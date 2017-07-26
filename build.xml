@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="AVOSCloud">
+
+  <!-- A property for the name of the file that contains 'android.library=true' (which is how we find library projects) -->
+  <property name="library.setting.file.name" value="project.properties" />
+  <path id="full-classpath">
+    <fileset file="libs/*.jar" />
+  </path>
+
+  <target name="javadoc.avoscloud" description="Generate the documentation for AVOS Cloud SDK.">
+    <delete dir="doc" failonerror="true"/>
+    <mkdir dir="doc"/>
+    <javadoc packagenames="com.avos.avoscloud"
+             defaultexcludes="yes"
+             destdir="doc"
+			 charset="utf8"
+			 encoding="utf8"
+             author="true"
+             version="true"
+             use="true"
+             splitindex="true"
+             Public="true"
+             windowtitle="AVOS Cloud Android SDK">
+
+      <classpath refid="full-classpath" />
+      <doctitle><![CDATA[<h1>AVOS Cloud Android SDK</h1>]]></doctitle>
+      <bottom><![CDATA[<i>Copyright &#169; 2013 AVOS Systems Inc. All Rights Reserved.</i>]]></bottom>
+
+
+	  <fileset dir="avoscloud-sdk/src/main/java" defaultexcludes="no">
+		<include name="com/avos/avoscloud/AV*java"/>
+		<include name="com/avos/avoscloud/*Callback*java"/>
+		<include name="com/avos/avoscloud/Push*java"/>
+		<exclude name="com/avos/avoscloud/AVDefaultNotificationReceiver.java"/>
+		<exclude name="com/avos/avoscloud/AVErrorUtils.java"/>
+		<exclude name="com/avos/avoscloud/AVUtils.java"/>
+		<exclude name="com/avos/avoscloud/AVUploader.java"/>
+		<exclude name="com/avos/avoscloud/AVCacheManager.java"/>
+		<exclude name="com/avos/avoscloud/AVDuration.java"/>
+		<exclude name="com/avos/avoscloud/AVExceptionHolder.java"/>
+		<exclude name="com/avos/avoscloud/AVKeyValues.java"/>
+		<exclude name="com/avos/avoscloud/AVOSSSLSocketFactory.java"/>
+		<exclude name="com/avos/avoscloud/AVOperation.java"/>
+		<exclude name="com/avos/avoscloud/AVOperationQueue.java"/>
+		<exclude name="com/avos/avoscloud/AVPersistenceUtils.java"/>
+		<exclude name="com/avos/avoscloud/AVPowerfulUtils.java"/>
+		<exclude name="com/avos/avoscloud/AVResponse.java"/>
+		<exclude name="com/avos/avoscloud/AVResponseArray.java"/>
+		<exclude name="com/avos/avoscloud/AVUncaughtExceptionHandler.java"/>
+		<exclude name="com/avos/avoscloud/AVMultiPartEntity.java"/>
+		<exclude name="com/avos/avoscloud/AVClassName.java"/>
+		<exclude name="com/avos/avoscloud/AVNetworkHelper.java"/>
+		<exclude name="com/avos/avoscloud/DNSRetryCallback"/>
+		<exclude name="com/avos/avoscloud/AVFileDownloader.java"/>
+	  </fileset>
+	  <fileset dir="avoscloud-sns/src/main/java" defaultexcludes="no">
+		<include name="com/avos/sns/SNS*java"/>
+	  </fileset>
+	  <fileset dir="avoscloud-push/src/main/java" defaultexcludes="no">
+		<include name="com/avos/avoscloud/*"/>
+		<exclude name="com/avos/avoscloud/BroadcastUtil.java"/>
+		<exclude name="com/avos/avoscloud/NotifyUtil.java"/>
+		<include name="com/avos/avoscloud/im/v2/*"/>
+		<include name="com/avos/avoscloud/im/v2/callback/*"/>
+		<include name="com/avos/avoscloud/im/v2/messages/*"/>
+
+	  </fileset>
+	  <fileset dir="avoscloud-statistics/src/main/java" defaultexcludes="no">
+		<include name="com/avos/avoscloud/AVAnalytics*java"/>
+	  </fileset>
+	  <fileset dir="avoscloud-feedback/src/main/java" defaultexcludes="no">
+		<include name="com/avos/avoscloud/feedback/*"/>
+	  </fileset>
+	  <fileset dir="avoscloud-search/src/main/java" defaultexcludes="no">
+		<include name="com/avos/avoscloud/search/*"/>
+	  </fileset>
+    </javadoc>
+  </target>
+
+
+  <filelist id="normal-projects" dir=".">
+    <!-- You want to add your own projects here -->
+    <file name="./avoscloud/build.xml" />
+    <file name="./paas_unit_test_application/build.xml"/>
+
+    <file name="./avospush/build.xml"/>
+    <file name="./PushDemo/build.xml"/>
+    <file name="./xmppTest/build.xml"/>
+  </filelist>
+
+  <fileset id="all-libraries-properties" dir=".">
+    <include name="*/${library.setting.file.name}" />
+    <contains casesensitive="true" text="android.library=true" />
+  </fileset>
+
+  <pathconvert property="all-libraries" refid="all-libraries-properties">
+    <globmapper from="*${library.setting.file.name}" to="*build.xml" />
+  </pathconvert>
+
+  <target name="-set-debug-mode">
+    <property name="build.target" value="debug" />
+    <property name="install.target" value="installd" />
+  </target>
+
+
+  <target name="-set-release-mode">
+    <property name="build.target" value="release" />
+    <property name="install.target" value="installr" />
+  </target>
+
+  <target name="-build-dependencies" unless="built.dependencies">
+    <property name="built.dependencies" value="true" />
+    <subant buildpath="${all-libraries}" target="${build.target}" inheritall="false" />
+  </target>
+
+  <target name="-build-normal-projects" depends="-build-dependencies">
+    <subant inheritall="false">
+      <target name="nodeps" />
+      <target name="${build.target}" />
+      <resources refid="normal-projects" />
+    </subant>
+  </target>
+
+  <target name="-install-normal-projects">
+    <subant inheritall="false">
+      <target name="${install.target}" />
+      <resources refid="normal-projects" />
+    </subant>
+  </target>
+
+  <target name="-clean-projects">
+    <subant inheritall="false">
+      <target name="clean" />
+      <resources refid="normal-projects" />
+    </subant>
+  </target>
+
+
+  <target name="debug" depends="-set-debug-mode, -build-normal-projects" description="Builds (only) a debug-key signed application" />
+  <target name="release" depends="-set-release-mode, -build-normal-projects" description="Builds (only) a release-key signed application" />
+  <target name="installd" depends="-set-debug-mode, -install-normal-projects" description="Installs (only) a debug-key signed application" />
+  <target name="installr" depends="-set-release-mode, -install-normal-projects" description="Installs (only) a release-key signed application" />
+  <target name="clean" depends="-set-release-mode, -clean-projects" description="Clean application" />
+
+</project>

@@ -1,0 +1,35 @@
+package com.avos.avoscloud.im.v2;
+
+/**
+ * Created by lbt05 on 1/28/15.
+ */
+public class AVIMMessageManagerHelper {
+  public static void processMessage(AVIMMessage message, AVIMClient client, boolean hasMore,
+      boolean isTransient) {
+    AVIMMessageManager.processMessage(message, client, hasMore, isTransient);
+  }
+
+  public static void processMessageReceipt(AVIMMessage message, AVIMClient client) {
+    AVIMMessageManager.processMessageReceipt(message, client);
+  }
+
+  public static AVIMClientEventHandler getClientEventHandler() {
+    return AVIMClient.getClientEventHandler();
+  }
+
+  public static AVIMConversationEventHandler getConversationEventHandler() {
+    return AVIMMessageManager.getConversationEventHandler();
+  }
+
+  public static AVIMMessage parseTypedMessage(AVIMMessage message) {
+    return AVIMMessageManager.parseTypedMessage(message);
+  }
+
+  public static void removeConversationCache(AVIMConversation conversation) {
+    conversation.storage.deleteConversationData(conversation.getConversationId());
+  }
+
+  public static String getMessageToken(AVIMMessage msg) {
+    return msg.getUniqueToken();
+  }
+}

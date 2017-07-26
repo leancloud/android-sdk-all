@@ -1,0 +1,10 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.avos.avoscloud.search">
+
+    <application
+        android:allowBackup="true">
+        <activity android:name="com.avos.avoscloud.search.SearchActivity" >
+        </activity>
+    </application>
+
+</manifest>

@@ -1,0 +1,8 @@
+include ':avoscloud-sdk'
+include ':avoscloud-feedback'
+include ':avoscloud-push'
+include ':avoscloud-search'
+include ':avoscloud-sns'
+include ':avoscloud-statistics'
+include ':avoscloud-gcm'
+include ':avoscloud-mixpush'
