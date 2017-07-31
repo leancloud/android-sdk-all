@@ -333,7 +333,7 @@ class AVInternalConversation {
       }
       long messageTS = 0;
       if (null != params && params.containsKey(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP)) {
-        messageTS = (long)params.get(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP);
+        messageTS = ((Number) params.get(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP)).longValue();
       }
       read(messageId, messageTS, requestId);
     } else if (operationCode == AVIMOperation.CONVERSATION_FETCH_RECEIPT_TIME.getCode()) {
