@@ -132,7 +132,11 @@ public class AVIMClient {
     return client;
   }
 
-
+  /**
+   * Get the AVIMClient that is instantiated by AVUser
+   * @param user the related AVUser
+   * @return
+   */
   public static AVIMClient getInstance(AVUser user) {
     if (null == user) {
       throw new IllegalArgumentException("user cannot be null.");
@@ -149,6 +153,12 @@ public class AVIMClient {
     return client;
   }
 
+  /**
+   * Get the AVIMClient that is instantiated by AVUser and tag
+   * @param user the related AVUser
+   * @param tag the related tag，used for single login
+   * @return
+   */
   public static AVIMClient getInstance(AVUser user, String tag) {
     AVIMClient client = getInstance(user);
     client.tag = tag;
@@ -167,16 +177,16 @@ public class AVIMClient {
 
   /**
    * 连接服务器
-   * @param operation 登陆选项
+   * @param option 登陆选项
    * @param callback
    */
-  public void open(AVIMClientOpenOption operation, final AVIMClientCallback callback) {
+  public void open(AVIMClientOpenOption option, final AVIMClientCallback callback) {
 
     AVIMClientParcel parcel = new AVIMClientParcel();
     parcel.setClientTag(tag);
     parcel.setSessionToken(sessionToken);
-    if (null != operation) {
-      parcel.setForceSingleLogin(operation.isForceSingleLogin());
+    if (null != option) {
+      parcel.setForceSingleLogin(option.isForceSingleLogin());
     }
     BroadcastReceiver receiver = null;
 
