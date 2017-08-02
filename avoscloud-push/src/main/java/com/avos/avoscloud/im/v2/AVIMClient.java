@@ -1,6 +1,5 @@
 package com.avos.avoscloud.im.v2;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,11 +15,12 @@ import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVIMClientParcel;
 import com.avos.avoscloud.AVOSCloud;
 import com.avos.avoscloud.AVSession;
+import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.IntentUtil;
-import com.avos.avoscloud.LogUtil;
 import com.avos.avoscloud.PushService;
 import com.avos.avoscloud.SignatureFactory;
 import com.avos.avoscloud.im.v2.Conversation.AVIMOperation;
@@ -37,25 +37,20 @@ import com.avos.avoscloud.im.v2.callback.AVIMOnlineClientsCallback;
  */
 public class AVIMClient {
 
-  public static String PARAM_CLIENT_TAG = "param_client_tag";
-  public static String PARAM_CLIENT_FORECE_SINGLE_LOGIN = "param_client_forece_single_login";
-
-
   String clientId;
   AVIMMessageStorage storage;
-  String tag;
+  private String tag;
+  private String sessionToken;
   static ConcurrentHashMap<String, AVIMClient> clients =
       new ConcurrentHashMap<String, AVIMClient>();
   ConcurrentHashMap<String, AVIMConversation> conversationCache =
       new ConcurrentHashMap<String, AVIMConversation>();
   boolean isConversationSync = false;
 
-  static SignatureFactory factory;
-
   private static boolean isAutoOpen = true;
 
   public SignatureFactory getSignatureFactory() {
-    return factory;
+    return AVSession.getSignatureFactory();
   }
 
   /**
@@ -66,18 +61,7 @@ public class AVIMClient {
    */
 
   public static void setSignatureFactory(SignatureFactory factory) {
-    AVIMClient.factory = factory;
-    try {
-      Class<?> pushService = Class.forName("com.avos.avoscloud.PushService");
-      Method setSignatureFactoryMethod =
-          pushService.getDeclaredMethod("setSignatureFactory", SignatureFactory.class);
-      setSignatureFactoryMethod.setAccessible(true);
-      setSignatureFactoryMethod.invoke(null, factory);
-    } catch (Exception e) {
-      if (AVOSCloud.showInternalDebugLog()) {
-        LogUtil.avlog.e("error during v2 IM Client signature factory setting");
-      }
-    }
+    AVSession.setSignatureFactory(factory);
   }
 
   /**
@@ -149,6 +133,39 @@ public class AVIMClient {
   }
 
   /**
+   * Get the AVIMClient that is instantiated by AVUser
+   * @param user the related AVUser
+   * @return
+   */
+  public static AVIMClient getInstance(AVUser user) {
+    if (null == user) {
+      throw new IllegalArgumentException("user cannot be null.");
+    }
+
+    String clientId = user.getObjectId();
+    String sessionToken = user.getSessionToken();
+    if (AVUtils.isBlankString(clientId) || AVUtils.isBlankString(sessionToken)) {
+      throw new IllegalArgumentException("user must login first.");
+    }
+
+    AVIMClient client = getInstance(clientId);
+    client.sessionToken = sessionToken;
+    return client;
+  }
+
+  /**
+   * Get the AVIMClient that is instantiated by AVUser and tag
+   * @param user the related AVUser
+   * @param tag the related tag，used for single login
+   * @return
+   */
+  public static AVIMClient getInstance(AVUser user, String tag) {
+    AVIMClient client = getInstance(user);
+    client.tag = tag;
+    return client;
+  }
+
+  /**
    * 连接服务器
    * 
    * @param callback
@@ -160,17 +177,16 @@ public class AVIMClient {
 
   /**
    * 连接服务器
-   * @param operation 登陆选项
+   * @param option 登陆选项
    * @param callback
    */
-  public void open(AVIMClientOpenOption operation, final AVIMClientCallback callback) {
-    Map<String, Object> params = new HashMap<String, Object>();
-    if (!AVUtils.isBlankString(tag)) {
-      params.put(PARAM_CLIENT_TAG, tag);
-    }
+  public void open(AVIMClientOpenOption option, final AVIMClientCallback callback) {
 
-    if (null != operation) {
-      params.put(PARAM_CLIENT_FORECE_SINGLE_LOGIN, operation.isForceSingleLogin());
+    AVIMClientParcel parcel = new AVIMClientParcel();
+    parcel.setClientTag(tag);
+    parcel.setSessionToken(sessionToken);
+    if (null != option) {
+      parcel.setForceSingleLogin(option.isForceSingleLogin());
     }
     BroadcastReceiver receiver = null;
 
@@ -182,7 +198,7 @@ public class AVIMClient {
         }
       };
     }
-    this.sendClientCMDToPushService(JSON.toJSONString(params), receiver, AVIMOperation.CLIENT_OPEN);
+    this.sendClientCommand(parcel, receiver, AVIMOperation.CLIENT_OPEN);
   }
 
   /**
@@ -500,6 +516,22 @@ public class AVIMClient {
       };
     }
     this.sendClientCMDToPushService(null, receiver, AVIMOperation.CLIENT_STATUS);
+  }
+
+  protected void sendClientCommand(AVIMClientParcel parcel, BroadcastReceiver receiver, AVIMOperation operation) {
+    int requestId = AVUtils.getNextIMRequestId();
+
+    if (receiver != null) {
+      LocalBroadcastManager.getInstance(AVOSCloud.applicationContext).registerReceiver(receiver,
+        new IntentFilter(operation.getOperation() + requestId));
+    }
+    Intent i = new Intent(AVOSCloud.applicationContext, PushService.class);
+    i.setAction(Conversation.AV_CONVERSATION_INTENT_ACTION);
+    i.putExtra(Conversation.INTENT_KEY_CLIENT_PARCEL, parcel);
+    i.putExtra(Conversation.INTENT_KEY_CLIENT, clientId);
+    i.putExtra(Conversation.INTENT_KEY_REQUESTID, requestId);
+    i.putExtra(Conversation.INTENT_KEY_OPERATION, operation.getCode());
+    AVOSCloud.applicationContext.startService(IntentUtil.setupIntentFlags(i));
   }
 
   protected void sendClientCMDToPushService(String dataAsString, BroadcastReceiver receiver,

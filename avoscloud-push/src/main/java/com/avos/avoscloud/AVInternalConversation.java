@@ -10,7 +10,6 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
 import com.avos.avoscloud.AVIMOperationQueue.Operation;
-import com.avos.avoscloud.AVSession.SignatureTask;
 import com.avos.avoscloud.PendingMessageCache.Message;
 import com.avos.avoscloud.SignatureFactory.SignatureException;
 import com.avos.avoscloud.im.v2.AVIMClient;
@@ -66,9 +65,10 @@ class AVInternalConversation {
 
       @Override
       public Signature computeSignature() throws SignatureException {
-        if (session.getSignatureFactory() != null) {
+        final SignatureFactory signatureFactory = AVSession.getSignatureFactory();
+        if (null != signatureFactory) {
           // 服务器端为了兼容老版本，这里需要使用group的invite
-          return session.getSignatureFactory().createConversationSignature(conversationId,
+          return signatureFactory.createConversationSignature(conversationId,
               session.getSelfPeerId(), members, GROUP_INVITE);
         }
         return null;
@@ -101,8 +101,9 @@ class AVInternalConversation {
       @Override
       public Signature computeSignature() throws SignatureException {
         // 服务器端为兼容老版本，签名使用kick的action
-        if (session.getSignatureFactory() != null) {
-          return session.getSignatureFactory().createConversationSignature(conversationId,
+        final SignatureFactory signatureFactory = AVSession.getSignatureFactory();
+        if (signatureFactory != null) {
+          return signatureFactory.createConversationSignature(conversationId,
               session.getSelfPeerId(), members, GROUP_KICK);
         }
         return null;
@@ -132,9 +133,10 @@ class AVInternalConversation {
 
       @Override
       public Signature computeSignature() throws SignatureException {
-        if (session.getSignatureFactory() != null) {
+        final SignatureFactory signatureFactory = AVSession.getSignatureFactory();
+        if (null != signatureFactory) {
           // 服务器端为了兼容老版本，这里需要使用group的invite
-          return session.getSignatureFactory().createConversationSignature(conversationId,
+          return signatureFactory.createConversationSignature(conversationId,
               session.getSelfPeerId(), Arrays.asList(session.getSelfPeerId()),
               GROUP_INVITE);
         }

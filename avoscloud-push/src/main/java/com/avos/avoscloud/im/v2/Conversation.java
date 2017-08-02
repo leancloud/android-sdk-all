@@ -21,6 +21,7 @@ public interface Conversation {
 
   String INTENT_KEY_DATA = "conversation.data";
   String INTENT_KEY_MESSAGE_OPTION = "conversation.messageoption";
+  String INTENT_KEY_CLIENT_PARCEL = "conversation.client.parcel";
   String INTENT_KEY_CLIENT = "conversation.client";
   String INTENT_KEY_CONVERSATION = "convesration.id";
   String INTENT_KEY_OPERATION = "conversation.operation";
