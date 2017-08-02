@@ -385,17 +385,7 @@ public class PushService extends Service {
       sPushConnectionManager.sendData(packet);
     }
   }
-
-  // 这个地方由于存在pushService并没有启动的情况下，sPushConnectionManager尚未被初始化的情况，同时signatureFactory方法无法通过intent来传递，只能用这种方法来做
-  // 但是由于启动是由异步方法去完成，则容易遭遇同步问题
-  // 所以选择双保险
-  // 在发送open operation时，能够尽量带上signature参数，弥补factory尚未被设置的情况
-  // 但是会保证factory优于signature
-  // 这种写法也有问题，就是在于signature会出现重复计算的情况，在signature非常复杂的情况下，会有一定的性能浪费。但是由于每次watch都会计算，这个计算一般都不会太过于复杂
-  protected static void setSignatureFactory(final SignatureFactory factory) {
-    AVSession.setStaticSignatureFactory(factory);
-  }
-
+  
   /*
    * https://groups.google.com/forum/#!topic/android-developers/H-DSQ4-tiac
    * @see android.app.Service#onTaskRemoved(android.content.Intent)
@@ -455,7 +445,6 @@ public class PushService extends Service {
   }
 
   private void processConversationEventsFromClient(Intent intent) {
-
     int operationCode = intent.getExtras().getInt(Conversation.INTENT_KEY_OPERATION);
     String clientId = intent.getExtras().getString(Conversation.INTENT_KEY_CLIENT);
     String conversationId = intent.getExtras().getString(Conversation.INTENT_KEY_CONVERSATION);
@@ -484,15 +473,8 @@ public class PushService extends Service {
 
     switch (operation) {
       case CLIENT_OPEN:
-        String tag = null;
-        if (params.containsKey(AVIMClient.PARAM_CLIENT_TAG)) {
-          tag = (String) params.get(AVIMClient.PARAM_CLIENT_TAG);
-        }
-        boolean isForceSingleLogin = false;
-        if (params.containsKey(AVIMClient.PARAM_CLIENT_FORECE_SINGLE_LOGIN)) {
-          isForceSingleLogin = (boolean) params.get(AVIMClient.PARAM_CLIENT_FORECE_SINGLE_LOGIN);
-        }
-        session.open(tag, isForceSingleLogin, requestId);
+        AVIMClientParcel parcel = intent.getExtras().getParcelable(Conversation.INTENT_KEY_CLIENT_PARCEL);
+        session.open(parcel, requestId);
         break;
       case CLIENT_DISCONNECT:
         session.close(requestId);
