@@ -380,7 +380,7 @@ public class AVSession {
 
   String getSessionToken() {
     if (AVUtils.isBlankString(sessionToken)) {
-      AVPersistenceUtils.sharedInstance().getPersistentSettingString(selfId, AVUSER_SESSION_TOKEN, "");
+      sessionToken = AVPersistenceUtils.sharedInstance().getPersistentSettingString(selfId, AVUSER_SESSION_TOKEN, "");
     }
     return sessionToken;
   }
