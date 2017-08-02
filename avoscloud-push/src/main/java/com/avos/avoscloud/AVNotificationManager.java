@@ -291,7 +291,7 @@ class AVNotificationManager {
           // ignore;
         }
       } else {
-        String defaultCls = (String) entry.getValue();
+        String defaultCls = String.valueOf(entry.getValue());
         defaultPushCallback.put(channel, defaultCls);
       }
     }
