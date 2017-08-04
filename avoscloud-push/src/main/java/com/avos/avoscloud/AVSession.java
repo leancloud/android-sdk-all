@@ -2,7 +2,6 @@ package com.avos.avoscloud;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.AsyncTask;
 
 import com.avos.avoscloud.AVIMOperationQueue.Operation;
 import com.avos.avoscloud.PendingMessageCache.Message;
@@ -48,10 +47,16 @@ public class AVSession {
    */
   private final String LAST_PATCH_TIME = "lastPatchTime";
 
+  /**
+   * 用于存储相关联的 AVUser 的 sessionToken
+   */
+  private final String AVUSER_SESSION_TOKEN = "avuserSessionToken";
+
   private final Context context;
   final AVInternalSessionListener sessionListener;
   private final String selfId;
   String tag;
+  private String sessionToken = null;
   private long lastNotifyTime = 0;
   private long lastPatchTime = 0;
 
@@ -77,16 +82,16 @@ public class AVSession {
 
   private static SignatureFactory signatureFactory;
 
-  public SignatureFactory getSignatureFactory() {
+  public static SignatureFactory getSignatureFactory() {
     return signatureFactory;
+  }
+
+  public static void setSignatureFactory(SignatureFactory factory) {
+    AVSession.signatureFactory = factory;
   }
 
   public AVWebSocketListener getWebSocketListener() {
     return this.websocketListener;
-  }
-
-  static void setStaticSignatureFactory(SignatureFactory factory) {
-    AVSession.signatureFactory = factory;
   }
 
   public AVSession(String selfId, AVInternalSessionListener sessionListener) {
@@ -98,8 +103,9 @@ public class AVSession {
     conversationOperationCache = new AVIMOperationQueue(selfId);
   }
 
-  public void open(final String tag, final boolean forceSingleLogin, final int requestId) {
-    this.tag = tag;
+  public void open(final AVIMClientParcel parcel, final int requestId) {
+    this.tag = parcel.getClientTag();
+    updateSessionToken(parcel.getSessionToken());
     try {
       if (PushService.isPushConnectionBroken()) {
         sessionListener
@@ -125,7 +131,7 @@ public class AVSession {
               sig, getLastNotifyTime(), getLastPatchTime(), requestId);
             scp.setTag(tag);
             // 注意，forceSingleLogin 代表是否强制登陆，若为 true, reconnectionRequest 应为 false
-            scp.setReconnectionRequest(!forceSingleLogin);
+            scp.setReconnectionRequest(!parcel.isForceSingleLogin());
             PushService.sendData(scp);
           } else {
             sessionListener.onError(AVOSCloud.applicationContext, AVSession.this, e,
@@ -140,8 +146,15 @@ public class AVSession {
 
         @Override
         public Signature computeSignature() throws SignatureException {
-          if (signatureFactory != null) {
+          final SignatureFactory signatureFactory = AVSession.getSignatureFactory();
+          if (null != signatureFactory) {
             return signatureFactory.createSignature(selfId, new ArrayList<String>());
+          } else if (!AVUtils.isBlankString(getSessionToken())) {
+            try {
+              return new AVUserSinatureFactory(getSessionToken()).getOpenSignature();
+            } catch (AVException e) {
+              throw  new SignatureException(e.getCode(), e.getMessage());
+            }
           }
           return null;
         }
@@ -305,49 +318,6 @@ public class AVSession {
     new SignatureTask(callback).execute(this.selfId);
   }
 
-  static class SignatureTask extends AsyncTask<String, Integer, Signature> {
-    SignatureCallback callback;
-    AVException signatureException;
-
-    public SignatureTask(SignatureCallback callback) {
-      this.callback = callback;
-    }
-
-    @Override
-    protected Signature doInBackground(String... params) {
-      String clientId = params[0];
-      Signature signature;
-      if (callback.useSignatureCache()) {
-        signature = AVSessionCacheHelper.SignatureCache.getSessionSignature(clientId);
-        if (signature != null && !signature.isExpired()) {
-          if (AVOSCloud.isDebugLogEnabled()) {
-            LogUtil.avlog.d("get signature from cache");
-          }
-          return signature;
-        } else {
-          if (AVOSCloud.isDebugLogEnabled()) {
-            LogUtil.avlog.d("signature expired");
-          }
-        }
-      }
-      try {
-        signature = callback.computeSignature();
-        if (callback.cacheSignature()) {
-          AVSessionCacheHelper.SignatureCache.addSessionSignature(clientId, signature);
-        }
-        return signature;
-      } catch (Exception e) {
-        signatureException = new AVException(e);
-        return null;
-      }
-    }
-
-    @Override
-    protected void onPostExecute(Signature result) {
-      callback.onSignatureReady(result, signatureException);
-    }
-  }
-
   /**
    * 设置离线消息推送模式
    * @param isOnlyCount
@@ -405,6 +375,20 @@ public class AVSession {
     if (patchTime > currentTime) {
       lastPatchTime = patchTime;
       AVPersistenceUtils.sharedInstance().savePersistentSettingLong(selfId, LAST_PATCH_TIME, patchTime);
+    }
+  }
+
+  String getSessionToken() {
+    if (AVUtils.isBlankString(sessionToken)) {
+      sessionToken = AVPersistenceUtils.sharedInstance().getPersistentSettingString(selfId, AVUSER_SESSION_TOKEN, "");
+    }
+    return sessionToken;
+  }
+
+  void updateSessionToken(String token) {
+    sessionToken = token;
+    if (!AVUtils.isBlankString(sessionToken)) {
+      AVPersistenceUtils.sharedInstance().savePersistentSettingString(selfId, AVUSER_SESSION_TOKEN, sessionToken);
     }
   }
 
