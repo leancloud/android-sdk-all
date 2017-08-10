@@ -438,6 +438,11 @@ public class AVUtils {
   }
 
   public static void updatePropertyFromMap(AVObject parent, String key, Map<String, Object> map) {
+    if (isACL(key)) {
+      parent.setACL(new AVACL(map));
+      return;
+    }
+
     String objectId = (String) map.get(objectIdTag);
     String type = (String) map.get(typeTag);
     if (type == null && objectId == null) {
