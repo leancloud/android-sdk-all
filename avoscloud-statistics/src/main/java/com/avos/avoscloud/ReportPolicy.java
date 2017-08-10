@@ -2,7 +2,6 @@ package com.avos.avoscloud;
 
 /**
  * Created with IntelliJ IDEA. User: zhuzeng Date: 8/27/13 Time: 4:49 PM
- * http://mta.qq.com/mta/setting/ctr_transmission_strategy?app_id=1
  */
 public enum ReportPolicy {
   REALTIME(0), // 实时发送，app每产生一条消息都会发送到服务器, debug only
