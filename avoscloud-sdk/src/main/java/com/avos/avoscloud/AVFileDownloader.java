@@ -5,8 +5,13 @@ import android.os.AsyncTask;
 import org.apache.http.Header;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.StreamCorruptedException;
 import java.net.HttpURLConnection;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import okhttp3.Request;
 
@@ -20,12 +25,22 @@ import okhttp3.Request;
 class AVFileDownloader extends AsyncTask<String, Integer, AVException> {
 
   private final GetDataCallback dataCallback;
+  private final GetDataStreamCallback dataStreamCallback;
   private final ProgressCallback progressCallback;
+  private static final int READ_BUF_SIZE = 1024*1024;
 
   private byte[] fileData;
+  private InputStream is;
 
   public AVFileDownloader(ProgressCallback progressCallback, GetDataCallback dataCallback) {
     this.dataCallback = dataCallback;
+    this.dataStreamCallback = null;
+    this.progressCallback = progressCallback;
+  }
+
+  public AVFileDownloader(ProgressCallback progressCallback, GetDataStreamCallback dataStreamCallback) {
+    this.dataCallback = null;
+    this.dataStreamCallback = dataStreamCallback;
     this.progressCallback = progressCallback;
   }
 
@@ -35,7 +50,15 @@ class AVFileDownloader extends AsyncTask<String, Integer, AVException> {
       File cacheFile = getCacheFile(url);
       if (cacheFile.exists()) {
         this.publishProgress(100);
-        fileData = AVPersistenceUtils.readContentBytesFromFile(cacheFile);
+        if (null != this.dataCallback) {
+          fileData = AVPersistenceUtils.readContentBytesFromFile(cacheFile);
+        } else if (null != this.dataStreamCallback) {
+          try {
+            is = AVPersistenceUtils.getInputStreamFromFile(cacheFile);
+          } catch (IOException e) {
+            is = null;
+          }
+        }
         return null;
       } else {
         return downloadFileFromNetwork(url);
@@ -63,6 +86,8 @@ class AVFileDownloader extends AsyncTask<String, Integer, AVException> {
     super.onPostExecute(e);
     if (dataCallback != null) {
       dataCallback.internalDone(fileData, e);
+    } else if (null != dataStreamCallback) {
+      dataStreamCallback.internalDone0(this.is, e);
     }
   }
 
@@ -75,6 +100,7 @@ class AVFileDownloader extends AsyncTask<String, Integer, AVException> {
     if (AVOSCloud.isDebugLogEnabled()) {
       LogUtil.avlog.d("downloadFileFromNetwork: " + url);
     }
+    final File cacheFile = getCacheFile(url);
 
     final AVException[] errors = new AVException[1];
     Request.Builder requestBuilder = new Request.Builder();
@@ -87,22 +113,56 @@ class AVFileDownloader extends AsyncTask<String, Integer, AVException> {
       }
     };
     AVHttpClient client = AVHttpClient.progressClientInstance(listener);
-    client.execute(requestBuilder.build(), true, new AsyncHttpResponseHandler() {
+    client.execute(requestBuilder.build(), true, new AsyncHttpStreamResponseHandler() {
 
       @Override
-      public void onSuccess(int statusCode, Header[] headers, byte[] data) {
+      public void onSuccess(int statusCode, Header[] headers, InputStream data) {
         if (statusCode / 100 == 2 && null != data) {
-          fileData = data;
-          AVPersistenceUtils.saveContentToFile(data, getCacheFile(url));
+          // read data from InputStream and save to cache File
+          byte[] content = new byte[READ_BUF_SIZE];
+
+          Lock writeLock = AVPersistenceUtils.getLock(cacheFile.getAbsolutePath()).writeLock();
+          FileOutputStream out = null;
+          if (writeLock.tryLock()) {
+            try {
+              out = new FileOutputStream(cacheFile, false);
+              int currentReadSize = data.read(content);
+              while (currentReadSize > 0) {
+                out.write(content, 0, currentReadSize);
+                currentReadSize = data.read(content);
+              }
+            } catch (Exception e) {
+              LogUtil.log.d(e.toString());
+            } finally {
+              try {
+                data.close();
+                if (out != null) {
+                  out.close();
+                }
+              } catch (IOException e) {
+                LogUtil.log.d(e.toString());
+              }
+              writeLock.unlock();
+            }
+          }
+          if (null != dataCallback) {
+            fileData = AVPersistenceUtils.readContentBytesFromFile(cacheFile);
+          } else if (null != dataStreamCallback) {
+            try {
+              is = AVPersistenceUtils.getInputStreamFromFile(cacheFile);
+            } catch (IOException e) {
+              is = null;
+            }
+          }
         } else if (null != data) {
-          errors[0] = new AVException(statusCode, new String(data));
+          errors[0] = new AVException(statusCode, "status code is invalid");
         } else {
           errors[0] = new AVException(statusCode, "data is empty!");
         }
       }
 
       @Override
-      public void onFailure(int statusCode, Header[] headers, byte[] data, Throwable error) {
+      public void onFailure(int statusCode, Header[] headers, Throwable error) {
         errors[0] = new AVException(error);
       }
     });

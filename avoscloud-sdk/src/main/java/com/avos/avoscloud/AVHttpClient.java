@@ -5,6 +5,7 @@ import java.net.SocketTimeoutException;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -75,7 +76,7 @@ public class AVHttpClient {
     return okHttpClient.newBuilder();
   }
 
-  public void execute(Request request, boolean sync, final AsyncHttpResponseHandler handler) {
+  public void execute(Request request, boolean sync, final Callback handler) {
     Call call = getCall(request);
     if (sync) {
       try {

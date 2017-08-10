@@ -17,7 +17,7 @@ public class AVPersistenceUtils {
   private static ConcurrentHashMap<String, ReentrantReadWriteLock> fileLocks =
       new ConcurrentHashMap<String, ReentrantReadWriteLock>();
 
-  private static ReentrantReadWriteLock getLock(String path) {
+  public static ReentrantReadWriteLock getLock(String path) {
     ReentrantReadWriteLock lock = fileLocks.get(path);
     if (lock == null) {
       lock = new ReentrantReadWriteLock();
@@ -166,6 +166,20 @@ public class AVPersistenceUtils {
     } else {
       return new String(data);
     }
+  }
+
+  public static InputStream getInputStreamFromFile(File fileForRead) throws IOException{
+    if (fileForRead == null) {
+      LogUtil.avlog.e("null file object.");
+      return null;
+    };
+    if (!fileForRead.exists() || !fileForRead.isFile()) {
+      if (AVOSCloud.isDebugLogEnabled()) {
+        LogUtil.log.d("not file object", new FileNotFoundException());
+      }
+      return null;
+    }
+    return new BufferedInputStream(new FileInputStream(fileForRead), 8192);
   }
 
   public static byte[] readContentBytesFromFile(File fileForRead) {
