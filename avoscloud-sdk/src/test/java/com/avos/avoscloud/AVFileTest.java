@@ -23,7 +23,7 @@ import static com.avos.avoscloud.AVFileDownloader.getAVFileCachePath;
  * Created by wli on 16/10/10.
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, manifest = Config.NONE, sdk = 21)
+@Config(constants = BuildConfig.class, manifest = Config.NONE, sdk = 23)
 public class AVFileTest {
 
   public static String TEST_FILE_CONTENT = "hello world";
