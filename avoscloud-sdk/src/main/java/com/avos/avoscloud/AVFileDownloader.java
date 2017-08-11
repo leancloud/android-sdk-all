@@ -32,6 +32,12 @@ class AVFileDownloader extends AsyncTask<String, Integer, AVException> {
   private byte[] fileData;
   private InputStream is;
 
+  public AVFileDownloader() {
+    this.dataCallback = null;
+    this.dataStreamCallback = null;
+    this.progressCallback = null;
+  }
+
   public AVFileDownloader(ProgressCallback progressCallback, GetDataCallback dataCallback) {
     this.dataCallback = dataCallback;
     this.dataStreamCallback = null;
@@ -56,6 +62,7 @@ class AVFileDownloader extends AsyncTask<String, Integer, AVException> {
           try {
             is = AVPersistenceUtils.getInputStreamFromFile(cacheFile);
           } catch (IOException e) {
+            LogUtil.log.e("failed to invoke doWork() url:" + url, e);
             is = null;
           }
         }
@@ -151,6 +158,7 @@ class AVFileDownloader extends AsyncTask<String, Integer, AVException> {
             try {
               is = AVPersistenceUtils.getInputStreamFromFile(cacheFile);
             } catch (IOException e) {
+              LogUtil.log.e("failed to invoke downloadFileFromNetwork() url:" + url, e);
               is = null;
             }
           }

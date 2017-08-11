@@ -664,7 +664,7 @@ public final class AVFile {
         throw new AVException(AVException.CONNECTION_FAILED, "Connection lost");
       } else {
         cancelDownloadIfNeed();
-        downloader = new AVFileDownloader(null, null);
+        downloader = new AVFileDownloader();
         AVException exception = downloader.doWork(getUrl());
         if (exception != null) {
           throw exception;
@@ -696,7 +696,7 @@ public final class AVFile {
           throw new AVException(AVException.CONNECTION_FAILED, "Connection lost");
         } else {
           cancelDownloadIfNeed();
-          downloader = new AVFileDownloader(null, null);
+          downloader = new AVFileDownloader();
           AVException exception = downloader.doWork(getUrl());
           if (exception != null) {
             throw exception;
