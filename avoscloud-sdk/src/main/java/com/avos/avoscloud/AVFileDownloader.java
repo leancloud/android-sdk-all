@@ -8,10 +8,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StreamCorruptedException;
-import java.net.HttpURLConnection;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import okhttp3.Request;
 
@@ -27,7 +24,7 @@ class AVFileDownloader extends AsyncTask<String, Integer, AVException> {
   private final GetDataCallback dataCallback;
   private final GetDataStreamCallback dataStreamCallback;
   private final ProgressCallback progressCallback;
-  private static final int READ_BUF_SIZE = 1024*1024;
+  private static final int READ_BUF_SIZE = 1024*8;
 
   private byte[] fileData;
   private InputStream is;

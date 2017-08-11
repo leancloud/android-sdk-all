@@ -288,9 +288,10 @@ public class AVFileTest {
   }
 
   @Test
-  public void testGetDataStreamForLargeFile() throws Exception {
-    AVFile file = new AVFile("jiuzai", "http://ac-lhzo7z96.clouddn.com/1501249201318");
-
+  public void testGetDataStreamForSmallCloudFile() throws Exception {
+    final AVFile file = new AVFile("name", TEST_FILE_CONTENT.getBytes());
+    file.save();
+    final CountDownLatch latch = new CountDownLatch(1);
     file.getDataStreamInBackground(new GetDataStreamCallback() {
       @Override
       public void done(InputStream data, AVException e) {
@@ -306,18 +307,62 @@ public class AVFileTest {
               curRead = data.read(content);
             }
             data.close();
+            Assert.assertTrue(totalRead > 0);
+            System.out.println("download fileSize:" + totalRead);
           } catch (Exception ex) {
             ex.printStackTrace();
             Assert.fail();
           }
         }
+        try {
+          file.delete();
+        } catch (AVException ex) {
+          ex.printStackTrace();
+        }
+        latch.countDown();
       }
     });
+    latch.await(30, TimeUnit.SECONDS);
   }
+
+  @Test
+  public void testGetDataStreamForLargeFile() throws Exception {
+    final String testUrl = "http://ac-lhzo7z96.clouddn.com/1501249201318";
+    AVFile file = new AVFile("jiuzai", testUrl);
+    final CountDownLatch latch = new CountDownLatch(1);
+    file.getDataStreamInBackground(new GetDataStreamCallback() {
+      @Override
+      public void done(InputStream data, AVException e) {
+        if (null != e || null == data) {
+          Assert.fail();
+        } else {
+          byte content[] = new byte[10240];
+          try {
+            int totalRead = 0;
+            int curRead = data.read(content);
+            while (curRead > 0) {
+              totalRead += curRead;
+              curRead = data.read(content);
+            }
+            data.close();
+            Assert.assertTrue(totalRead > 0);
+            System.out.println("download url:" + testUrl + ", fileSize:" + totalRead);
+          } catch (Exception ex) {
+            ex.printStackTrace();
+            Assert.fail();
+          }
+        }
+        latch.countDown();
+      }
+    });
+    latch.await(30, TimeUnit.SECONDS);
+  }
+
   @Test
   public void testGetDataStreamForExternalFile() throws Exception {
-    AVFile file = new AVFile("jiuzai", "http://wx4.sinaimg.cn/mw690/005ZWQyIly1fifjlms4amj30ia0rgtmv.jpg");
-
+    final String testUrl = "http://wx4.sinaimg.cn/mw690/005ZWQyIly1fifjlms4amj30ia0rgtmv.jpg";
+    AVFile file = new AVFile("jiuzai", testUrl);
+    final CountDownLatch latch = new CountDownLatch(1);
     file.getDataStreamInBackground(new GetDataStreamCallback() {
       @Override
       public void done(InputStream data, AVException e) {
@@ -333,13 +378,17 @@ public class AVFileTest {
               curRead = data.read(content);
             }
             data.close();
+            Assert.assertTrue(totalRead > 0);
+            System.out.println("download url:" + testUrl + ", fileSize:" + totalRead);
           } catch (Exception ex) {
             ex.printStackTrace();
             Assert.fail();
           }
         }
+        latch.countDown();
       }
     });
+    latch.await(30, TimeUnit.SECONDS);
   }
   @Test
   public void testGetDataInBackgroundWithProgress() throws Exception {

@@ -1,6 +1,5 @@
 package com.avos.avoscloud;
 
-import android.renderscript.ScriptGroup;
 import android.webkit.MimeTypeMap;
 
 import com.alibaba.fastjson.annotation.JSONField;
@@ -646,6 +645,9 @@ public final class AVFile {
    * {@link #getDataInBackground(GetDataCallback)} instead
    * unless you're already in a background thread.
    *
+   * Notice: for large file(above 20MB), it is dangerous to read whole data once time,
+   * instead of, you should use {@link #getDataStream()} to read the content.
+   *
    * @throws AVException
    */
   @Deprecated
@@ -679,6 +681,8 @@ public final class AVFile {
    * Synchronously gets the data input stream for this object. You probably want to use
    * {@link #getDataStreamInBackground(GetDataStreamCallback)} instead
    * unless you're already in a background thread.
+   *
+   * Notice: You need to close the input stream after reading content from it.
    *
    * @throws AVException
    */
@@ -719,6 +723,9 @@ public final class AVFile {
    * Gets the data for this object in a background thread. progressCallback is guaranteed to be
    * called with 100 before dataCallback is called.
    *
+   * Notice: for large file(above 20MB), it is dangerous to read whole data once time,
+   * instead of, you should use {@link #getDataStreamInBackground(GetDataStreamCallback, ProgressCallback)} to read the content.
+   *
    * @param dataCallback     A GetDataCallback that is called when the get completes.
    * @param progressCallback A ProgressCallback that is called periodically with progress updates.
    */
@@ -750,6 +757,9 @@ public final class AVFile {
   /**
    * Gets the data for this object in a background thread.
    *
+   * Notice: for large file(above 20MB), it is dangerous to read whole data once time,
+   * instead of, you should use {@link #getDataStreamInBackground(GetDataStreamCallback)} to read the content.
+   *
    * @param dataCallback A GetDataCallback that is called when the get completes.
    */
   public void getDataInBackground(GetDataCallback dataCallback) {
@@ -758,7 +768,7 @@ public final class AVFile {
 
   /**
    * Gets the data input stream for this object in a background thread.
-   * Caution: You need to close the input stream after reading content from it.
+   * Notice: You need to close the input stream after reading content from it.
    *
    * @param callback A GetDataStreamCallback that is called when the get completes.
    */
