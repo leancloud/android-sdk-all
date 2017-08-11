@@ -12,6 +12,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -286,6 +287,60 @@ public class AVFileTest {
     Assert.assertEquals(TEST_FILE_CONTENT, content.toString());
   }
 
+  @Test
+  public void testGetDataStreamForLargeFile() throws Exception {
+    AVFile file = new AVFile("jiuzai", "http://ac-lhzo7z96.clouddn.com/1501249201318");
+
+    file.getDataStreamInBackground(new GetDataStreamCallback() {
+      @Override
+      public void done(InputStream data, AVException e) {
+        if (null != e || null == data) {
+          Assert.fail();
+        } else {
+          byte content[] = new byte[10240];
+          try {
+            int totalRead = 0;
+            int curRead = data.read(content);
+            while (curRead > 0) {
+              totalRead += curRead;
+              curRead = data.read(content);
+            }
+            data.close();
+          } catch (Exception ex) {
+            ex.printStackTrace();
+            Assert.fail();
+          }
+        }
+      }
+    });
+  }
+  @Test
+  public void testGetDataStreamForExternalFile() throws Exception {
+    AVFile file = new AVFile("jiuzai", "http://wx4.sinaimg.cn/mw690/005ZWQyIly1fifjlms4amj30ia0rgtmv.jpg");
+
+    file.getDataStreamInBackground(new GetDataStreamCallback() {
+      @Override
+      public void done(InputStream data, AVException e) {
+        if (null != e || null == data) {
+          Assert.fail();
+        } else {
+          byte content[] = new byte[10240];
+          try {
+            int totalRead = 0;
+            int curRead = data.read(content);
+            while (curRead > 0) {
+              totalRead += curRead;
+              curRead = data.read(content);
+            }
+            data.close();
+          } catch (Exception ex) {
+            ex.printStackTrace();
+            Assert.fail();
+          }
+        }
+      }
+    });
+  }
   @Test
   public void testGetDataInBackgroundWithProgress() throws Exception {
     AVFile file = new AVFile("name", TEST_FILE_CONTENT.getBytes());
