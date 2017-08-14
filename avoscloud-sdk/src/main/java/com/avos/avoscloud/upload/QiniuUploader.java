@@ -37,13 +37,13 @@ class QiniuUploader extends HttpClientUploader {
   private int blockCount;
   private String fileKey;
 
-  private static final String QINIU_HOST = "http://upload.qiniu.com";
-  private static final String QINIU_CREATE_BLOCK_EP = QINIU_HOST + "/mkblk/%d";
-  private static final String QINIU_BRICK_UPLOAD_EP = QINIU_HOST + "/bput/%s/%d";
-  private static final String QINIU_MKFILE_EP = QINIU_HOST + "/mkfile/%d/key/%s";
-  private static final int WIFI_CHUNK_SIZE = 256 * 1024;
-  private static final int BLOCK_SIZE = 1024 * 1024 * 4;
-  private static final int NONWIFI_CHUNK_SIZE = 64 * 1024;
+  static final String QINIU_HOST = "http://upload.qiniu.com";
+  static final String QINIU_CREATE_BLOCK_EP = QINIU_HOST + "/mkblk/%d";
+  static final String QINIU_BRICK_UPLOAD_EP = QINIU_HOST + "/bput/%s/%d";
+  static final String QINIU_MKFILE_EP = QINIU_HOST + "/mkfile/%d/key/%s";
+  static final int WIFI_CHUNK_SIZE = 256 * 1024;
+  static final int BLOCK_SIZE = 1024 * 1024 * 4;
+  static final int NONWIFI_CHUNK_SIZE = 64 * 1024;
 
   private ProgressCalculator progressCalculator;
   private volatile Call mergeFileRequestCall;
@@ -57,6 +57,7 @@ class QiniuUploader extends HttpClientUploader {
   }
 
   int uploadChunkSize = WIFI_CHUNK_SIZE;
+  // // FIXME: 2017/8/14 why not use executorService declared in parent class(HttpClientUploader.ThreadPoolExecutor)??
   static final ExecutorService fileUploadExecutor = Executors.newFixedThreadPool(10);
 
   @Override
