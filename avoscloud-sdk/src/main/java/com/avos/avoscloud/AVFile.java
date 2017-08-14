@@ -6,9 +6,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -647,6 +645,9 @@ public final class AVFile {
    * {@link #getDataInBackground(GetDataCallback)} instead
    * unless you're already in a background thread.
    *
+   * Notice: for large file(above 20MB), it is dangerous to read whole data once time,
+   * instead of, you should use {@link #getDataStream()} to read the content.
+   *
    * @throws AVException
    */
   @Deprecated
@@ -665,7 +666,7 @@ public final class AVFile {
         throw new AVException(AVException.CONNECTION_FAILED, "Connection lost");
       } else {
         cancelDownloadIfNeed();
-        downloader = new AVFileDownloader(null, null);
+        downloader = new AVFileDownloader();
         AVException exception = downloader.doWork(getUrl());
         if (exception != null) {
           throw exception;
@@ -677,8 +678,53 @@ public final class AVFile {
   }
 
   /**
+   * Synchronously gets the data input stream for this object. You probably want to use
+   * {@link #getDataStreamInBackground(GetDataStreamCallback)} instead
+   * unless you're already in a background thread.
+   *
+   * Notice: You need to close the input stream after reading content from it.
+   *
+   * @throws AVException
+   */
+  @JSONField(serialize = false)
+  public InputStream getDataStream() throws AVException {
+    String filePath = "";
+    if(!AVUtils.isBlankString(localPath)) {
+      filePath = localPath;
+    } else if (!AVUtils.isBlankString(localTmpFilePath)) {
+      filePath = localTmpFilePath;
+    } else if (!AVUtils.isBlankString(url)) {
+      File cacheFile = AVFileDownloader.getCacheFile(url);
+      if (null == cacheFile || !cacheFile.exists()) {
+        if (!AVUtils.isConnected(AVOSCloud.applicationContext)) {
+          throw new AVException(AVException.CONNECTION_FAILED, "Connection lost");
+        } else {
+          cancelDownloadIfNeed();
+          downloader = new AVFileDownloader();
+          AVException exception = downloader.doWork(getUrl());
+          if (exception != null) {
+            throw exception;
+          }
+        }
+      }
+      filePath = cacheFile.getAbsolutePath();
+    }
+    if(!AVUtils.isBlankString(filePath)) {
+      try {
+        return AVPersistenceUtils.getInputStreamFromFile(new File(filePath));
+      } catch (IOException e){
+        throw new AVException(e);
+      }
+    }
+    return null;
+  }
+
+  /**
    * Gets the data for this object in a background thread. progressCallback is guaranteed to be
    * called with 100 before dataCallback is called.
+   *
+   * Notice: for large file(above 20MB), it is dangerous to read whole data once time,
+   * instead of, you should use {@link #getDataStreamInBackground(GetDataStreamCallback, ProgressCallback)} to read the content.
    *
    * @param dataCallback     A GetDataCallback that is called when the get completes.
    * @param progressCallback A ProgressCallback that is called periodically with progress updates.
@@ -686,10 +732,16 @@ public final class AVFile {
   public void getDataInBackground(final GetDataCallback dataCallback,
                                   final ProgressCallback progressCallback) {
     if (!AVUtils.isBlankString(localPath)) {
+      if (null != progressCallback) {
+        progressCallback.done(100);
+      }
       if (dataCallback != null) {
         dataCallback.internalDone(getLocalFileData(), null);
       }
     } else if (!AVUtils.isBlankString(localTmpFilePath)) {
+      if (null != progressCallback) {
+        progressCallback.done(100);
+      }
       if (dataCallback != null) {
         dataCallback.internalDone(getTmpFileData(), null);
       }
@@ -705,10 +757,62 @@ public final class AVFile {
   /**
    * Gets the data for this object in a background thread.
    *
+   * Notice: for large file(above 20MB), it is dangerous to read whole data once time,
+   * instead of, you should use {@link #getDataStreamInBackground(GetDataStreamCallback)} to read the content.
+   *
    * @param dataCallback A GetDataCallback that is called when the get completes.
    */
   public void getDataInBackground(GetDataCallback dataCallback) {
     getDataInBackground(dataCallback, null);
+  }
+
+  /**
+   * Gets the data input stream for this object in a background thread.
+   * Notice: You need to close the input stream after reading content from it.
+   *
+   * @param callback A GetDataStreamCallback that is called when the get completes.
+   */
+  public void getDataStreamInBackground(GetDataStreamCallback callback) {
+    getDataStreamInBackground(callback, null);
+  }
+
+  /**
+   * Gets the data input stream for this object in a background thread. progressCallback is guaranteed to be
+   * called with 100 before dataStreamCallback is called.
+   * Caution: You need to close the input stream after reading content from it.
+   *
+   * @param callback     A GetDataStreamCallback that is called when the get completes.
+   * @param progressCallback A ProgressCallback that is called periodically with progress updates.
+   */
+  public void getDataStreamInBackground(final GetDataStreamCallback callback, final ProgressCallback progressCallback) {
+    String filePath = "";
+    if (!AVUtils.isBlankString(localPath)) {
+      filePath = localPath;
+    } else if (!AVUtils.isBlankString(localTmpFilePath)) {
+      filePath = localTmpFilePath;
+    } else if (!AVUtils.isBlankString(getUrl())) {
+      File cacheFile = AVFileDownloader.getCacheFile(url);
+      if (null != cacheFile && cacheFile.exists()) {
+        filePath = cacheFile.getAbsolutePath();
+      }
+    }
+    if (!AVUtils.isBlankString(filePath)) {
+      if (null != progressCallback) {
+        progressCallback.done(100);
+      }
+      if (callback != null) {
+        try {
+          InputStream is = AVPersistenceUtils.getInputStreamFromFile(new File(filePath));
+          callback.internalDone0(is, null);
+        } catch (IOException e) {
+          callback.internalDone(new AVException(e));
+        }
+      }
+    } else {
+      cancelDownloadIfNeed();
+      downloader = new AVFileDownloader(progressCallback, callback);
+      downloader.execute(getUrl());
+    }
   }
 
   /**
