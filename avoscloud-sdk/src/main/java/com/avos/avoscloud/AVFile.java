@@ -3,6 +3,9 @@ package com.avos.avoscloud;
 import android.webkit.MimeTypeMap;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.avos.avoscloud.upload.FileUploader;
+import com.avos.avoscloud.upload.Uploader;
+import com.avos.avoscloud.upload.UrlDirectlyUploader;
 
 import org.json.JSONObject;
 
@@ -134,6 +137,7 @@ public final class AVFile {
     this.dirty = true;
     this.name = name;
     if (null != data) {
+      // // FIXME: 2017/8/14 it is better to calculate md5 during uploading.
       String md5 = AVUtils.computeMD5(data);
       localTmpFilePath = AVFileDownloader.getAVFileCachePath() + md5;
       AVPersistenceUtils.saveContentToFile(data, new File(localTmpFilePath));
@@ -371,8 +375,10 @@ public final class AVFile {
 
     avFile.dirty = true;
     avFile.name = name;
+    // FIXME: 2017/8/14 need to read content stream for local file.
     byte[] data = AVPersistenceUtils.readContentBytesFromFile(file);
     if (null != data) {
+      // FIXME: 2017/8/14 it it better to calculate md5 during uploading.
       avFile.metaData.put(FILE_SUM_KEY, AVUtils.computeMD5(data));
       avFile.metaData.put("size", file.length());
     } else {
@@ -590,7 +596,7 @@ public final class AVFile {
     if (AVUtils.isBlankString(objectId)) {
       cancelUploadIfNeed();
       final AVException[] avExceptions = new AVException[1];
-      uploader = this.getUploader(null, null);
+      uploader = getUploader(null, null);
 
       if (null != avExceptions[0]) {
         throw avExceptions[0];
@@ -613,7 +619,8 @@ public final class AVFile {
                                             final ProgressCallback progressCallback) {
     if (AVUtils.isBlankString(objectId)) {
       cancelUploadIfNeed();
-      getUploader(saveCallback, progressCallback).execute();
+      uploader = getUploader(saveCallback, progressCallback);
+      uploader.execute();
     } else {
       if (null != saveCallback) {
         saveCallback.internalDone(null);
@@ -846,7 +853,7 @@ public final class AVFile {
    * @param uniqueName
    * @param url
    */
-  void handleUploadedResponse(String objectId, String uniqueName, String url) {
+  void finishedUploadWithResults(String objectId, String uniqueName, String url) {
     this.dirty = false;
     this.objectId = objectId;
     this.fileObject = AVObject.createWithoutData("_File", objectId);
@@ -906,7 +913,8 @@ public final class AVFile {
           "File object is not exists."));
   }
 
-  String mimeType() {
+  // // FIXME: 2017/8/14 mimeType is right?
+  public String mimeType() {
     String mimeType = "";
     if (!AVUtils.isBlankString(name)) {
       mimeType = AVUtils.getMimeTypeFromLocalFile(name);
@@ -916,15 +924,23 @@ public final class AVFile {
     return AVUtils.isBlankContent(mimeType) ? DEFAULTMIMETYPE : mimeType;
   }
 
-  static String className() {
+  public static String className() {
     return "File";
   }
 
   public Uploader getUploader(SaveCallback saveCallback, ProgressCallback progressCallback) {
+    Uploader.UploadCallback callback = new Uploader.UploadCallback() {
+      @Override
+      public void finishedWithResults(String finalObjectId, String finalUrl) {
+        finishedUploadWithResults(finalObjectId, finalObjectId, finalUrl);
+      }
+    };
     if (AVUtils.isBlankString(url)) {
-      return new FileUploader(this, saveCallback, progressCallback);
+      System.out.println("create FileUploader");
+      return new FileUploader(this, saveCallback, progressCallback, callback);
     } else {
-      return new UrlDirectlyUploader(this, saveCallback, progressCallback);
+      System.out.println("create UrlDirectlyUploader");
+      return new UrlDirectlyUploader(this, saveCallback, progressCallback, callback);
     }
   }
 
@@ -983,7 +999,7 @@ public final class AVFile {
    *
    * @since 2.6.9
    */
-  protected AVACL getACL() {
+  public AVACL getACL() {
     return acl;
   }
 

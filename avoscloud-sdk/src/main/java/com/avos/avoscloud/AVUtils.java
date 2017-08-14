@@ -644,7 +644,7 @@ public class AVUtils {
   // Data for server
   // ================================================================================
 
-  static Map<String, Object> getParsedMap(Map<String, Object> map) {
+  public static Map<String, Object> getParsedMap(Map<String, Object> map) {
     return getParsedMap(map, false);
   }
 

@@ -328,7 +328,7 @@ public class AVACL {
     return permissionsById;
   }
 
-  Map<String, Object> getACLMap() {
+  public Map<String, Object> getACLMap() {
     Map<String, Object> aclMap = new HashMap<String, Object>();
     aclMap.put("ACL", getPermissionsById());
     return aclMap;

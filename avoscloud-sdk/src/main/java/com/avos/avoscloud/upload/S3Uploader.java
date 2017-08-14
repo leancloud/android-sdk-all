@@ -1,4 +1,12 @@
-package com.avos.avoscloud;
+package com.avos.avoscloud.upload;
+
+import com.avos.avoscloud.AVErrorUtils;
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVFile;
+import com.avos.avoscloud.AVUtils;
+import com.avos.avoscloud.LogUtil;
+import com.avos.avoscloud.ProgressCallback;
+import com.avos.avoscloud.SaveCallback;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -14,10 +22,9 @@ import okhttp3.Response;
 /**
  * Created by summer on 13-5-27.
  */
-public class S3Uploader extends HttpClientUploader {
+class S3Uploader extends HttpClientUploader {
   private volatile Call call;
   private String uploadUrl;
-  private AVFile avFile;
   private int retryTimes = DEFAULT_RETRY_TIMES;
 
   /**
@@ -41,9 +48,8 @@ public class S3Uploader extends HttpClientUploader {
   private static int writeTimeout = 0;
 
   S3Uploader(AVFile avFile, String uploadUrl, SaveCallback saveCallback, ProgressCallback progressCallback) {
-    super(saveCallback, progressCallback);
+    super(avFile, saveCallback, progressCallback);
     this.uploadUrl = uploadUrl;
-    this.avFile = avFile;
   }
 
   @Override

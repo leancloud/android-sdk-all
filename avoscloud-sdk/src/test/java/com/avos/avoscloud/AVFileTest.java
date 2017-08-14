@@ -1,5 +1,6 @@
 package com.avos.avoscloud;
 
+import android.os.Looper;
 import android.text.TextUtils;
 
 import org.json.JSONObject;
@@ -67,6 +68,7 @@ public class AVFileTest {
     Assert.assertNotNull(jsonObject);
     Assert.assertEquals(jsonObject.getString("__type"), AVFile.className());
     Assert.assertTrue(!TextUtils.isEmpty(jsonObject.getString("url")));
+    avFile.delete();
   }
 
   @Test
@@ -170,8 +172,31 @@ public class AVFileTest {
         latch.countDown();
       }
     });
+    file.delete();
   }
 
+  @Test
+  public void testSaveInBackground() throws Exception {
+    final CountDownLatch latch = new CountDownLatch(1);
+    final AVFile file = new AVFile("name", TEST_FILE_CONTENT.getBytes());
+    file.saveInBackground(new SaveCallback() {
+      @Override
+      protected boolean mustRunOnUIThread() {
+        return false;
+      }
+      @Override
+      public void done(AVException e) {
+        System.out.println("file saved. objectId=" + file.getObjectId());
+        System.out.println("url=" + file.getUrl());
+        Assert.assertNull(e);
+        Assert.assertTrue(file.getObjectId().length() > 0);
+        Assert.assertTrue(file.getUrl().length() > 0);
+        latch.countDown();
+      }
+    });
+    latch.await(60, TimeUnit.SECONDS);
+    file.delete();
+  }
   @Test
   public void testParseFileWithObjectId() throws Exception {
     AVFile file = new AVFile("name", TEST_FILE_CONTENT.getBytes());
@@ -183,6 +208,7 @@ public class AVFileTest {
     Assert.assertNotNull(newFile.getOriginalName());
     Assert.assertNotNull(newFile.getBucket());
     Assert.assertNotNull(newFile.getMetaData());
+    file.delete();
   }
 
   @Test
@@ -196,6 +222,7 @@ public class AVFileTest {
     Assert.assertNotNull(newFile.getOriginalName());
     Assert.assertNotNull(newFile.getBucket());
     Assert.assertNotNull(newFile.getMetaData());
+    file.delete();
   }
 
   @Test
@@ -212,6 +239,7 @@ public class AVFileTest {
     Assert.assertEquals(file.getUrl(), newFile.getUrl());
     Assert.assertNotNull(newFile.getBucket());
     Assert.assertEquals(file.getMetaData(), newFile.getMetaData());
+    file.delete();
   }
 
   @Test
@@ -249,6 +277,7 @@ public class AVFileTest {
     AVFile newFile = AVFile.withAVObject(object);
     byte[] byteData = newFile.getData();
     Assert.assertArrayEquals(TEST_FILE_CONTENT.getBytes(), byteData);
+    file.delete();
   }
 
   @Test
@@ -284,7 +313,9 @@ public class AVFileTest {
         latch.countDown();
       }
     });
+    latch.await(60, TimeUnit.SECONDS);
     Assert.assertEquals(TEST_FILE_CONTENT, content.toString());
+    file.delete();
   }
 
   @Test
@@ -322,7 +353,8 @@ public class AVFileTest {
         latch.countDown();
       }
     });
-    latch.await(30, TimeUnit.SECONDS);
+    latch.await(60, TimeUnit.SECONDS);
+    file.delete();
   }
 
   @Test
@@ -355,7 +387,7 @@ public class AVFileTest {
         latch.countDown();
       }
     });
-    latch.await(30, TimeUnit.SECONDS);
+    latch.await(60, TimeUnit.SECONDS);
   }
 
   @Test
@@ -388,7 +420,7 @@ public class AVFileTest {
         latch.countDown();
       }
     });
-    latch.await(30, TimeUnit.SECONDS);
+    latch.await(60, TimeUnit.SECONDS);
   }
   @Test
   public void testGetDataInBackgroundWithProgress() throws Exception {
@@ -418,6 +450,7 @@ public class AVFileTest {
     });
     Assert.assertEquals(TEST_FILE_CONTENT, content.toString());
     Assert.assertTrue(progressDetail.length() > 0);
+    file.delete();
   }
 
   @Test
@@ -432,16 +465,69 @@ public class AVFileTest {
   }
 
   @Test
-  public void testSaveInBackground() {
-    AVFile file = new AVFile("name", TEST_FILE_CONTENT.getBytes());
+  public void testSaveInBackgroundWithData() throws Exception {
+    final AVFile file = new AVFile("name", TEST_FILE_CONTENT.getBytes());
     final CountDownLatch latch = new CountDownLatch(1);
     file.saveInBackground(new SaveCallback() {
       @Override
+      protected boolean mustRunOnUIThread() {
+        return false;
+      }
+      @Override
       public void done(AVException e) {
+        System.out.println("file saved. objectId=" + file.getObjectId());
+        System.out.println("url=" + file.getUrl());
         Assert.assertNull(e);
+        Assert.assertNotNull(file.getObjectId());
         latch.countDown();
       }
     });
+    latch.await(60, TimeUnit.SECONDS);
+
+    System.out.println("file saved. objectId=" + file.getObjectId());
+    AVQuery<AVObject> query = new AVQuery<AVObject>("_File");
+    AVObject object = query.get(file.getObjectId());
+    Assert.assertNotNull(object);
+    file.delete();
+  }
+
+  @Test
+  public void testSaveInBackgroundWithExternalUrl() throws Exception {
+    final String testUrl = "http://wx4.sinaimg.cn/mw690/005ZWQyIly1fifjlms4amj30ia0rgtmv.jpg";
+    final AVFile file = new AVFile("name", testUrl);
+    final CountDownLatch latch = new CountDownLatch(1);
+    file.saveInBackground(new SaveCallback() {
+      @Override
+      protected boolean mustRunOnUIThread() {
+        return false;
+      }
+      @Override
+      public void done(AVException e) {
+        if (null !=e) {
+          e.printStackTrace();
+          Assert.fail();
+        } else {
+          System.out.println("file saved. objectId=" + file.getObjectId());
+          System.out.println("url=" + file.getUrl());
+          Assert.assertNull(e);
+          Assert.assertNotNull(file.getObjectId());
+          try {
+            file.delete();
+          } catch (AVException ex) {
+            ex.printStackTrace();
+            Assert.fail();
+          }
+        }
+        latch.countDown();
+      }
+    });
+    latch.await();
+    System.out.println("file saved. objectId=" + file.getObjectId());
+  }
+
+  @Test
+  public void testSaveInBackgroundWithLocalFile() throws Exception {
+
   }
 
   @Test
@@ -501,6 +587,8 @@ public class AVFileTest {
   public void testAVFileUploadByUrl() throws AVException {
     AVFile file = new AVFile("remoteUrl", "http://leancloud.cn", null);
     file.save();
+    Assert.assertNotNull(file.getObjectId());
+    file.delete();
   }
 
   @Test
@@ -523,5 +611,7 @@ public class AVFileTest {
     Assert.assertNotNull(remoteObject.getAVFile(column));
     Assert.assertNotNull(remoteObject.getAVFile(column).getUrl());
     Assert.assertNotNull(remoteObject.getAVFile(column).getObjectId());
+    file.delete();
+    object.delete();
   }
 }

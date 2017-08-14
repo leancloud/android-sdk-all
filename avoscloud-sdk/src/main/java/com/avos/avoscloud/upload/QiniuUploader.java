@@ -1,8 +1,17 @@
-package com.avos.avoscloud;
+package com.avos.avoscloud.upload;
 
 import com.alibaba.fastjson.JSON;
-import com.avos.avoscloud.FileUploader.ProgressCalculator;
-import com.avos.avoscloud.FileUploader.FileUploadProgressCallback;
+import com.avos.avoscloud.AVErrorUtils;
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVExceptionHolder;
+import com.avos.avoscloud.AVFile;
+import com.avos.avoscloud.AVOSCloud;
+import com.avos.avoscloud.AVUtils;
+import com.avos.avoscloud.upload.FileUploader.ProgressCalculator;
+import com.avos.avoscloud.upload.FileUploader.FileUploadProgressCallback;
+import com.avos.avoscloud.LogUtil;
+import com.avos.avoscloud.ProgressCallback;
+import com.avos.avoscloud.SaveCallback;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -39,11 +48,10 @@ class QiniuUploader extends HttpClientUploader {
   private ProgressCalculator progressCalculator;
   private volatile Call mergeFileRequestCall;
   private volatile Future[] tasks;
-  private AVFile avFile;
 
   QiniuUploader(AVFile avFile, String token, String fileKey, SaveCallback saveCallback, ProgressCallback progressCallback) {
-    super(saveCallback,progressCallback);
-    this.avFile = avFile;
+    super(avFile, saveCallback,progressCallback);
+
     this.token = token;
     this.fileKey = fileKey;
   }
@@ -53,6 +61,7 @@ class QiniuUploader extends HttpClientUploader {
 
   @Override
   public AVException doWork() {
+    System.out.println("invoke QiniuUploader.doWork()...");
 
       boolean isWifi = AVUtils.isWifi(AVOSCloud.applicationContext);
       if (!isWifi) {
@@ -84,8 +93,7 @@ class QiniuUploader extends HttpClientUploader {
       // 2.按照分片进行上传
       QiniuBlockResponseData respBlockData = null;
       CountDownLatch latch = new CountDownLatch(blockCount);
-      progressCalculator = new ProgressCalculator(blockCount, new FileUploadProgressCallback() {
-        @Override
+      progressCalculator = new ProgressCalculator(blockCount, new FileUploader.FileUploadProgressCallback() {
         public void onProgress(int progress) {
           publishProgress(progress);
         }
