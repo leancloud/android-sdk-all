@@ -61,8 +61,6 @@ class QiniuUploader extends HttpClientUploader {
 
   @Override
   public AVException doWork() {
-    System.out.println("invoke QiniuUploader.doWork()...");
-
       boolean isWifi = AVUtils.isWifi(AVOSCloud.applicationContext);
       if (!isWifi) {
         // 从七牛的接口来看block size为4M不可变，但是chunkSize是可以调整的

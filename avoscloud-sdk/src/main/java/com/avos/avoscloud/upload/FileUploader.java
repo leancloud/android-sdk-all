@@ -45,13 +45,8 @@ public class FileUploader extends HttpClientUploader {
   public AVException doWork() {
     // fileKey 是随机值，在 fileTokens 请求与真正的 upload 请求时都会用到，这里要保证是同一个值
     String fileKey = AVUtils.parseFileKey(avFile.getName());
-    System.out.println("invoke FileUploader.doWork()...");
     if (AVUtils.isBlankString(uploadUrl)) {
       final AVException getBucketException = fetchUploadBucket("fileTokens", fileKey, true, new AVCallback<String>() {
-        @Override
-        protected boolean mustRunOnUIThread() {
-          return false;
-        }
         @Override
         protected void internalDone0(String s, AVException avException) {
           if (null == avException) {
@@ -126,7 +121,6 @@ public class FileUploader extends HttpClientUploader {
   private AVException handleGetBucketResponse(String responseStr) {
     if (!AVUtils.isBlankContent(responseStr)) {
       try {
-        System.out.println("responseStr=" + responseStr);
         com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(responseStr);
         this.bucket = jsonObject.getString("bucket");
         this.finalObjectId = jsonObject.getString("objectId");

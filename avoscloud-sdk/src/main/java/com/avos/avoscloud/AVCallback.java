@@ -6,7 +6,6 @@ package com.avos.avoscloud;
 public abstract class AVCallback<T> {
   public void internalDone(final T t, final AVException avException) {
     if (mustRunOnUIThread() && !AVUtils.isMainThread()) {
-      System.out.println("post to UIThread.");
       if (!AVOSCloud.handler.post(new Runnable() {
         @Override
         public void run() {

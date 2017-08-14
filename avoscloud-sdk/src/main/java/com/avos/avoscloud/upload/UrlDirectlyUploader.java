@@ -29,12 +29,10 @@ public class UrlDirectlyUploader extends HttpClientUploader {
     final AVException[] exceptionSaveFile = new AVException[1];
     String url = AVPowerfulUtils.getEndpoint(avFile, true);
     String params = getFileRequestParameters();
-    System.out.println("try to post url=" + url + ", params=" + params);
     PaasClient.storageInstance().postObject(url, params, true,
         new GenericObjectCallback() {
           @Override
           public void onSuccess(String content, AVException e) {
-            System.out.println("request successful result=" + content + ", exception=" + e);
             if (e == null) {
               try {
                 JSONObject jsonObject = new JSONObject(content);
@@ -54,7 +52,6 @@ public class UrlDirectlyUploader extends HttpClientUploader {
 
           @Override
           public void onFailure(Throwable error, String content) {
-            System.out.println("request failure result=" + content + ", exception=" + error.getMessage());
             exceptionSaveFile[0] = AVErrorUtils.createException(error, content);
           }
 

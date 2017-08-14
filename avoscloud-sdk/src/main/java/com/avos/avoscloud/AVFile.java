@@ -853,7 +853,7 @@ public final class AVFile {
    * @param uniqueName
    * @param url
    */
-  void finishedUploadWithResults(String objectId, String uniqueName, String url) {
+  void handleUploadedResponse(String objectId, String uniqueName, String url) {
     this.dirty = false;
     this.objectId = objectId;
     this.fileObject = AVObject.createWithoutData("_File", objectId);
@@ -932,14 +932,12 @@ public final class AVFile {
     Uploader.UploadCallback callback = new Uploader.UploadCallback() {
       @Override
       public void finishedWithResults(String finalObjectId, String finalUrl) {
-        finishedUploadWithResults(finalObjectId, finalObjectId, finalUrl);
+        handleUploadedResponse(finalObjectId, finalObjectId, finalUrl);
       }
     };
     if (AVUtils.isBlankString(url)) {
-      System.out.println("create FileUploader");
       return new FileUploader(this, saveCallback, progressCallback, callback);
     } else {
-      System.out.println("create UrlDirectlyUploader");
       return new UrlDirectlyUploader(this, saveCallback, progressCallback, callback);
     }
   }
