@@ -3,10 +3,14 @@ package com.avos.avoscloud;
 import android.webkit.MimeTypeMap;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.avos.avoscloud.upload.FileUploader;
+import com.avos.avoscloud.upload.Uploader;
+import com.avos.avoscloud.upload.UrlDirectlyUploader;
 
 import org.json.JSONObject;
 
 import java.io.*;
+import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,7 +67,8 @@ public final class AVFile {
   transient private AVFileDownloader downloader;
   // metadata for file,added by dennis<xzhuang@avos.com>,2013-09-06
   private final HashMap<String, Object> metaData = new HashMap<String, Object>();
-  private static String DEFAULTMIMETYPE = "application/octet-stream";
+  private static long MAX_FILE_BUF_SIZE = 1024 * 2014 * 4;
+  public static String DEFAULTMIMETYPE = "application/octet-stream";
   private static final String FILE_SUM_KEY = "_checksum";
   static final String FILE_NAME_KEY = "_name";
   private static final String ELDERMETADATAKEYFORIOSFIX = "metadata";
@@ -361,23 +366,40 @@ public final class AVFile {
    * @since 2.0.2
    */
   public static AVFile withFile(String name, File file) throws FileNotFoundException {
-    if (file == null) throw new IllegalArgumentException("null file object.");
+    if (file == null) {
+      throw new IllegalArgumentException("null file object.");
+    }
     if (!file.exists() || !file.isFile()) {
       throw new FileNotFoundException();
     }
+
     AVFile avFile = new AVFile();
     avFile.setLocalPath(file.getAbsolutePath());
     avFile.setName(name);
 
     avFile.dirty = true;
     avFile.name = name;
-    byte[] data = AVPersistenceUtils.readContentBytesFromFile(file);
-    if (null != data) {
-      avFile.metaData.put(FILE_SUM_KEY, AVUtils.computeMD5(data));
-      avFile.metaData.put("size", file.length());
-    } else {
-      avFile.metaData.put("size", 0);
+    long fileSize = file.length();
+    String fileMD5 = "";
+    try {
+      InputStream is = AVPersistenceUtils.getInputStreamFromFile(file);
+      MessageDigest md = MessageDigest.getInstance("MD5");
+      if (null != is) {
+        byte buf[] = new byte[(int)MAX_FILE_BUF_SIZE];
+        int readCnt = is.read(buf);
+        while (readCnt > 0) {
+          md.update(buf, 0, readCnt);
+        }
+        byte[] md5bytes = md.digest();
+        fileMD5 = AVUtils.hexEncodeBytes(md5bytes);
+        is.close();
+      }
+    } catch (Exception ex) {
+      fileMD5 = "";
     }
+    avFile.metaData.put("size", fileSize);
+    avFile.metaData.put(FILE_SUM_KEY, fileMD5);
+
     AVUser currentUser = AVUser.getCurrentUser();
     avFile.metaData.put("owner", currentUser != null ? currentUser.getObjectId() : "");
     avFile.metaData.put(FILE_NAME_KEY, name);
@@ -590,7 +612,7 @@ public final class AVFile {
     if (AVUtils.isBlankString(objectId)) {
       cancelUploadIfNeed();
       final AVException[] avExceptions = new AVException[1];
-      uploader = this.getUploader(null, null);
+      uploader = getUploader(null, null);
 
       if (null != avExceptions[0]) {
         throw avExceptions[0];
@@ -613,7 +635,8 @@ public final class AVFile {
                                             final ProgressCallback progressCallback) {
     if (AVUtils.isBlankString(objectId)) {
       cancelUploadIfNeed();
-      getUploader(saveCallback, progressCallback).execute();
+      uploader = getUploader(saveCallback, progressCallback);
+      uploader.execute();
     } else {
       if (null != saveCallback) {
         saveCallback.internalDone(null);
@@ -916,15 +939,21 @@ public final class AVFile {
     return AVUtils.isBlankContent(mimeType) ? DEFAULTMIMETYPE : mimeType;
   }
 
-  static String className() {
+  public static String className() {
     return "File";
   }
 
   public Uploader getUploader(SaveCallback saveCallback, ProgressCallback progressCallback) {
+    Uploader.UploadCallback callback = new Uploader.UploadCallback() {
+      @Override
+      public void finishedWithResults(String finalObjectId, String finalUrl) {
+        handleUploadedResponse(finalObjectId, finalObjectId, finalUrl);
+      }
+    };
     if (AVUtils.isBlankString(url)) {
-      return new FileUploader(this, saveCallback, progressCallback);
+      return new FileUploader(this, saveCallback, progressCallback, callback);
     } else {
-      return new UrlDirectlyUploader(this, saveCallback, progressCallback);
+      return new UrlDirectlyUploader(this, saveCallback, progressCallback, callback);
     }
   }
 
@@ -983,7 +1012,7 @@ public final class AVFile {
    *
    * @since 2.6.9
    */
-  protected AVACL getACL() {
+  public AVACL getACL() {
     return acl;
   }
 

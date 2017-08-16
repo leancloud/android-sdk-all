@@ -644,7 +644,7 @@ public class AVUtils {
   // Data for server
   // ================================================================================
 
-  static Map<String, Object> getParsedMap(Map<String, Object> map) {
+  public static Map<String, Object> getParsedMap(Map<String, Object> map) {
     return getParsedMap(map, false);
   }
 
@@ -943,6 +943,19 @@ public class AVUtils {
     return "";
   }
 
+  public static String hexEncodeBytes(byte[] md5bytes) {
+    if (null == md5bytes) {
+      return "";
+    }
+    StringBuffer hexString = new StringBuffer();
+    for (int i = 0; i < md5bytes.length; i++) {
+      String hex = Integer.toHexString(0xff & md5bytes[i]);
+      if (hex.length() == 1) hexString.append('0');
+      hexString.append(hex);
+    }
+    return hexString.toString();
+  }
+
   public static String computeMD5(byte[] input) {
     try {
       if (null == input) {
@@ -952,13 +965,7 @@ public class AVUtils {
       md.update(input, 0, input.length);
       byte[] md5bytes = md.digest();
 
-      StringBuffer hexString = new StringBuffer();
-      for (int i = 0; i < md5bytes.length; i++) {
-        String hex = Integer.toHexString(0xff & md5bytes[i]);
-        if (hex.length() == 1) hexString.append('0');
-        hexString.append(hex);
-      }
-      return hexString.toString();
+      return hexEncodeBytes(md5bytes);
     } catch (NoSuchAlgorithmException e) {
       throw new RuntimeException(e);
     }

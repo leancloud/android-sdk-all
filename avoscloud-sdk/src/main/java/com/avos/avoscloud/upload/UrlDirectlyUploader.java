@@ -1,34 +1,46 @@
-package com.avos.avoscloud;
+package com.avos.avoscloud.upload;
+
+import com.avos.avoscloud.AVErrorUtils;
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVFile;
+import com.avos.avoscloud.AVPowerfulUtils;
+import com.avos.avoscloud.AVUtils;
+import com.avos.avoscloud.GenericObjectCallback;
+import com.avos.avoscloud.PaasClient;
+import com.avos.avoscloud.ProgressCallback;
+import com.avos.avoscloud.SaveCallback;
 
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
 
-class UrlDirectlyUploader extends HttpClientUploader {
-
-  AVFile avFile;
-
-  protected UrlDirectlyUploader(AVFile avFile, SaveCallback saveCallback,
-                                ProgressCallback progressCallback) {
-    super(saveCallback, progressCallback);
-    this.avFile = avFile;
+public class UrlDirectlyUploader extends HttpClientUploader {
+  private UploadCallback callback = null;
+  public UrlDirectlyUploader(AVFile avFile, SaveCallback saveCallback,
+                                ProgressCallback progressCallback, UploadCallback uploadCallback) {
+    super(avFile, saveCallback, progressCallback);
+    this.callback = uploadCallback;
   }
 
   @Override
   public AVException doWork() {
 
     final AVException[] exceptionSaveFile = new AVException[1];
-    PaasClient.storageInstance().postObject(AVPowerfulUtils.getEndpoint(avFile, true),
-
-        getFileRequestParameters(), true, new GenericObjectCallback() {
+    String url = AVPowerfulUtils.getEndpoint(avFile, true);
+    String params = getFileRequestParameters();
+    PaasClient.storageInstance().postObject(url, params, true,
+        new GenericObjectCallback() {
           @Override
           public void onSuccess(String content, AVException e) {
             if (e == null) {
               try {
                 JSONObject jsonObject = new JSONObject(content);
-                avFile.handleUploadedResponse(jsonObject.getString("objectId"),
-                    jsonObject.getString("objectId"), avFile.getUrl());
+                if (null != callback) {
+                  callback.finishedWithResults(jsonObject.getString("objectId"), avFile.getUrl());
+                }
+//                avFile.handleUploadedResponse(jsonObject.getString("objectId"),
+//                    jsonObject.getString("objectId"), avFile.getUrl());
                 publishProgress(100);
               } catch (Exception ex) {
                 exceptionSaveFile[0] = new AVException(ex);

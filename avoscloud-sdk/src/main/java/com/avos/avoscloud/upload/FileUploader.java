@@ -1,10 +1,20 @@
-package com.avos.avoscloud;
+package com.avos.avoscloud.upload;
 
 import android.util.SparseArray;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.avos.avoscloud.AVCallback;
+import com.avos.avoscloud.AVErrorUtils;
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVFile;
+import com.avos.avoscloud.AVUtils;
+import com.avos.avoscloud.GenericObjectCallback;
+import com.avos.avoscloud.LogUtil;
+import com.avos.avoscloud.PaasClient;
+import com.avos.avoscloud.ProgressCallback;
+import com.avos.avoscloud.SaveCallback;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,37 +22,41 @@ import java.util.Map;
 /**
  * User: summer Date: 13-4-16 Time: AM10:43
  */
-class FileUploader extends HttpClientUploader {
-  protected AVFile avFile;
-
+public class FileUploader extends HttpClientUploader {
   static final int PROGRESS_GET_TOKEN = 10;
   static final int PROGRESS_UPLOAD_FILE = 90;
   static final int PROGRESS_COMPLETE = 100;
 
   private String token;
-  private String url;
-  private String objectId;
+//  private String url;
+//  private String objectId;
   private String bucket;
   private String uploadUrl;
   private String provider;
+  private Uploader.UploadCallback callback = null;
 
   protected static final int defaultFileKeyLength = 40;
 
-  protected FileUploader(AVFile avFile, SaveCallback saveCallback,
-                         ProgressCallback progressCallback) {
-    super(saveCallback, progressCallback);
-    this.avFile = avFile;
+  public FileUploader(AVFile avFile, SaveCallback saveCallback,
+                         ProgressCallback progressCallback, Uploader.UploadCallback uploadCallback) {
+    super(avFile, saveCallback, progressCallback);
+    this.callback = uploadCallback;
   }
 
   public AVException doWork() {
     // fileKey 是随机值，在 fileTokens 请求与真正的 upload 请求时都会用到，这里要保证是同一个值
     String fileKey = AVUtils.parseFileKey(avFile.getName());
     if (AVUtils.isBlankString(uploadUrl)) {
-      AVException getBucketException = fetchUploadBucket("fileTokens", fileKey, true, new AVCallback<String>() {
+      final AVException getBucketException = fetchUploadBucket("fileTokens", fileKey, true, new AVCallback<String>() {
         @Override
         protected void internalDone0(String s, AVException avException) {
           if (null == avException) {
-            handleGetBucketResponse(s);
+            AVException ex = handleGetBucketResponse(s);
+            if (null != ex) {
+              LogUtil.log.e("failed to parse response of fileTokens.", ex);
+            }
+          } else {
+            LogUtil.log.e("failed to invoke fileTokens.", avException);
           }
         }
       });
@@ -55,7 +69,10 @@ class FileUploader extends HttpClientUploader {
 
     AVException uploadException = uploader.doWork();
     if (uploadException == null) {
-      avFile.handleUploadedResponse(objectId, objectId, url);
+      if (null != callback) {
+        callback.finishedWithResults(finalObjectId, finalUrl);
+      }
+//      avFile.handleUploadedResponse(objectId, objectId, url);
       publishProgress(PROGRESS_COMPLETE);
       completeFileUpload(true);
       return null;
@@ -73,9 +90,9 @@ class FileUploader extends HttpClientUploader {
       case "s3":
         return new S3Uploader(avFile, uploadUrl, saveCallback, progressCallback);
       default:
-        return new QiniuUploader(avFile, token, fileKey, saveCallback, progressCallback);
+        return new QiniuSlicingUploader(avFile, token, fileKey, saveCallback, progressCallback);
+//        return new QiniuUploader(avFile, token, fileKey, saveCallback, progressCallback);
     }
-
   }
 
   private AVException fetchUploadBucket(String path, String fileKey, boolean sync, final AVCallback<String> callback) {
@@ -84,13 +101,15 @@ class FileUploader extends HttpClientUploader {
         new GenericObjectCallback() {
           @Override
           public void onSuccess(String content, AVException e) {
-            callback.internalDone0(content, e);
+            //callback.internalDone0(content, e);
+            callback.internalDone(content, e);
             exceptionWhenGetBucket[0] = e;
           }
 
           @Override
           public void onFailure(Throwable error, String content) {
-            callback.internalDone0(null, AVErrorUtils.createException(error, content));
+            //callback.internalDone0(null, AVErrorUtils.createException(error, content));
+            callback.internalDone(null, AVErrorUtils.createException(error, content));
             exceptionWhenGetBucket[0] = AVErrorUtils.createException(error, content);
           }
         });
@@ -105,11 +124,11 @@ class FileUploader extends HttpClientUploader {
       try {
         com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(responseStr);
         this.bucket = jsonObject.getString("bucket");
-        this.objectId = jsonObject.getString("objectId");
+        this.finalObjectId = jsonObject.getString("objectId");
         this.uploadUrl = jsonObject.getString("upload_url");
         this.provider = jsonObject.getString("provider");
         this.token = jsonObject.getString("token");
-        url = jsonObject.getString("url");
+        this.finalUrl = jsonObject.getString("url");
       } catch (JSONException e) {
         return new AVException(e);
       }
@@ -118,10 +137,20 @@ class FileUploader extends HttpClientUploader {
   }
 
   private String getGetBucketParameters(String fileKey) {
+    // decide file mimetype.
+    String fileName = avFile.getName();
+    String fileUrl = avFile.getUrl();
+    String mimeType = AVFile.DEFAULTMIMETYPE;
+    if (!AVUtils.isBlankString(fileName)) {
+      mimeType = AVUtils.getMimeTypeFromLocalFile(fileName);
+    } else if (!AVUtils.isBlankString(fileUrl)) {
+      mimeType = AVUtils.getMimeTypeFromUrl(fileUrl);
+    }
+
     Map<String, Object> parameters = new HashMap<String, Object>(3);
     parameters.put("key",  fileKey);
-    parameters.put("name", avFile.getName());
-    parameters.put("mime_type", avFile.mimeType());
+    parameters.put("name", fileName);
+    parameters.put("mime_type", mimeType);
     parameters.put("metaData", avFile.getMetaData());
     parameters.put("__type", AVFile.className());
     if (avFile.getACL() != null) {
@@ -166,7 +195,7 @@ class FileUploader extends HttpClientUploader {
     }
   }
 
-  public interface FileUploadProgressCallback {
+  public static interface FileUploadProgressCallback {
     void onProgress(int progress);
   }
 }
