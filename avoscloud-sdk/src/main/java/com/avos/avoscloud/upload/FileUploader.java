@@ -15,6 +15,7 @@ import com.avos.avoscloud.LogUtil;
 import com.avos.avoscloud.PaasClient;
 import com.avos.avoscloud.ProgressCallback;
 import com.avos.avoscloud.SaveCallback;
+import com.avos.avoscloud.utils.AVFileUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -139,13 +140,7 @@ public class FileUploader extends HttpClientUploader {
   private String getGetBucketParameters(String fileKey) {
     // decide file mimetype.
     String fileName = avFile.getName();
-    String fileUrl = avFile.getUrl();
-    String mimeType = AVFile.DEFAULTMIMETYPE;
-    if (!AVUtils.isBlankString(fileName)) {
-      mimeType = AVUtils.getMimeTypeFromLocalFile(fileName);
-    } else if (!AVUtils.isBlankString(fileUrl)) {
-      mimeType = AVUtils.getMimeTypeFromUrl(fileUrl);
-    }
+    String mimeType = AVFileUtil.getFileMimeType(avFile);
 
     Map<String, Object> parameters = new HashMap<String, Object>(3);
     parameters.put("key",  fileKey);
