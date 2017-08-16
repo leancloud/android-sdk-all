@@ -9,6 +9,7 @@ import com.avos.avoscloud.GenericObjectCallback;
 import com.avos.avoscloud.PaasClient;
 import com.avos.avoscloud.ProgressCallback;
 import com.avos.avoscloud.SaveCallback;
+import com.avos.avoscloud.utils.AVFileUtil;
 
 import org.json.JSONObject;
 
@@ -61,9 +62,12 @@ public class UrlDirectlyUploader extends HttpClientUploader {
   }
 
   private String getFileRequestParameters() {
+    // decide file mimetype.
+    String mimeType = AVFileUtil.getFileMimeType(avFile);
+
     Map<String, Object> parameters = new HashMap<String, Object>();
     parameters.put("name", avFile.getName());
-    parameters.put("mime_type", avFile.mimeType());
+    parameters.put("mime_type", mimeType);
     parameters.put("metaData", avFile.getMetaData());
     parameters.put("__type", AVFile.className());
     parameters.put("url", avFile.getUrl());

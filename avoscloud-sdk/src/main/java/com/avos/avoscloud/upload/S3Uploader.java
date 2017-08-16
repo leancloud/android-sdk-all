@@ -7,6 +7,7 @@ import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.LogUtil;
 import com.avos.avoscloud.ProgressCallback;
 import com.avos.avoscloud.SaveCallback;
+import com.avos.avoscloud.utils.AVFileUtil;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -75,6 +76,9 @@ class S3Uploader extends HttpClientUploader {
       Response response = null;
       String serverResponse = null;
       try{
+        // decide file mimetype.
+        String mimeType = AVFileUtil.getFileMimeType(avFile);
+
         // upload to s3
         Request.Builder builder = new Request.Builder();
         builder.url(uploadUrl);
@@ -85,10 +89,10 @@ class S3Uploader extends HttpClientUploader {
         Charset charset = Charset.forName("UTF-8");
         // support file for future
 
-        RequestBody requestBody = RequestBody.create(MediaType.parse(avFile.mimeType()), data);
+        RequestBody requestBody = RequestBody.create(MediaType.parse(mimeType), data);
 
         builder.put(requestBody);
-        builder.addHeader("Content-Type", avFile.mimeType());
+        builder.addHeader("Content-Type", mimeType);
 
         // Send it
         call = httpClient.newCall(builder.build());
