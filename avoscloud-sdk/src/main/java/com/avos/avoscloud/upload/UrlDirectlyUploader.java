@@ -61,9 +61,19 @@ public class UrlDirectlyUploader extends HttpClientUploader {
   }
 
   private String getFileRequestParameters() {
+    // decide file mimetype.
+    String fileName = avFile.getName();
+    String fileUrl = avFile.getUrl();
+    String mimeType = AVFile.DEFAULTMIMETYPE;
+    if (!AVUtils.isBlankString(fileName)) {
+      mimeType = AVUtils.getMimeTypeFromLocalFile(fileName);
+    } else if (!AVUtils.isBlankString(fileUrl)) {
+      mimeType = AVUtils.getMimeTypeFromUrl(fileUrl);
+    }
+
     Map<String, Object> parameters = new HashMap<String, Object>();
-    parameters.put("name", avFile.getName());
-    parameters.put("mime_type", avFile.mimeType());
+    parameters.put("name", fileName);
+    parameters.put("mime_type", mimeType);
     parameters.put("metaData", avFile.getMetaData());
     parameters.put("__type", AVFile.className());
     parameters.put("url", avFile.getUrl());

@@ -174,7 +174,7 @@ public final class AVFile {
    *
    * @param objectId file object id.
    */
-  public void setObjectId(String objectId) {
+  void setObjectId(String objectId) {
     this.objectId = objectId;
   }
 

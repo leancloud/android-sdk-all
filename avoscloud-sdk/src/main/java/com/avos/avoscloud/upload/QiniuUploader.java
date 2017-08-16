@@ -254,7 +254,7 @@ class QiniuUploader extends HttpClientUploader {
         final int nextChunkSize =
             getNextChunkSize(blockOffset, data);
 
-        RequestBody requestBody = RequestBody.create(MediaType.parse(parent.avFile.mimeType()),
+        RequestBody requestBody = RequestBody.create(MediaType.parse(AVFile.DEFAULTMIMETYPE),
             data, blockOffset * BLOCK_SIZE, nextChunkSize);
 
         builder = builder.post(requestBody);
@@ -291,7 +291,7 @@ class QiniuUploader extends HttpClientUploader {
           final int nextChunkSize =
               remainingBlockLength > uploadChunkSize ? uploadChunkSize : remainingBlockLength;
 
-          RequestBody requestBody = RequestBody.create(MediaType.parse(parent.avFile.mimeType()),
+          RequestBody requestBody = RequestBody.create(MediaType.parse(AVFile.DEFAULTMIMETYPE),
               data,
               blockOffset * BLOCK_SIZE + chunkData.offset,
               nextChunkSize);
