@@ -527,7 +527,52 @@ public class AVFileTest {
 
   @Test
   public void testSaveInBackgroundWithLocalFile() throws Exception {
+    final CountDownLatch latch = new CountDownLatch(1);
+    AVFile file = AVFile.withAbsoluteLocalPath("LCShare.key", "/Users/fengjunwen/Downloads/LCShare.key");
+    file.saveInBackground(new SaveCallback() {
+      @Override
+      public void done(AVException e) {
+        if (null == e) {
+          System.out.println("congratulations!");
+        } else {
+          e.printStackTrace();
+        }
+        latch.countDown();
+      }
+    }, new ProgressCallback() {
+      @Override
+      public void done(Integer percentDone) {
+        System.out.println("upload progress:" + percentDone);
+      }
+    });
+    latch.await();
+    System.out.println("file saved. objectId=" + file.getObjectId());
+    file.delete();
+  }
 
+  @Test
+  public void testSaveInBackgroundWithLocalLargeFile() throws Exception {
+    final CountDownLatch latch = new CountDownLatch(1);
+    AVFile file = AVFile.withAbsoluteLocalPath("cws_model.bin", "/Users/fengjunwen/Downloads/cws_model.bin");
+    file.saveInBackground(new SaveCallback() {
+      @Override
+      public void done(AVException e) {
+        if (null == e) {
+          System.out.println("congratulations!");
+        } else {
+          e.printStackTrace();
+        }
+        latch.countDown();
+      }
+    }, new ProgressCallback() {
+      @Override
+      public void done(Integer percentDone) {
+        System.out.println("upload progress:" + percentDone);
+      }
+    });
+    latch.await();
+    System.out.println("file saved. objectId=" + file.getObjectId());
+    file.delete();
   }
 
   @Test

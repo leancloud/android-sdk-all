@@ -10,6 +10,7 @@ import com.avos.avoscloud.upload.UrlDirectlyUploader;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,7 +67,8 @@ public final class AVFile {
   transient private AVFileDownloader downloader;
   // metadata for file,added by dennis<xzhuang@avos.com>,2013-09-06
   private final HashMap<String, Object> metaData = new HashMap<String, Object>();
-  private static String DEFAULTMIMETYPE = "application/octet-stream";
+  private static long MAX_FILE_BUF_SIZE = 1024 * 2014 * 4;
+  public static String DEFAULTMIMETYPE = "application/octet-stream";
   private static final String FILE_SUM_KEY = "_checksum";
   static final String FILE_NAME_KEY = "_name";
   private static final String ELDERMETADATAKEYFORIOSFIX = "metadata";
@@ -137,7 +139,6 @@ public final class AVFile {
     this.dirty = true;
     this.name = name;
     if (null != data) {
-      // // FIXME: 2017/8/14 it is better to calculate md5 during uploading.
       String md5 = AVUtils.computeMD5(data);
       localTmpFilePath = AVFileDownloader.getAVFileCachePath() + md5;
       AVPersistenceUtils.saveContentToFile(data, new File(localTmpFilePath));
@@ -365,25 +366,40 @@ public final class AVFile {
    * @since 2.0.2
    */
   public static AVFile withFile(String name, File file) throws FileNotFoundException {
-    if (file == null) throw new IllegalArgumentException("null file object.");
+    if (file == null) {
+      throw new IllegalArgumentException("null file object.");
+    }
     if (!file.exists() || !file.isFile()) {
       throw new FileNotFoundException();
     }
+
     AVFile avFile = new AVFile();
     avFile.setLocalPath(file.getAbsolutePath());
     avFile.setName(name);
 
     avFile.dirty = true;
     avFile.name = name;
-    // FIXME: 2017/8/14 need to read content stream for local file.
-    byte[] data = AVPersistenceUtils.readContentBytesFromFile(file);
-    if (null != data) {
-      // FIXME: 2017/8/14 it it better to calculate md5 during uploading.
-      avFile.metaData.put(FILE_SUM_KEY, AVUtils.computeMD5(data));
-      avFile.metaData.put("size", file.length());
-    } else {
-      avFile.metaData.put("size", 0);
+    long fileSize = file.length();
+    String fileMD5 = "";
+    try {
+      InputStream is = AVPersistenceUtils.getInputStreamFromFile(file);
+      MessageDigest md = MessageDigest.getInstance("MD5");
+      if (null != is) {
+        byte buf[] = new byte[(int)MAX_FILE_BUF_SIZE];
+        int readCnt = is.read(buf);
+        while (readCnt > 0) {
+          md.update(buf, 0, readCnt);
+        }
+        byte[] md5bytes = md.digest();
+        fileMD5 = AVUtils.hexEncodeBytes(md5bytes);
+        is.close();
+      }
+    } catch (Exception ex) {
+      fileMD5 = "";
     }
+    avFile.metaData.put("size", fileSize);
+    avFile.metaData.put(FILE_SUM_KEY, fileMD5);
+
     AVUser currentUser = AVUser.getCurrentUser();
     avFile.metaData.put("owner", currentUser != null ? currentUser.getObjectId() : "");
     avFile.metaData.put(FILE_NAME_KEY, name);
@@ -913,8 +929,7 @@ public final class AVFile {
           "File object is not exists."));
   }
 
-  // // FIXME: 2017/8/14 mimeType is right?
-  public String mimeType() {
+  String mimeType() {
     String mimeType = "";
     if (!AVUtils.isBlankString(name)) {
       mimeType = AVUtils.getMimeTypeFromLocalFile(name);

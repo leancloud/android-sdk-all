@@ -89,9 +89,9 @@ public class FileUploader extends HttpClientUploader {
       case "s3":
         return new S3Uploader(avFile, uploadUrl, saveCallback, progressCallback);
       default:
-        return new QiniuUploader(avFile, token, fileKey, saveCallback, progressCallback);
+        return new QiniuSlicingUploader(avFile, token, fileKey, saveCallback, progressCallback);
+//        return new QiniuUploader(avFile, token, fileKey, saveCallback, progressCallback);
     }
-
   }
 
   private AVException fetchUploadBucket(String path, String fileKey, boolean sync, final AVCallback<String> callback) {
@@ -136,10 +136,20 @@ public class FileUploader extends HttpClientUploader {
   }
 
   private String getGetBucketParameters(String fileKey) {
+    // decide file mimetype.
+    String fileName = avFile.getName();
+    String fileUrl = avFile.getUrl();
+    String mimeType = AVFile.DEFAULTMIMETYPE;
+    if (!AVUtils.isBlankString(fileName)) {
+      mimeType = AVUtils.getMimeTypeFromLocalFile(fileName);
+    } else if (!AVUtils.isBlankString(fileUrl)) {
+      mimeType = AVUtils.getMimeTypeFromUrl(fileUrl);
+    }
+
     Map<String, Object> parameters = new HashMap<String, Object>(3);
     parameters.put("key",  fileKey);
-    parameters.put("name", avFile.getName());
-    parameters.put("mime_type", avFile.mimeType());
+    parameters.put("name", fileName);
+    parameters.put("mime_type", mimeType);
     parameters.put("metaData", avFile.getMetaData());
     parameters.put("__type", AVFile.className());
     if (avFile.getACL() != null) {
