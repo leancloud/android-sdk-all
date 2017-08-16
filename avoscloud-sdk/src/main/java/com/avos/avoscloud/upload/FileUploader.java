@@ -11,6 +11,7 @@ import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVFile;
 import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.GenericObjectCallback;
+import com.avos.avoscloud.LogUtil;
 import com.avos.avoscloud.PaasClient;
 import com.avos.avoscloud.ProgressCallback;
 import com.avos.avoscloud.SaveCallback;
@@ -52,10 +53,10 @@ public class FileUploader extends HttpClientUploader {
           if (null == avException) {
             AVException ex = handleGetBucketResponse(s);
             if (null != ex) {
-              ex.printStackTrace();
+              LogUtil.log.e("failed to parse response of fileTokens.", ex);
             }
           } else {
-            avException.printStackTrace();
+            LogUtil.log.e("failed to invoke fileTokens.", avException);
           }
         }
       });
