@@ -1027,4 +1027,55 @@ public final class AVFile {
     }
     return new JSONObject(data);
   }
+
+  /**
+   * clear cached file for this file.
+   */
+  public void clearCachedFile() {
+    if (!AVUtils.isBlankString(localTmpFilePath)) {
+      File cacheFile = new File(localTmpFilePath);
+      if (null != cacheFile && cacheFile.exists() && cacheFile.isFile()) {
+        cacheFile.delete();
+      }
+    }
+    if (!AVUtils.isBlankString(url)) {
+      File cacheFile = AVFileDownloader.getCacheFile(url);
+      if (null != cacheFile && cacheFile.exists() && cacheFile.isFile()) {
+        cacheFile.delete();
+      }
+    }
+  }
+
+  /**
+   * clear all cached files
+   */
+  public static void clearAllCachedFiles() {
+    clearCacheMoreThanDays(0);
+  }
+
+  /**
+   * clear cached files which created before x days.
+   * @param days - peroid from now.
+   */
+  public static void clearCacheMoreThanDays(int days) {
+    long curTime = System.currentTimeMillis();
+    if ( days > 0) {
+      curTime -= days * 86400000; // 86400000 is one day.
+    }
+    String cacheDir = AVFileDownloader.getAVFileCachePath();
+    clearDir(new File(cacheDir), curTime);
+  }
+
+  private static void clearDir(File dir, long lastModified) {
+    File[] files = dir.listFiles();
+    for (File f: files) {
+      if (f.isFile()) {
+        if (f.lastModified() < lastModified) {
+          f.delete();
+        }
+      } else if (f.isDirectory()) {
+        clearDir(f, lastModified);
+      }
+    }
+  }
 }
