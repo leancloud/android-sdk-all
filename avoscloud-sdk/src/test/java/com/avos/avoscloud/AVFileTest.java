@@ -659,4 +659,48 @@ public class AVFileTest {
     file.delete();
     object.delete();
   }
+
+  @Test
+  public void testClearCurrentFileCache() throws Exception {
+    final String testUrl = "http://wx4.sinaimg.cn/mw690/005ZWQyIly1fifjlms4amj30ia0rgtmv.jpg";
+    final AVFile file = new AVFile("name", testUrl);
+    final CountDownLatch latch = new CountDownLatch(1);
+    file.saveInBackground(new SaveCallback() {
+      @Override
+      protected boolean mustRunOnUIThread() {
+        return false;
+      }
+      @Override
+      public void done(AVException e) {
+        if (null !=e) {
+          e.printStackTrace();
+          Assert.fail();
+        } else {
+          System.out.println("file saved. objectId=" + file.getObjectId());
+          System.out.println("url=" + file.getUrl());
+          Assert.assertNull(e);
+          Assert.assertNotNull(file.getObjectId());
+          try {
+            file.clearCachedFile();
+            file.delete();
+          } catch (AVException ex) {
+            ex.printStackTrace();
+            Assert.fail();
+          }
+        }
+        latch.countDown();
+      }
+    });
+    latch.await();
+    System.out.println("file saved. objectId=" + file.getObjectId());
+  }
+  @Test
+  public void testClearCachedFileBeforeDays() throws Exception {
+    AVFile.clearCacheMoreThanDays(6);
+  }
+
+  @Test
+  public void testClearAllCachedFile() throws Exception {
+    AVFile.clearAllCachedFiles();
+  }
 }
