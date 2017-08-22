@@ -521,6 +521,8 @@ public class AVIMConversation {
     final boolean connected = AVUtils.isConnected(AVOSCloud.applicationContext);
     // 如果只是最后一个消息是breakPoint，那还走啥网络
     if (!connected || continuousMessages.size() >= limit - 1) {
+      // // FIXME: 2017/8/22 why not use continuousMessages instead of cachedMEssages?
+      // in case of wifi is invalid, and thre query list contain breakpoint, the result is error.
       Collections.sort(cachedMessages, messageComparator);
       callback.internalDone(cachedMessages, null);
     } else {

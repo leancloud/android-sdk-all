@@ -66,6 +66,21 @@ class AVIMMessageStorage {
   static final String TEXT = "TEXT";
   static final String VARCHAR32 = "VARCHAR(32)";
 
+  /**
+   * table: messages
+   * schema:
+   * |--------------------------------------------------------------------------------------------------------------------------------|
+   * |varchar    |numberic  |varchar         |text         |numberic          |number |number    |blob    |int    |int        |varchar|
+   * |message_id |timestamp |conversation_id |from_peer_id |receipt_timestamp |readAt |updatedAt |payload |status |breakpoint |dtoken |
+   * |--------------------------------------------------------------------------------------------------------------------------------|
+   *
+   * table: conversations
+   * schema:
+   * |---------------------------------------------------------------------------------------------------------------------------------------|
+   * |expireAt |attr |instanceData |updatedAt |createdAt |creator |members |lm |last_message |isTransient |unread_count |readAt |deliveredAt |
+   * |---------------------------------------------------------------------------------------------------------------------------------------|
+   *
+   */
   static class SQL {
     static final String TIMESTAMP_MORE_OR_TIMESTAMP_EQUAL_BUT_MESSAGE_ID_MORE_AND_CONVERSATION_ID =
         " ( " +
@@ -246,6 +261,8 @@ class AVIMMessageStorage {
 
   private AVIMMessageStorage(Context context, String clientId) {
     dbHelper = new DBHelper(context, clientId);
+    
+    // // FIXME: 2017/8/22 it is not need to invoke onUpgrade manually.
     dbHelper.onUpgrade(dbHelper.getWritableDatabase(), dbHelper.getWritableDatabase().getVersion(),
         DB_VERSION);
     this.clientId = clientId;
@@ -275,7 +292,7 @@ class AVIMMessageStorage {
   }
 
   /*
-   * 这个代码是用于插入由本地发送的消息，由于存在deduplicatedMessage 所以有些特殊，需要做额外的token检查
+   * 这个代码是用于插入由本地发送的消息，由于存在deduplicated Message 所以有些特殊，需要做额外的token检查
    */
   public void insertLocalMessage(AVIMMessage message) {
     SQLiteDatabase db = dbHelper.getReadableDatabase();
