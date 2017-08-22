@@ -49,7 +49,7 @@ android.libraryVariants.all { variant ->
 
 dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.8.0'
-    compile 'com.alibaba:fastjson:1.2.35'
+    compile 'com.alibaba:fastjson:1.2.37'
     testCompile 'junit:junit:4.12'
     testCompile "org.robolectric:robolectric:3.1.4"
     testCompile 'org.mockito:mockito-core:1.10.19'
