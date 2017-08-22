@@ -11,7 +11,6 @@ import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
-import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.avos.avoscloud.AVException;
@@ -105,7 +104,7 @@ public class AVIMClient {
    */
 
   public static AVIMClient getInstance(String clientId) {
-    if (TextUtils.isEmpty(clientId)) {
+    if (AVUtils.isBlankString(clientId)) {
       throw new IllegalArgumentException("clientId cannot be null.");
     }
 

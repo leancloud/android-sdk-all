@@ -13,6 +13,7 @@ import com.avos.avoscloud.im.v2.AVIMMessageType;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,7 +73,7 @@ public class AVIMImageMessage extends AVIMFileMessage {
   public int getHeight() {
     Map<String, Object> metaData = getFileMetaData();
     if (metaData != null && metaData.containsKey(IMAGE_HEIGHT)) {
-      return (Integer) metaData.get(IMAGE_HEIGHT);
+      return parseIntValue(metaData.get(IMAGE_HEIGHT));
     }
     return 0;
   }
@@ -85,11 +86,23 @@ public class AVIMImageMessage extends AVIMFileMessage {
   public int getWidth() {
     Map<String, Object> metaData = getFileMetaData();
     if (metaData != null && metaData.containsKey(IMAGE_WIDTH)) {
-      return (Integer) metaData.get(IMAGE_WIDTH);
+      return parseIntValue(metaData.get(IMAGE_WIDTH));
     }
     return 0;
   }
 
+  private static int parseIntValue(Object value) {
+    if (null != value) {
+      if (value instanceof Integer || value instanceof Long) {
+        return (int)value;
+      } else if (value instanceof Double) {
+        return (int)((double) value);
+      } else if (value instanceof BigDecimal) {
+        return ((BigDecimal) value).intValue();
+      }
+    }
+    return 0;
+  }
 
 
   @Override

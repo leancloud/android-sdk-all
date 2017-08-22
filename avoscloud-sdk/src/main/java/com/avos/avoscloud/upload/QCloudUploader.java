@@ -1,10 +1,17 @@
-package com.avos.avoscloud;
+package com.avos.avoscloud.upload;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
+import com.avos.avoscloud.AVErrorUtils;
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVExceptionHolder;
+import com.avos.avoscloud.AVFile;
+import com.avos.avoscloud.AVOSCloud;
+import com.avos.avoscloud.AVUtils;
+import com.avos.avoscloud.LogUtil;
+import com.avos.avoscloud.ProgressCallback;
+import com.avos.avoscloud.SaveCallback;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 
@@ -42,11 +49,10 @@ class QCloudUploader extends HttpClientUploader {
   private String uploadUrl;
   private String fileKey;
   private String token;
-  private AVFile avFile;
 
   QCloudUploader(AVFile avFile, String fileKey, String token, String uploadUrl, SaveCallback saveCallback, ProgressCallback progressCallback) {
-    super(saveCallback, progressCallback);
-    this.avFile = avFile;
+    super(avFile, saveCallback, progressCallback);
+
     this.uploadUrl = uploadUrl;
     this.token = token;
     this.fileKey = fileKey;
