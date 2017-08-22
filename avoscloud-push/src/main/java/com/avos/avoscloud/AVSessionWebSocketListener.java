@@ -5,7 +5,6 @@ import android.os.Bundle;
 import java.util.ArrayList;
 import java.util.List;
 import com.avos.avoscloud.AVIMOperationQueue.Operation;
-import com.avos.avoscloud.AVSession.SignatureTask;
 import com.avos.avoscloud.PendingMessageCache.Message;
 import com.avos.avoscloud.SignatureFactory.SignatureException;
 import com.avos.avoscloud.im.v2.AVIMException;
@@ -43,66 +42,83 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
         LogUtil.avlog.d("web socket opened, send session open.");
       }
 
-
       String token = AVSessionCacheHelper.IMSessionTokenCache.getIMSessionToken(session.getSelfPeerId());
       if (!AVUtils.isBlankString(token)) {
-        // 使用im-sessionToken来登录
-        SessionControlPacket scp = SessionControlPacket.genSessionCommand(
-          session.getSelfPeerId(), null, SessionControlPacket.SessionControlOp.OPEN, null, session.getLastNotifyTime(), session.getLastPatchTime(), null);
-        scp.setSessionToken(token);
-        scp.setReconnectionRequest(true);
-        PushService.sendData(scp);
+        openWithSessionToken(token);
       } else {
-        final SignatureCallback callback = new SignatureCallback() {
+        openWithSignature();
+      }
+    }
+  }
 
-          @Override
-          public void onSignatureReady(Signature sig, AVException exception) {
-            int requestId = AVUtils.getNextIMRequestId();
-            SessionControlPacket scp = SessionControlPacket.genSessionCommand(
-              session.getSelfPeerId(), null,
-              SessionControlPacket.SessionControlOp.OPEN, sig, session.getLastNotifyTime(), session.getLastPatchTime(), null);
-            scp.setTag(session.tag);
-            scp.setReconnectionRequest(true);
-            if (session.conversationOperationCache != null) {
-              session.conversationOperationCache.offer(Operation.getOperation(
-                  AVIMOperation.CLIENT_OPEN.getCode(), session.getSelfPeerId(), null, requestId));
-            }
-            PushService.sendData(scp);
-          }
+  /**
+   * 使用im-sessionToken来登录
+   */
+  private void openWithSessionToken(String token) {
+    SessionControlPacket scp = SessionControlPacket.genSessionCommand(
+      session.getSelfPeerId(), null, SessionControlPacket.SessionControlOp.OPEN, null, session.getLastNotifyTime(), session.getLastPatchTime(), null);
+    scp.setSessionToken(token);
+    scp.setReconnectionRequest(true);
+    PushService.sendData(scp);
+  }
 
-          @Override
-          public boolean cacheSignature() {
-            // 自动登录是因为会使用 im-sessionToken 来登录，所以缓存是没有必要的
-            return false;
-          }
+  /**
+   * 使用签名登陆
+   */
+  private void openWithSignature() {
+    final SignatureCallback callback = new SignatureCallback() {
 
-          @Override
-          public boolean useSignatureCache() {
-            return false;
-          }
+      @Override
+      public void onSignatureReady(Signature sig, AVException exception) {
+        int requestId = AVUtils.getNextIMRequestId();
+        SessionControlPacket scp = SessionControlPacket.genSessionCommand(
+          session.getSelfPeerId(), null,
+          SessionControlPacket.SessionControlOp.OPEN, sig, session.getLastNotifyTime(), session.getLastPatchTime(), null);
+        scp.setTag(session.tag);
+        scp.setReconnectionRequest(true);
+        if (session.conversationOperationCache != null) {
+          session.conversationOperationCache.offer(Operation.getOperation(
+            AVIMOperation.CLIENT_OPEN.getCode(), session.getSelfPeerId(), null, requestId));
+        }
+        PushService.sendData(scp);
+      }
 
-          @Override
-          public Signature computeSignature() throws SignatureException {
-            if (session.getSignatureFactory() != null) {
-              Signature sig =
-                  session.getSignatureFactory().createSignature(session.getSelfPeerId(), new ArrayList<String>());
-              return sig;
-            }
-            return null;
+      @Override
+      public boolean cacheSignature() {
+        // 自动登录是因为会使用 im-sessionToken 来登录，所以缓存是没有必要的
+        return false;
+      }
+
+      @Override
+      public boolean useSignatureCache() {
+        return false;
+      }
+
+      @Override
+      public Signature computeSignature() throws SignatureException {
+        final SignatureFactory signatureFactory = AVSession.getSignatureFactory();
+        if (null != signatureFactory) {
+          return signatureFactory.createSignature(session.getSelfPeerId(), new ArrayList<String>());
+        } else if (!AVUtils.isBlankString(session.getSessionToken())) {
+          try {
+            return new AVUserSinatureFactory(session.getSessionToken()).getOpenSignature();
+          } catch (AVException e) {
+            throw  new SignatureException(e.getCode(), e.getMessage());
           }
-        };
-        // 在某些特定的rom上，socket回来的线程会与Service本身的线程不一致，导致AsyncTask调用出现异常
-        if (!AVUtils.isMainThread()) {
-          AVOSCloud.handler.post(new Runnable() {
-            @Override
-            public void run() {
-              new SignatureTask(callback).execute(session.getSelfPeerId());
-            }
-          });
-        } else {
+        }
+        return null;
+      }
+    };
+    // 在某些特定的rom上，socket回来的线程会与Service本身的线程不一致，导致AsyncTask调用出现异常
+    if (!AVUtils.isMainThread()) {
+      AVOSCloud.handler.post(new Runnable() {
+        @Override
+        public void run() {
           new SignatureTask(callback).execute(session.getSelfPeerId());
         }
-      }
+      });
+    } else {
+      new SignatureTask(callback).execute(session.getSelfPeerId());
     }
   }
 

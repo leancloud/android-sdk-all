@@ -1,6 +1,16 @@
-package com.avos.avoscloud;
+package com.avos.avoscloud.upload;
 
 import android.os.Build;
+
+import com.avos.avoscloud.AVErrorUtils;
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVHttpClient;
+import com.avos.avoscloud.AVOSCloud;
+import com.avos.avoscloud.AVUtils;
+import com.avos.avoscloud.LogUtil;
+import com.avos.avoscloud.ProgressCallback;
+import com.avos.avoscloud.SaveCallback;
+import com.avos.avoscloud.AVFile;
 
 import java.io.IOException;
 
@@ -17,8 +27,12 @@ import okhttp3.Response;
  * Created with IntelliJ IDEA. User: dennis (xzhuang@avos.com) Date: 13-7-26 Time: 下午3:37
  */
 public abstract class HttpClientUploader implements Uploader {
+  protected String finalUrl = "";
+  protected String finalObjectId = "";
+  protected AVFile avFile = null;
 
-  public HttpClientUploader(SaveCallback saveCallback, ProgressCallback progressCallback) {
+  public HttpClientUploader(AVFile file, SaveCallback saveCallback, ProgressCallback progressCallback) {
+    this.avFile = file;
     this.saveCallback = saveCallback;
     this.progressCallback = progressCallback;
     cancelled = false;
@@ -109,6 +123,18 @@ public abstract class HttpClientUploader implements Uploader {
     future = executor.submit(task);
   }
 
+  public String getFinalUrl() {
+    return this.finalUrl;
+  }
+  public void setFinalUrl(String url) {
+    this.finalUrl = url;
+  }
+  public String getFinalObjectId() {
+    return this.finalObjectId;
+  }
+  public void setFinalObjectId(String objectId) {
+    this.finalObjectId = objectId;
+  }
 
   // ignore interrupt so far.
   public boolean cancel(boolean interrupt) {

@@ -23,12 +23,12 @@ public class AVErrorUtils {
   }
 
   public static AVException createException(Throwable t, String content) {
-    if (t instanceof AVException) {
-      return (AVException) t;
-    }
     if (content != null) {
       return createException(content);
     } else if (t != null) {
+      if (t instanceof AVException) {
+        return (AVException) t;
+      }
       return new AVException(t);
     } else {
       return new AVException(AVException.UNKNOWN, "unknown reason");

@@ -1,8 +1,17 @@
-package com.avos.avoscloud;
+package com.avos.avoscloud.upload;
 
 import com.alibaba.fastjson.JSON;
-import com.avos.avoscloud.FileUploader.ProgressCalculator;
-import com.avos.avoscloud.FileUploader.FileUploadProgressCallback;
+import com.avos.avoscloud.AVErrorUtils;
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVExceptionHolder;
+import com.avos.avoscloud.AVFile;
+import com.avos.avoscloud.AVOSCloud;
+import com.avos.avoscloud.AVUtils;
+import com.avos.avoscloud.upload.FileUploader.ProgressCalculator;
+import com.avos.avoscloud.upload.FileUploader.FileUploadProgressCallback;
+import com.avos.avoscloud.LogUtil;
+import com.avos.avoscloud.ProgressCallback;
+import com.avos.avoscloud.SaveCallback;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -28,32 +37,31 @@ class QiniuUploader extends HttpClientUploader {
   private int blockCount;
   private String fileKey;
 
-  private static final String QINIU_HOST = "http://upload.qiniu.com";
-  private static final String QINIU_CREATE_BLOCK_EP = QINIU_HOST + "/mkblk/%d";
-  private static final String QINIU_BRICK_UPLOAD_EP = QINIU_HOST + "/bput/%s/%d";
-  private static final String QINIU_MKFILE_EP = QINIU_HOST + "/mkfile/%d/key/%s";
-  private static final int WIFI_CHUNK_SIZE = 256 * 1024;
-  private static final int BLOCK_SIZE = 1024 * 1024 * 4;
-  private static final int NONWIFI_CHUNK_SIZE = 64 * 1024;
+  static final String QINIU_HOST = "http://upload.qiniu.com";
+  static final String QINIU_CREATE_BLOCK_EP = QINIU_HOST + "/mkblk/%d";
+  static final String QINIU_BRICK_UPLOAD_EP = QINIU_HOST + "/bput/%s/%d";
+  static final String QINIU_MKFILE_EP = QINIU_HOST + "/mkfile/%d/key/%s";
+  static final int WIFI_CHUNK_SIZE = 256 * 1024;
+  static final int BLOCK_SIZE = 1024 * 1024 * 4;
+  static final int NONWIFI_CHUNK_SIZE = 64 * 1024;
 
   private ProgressCalculator progressCalculator;
   private volatile Call mergeFileRequestCall;
   private volatile Future[] tasks;
-  private AVFile avFile;
 
   QiniuUploader(AVFile avFile, String token, String fileKey, SaveCallback saveCallback, ProgressCallback progressCallback) {
-    super(saveCallback,progressCallback);
-    this.avFile = avFile;
+    super(avFile, saveCallback,progressCallback);
+
     this.token = token;
     this.fileKey = fileKey;
   }
 
   int uploadChunkSize = WIFI_CHUNK_SIZE;
+  // // FIXME: 2017/8/14 why not use executorService declared in parent class(HttpClientUploader.ThreadPoolExecutor)??
   static final ExecutorService fileUploadExecutor = Executors.newFixedThreadPool(10);
 
   @Override
   public AVException doWork() {
-
       boolean isWifi = AVUtils.isWifi(AVOSCloud.applicationContext);
       if (!isWifi) {
         // 从七牛的接口来看block size为4M不可变，但是chunkSize是可以调整的
@@ -84,8 +92,7 @@ class QiniuUploader extends HttpClientUploader {
       // 2.按照分片进行上传
       QiniuBlockResponseData respBlockData = null;
       CountDownLatch latch = new CountDownLatch(blockCount);
-      progressCalculator = new ProgressCalculator(blockCount, new FileUploadProgressCallback() {
-        @Override
+      progressCalculator = new ProgressCalculator(blockCount, new FileUploader.FileUploadProgressCallback() {
         public void onProgress(int progress) {
           publishProgress(progress);
         }
@@ -247,7 +254,7 @@ class QiniuUploader extends HttpClientUploader {
         final int nextChunkSize =
             getNextChunkSize(blockOffset, data);
 
-        RequestBody requestBody = RequestBody.create(MediaType.parse(parent.avFile.mimeType()),
+        RequestBody requestBody = RequestBody.create(MediaType.parse(AVFile.DEFAULTMIMETYPE),
             data, blockOffset * BLOCK_SIZE, nextChunkSize);
 
         builder = builder.post(requestBody);
@@ -284,7 +291,7 @@ class QiniuUploader extends HttpClientUploader {
           final int nextChunkSize =
               remainingBlockLength > uploadChunkSize ? uploadChunkSize : remainingBlockLength;
 
-          RequestBody requestBody = RequestBody.create(MediaType.parse(parent.avFile.mimeType()),
+          RequestBody requestBody = RequestBody.create(MediaType.parse(AVFile.DEFAULTMIMETYPE),
               data,
               blockOffset * BLOCK_SIZE + chunkData.offset,
               nextChunkSize);

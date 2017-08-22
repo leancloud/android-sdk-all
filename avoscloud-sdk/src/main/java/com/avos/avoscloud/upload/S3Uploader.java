@@ -1,4 +1,13 @@
-package com.avos.avoscloud;
+package com.avos.avoscloud.upload;
+
+import com.avos.avoscloud.AVErrorUtils;
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVFile;
+import com.avos.avoscloud.AVUtils;
+import com.avos.avoscloud.LogUtil;
+import com.avos.avoscloud.ProgressCallback;
+import com.avos.avoscloud.SaveCallback;
+import com.avos.avoscloud.utils.AVFileUtil;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -14,10 +23,9 @@ import okhttp3.Response;
 /**
  * Created by summer on 13-5-27.
  */
-public class S3Uploader extends HttpClientUploader {
+class S3Uploader extends HttpClientUploader {
   private volatile Call call;
   private String uploadUrl;
-  private AVFile avFile;
   private int retryTimes = DEFAULT_RETRY_TIMES;
 
   /**
@@ -41,9 +49,8 @@ public class S3Uploader extends HttpClientUploader {
   private static int writeTimeout = 0;
 
   S3Uploader(AVFile avFile, String uploadUrl, SaveCallback saveCallback, ProgressCallback progressCallback) {
-    super(saveCallback, progressCallback);
+    super(avFile, saveCallback, progressCallback);
     this.uploadUrl = uploadUrl;
-    this.avFile = avFile;
   }
 
   @Override
@@ -69,6 +76,9 @@ public class S3Uploader extends HttpClientUploader {
       Response response = null;
       String serverResponse = null;
       try{
+        // decide file mimetype.
+        String mimeType = AVFileUtil.getFileMimeType(avFile);
+
         // upload to s3
         Request.Builder builder = new Request.Builder();
         builder.url(uploadUrl);
@@ -79,10 +89,10 @@ public class S3Uploader extends HttpClientUploader {
         Charset charset = Charset.forName("UTF-8");
         // support file for future
 
-        RequestBody requestBody = RequestBody.create(MediaType.parse(avFile.mimeType()), data);
+        RequestBody requestBody = RequestBody.create(MediaType.parse(mimeType), data);
 
         builder.put(requestBody);
-        builder.addHeader("Content-Type", avFile.mimeType());
+        builder.addHeader("Content-Type", mimeType);
 
         // Send it
         call = httpClient.newCall(builder.build());

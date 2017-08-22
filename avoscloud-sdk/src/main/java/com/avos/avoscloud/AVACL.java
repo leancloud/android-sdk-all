@@ -27,6 +27,17 @@ public class AVACL {
     permissionsById = new HashMap<String, Object>();
   }
 
+  /**
+   * Create an ACL with permissions
+   * @param aclMap
+   */
+  public AVACL(Map<String, Object> aclMap) {
+    permissionsById = new HashMap<String, Object>();
+    if (null != aclMap) {
+      permissionsById.putAll(aclMap);
+    }
+  }
+
   AVACL(AVACL right) {
     permissionsById = new HashMap<String, Object>();
     permissionsById.putAll(right.permissionsById);
@@ -317,7 +328,7 @@ public class AVACL {
     return permissionsById;
   }
 
-  Map<String, Object> getACLMap() {
+  public Map<String, Object> getACLMap() {
     Map<String, Object> aclMap = new HashMap<String, Object>();
     aclMap.put("ACL", getPermissionsById());
     return aclMap;
