@@ -345,7 +345,7 @@ class AVInternalConversation {
 
   public void processConversationCommandFromServer(AVIMOperation imop, String operation, int requestId, Messages.ConvCommand convCommand) {
     if (ConversationControlOp.STARTED.equals(operation)) {
-      this.onConversationCreated(requestId, convCommand.getCdate());
+      onConversationCreated(requestId, convCommand.getCdate());
     } else if (ConversationControlOp.JOINED.equals(operation)) {
       String invitedBy = convCommand.getInitBy();
       // 这里是我自己邀请了我自己，这个事件会被忽略。因为伴随这个消息一起来的还有added消息
