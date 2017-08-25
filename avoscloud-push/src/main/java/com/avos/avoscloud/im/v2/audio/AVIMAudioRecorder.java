@@ -3,6 +3,7 @@ package com.avos.avoscloud.im.v2.audio;
 import android.hardware.Camera;
 import android.media.MediaRecorder;
 
+import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.LogUtil;
 
 import java.io.File;
@@ -14,7 +15,17 @@ import java.io.IOException;
 
 public class AVIMAudioRecorder {
   public interface RecordEventListener {
-    void onFinishedRecord(int secs, String reason);
+    /**
+     * invoke after recording finished.
+     *
+     * @param milliSeconds   audio recording time(milliseconds). 0 for error, otherwise always great then 0.
+     * @param reason         error message, only valid while milliSeconds = 0.
+     */
+    void onFinishedRecord(long milliSeconds, String reason);
+
+    /**
+     * callback method after recording started.
+     */
     void onStartRecord();
   }
 
@@ -27,6 +38,9 @@ public class AVIMAudioRecorder {
   private RecordEventListener listener = null;
 
   public AVIMAudioRecorder(String path, RecordEventListener listener) {
+    if (AVUtils.isBlankString(path)) {
+      throw new IllegalArgumentException("local path is empty.");
+    }
     this.localPath = path;
     this.listener = listener;
   }
@@ -109,8 +123,7 @@ public class AVIMAudioRecorder {
             removeRecordFile();
             this.listener.onFinishedRecord(0, REASON_TOO_SHORT_TIME);
           } else {
-            int sec = Math.round(intervalTime * 1.0f / 1000);
-            this.listener.onFinishedRecord(sec, null);
+            this.listener.onFinishedRecord(intervalTime, null);
           }
         }
       } catch (Exception e) {
