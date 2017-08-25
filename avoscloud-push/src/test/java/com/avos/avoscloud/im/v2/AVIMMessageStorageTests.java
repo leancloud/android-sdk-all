@@ -75,12 +75,12 @@ public class AVIMMessageStorageTests {
   @Test
   public void testInsertMessage() {
     AVIMMessageStorage storage = AVIMMessageStorage.getInstance(defaultClient);
-    storage.dumpMessages(defaultConversation);
+//    storage.dumpMessages(defaultConversation);
     System.out.println("^^^^ should be empty.");
 
     List<AVIMMessage> msgs = generateMessages(1);
     storage.insertMessage(msgs.get(0), true);
-    storage.dumpMessages(defaultConversation);
+//    storage.dumpMessages(defaultConversation);
     System.out.println("^^^^ should be one msg.");
 
     long msgCount = storage.getMessageCount(defaultConversation);
@@ -88,7 +88,7 @@ public class AVIMMessageStorageTests {
 
     msgs = generateMessages(10);
     storage.insertContinuousMessages(msgs, defaultConversation);
-    storage.dumpMessages(defaultConversation);
+//    storage.dumpMessages(defaultConversation);
     System.out.println("^^^^ should be 11 msgs.");
 
     msgCount = storage.getMessageCount(defaultConversation);
@@ -108,7 +108,7 @@ public class AVIMMessageStorageTests {
     msg3.add(msgs.get(9));
     msg3.addAll(msg2);
     storage.insertContinuousMessages(msg3, defaultConversation);
-    storage.dumpMessages(defaultConversation);
+//    storage.dumpMessages(defaultConversation);
     System.out.println("^^^^ should be 15 msgs.");
     long msgCount = storage.getMessageCount(defaultConversation);
     Assert.assertTrue(msgCount == 15);
