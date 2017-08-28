@@ -503,21 +503,22 @@ class AVIMMessageStorage {
     }
   }
 
-//  public void dumpMessages(String conversationId) {
-//    long curTs = System.currentTimeMillis();
-//    SQLiteDatabase db = dbHelper.getReadableDatabase();
-//    String condition = SQL.TIMESTAMP_LESS_AND_CONVERSATION_ID;
-//    String[] conditionArgs = new String[]{Long.toString(curTs), conversationId};
-//    Cursor cursor = db.query(MESSAGE_TABLE, null, condition, conditionArgs, null, null, SQL.ORDER_BY_TIMESTAMP_DESC_THEN_MESSAGE_ID_DESC);
-//    if (cursor.moveToFirst()) {
-//      while (!cursor.isAfterLast()) {
-//        AVIMMessage message = createMessageFromCursor(cursor);
-//        boolean breakpoint = cursor.getInt(cursor.getColumnIndex(COLUMN_BREAKPOINT)) != 0;
-//        System.out.println("msg: {" + message.toString() + "}, breakpoint=" + breakpoint);
-//        cursor.moveToNext();
-//      }
-//    }
-//  }
+  void dumpMessages(String conversationId) {
+    long curTs = System.currentTimeMillis();
+    SQLiteDatabase db = dbHelper.getReadableDatabase();
+    String condition = SQL.TIMESTAMP_LESS_AND_CONVERSATION_ID;
+    String[] conditionArgs = new String[]{Long.toString(curTs), conversationId};
+    Cursor cursor = db.query(MESSAGE_TABLE, null, condition, conditionArgs, null, null, SQL.ORDER_BY_TIMESTAMP_DESC_THEN_MESSAGE_ID_DESC);
+    if (cursor.moveToFirst()) {
+      while (!cursor.isAfterLast()) {
+        AVIMMessage message = createMessageFromCursor(cursor);
+        boolean breakpoint = cursor.getInt(cursor.getColumnIndex(COLUMN_BREAKPOINT)) != 0;
+        System.out.println("msg: {" + message.toString() + "}, breakpoint=" + breakpoint);
+        cursor.moveToNext();
+      }
+    }
+  }
+
   /**
    * 根据条件查询本地缓存消息，消息有可能不连续，是否连续会通过 callback 返回
    *
