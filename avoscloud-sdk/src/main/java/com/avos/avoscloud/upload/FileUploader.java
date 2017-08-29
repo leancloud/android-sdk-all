@@ -73,6 +73,9 @@ public class FileUploader extends HttpClientUploader {
     }
     publishProgress(PROGRESS_GET_TOKEN);
     Uploader uploader = getUploaderImplementation(fileKey);
+    if (null == uploader) {
+      return new AVException(new Throwable("Uploader can not be instantiated."));
+    }
 
     AVException uploadException = uploader.doWork();
     if (uploadException == null) {
@@ -90,13 +93,17 @@ public class FileUploader extends HttpClientUploader {
   }
 
   private Uploader getUploaderImplementation(String fileKey) {
-    switch (provider) {
-      case "qcloud":
-        return new QCloudUploader(avFile, fileKey, token, uploadUrl, saveCallback, progressCallback);
-      case "s3":
-        return new S3Uploader(avFile, uploadUrl, saveCallback, progressCallback);
-      default:
-        return new QiniuSlicingUploader(avFile, token, fileKey, saveCallback, progressCallback);
+    if (!AVUtils.isBlankString(provider)) {
+      switch (provider) {
+        case "qcloud":
+          return new QCloudUploader(avFile, fileKey, token, uploadUrl, saveCallback, progressCallback);
+        case "s3":
+          return new S3Uploader(avFile, uploadUrl, saveCallback, progressCallback);
+        default:
+          return new QiniuSlicingUploader(avFile, token, fileKey, saveCallback, progressCallback);
+      }
+    } else {
+      return null;
     }
   }
 
