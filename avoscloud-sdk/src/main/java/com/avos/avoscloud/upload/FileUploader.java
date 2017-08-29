@@ -60,6 +60,12 @@ public class FileUploader extends HttpClientUploader {
             LogUtil.log.e("failed to invoke fileTokens.", avException);
           }
         }
+
+        @Override
+        protected boolean mustRunOnUIThread() {
+          // 必须要同步执行，不然会导致没有 handleGetBucketResponse 没有执行，而造成以后的逻辑错误
+          return false;
+        }
       });
       if (getBucketException != null) {
         return getBucketException;
@@ -83,7 +89,6 @@ public class FileUploader extends HttpClientUploader {
     }
   }
 
-
   private Uploader getUploaderImplementation(String fileKey) {
     switch (provider) {
       case "qcloud":
@@ -92,7 +97,6 @@ public class FileUploader extends HttpClientUploader {
         return new S3Uploader(avFile, uploadUrl, saveCallback, progressCallback);
       default:
         return new QiniuSlicingUploader(avFile, token, fileKey, saveCallback, progressCallback);
-//        return new QiniuUploader(avFile, token, fileKey, saveCallback, progressCallback);
     }
   }
 
@@ -102,14 +106,12 @@ public class FileUploader extends HttpClientUploader {
         new GenericObjectCallback() {
           @Override
           public void onSuccess(String content, AVException e) {
-            //callback.internalDone0(content, e);
             callback.internalDone(content, e);
             exceptionWhenGetBucket[0] = e;
           }
 
           @Override
           public void onFailure(Throwable error, String content) {
-            //callback.internalDone0(null, AVErrorUtils.createException(error, content));
             callback.internalDone(null, AVErrorUtils.createException(error, content));
             exceptionWhenGetBucket[0] = AVErrorUtils.createException(error, content);
           }
