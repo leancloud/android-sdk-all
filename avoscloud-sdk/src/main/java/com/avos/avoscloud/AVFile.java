@@ -386,9 +386,9 @@ public final class AVFile {
       MessageDigest md = MessageDigest.getInstance("MD5");
       if (null != is) {
         byte buf[] = new byte[(int)MAX_FILE_BUF_SIZE];
-        int readCnt = is.read(buf);
-        while (readCnt > 0) {
-          md.update(buf, 0, readCnt);
+        int len;
+        while ((len = is.read(buf)) != -1) {
+          md.update(buf, 0, len);
         }
         byte[] md5bytes = md.digest();
         fileMD5 = AVUtils.hexEncodeBytes(md5bytes);
