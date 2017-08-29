@@ -31,7 +31,6 @@ mkdir -p "$releaseDir/avoscloud-search/libs/"
 mkdir -p "$releaseDir/avoscloud-sns/libs/"
 
 cp avoscloud-sdk/build/libs/avoscloud-sdk-*.jar $releaseDir/
-cp avoscloud-sdk/src/main/res/raw/avoscloud_us_ssl.bks $releaseDir/
 
 cp avoscloud-push/build/libs/avoscloud-push-*.jar $releaseDir/
 
