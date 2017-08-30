@@ -232,6 +232,26 @@ public class AVIMConversation {
   }
 
   /**
+   * save local message which failed to send to LeanCloud server.
+   *
+   * @param message the message need to be saved to local.
+   */
+  public void addToLocalCache(AVIMMessage message) {
+    // FIXME: 2017/8/30. not fully implement yet.
+    this.storage.insertLocalMessage(message);
+  }
+
+  /**
+   * remove local message from cache.
+   *
+   * @param message
+   */
+  public void removeFromLocalCache(AVIMMessage message) {
+    // FIXME: 2017/8/30 not fully implement yet.
+    this.storage.deleteMessages(Arrays.asList(message), message.conversationId);
+  }
+
+  /**
    * 查询最近的20条消息记录
    * 
    * @param callback
