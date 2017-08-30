@@ -54,13 +54,15 @@ public class AVIMMessageStorageTests {
     return AVUtils.getRandomString(length);
   }
 
-  private List<AVIMMessage> generateMessages(int count) {
+  private List<AVIMMessage> generateMessages(int count, boolean includeMessageId) {
     ArrayList<AVIMMessage> results = new ArrayList<>(count);
     String msgIdPrefix = generateRandomString(5);
     for (int i = 0; i < count; i++) {
       AVIMTextMessage msg = new AVIMTextMessage();
       msg.setText(String.valueOf(i));
-      msg.setMessageId(msgIdPrefix + i);
+      if (includeMessageId) {
+        msg.setMessageId(msgIdPrefix + i);
+      }
       msg.setConversationId(defaultConversation);
       msg.setFrom("Bob");
       msg.setMessageIOType(AVIMMessage.AVIMMessageIOType.AVIMMessageIOTypeIn);
@@ -75,20 +77,20 @@ public class AVIMMessageStorageTests {
   @Test
   public void testInsertMessage() {
     AVIMMessageStorage storage = AVIMMessageStorage.getInstance(defaultClient);
-//    storage.dumpMessages(defaultConversation);
+    storage.dumpMessages(defaultConversation);
     System.out.println("^^^^ should be empty.");
 
-    List<AVIMMessage> msgs = generateMessages(1);
+    List<AVIMMessage> msgs = generateMessages(1, true);
     storage.insertMessage(msgs.get(0), true);
-//    storage.dumpMessages(defaultConversation);
+    storage.dumpMessages(defaultConversation);
     System.out.println("^^^^ should be one msg.");
 
     long msgCount = storage.getMessageCount(defaultConversation);
     Assert.assertTrue(msgCount == 1);
 
-    msgs = generateMessages(10);
+    msgs = generateMessages(10, true);
     storage.insertContinuousMessages(msgs, defaultConversation);
-//    storage.dumpMessages(defaultConversation);
+    storage.dumpMessages(defaultConversation);
     System.out.println("^^^^ should be 11 msgs.");
 
     msgCount = storage.getMessageCount(defaultConversation);
@@ -100,19 +102,72 @@ public class AVIMMessageStorageTests {
   @Test
   public void testInsertDuplicatedMessages() {
     AVIMMessageStorage storage = AVIMMessageStorage.getInstance(defaultClient);
-    List<AVIMMessage> msgs = generateMessages(10);
+    List<AVIMMessage> msgs = generateMessages(10, true);
     storage.insertContinuousMessages(msgs, defaultConversation);
 
-    List<AVIMMessage> msg2 = generateMessages(5);
+    List<AVIMMessage> msg2 = generateMessages(5, true);
     List<AVIMMessage> msg3 = new ArrayList<>(6);
     msg3.add(msgs.get(9));
     msg3.addAll(msg2);
     storage.insertContinuousMessages(msg3, defaultConversation);
-//    storage.dumpMessages(defaultConversation);
+    storage.dumpMessages(defaultConversation);
     System.out.println("^^^^ should be 15 msgs.");
     long msgCount = storage.getMessageCount(defaultConversation);
     Assert.assertTrue(msgCount == 15);
 
     storage.deleteConversationData(defaultConversation);
+  }
+
+  @Test
+  public void testInsertLocalMessage() {
+    AVIMMessageStorage storage = AVIMMessageStorage.getInstance(defaultClient);
+    List<AVIMMessage> msgs = generateMessages(1, false);
+    AVIMMessage msg = msgs.get(0);
+    msg.setConversationId(defaultConversation);
+    msg.setFrom(defaultClient);
+    msg.generateUniqueToken();
+    msg.setTimestamp(System.currentTimeMillis());
+    boolean ret = storage.insertLocalMessage(msg);
+    Assert.assertTrue(ret);
+    storage.dumpMessages(defaultConversation);
+    long cnt = storage.getMessageCount(defaultConversation);
+    Assert.assertTrue(cnt == 1);
+  }
+
+  @Test
+  public void testInsertDuplicatedLocalMessage() {
+    AVIMMessageStorage storage = AVIMMessageStorage.getInstance(defaultClient);
+    List<AVIMMessage> msgs = generateMessages(1, false);
+    AVIMMessage msg = msgs.get(0);
+    msg.setConversationId(defaultConversation);
+    msg.setFrom(defaultClient);
+    msg.generateUniqueToken();
+    msg.setTimestamp(System.currentTimeMillis());
+    boolean ret = storage.insertLocalMessage(msg);
+    Assert.assertTrue(ret);
+    ret = storage.insertLocalMessage(msg);
+    Assert.assertTrue(ret);
+    storage.dumpMessages(defaultConversation);
+    long cnt = storage.getMessageCount(defaultConversation);
+    Assert.assertTrue(cnt == 1);
+  }
+  @Test
+  public void testDeleteLocalMessage() {
+    AVIMMessageStorage storage = AVIMMessageStorage.getInstance(defaultClient);
+    List<AVIMMessage> msgs = generateMessages(1, false);
+    AVIMMessage msg = msgs.get(0);
+    msg.setConversationId(defaultConversation);
+    msg.setFrom(defaultClient);
+    msg.generateUniqueToken();
+    msg.setTimestamp(System.currentTimeMillis());
+    boolean ret = storage.insertLocalMessage(msg);
+    Assert.assertTrue(ret);
+    storage.dumpMessages(defaultConversation);
+    long cnt = storage.getMessageCount(defaultConversation);
+    Assert.assertTrue(cnt == 1);
+    storage.removeLocalMessage(msg);
+    storage.dumpMessages(defaultConversation);
+    cnt = storage.getMessageCount(defaultConversation);
+    Assert.assertTrue(cnt == 0);
   }
 }

@@ -622,12 +622,15 @@ class AVIMMessageStorage {
     long readAt = cursor.getLong(cursor.getColumnIndex(COLUMN_MESSAGE_READAT));
     long updateAt = cursor.getLong(cursor.getColumnIndex(COLUMN_MESSAGE_UPDATEAT));
     byte[] payload = cursor.getBlob(cursor.getColumnIndex(COLUMN_PAYLOAD));
+    String uniqueToken = cursor.getString(cursor.getColumnIndex(COLUMN_DEDUPLICATED_TOKEN));
+
     String content = new String(payload);
     int status = cursor.getInt(cursor.getColumnIndex(COLUMN_STATUS));
 
     AVIMMessage message = new AVIMMessage(cid, from, timestamp, deliveredAt, readAt);
     message.setMessageId(mid);
     message.setContent(content);
+    message.setUniqueToken(uniqueToken);
     message.setMessageStatus(AVIMMessage.AVIMMessageStatus.getMessageStatus(status));
     message.setUpdateAt(updateAt);
     return AVIMMessageManager.parseTypedMessage(message);

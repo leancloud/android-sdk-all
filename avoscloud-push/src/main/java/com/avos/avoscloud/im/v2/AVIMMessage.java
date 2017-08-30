@@ -285,6 +285,10 @@ public class AVIMMessage implements Parcelable {
     }
   }
 
+  void setUniqueToken(String uniqueToken) {
+    this.uniqueToken = uniqueToken;
+  }
+
   protected String getUniqueToken() {
     return uniqueToken;
   }
