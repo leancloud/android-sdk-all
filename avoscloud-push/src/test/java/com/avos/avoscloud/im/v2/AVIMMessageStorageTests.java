@@ -170,4 +170,19 @@ public class AVIMMessageStorageTests {
     cnt = storage.getMessageCount(defaultConversation);
     Assert.assertTrue(cnt == 0);
   }
+  @Test
+  public void testDeleteNotexistedLocalMessage() {
+    AVIMMessageStorage storage = AVIMMessageStorage.getInstance(defaultClient);
+    List<AVIMMessage> msgs = generateMessages(1, false);
+    AVIMMessage msg = msgs.get(0);
+    msg.setConversationId(defaultConversation);
+    msg.setFrom(defaultClient);
+    msg.generateUniqueToken();
+    msg.setTimestamp(System.currentTimeMillis());
+    boolean ret = storage.removeLocalMessage(msg);
+    Assert.assertTrue(!ret);
+    storage.dumpMessages(defaultConversation);
+    long cnt = storage.getMessageCount(defaultConversation);
+    Assert.assertTrue(cnt == 0);
+  }
 }
