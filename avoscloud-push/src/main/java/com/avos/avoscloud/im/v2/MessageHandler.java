@@ -3,7 +3,7 @@ package com.avos.avoscloud.im.v2;
 import com.avos.avoscloud.AVIMEventHandler;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationCallback;
 
-abstract class MessageHandler<T extends AVIMMessage> extends AVIMEventHandler {
+public abstract class MessageHandler<T extends AVIMMessage> extends AVIMEventHandler {
   public abstract void onMessage(T message, AVIMConversation conversation, AVIMClient client);
 
   public abstract void onMessageReceipt(T message, AVIMConversation conversation, AVIMClient client);

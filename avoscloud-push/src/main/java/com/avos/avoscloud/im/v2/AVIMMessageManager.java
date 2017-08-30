@@ -19,9 +19,9 @@ import com.avos.avoscloud.im.v2.messages.AVIMVideoMessage;
 import java.lang.annotation.IncompleteAnnotationException;
 import java.lang.reflect.Method;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public class AVIMMessageManager {
   static SparseArray<Class<? extends AVIMTypedMessage>> messageTypesRepository =
@@ -85,7 +85,7 @@ public class AVIMMessageManager {
    */
   public static void registerMessageHandler(Class<? extends AVIMMessage> clazz,
       MessageHandler<?> handler) {
-    Set<MessageHandler> handlerSet = new HashSet<MessageHandler>();;
+    Set<MessageHandler> handlerSet = new CopyOnWriteArraySet<>();
 
     Set<MessageHandler> set = messageHandlerRepository.putIfAbsent(clazz, handlerSet);
     if (set != null) {
