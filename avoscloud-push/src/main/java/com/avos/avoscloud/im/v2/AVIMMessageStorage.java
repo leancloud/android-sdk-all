@@ -108,7 +108,7 @@ class AVIMMessageStorage {
     static final String ORDER_BY_TIMESTAMP_ASC_THEN_MESSAGE_ID_ASC =
         COLUMN_TIMESTAMP + " , " + COLUMN_MESSAGE_ID;
 
-    static final String DELETE_LOCAL_MESSAGE = COLUMN_CONVERSATION_ID + " = ? and " + COLUMN_MESSAGE_ID + " = ? and"
+    static final String DELETE_LOCAL_MESSAGE = COLUMN_CONVERSATION_ID + " = ? and " + COLUMN_MESSAGE_ID + " = ? and "
         + COLUMN_STATUS + " = ? and " + COLUMN_DEDUPLICATED_TOKEN + " = ? ";
   }
 
