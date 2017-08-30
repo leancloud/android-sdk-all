@@ -160,7 +160,8 @@ public class AVIMConversation {
   public void sendMessage(final AVIMMessage message, final AVIMMessageOption messageOption, final AVIMConversationCallback callback) {
     message.setConversationId(conversationId);
     message.setFrom(client.clientId);
-    message.genUniqueToken();
+    message.generateUniqueToken();
+    message.setTimestamp(System.currentTimeMillis());
     if (!AVUtils.isConnected(AVOSCloud.applicationContext)) {
       message.setMessageStatus(AVIMMessage.AVIMMessageStatus.AVIMMessageStatusFailed);
       if (callback != null) {
@@ -169,7 +170,6 @@ public class AVIMConversation {
       return;
     }
 
-    message.setTimestamp(System.currentTimeMillis());
     message.setMessageStatus(AVIMMessage.AVIMMessageStatus.AVIMMessageStatusSending);
     if (AVIMFileMessage.class.isAssignableFrom(message.getClass())) {
       AVIMFileMessageAccessor.upload((AVIMFileMessage) message, new SaveCallback() {
@@ -229,6 +229,26 @@ public class AVIMConversation {
     PushServiceParcel parcel = new PushServiceParcel();
     parcel.setRecallMessage(message);
     sendParcelToPushService(parcel, AVIMOperation.CONVERSATION_RECALL_MESSAGE, callback);
+  }
+
+  /**
+   * save local message which failed to send to LeanCloud server.
+   * Notice: this operation perhaps to block the main thread because that database operation is executing.
+   *
+   * @param message the message need to be saved to local.
+   */
+  public void addToLocalCache(AVIMMessage message) {
+    this.storage.insertLocalMessage(message);
+  }
+
+  /**
+   * remove local message from cache.
+   * Notice: this operation perhaps to block the main thread because that database operation is executing.
+   *
+   * @param message
+   */
+  public void removeFromLocalCache(AVIMMessage message) {
+    this.storage.removeLocalMessage(message);
   }
 
   /**
@@ -423,14 +443,15 @@ public class AVIMConversation {
               String startMsgId = msgId;
               long startTS = timestamp;
               int requestLimit = limit;
-              if (indicatorMessage != null && isIndicateMessageBreakPoint) {
-                AVIMMessage nextMessage = storage.getNextMessage(indicatorMessage);
-                if (nextMessage != null) {
-                  startMsgId = nextMessage.getMessageId();
-                  startTS = nextMessage.getTimestamp();
-                  requestLimit = limit + 1;
-                }
-              }
+              // comment by jwfing[2017/8/25]: it is not necessary to find out newer message, isn't it?
+//              if (indicatorMessage != null && isIndicateMessageBreakPoint) {
+//                AVIMMessage nextMessage = storage.getNextMessage(indicatorMessage);
+//                if (nextMessage != null) {
+//                  startMsgId = nextMessage.getMessageId();
+//                  startTS = nextMessage.getTimestamp();
+//                  requestLimit = limit + 1;
+//                }
+//              }
               queryMessagesFromServer(startMsgId, startTS, requestLimit, null, 0,
                   new AVIMMessagesQueryCallback() {
                     @Override
@@ -438,10 +459,15 @@ public class AVIMConversation {
                       if (e != null) {
                         callback.internalDone(e);
                       } else {
-                        if (messages == null) {
-                          messages = new LinkedList<AVIMMessage>();
+                        List<AVIMMessage> cachedMsgs = new LinkedList<AVIMMessage>();
+                        if (indicatorMessage != null) {
+                          // add indicatorMessage to remove breakpoint.
+                          cachedMsgs.add(indicatorMessage);
                         }
-                        processContinuousMessages(messages);
+                        if (messages != null) {
+                          cachedMsgs.addAll(messages);
+                        }
+                        processContinuousMessages(cachedMsgs);
                         queryMessagesFromCache(msgId, timestamp, limit, callback);
                       }
                     }
@@ -520,18 +546,20 @@ public class AVIMConversation {
     }
     final boolean connected = AVUtils.isConnected(AVOSCloud.applicationContext);
     // 如果只是最后一个消息是breakPoint，那还走啥网络
-    if (!connected || continuousMessages.size() >= limit - 1) {
-      Collections.sort(cachedMessages, messageComparator);
-      callback.internalDone(cachedMessages, null);
+    if (!connected || continuousMessages.size() >= limit/* - 1*/) {
+      // in case of wifi is invalid, and thre query list contain breakpoint, the result is error.
+      Collections.sort(continuousMessages, messageComparator);
+      callback.internalDone(continuousMessages, null);
     } else {
       final int restCount;
       final AVIMMessage startMessage;
-      if (firstBreakPointIndex > 0 && firstBreakPointIndex < cachedMessages.size()) {
-        // 这个地方是指这些缓存中间有breakPoint的时候
-        restCount = limit - continuousMessages.size() + 1;
-        startMessage = cachedMessages.get(firstBreakPointIndex - 1);
-        continuousMessages.add(startMessage);
-      } else if (!continuousMessages.isEmpty()) {
+//      if (firstBreakPointIndex > 0 && firstBreakPointIndex < cachedMessages.size()) {
+//        // 这个地方是指这些缓存中间有breakPoint的时候
+//        restCount = limit - continuousMessages.size() + 1;
+//        startMessage = cachedMessages.get(firstBreakPointIndex - 1);
+//        continuousMessages.add(startMessage);
+//      } else
+      if (!continuousMessages.isEmpty()) {
         // 这里是缓存里面没有breakPoint，但是limit不够的情况下
         restCount = limit - continuousMessages.size();
         startMessage = continuousMessages.get(continuousMessages.size() - 1);
@@ -545,7 +573,12 @@ public class AVIMConversation {
             @Override
             public void done(List<AVIMMessage> serverMessages, AVIMException e) {
               if (e != null) {
-                callback.internalDone(e);
+                // 不管如何，先返回缓存里面已有的有效数据
+                if (continuousMessages.size() > 0) {
+                  callback.internalDone(continuousMessages, null);
+                } else {
+                  callback.internalDone(e);
+                }
               } else {
                 if (serverMessages == null) {
                   serverMessages = new ArrayList<AVIMMessage>();
@@ -1229,13 +1262,13 @@ public class AVIMConversation {
                 List<AVIMMessage> historyMessages =
                     intent.getParcelableArrayListExtra(Conversation.callbackHistoryMessages);
 
-                setLastReadAt(intent.getLongExtra(Conversation.callbackReadAt, 0L), false);
-                setLastDeliveredAt(intent.getLongExtra(Conversation.callbackDeliveredAt, 0L), false);
-                storage.updateConversationTimes(AVIMConversation.this);
-
                 if (error != null) {
-                  callback.internalDone(null, AVIMException.wrapperAVException(error));
+                  // modify by jwfing[2017/8/23] not return exception to external caller.
+                  callback.internalDone(null, new AVIMException(AVIMException.TIMEOUT, AVException.CONNECTION_FAILED, error.getMessage()));
                 } else {
+                  setLastReadAt(intent.getLongExtra(Conversation.callbackReadAt, 0L), false);
+                  setLastDeliveredAt(intent.getLongExtra(Conversation.callbackDeliveredAt, 0L), false);
+                  storage.updateConversationTimes(AVIMConversation.this);
                   if (historyMessages == null) {
                     historyMessages = Collections.EMPTY_LIST;
                   }

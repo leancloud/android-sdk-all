@@ -23,7 +23,7 @@ public class AVLiveQueryTest {
 
   @Before
   public void initAvos() {
-    AVOSCloud.initialize(RuntimeEnvironment.application, TestConfig.TEST_LIVEQUERY_APP_ID, TestConfig.TEST_LIVEQUERY_APP_KEY);
+    AVOSCloud.initialize(RuntimeEnvironment.application, PushTestConfig.TEST_LIVEQUERY_APP_ID, PushTestConfig.TEST_LIVEQUERY_APP_KEY);
   }
 
   @Ignore

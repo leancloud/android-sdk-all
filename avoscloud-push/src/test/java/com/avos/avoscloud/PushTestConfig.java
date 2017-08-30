@@ -4,7 +4,7 @@ package com.avos.avoscloud;
  * Created by wli on 2017/4/27.
  */
 
-public class TestConfig {
+public class PushTestConfig {
 
   public static String TEST_APP_ID = "683jigxkqb10jrirelvd9vcn9ywbq2o436lfz1kngsvigm27";
   public static String TEST_APP_KEY = "ualzl8f8pxmryous77m3gf2z0dyhrhk6xdb7zkiu6flc0jxy";

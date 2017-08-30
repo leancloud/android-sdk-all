@@ -773,7 +773,7 @@ public class AVUtils {
     return computeMD5(hash);
   }
 
-  static Random random = new Random();
+  static Random random = new Random(System.currentTimeMillis());
 
   public static String getRandomString(int length) {
     String letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

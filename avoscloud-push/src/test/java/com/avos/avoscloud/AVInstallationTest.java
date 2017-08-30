@@ -21,7 +21,7 @@ public class AVInstallationTest {
 
   @Before
   public void initAvos() {
-    AVOSCloud.initialize(RuntimeEnvironment.application, TestConfig.TEST_APP_ID, TestConfig.TEST_APP_KEY);
+    AVOSCloud.initialize(RuntimeEnvironment.application, PushTestConfig.TEST_APP_ID, PushTestConfig.TEST_APP_KEY);
   }
 
   @Test

@@ -14,6 +14,7 @@ import com.alibaba.fastjson.JSON;
 import com.avos.avoscloud.AVOSCloud;
 import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.LogUtil;
+import com.avos.avoscloud.im.v2.AVIMMessage.AVIMMessageStatus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,6 +67,23 @@ class AVIMMessageStorage {
   static final String TEXT = "TEXT";
   static final String VARCHAR32 = "VARCHAR(32)";
 
+  /**
+   * table: messages
+   * schema:
+   * |--------------------------------------------------------------------------------------------------------------------------------|
+   * |varchar    |numberic  |varchar         |text         |numberic          |number |number    |blob    |int    |int        |varchar|
+   * |message_id |timestamp |conversation_id |from_peer_id |receipt_timestamp |readAt |updatedAt |payload |status |breakpoint |dtoken |
+   * |not null   |          |not null        |not null     |                  |       |          |        |       |           |       |
+   * |   *       |          |    *           |   <-- primary key                                                                      |
+   * |--------------------------------------------------------------------------------------------------------------------------------|
+   *
+   * table: conversations
+   * schema:
+   * |---------------------------------------------------------------------------------------------------------------------------------------|
+   * |expireAt |attr |instanceData |updatedAt |createdAt |creator |members |lm |last_message |isTransient |unread_count |readAt |deliveredAt |
+   * |---------------------------------------------------------------------------------------------------------------------------------------|
+   *
+   */
   static class SQL {
     static final String TIMESTAMP_MORE_OR_TIMESTAMP_EQUAL_BUT_MESSAGE_ID_MORE_AND_CONVERSATION_ID =
         " ( " +
@@ -89,6 +107,9 @@ class AVIMMessageStorage {
 
     static final String ORDER_BY_TIMESTAMP_ASC_THEN_MESSAGE_ID_ASC =
         COLUMN_TIMESTAMP + " , " + COLUMN_MESSAGE_ID;
+
+    static final String DELETE_LOCAL_MESSAGE = COLUMN_CONVERSATION_ID + " = ? and " + COLUMN_MESSAGE_ID + " = ? and "
+        + COLUMN_STATUS + " = ? and " + COLUMN_DEDUPLICATED_TOKEN + " = ? ";
   }
 
   private DBHelper dbHelper;
@@ -246,6 +267,8 @@ class AVIMMessageStorage {
 
   private AVIMMessageStorage(Context context, String clientId) {
     dbHelper = new DBHelper(context, clientId);
+    
+    // FIXME: 2017/8/22 it is not need to invoke onUpgrade manually.
     dbHelper.onUpgrade(dbHelper.getWritableDatabase(), dbHelper.getWritableDatabase().getVersion(),
         DB_VERSION);
     this.clientId = clientId;
@@ -275,34 +298,66 @@ class AVIMMessageStorage {
   }
 
   /*
-   * 这个代码是用于插入由本地发送的消息，由于存在deduplicatedMessage 所以有些特殊，需要做额外的token检查
+   * 这个代码是用于插入由本地发送的消息，由于存在deduplicated Message 所以有些特殊，需要做额外的token检查
    */
-  public void insertLocalMessage(AVIMMessage message) {
-    SQLiteDatabase db = dbHelper.getReadableDatabase();
-    Cursor cursor = db.query(MESSAGE_TABLE, new String[] {},
-        getWhereClause(COLUMN_CONVERSATION_ID, COLUMN_DEDUPLICATED_TOKEN),
-        new String[] {message.conversationId, message.uniqueToken}, null, null, null);
-    boolean contained = cursor.getCount() > 0;
-    cursor.close();
-    // 如果已经存在过了，咱们就别存了吧
-    if (contained) {
-      return;
-    } else {
-      db = dbHelper.getWritableDatabase();
+  public synchronized boolean insertLocalMessage(AVIMMessage message) {
+    if (null == message
+        || !AVUtils.isBlankString(message.getMessageId())
+        || AVUtils.isBlankString(message.conversationId)
+        || AVUtils.isBlankString(message.uniqueToken)) {
+      return false;
+    }
+
+    String internalMessageId = generateInternalMessageId(message.uniqueToken);
+    try {
+      SQLiteDatabase db = dbHelper.getWritableDatabase();
       ContentValues values = new ContentValues();
-      values.put(COLUMN_CONVERSATION_ID, message.getConversationId());
-      values.put(COLUMN_MESSAGE_ID, message.getMessageId());
+      values.put(COLUMN_CONVERSATION_ID, message.conversationId);
+      values.put(COLUMN_MESSAGE_ID, internalMessageId);
       values.put(COLUMN_TIMESTAMP, message.getTimestamp());
       values.put(COLUMN_FROM_PEER_ID, message.getFrom());
       values.put(COLUMN_PAYLOAD, message.getContent().getBytes());
       values.put(COLUMN_MESSAGE_DELIVEREDAT, message.getDeliveredAt());
       values.put(COLUMN_MESSAGE_READAT, message.getReadAt());
       values.put(COLUMN_MESSAGE_UPDATEAT, message.getUpdateAt());
-      values.put(COLUMN_STATUS, message.getMessageStatus().getStatusCode());
+      values.put(COLUMN_STATUS, AVIMMessageStatus.AVIMMessageStatusFailed.getStatusCode());
       values.put(COLUMN_BREAKPOINT, 0);
       values.put(COLUMN_DEDUPLICATED_TOKEN, message.uniqueToken);
-      db.insertWithOnConflict(MESSAGE_TABLE, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+      long ret = db.insertWithOnConflict(MESSAGE_TABLE, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+      return ret != -1;
+    } catch (Exception ex) {
+      return false;
     }
+  }
+
+  /**
+   * remove local message.
+   *
+   * @param message
+   */
+  public synchronized boolean removeLocalMessage(AVIMMessage message) {
+    if (null == message
+        || AVUtils.isBlankString(message.conversationId)
+        || AVUtils.isBlankString(message.uniqueToken)) {
+      return false;
+    }
+    String internalMessageId = generateInternalMessageId(message.uniqueToken);
+    String status = String.valueOf(AVIMMessageStatus.AVIMMessageStatusFailed.getStatusCode());
+    try {
+      SQLiteDatabase db = dbHelper.getWritableDatabase();
+      int ret = db.delete(MESSAGE_TABLE, SQL.DELETE_LOCAL_MESSAGE,
+          new String[]{message.conversationId, internalMessageId, status, message.uniqueToken});
+      return ret > 0;
+    } catch (Exception ex) {
+      return false;
+    }
+  }
+
+  private String generateInternalMessageId(String uniqueToken) {
+    if (AVUtils.isBlankString(uniqueToken)) {
+      return "";
+    }
+    return uniqueToken;
   }
 
   private synchronized int insertMessages(List<AVIMMessage> messages, boolean breakpoint) {
@@ -486,6 +541,22 @@ class AVIMMessageStorage {
     }
   }
 
+  void dumpMessages(String conversationId) {
+    long curTs = System.currentTimeMillis();
+    SQLiteDatabase db = dbHelper.getReadableDatabase();
+    String condition = SQL.TIMESTAMP_LESS_AND_CONVERSATION_ID;
+    String[] conditionArgs = new String[]{Long.toString(curTs), conversationId};
+    Cursor cursor = db.query(MESSAGE_TABLE, null, condition, conditionArgs, null, null, SQL.ORDER_BY_TIMESTAMP_DESC_THEN_MESSAGE_ID_DESC);
+    if (cursor.moveToFirst()) {
+      while (!cursor.isAfterLast()) {
+        AVIMMessage message = createMessageFromCursor(cursor);
+        boolean breakpoint = cursor.getInt(cursor.getColumnIndex(COLUMN_BREAKPOINT)) != 0;
+        System.out.println("msg: {" + message.toString() + "}, breakpoint=" + breakpoint);
+        cursor.moveToNext();
+      }
+    }
+  }
+
   /**
    * 根据条件查询本地缓存消息，消息有可能不连续，是否连续会通过 callback 返回
    *
@@ -551,12 +622,15 @@ class AVIMMessageStorage {
     long readAt = cursor.getLong(cursor.getColumnIndex(COLUMN_MESSAGE_READAT));
     long updateAt = cursor.getLong(cursor.getColumnIndex(COLUMN_MESSAGE_UPDATEAT));
     byte[] payload = cursor.getBlob(cursor.getColumnIndex(COLUMN_PAYLOAD));
+    String uniqueToken = cursor.getString(cursor.getColumnIndex(COLUMN_DEDUPLICATED_TOKEN));
+
     String content = new String(payload);
     int status = cursor.getInt(cursor.getColumnIndex(COLUMN_STATUS));
 
     AVIMMessage message = new AVIMMessage(cid, from, timestamp, deliveredAt, readAt);
     message.setMessageId(mid);
     message.setContent(content);
+    message.setUniqueToken(uniqueToken);
     message.setMessageStatus(AVIMMessage.AVIMMessageStatus.getMessageStatus(status));
     message.setUpdateAt(updateAt);
     return AVIMMessageManager.parseTypedMessage(message);

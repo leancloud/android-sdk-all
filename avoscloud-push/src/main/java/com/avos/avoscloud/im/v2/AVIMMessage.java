@@ -279,10 +279,14 @@ public class AVIMMessage implements Parcelable {
 
   }
 
-  protected synchronized void genUniqueToken() {
+  protected synchronized void generateUniqueToken() {
     if (AVUtils.isBlankString(uniqueToken)) {
       uniqueToken = UUID.randomUUID().toString();
     }
+  }
+
+  void setUniqueToken(String uniqueToken) {
+    this.uniqueToken = uniqueToken;
   }
 
   protected String getUniqueToken() {
