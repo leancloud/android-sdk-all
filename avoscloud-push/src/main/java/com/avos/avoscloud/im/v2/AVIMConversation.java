@@ -160,7 +160,8 @@ public class AVIMConversation {
   public void sendMessage(final AVIMMessage message, final AVIMMessageOption messageOption, final AVIMConversationCallback callback) {
     message.setConversationId(conversationId);
     message.setFrom(client.clientId);
-    message.genUniqueToken();
+    message.generateUniqueToken();
+    message.setTimestamp(System.currentTimeMillis());
     if (!AVUtils.isConnected(AVOSCloud.applicationContext)) {
       message.setMessageStatus(AVIMMessage.AVIMMessageStatus.AVIMMessageStatusFailed);
       if (callback != null) {
@@ -169,7 +170,6 @@ public class AVIMConversation {
       return;
     }
 
-    message.setTimestamp(System.currentTimeMillis());
     message.setMessageStatus(AVIMMessage.AVIMMessageStatus.AVIMMessageStatusSending);
     if (AVIMFileMessage.class.isAssignableFrom(message.getClass())) {
       AVIMFileMessageAccessor.upload((AVIMFileMessage) message, new SaveCallback() {
@@ -233,22 +233,22 @@ public class AVIMConversation {
 
   /**
    * save local message which failed to send to LeanCloud server.
+   * Notice: this operation perhaps to block the main thread because that database operation is executing.
    *
    * @param message the message need to be saved to local.
    */
   public void addToLocalCache(AVIMMessage message) {
-    // FIXME: 2017/8/30. not fully implement yet.
     this.storage.insertLocalMessage(message);
   }
 
   /**
    * remove local message from cache.
+   * Notice: this operation perhaps to block the main thread because that database operation is executing.
    *
    * @param message
    */
   public void removeFromLocalCache(AVIMMessage message) {
-    // FIXME: 2017/8/30 not fully implement yet.
-    this.storage.deleteMessages(Arrays.asList(message), message.conversationId);
+    this.storage.removeLocalMessage(message);
   }
 
   /**
