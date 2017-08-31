@@ -182,7 +182,7 @@ class AVPushConnectionManager implements AVPushWebSocketClient.AVSocketListener 
       }
 
       if (AVOSCloud.isDebugLogEnabled()) {
-        LogUtil.avlog.d("About to connect to server.");
+        LogUtil.avlog.d("About to connect to server: " + pushServer);
       }
       socketClient.connect();
     }

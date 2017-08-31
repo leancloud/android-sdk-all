@@ -13,6 +13,7 @@ import com.avos.avoscloud.AppRouterManager;
 import com.avos.avoscloud.GenericObjectCallback;
 import com.avos.avoscloud.GetHttpResponseHandler;
 import com.avos.avoscloud.LogUtil;
+import com.avos.avoscloud.im.v2.AVIMOptions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -113,7 +114,10 @@ public class AVPushRouter {
       return;
     }
 
-    if (!AVUtils.isConnected(this.context)) {
+    String specifiedServer = AVIMOptions.getGlobalOptions().getRTMServer();
+    if (!AVUtils.isBlankString(specifiedServer)) {
+      listener.onServerAddress(specifiedServer);
+    } else if (!AVUtils.isConnected(this.context)) {
       // 无网络时只能返回缓存数据
       Map<String, Object> pushServerCache = getPushServerFromCache();
       if (pushServerCache != null) {
