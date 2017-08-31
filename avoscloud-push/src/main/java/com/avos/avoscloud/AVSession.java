@@ -123,8 +123,7 @@ public class AVSession {
         @Override
         public void onSignatureReady(Signature sig, AVException e) {
           if (e == null) {
-
-              conversationOperationCache.offer(Operation.getOperation(
+            conversationOperationCache.offer(Operation.getOperation(
                   AVIMOperation.CLIENT_OPEN.getCode(), selfId, null, requestId));
             SessionControlPacket scp = SessionControlPacket.genSessionCommand(selfId,
               null, SessionControlPacket.SessionControlOp.OPEN,
