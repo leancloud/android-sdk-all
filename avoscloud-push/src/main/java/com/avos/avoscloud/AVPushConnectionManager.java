@@ -41,6 +41,7 @@ class AVPushConnectionManager implements AVPushWebSocketClient.AVSocketListener 
   private static String liveQuerySubscribeId = "";
 
   private AVPushConnectionManager(Context ctx) {
+    LogUtil.log.d("begin to invoke AVPushConnectionManager(Context)");
     router = new AVPushRouter(ctx, new AVPushRouter.RouterResponseListener() {
       @Override
       public void onServerAddress(String address) {
@@ -67,6 +68,7 @@ class AVPushConnectionManager implements AVPushWebSocketClient.AVSocketListener 
         }
       }
     }
+    LogUtil.log.d("end of AVPushConnectionManager(Context)");
   }
 
   private void initSessionsIfExists() {
@@ -170,6 +172,7 @@ class AVPushConnectionManager implements AVPushWebSocketClient.AVSocketListener 
     if (socketClient == null || socketClient.isClosed()) {
       // 由于需要链接到新的server address上,原来的client就要被抛弃了,抛弃前需要取消自动重连的任务
       if (socketClient != null) {
+        LogUtil.log.d("destroy socketClient first which is closed.");
         socketClient.destroy();
       }
 
@@ -181,10 +184,10 @@ class AVPushConnectionManager implements AVPushWebSocketClient.AVSocketListener 
             new AVPushWebSocketClient(URI.create(pushServer), this, "lc.protobuf2.1", true);
       }
 
-      if (AVOSCloud.isDebugLogEnabled()) {
-        LogUtil.avlog.d("About to connect to server: " + pushServer);
-      }
       socketClient.connect();
+      if (AVOSCloud.isDebugLogEnabled()) {
+        LogUtil.avlog.d("connect to server: " + pushServer);
+      }
     }
   }
 
