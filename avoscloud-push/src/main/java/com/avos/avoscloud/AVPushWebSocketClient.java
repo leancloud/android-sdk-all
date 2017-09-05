@@ -16,16 +16,23 @@ import com.avos.avospush.session.CommandPacket;
 import java.net.Socket;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.net.SocketFactory;
+import javax.net.ssl.SNIHostName;
+import javax.net.ssl.SNIServerName;
+import javax.net.ssl.SSLParameters;
+import javax.net.ssl.SSLSocket;
 
 /**
  * Created by lbt05 on 5/20/16.
  */
 public class AVPushWebSocketClient extends WebSocketClient {
   private static final String HEADER_SUB_PROTOCOL = "Sec-WebSocket-Protocol";
+  private static final String HEADER_SNI_HOST = "Host";
   private static final int PING_TIMEOUT_CODE = 3000;
 
   private HeartBeatPolicy heartBeatPolicy;
@@ -49,8 +56,8 @@ public class AVPushWebSocketClient extends WebSocketClient {
         put(HEADER_SUB_PROTOCOL, subProtocol);
       }
     }, 0);
-    if (AVOSCloud.showInternalDebugLog()) {
-      LogUtil.avlog.d("trying to connect " + serverURI);
+    if (AVOSCloud.isDebugLogEnabled()) {
+      LogUtil.avlog.d("trying to connect " + serverURI + ", subProtocol=" + subProtocol);
     }
     initHeartBeatPolicy();
     if (secEnabled) {
@@ -87,7 +94,21 @@ public class AVPushWebSocketClient extends WebSocketClient {
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             socketFactory.setUseSessionTickets(socket, true);
           }
-          this.setSocket(socket);
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && socket instanceof SSLSocket) {
+            try {
+              SNIHostName serverName = new SNIHostName(getURI().getHost());
+              List<SNIServerName> serverNames = new ArrayList<>(1);
+              serverNames.add(serverName);
+
+              SSLParameters params = ((SSLSocket)socket).getSSLParameters();
+              params.setServerNames(serverNames);
+              ((SSLSocket)socket).setSSLParameters(params);
+            } catch (Exception ex) {
+              ex.printStackTrace();
+            }
+          }
+
+          setSocket(socket);
 
         } else {
           SocketFactory socketFactory = SocketFactory.getDefault();
@@ -108,6 +129,7 @@ public class AVPushWebSocketClient extends WebSocketClient {
       listener.processConnectionStatus(null);
       listener.processSessionsStatus(false);
     }
+    LogUtil.avlog.d("onOpen()");
   }
 
   @Override
@@ -129,7 +151,7 @@ public class AVPushWebSocketClient extends WebSocketClient {
     if (listener != null) {
       listener.processConnectionStatus(new AVException(code, reason));
     }
-    LogUtil.avlog.d("local disconnection:" + code + "  " + reason + " :" + remote);
+    LogUtil.avlog.d("onClose(). local disconnection:" + code + "  " + reason + " :" + remote);
     switch (code) {
       case -1:
         LogUtil.avlog.d("connection refused");
