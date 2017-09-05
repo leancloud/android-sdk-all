@@ -11,13 +11,44 @@ public class ConversationMessageQueryPacket extends PeerBasedCommandPacket {
     setCmd("logs");
   }
 
-  String msgId;
-  int limit;
-  long timestamp;
   String conversationId;
   int requestId;
+
+  String msgId;
+  long timestamp;
+
   String toMsgId;
   long toTimestamp;
+
+  int limit;
+
+  boolean sclosed;
+  boolean tclosed;
+  int direct;
+
+  public boolean isSclosed() {
+    return sclosed;
+  }
+
+  public void setSclosed(boolean sclosed) {
+    this.sclosed = sclosed;
+  }
+
+  public boolean isTclosed() {
+    return tclosed;
+  }
+
+  public void setTclosed(boolean tclosed) {
+    this.tclosed = tclosed;
+  }
+
+  public int getDirect() {
+    return direct;
+  }
+
+  public void setDirect(int direct) {
+    this.direct = direct;
+  }
 
   public String getConversationId() {
     return conversationId;
@@ -96,6 +127,7 @@ public class ConversationMessageQueryPacket extends PeerBasedCommandPacket {
     if (timestamp > 0) {
       builder.setT(timestamp);
     }
+    builder.setTIncluded(sclosed);
 
     if (!AVUtils.isBlankString(toMsgId)) {
       builder.setTmid(toMsgId);
@@ -104,23 +136,34 @@ public class ConversationMessageQueryPacket extends PeerBasedCommandPacket {
     if (toTimestamp > 0) {
       builder.setTt(toTimestamp);
     }
+    builder.setTtIncluded(tclosed);
+
+    if (direct == 0) {
+      builder.setDirection(Messages.LogsCommand.QueryDirection.OLD);
+    } else {
+      builder.setDirection(Messages.LogsCommand.QueryDirection.NEW);
+    }
     return builder.build();
   }
 
-  public static ConversationMessageQueryPacket getConversationMessageQueryPacket(String peerId,
-      String conversationId, String msgId,
-      long timestamp, int limit, String toMsgId, long toTimestamp, int requestId) {
+  public static ConversationMessageQueryPacket getConversationMessageQueryPacket(String peerId, String conversationId,
+                                                                                 String msgId, long timestamp, boolean sclosed,
+                                                                                 String toMsgId, long toTimestamp, boolean tclosed,
+                                                                                 int direct, int limit, int requestId) {
     ConversationMessageQueryPacket cqp = new ConversationMessageQueryPacket();
     cqp.setPeerId(peerId);
 
     cqp.setConversationId(conversationId);
     cqp.setMsgId(msgId);
     cqp.setLimit(limit);
+    cqp.setDirect(direct);
     cqp.setTimestamp(timestamp);
+    cqp.setSclosed(sclosed);
     cqp.setRequestId(requestId);
 
     cqp.setToMsgId(toMsgId);
     cqp.setToTimestamp(toTimestamp);
+    cqp.setTclosed(tclosed);
 
     return cqp;
   }

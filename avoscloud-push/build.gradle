@@ -41,7 +41,7 @@ android.libraryVariants.all { variant ->
 dependencies {
     compile project(':avoscloud-sdk')
     compile 'cn.leancloud.android:Java-WebSocket:1.3.2-leancloud'
-    compile 'com.google.protobuf:protobuf-java:2.6.1'
+    compile 'com.google.protobuf:protobuf-java:3.4.0'
     compile 'com.android.support:support-v4:18.+'
 
     testCompile 'junit:junit:4.12'
