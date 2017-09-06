@@ -17,10 +17,10 @@ import java.util.Map;
  * library.
  */
 public class AVOSCloud {
-  public static Context applicationContext;
-  public static String applicationId;
-  public static String clientKey;
-  protected static Handler handler;
+  public static Context applicationContext = null;
+  public static String applicationId = null;
+  public static String clientKey = null;
+  protected static Handler handler = null;
 
   public static final int LOG_LEVEL_VERBOSE = 1 << 1;
   public static final int LOG_LEVEL_DEBUG = 1 << 2;
@@ -140,6 +140,12 @@ public class AVOSCloud {
     if (handler == null && !AVUtils.isMainThread()) {
       throw new IllegalStateException("Please call AVOSCloud.initialize in main thread.");
     }
+    if (null == context || AVUtils.isBlankString(applicationId) || AVUtils.isBlankString(clientKey)) {
+      throw new IllegalArgumentException("Parameter(context or applicationId or clientKey) is illegal.");
+    }
+    if (null != AVOSCloud.applicationContext) {
+      throw new IllegalStateException("Can't initialize more than once.");
+    }
     AVOSCloud.applicationId = applicationId;
     AVOSCloud.clientKey = clientKey;
     AVOSCloud.applicationContext = context;
@@ -165,6 +171,13 @@ public class AVOSCloud {
     if (handler == null && !AVUtils.isMainThread()) {
       throw new IllegalStateException("Please call AVOSCloud.initialize in main thread.");
     }
+    if (null == context || AVUtils.isBlankString(applicationId) || AVUtils.isBlankString(clientKey)) {
+      throw new IllegalArgumentException("Parameter(context or applicationId or clientKey) is illegal.");
+    }
+    if (null != AVOSCloud.applicationContext) {
+      throw new IllegalStateException("Can't initialize more than once.");
+    }
+
     AVOSCloud.applicationId = applicationId;
     AVOSCloud.clientKey = clientKey;
     AVOSCloud.applicationContext = context;
