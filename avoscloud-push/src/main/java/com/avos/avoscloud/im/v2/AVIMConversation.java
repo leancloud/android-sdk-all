@@ -292,14 +292,33 @@ public class AVIMConversation {
 
   private void queryMessagesFromServer(String msgId, long timestamp, int limit,
       String toMsgId, long toTimestamp, AVIMMessagesQueryCallback callback) {
+    queryMessagesFromServer(msgId, timestamp, false, toMsgId, toTimestamp, false,
+        AVIMMessageQueryDirection.AVIMMessageQueryDirectionFromNewToOld, limit, callback);
+//    Map<String, Object> params = new HashMap<String, Object>();
+//    params.put(Conversation.PARAM_MESSAGE_QUERY_LIMIT, limit);
+//    params.put(Conversation.PARAM_MESSAGE_QUERY_MSGID, msgId);
+//    params.put(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP, timestamp);
+//    params.put(Conversation.PARAM_MESSAGE_QUERY_TO_MSGID, toMsgId);
+//    params.put(Conversation.PARAM_MESSAGE_QUERY_TO_TIMESTAMP, toTimestamp);
+//    sendCMDToPushService(JSON.toJSONString(params),
+//        AVIMOperation.CONVERSATION_MESSAGE_QUERY, callback);
+  }
+
+  private void queryMessagesFromServer(String msgId, long timestamp, boolean startClosed,
+                                       String toMsgId, long toTimestamp, boolean toClosed,
+                                       AVIMMessageQueryDirection direction, int limit,
+                                       AVIMMessagesQueryCallback cb) {
     Map<String, Object> params = new HashMap<String, Object>();
-    params.put(Conversation.PARAM_MESSAGE_QUERY_LIMIT, limit);
     params.put(Conversation.PARAM_MESSAGE_QUERY_MSGID, msgId);
     params.put(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP, timestamp);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_STARTCLOSED, startClosed);
     params.put(Conversation.PARAM_MESSAGE_QUERY_TO_MSGID, toMsgId);
     params.put(Conversation.PARAM_MESSAGE_QUERY_TO_TIMESTAMP, toTimestamp);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_TOCLOSED, toClosed);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_DIRECT, direction.getCode());
+    params.put(Conversation.PARAM_MESSAGE_QUERY_LIMIT, limit);
     sendCMDToPushService(JSON.toJSONString(params),
-        AVIMOperation.CONVERSATION_MESSAGE_QUERY, callback);
+        AVIMOperation.CONVERSATION_MESSAGE_QUERY, cb);
   }
 
   private void queryMessagesFromCache(String msgId, long timestamp, int limit,
@@ -485,6 +504,34 @@ public class AVIMConversation {
             }
           }
         });
+  }
+
+  public void queryMessages(final AVIMMessageInterval interval, AVIMMessageQueryDirection direction, final int limit,
+                            final AVIMMessagesQueryCallback callback) {
+    if (null == interval || limit < 0) {
+      if (null != callback) {
+        callback.internalDone(null,
+            new AVException(new IllegalArgumentException("interval must not null, or limit must great than 0.")));
+      }
+      return;
+    }
+    String mid = null;
+    long ts = 0;
+    boolean startClosed = false;
+    String tmid = null;
+    long tts = 0;
+    boolean endClosed = false;
+    if (null != interval.startIntervalBound) {
+      mid = interval.startIntervalBound.messageId;
+      ts = interval.startIntervalBound.timestamp;
+      startClosed = interval.startIntervalBound.closed;
+    }
+    if (null != interval.endIntervalBound) {
+      tmid = interval.endIntervalBound.messageId;
+      tts = interval.endIntervalBound.timestamp;
+      endClosed = interval.endIntervalBound.closed;
+    }
+    queryMessagesFromServer(mid, ts, startClosed, tmid, tts, endClosed, direction, limit, callback);
   }
 
   /**

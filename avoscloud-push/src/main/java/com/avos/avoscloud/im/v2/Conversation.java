@@ -14,10 +14,13 @@ public interface Conversation {
   String PARAM_ONLINE_CLIENTS = "client.oneline";
 
   String PARAM_MESSAGE_QUERY_LIMIT = "limit";
+  String PARAM_MESSAGE_QUERY_DIRECT = "direct";
   String PARAM_MESSAGE_QUERY_TIMESTAMP = "ts";
   String PARAM_MESSAGE_QUERY_MSGID = "mid";
+  String PARAM_MESSAGE_QUERY_STARTCLOSED = "sinc";
   String PARAM_MESSAGE_QUERY_TO_MSGID = "tmid";
   String PARAM_MESSAGE_QUERY_TO_TIMESTAMP = "tt";
+  String PARAM_MESSAGE_QUERY_TOCLOSED = "tinc";
 
   String INTENT_KEY_DATA = "conversation.data";
   String INTENT_KEY_MESSAGE_OPTION = "conversation.messageoption";

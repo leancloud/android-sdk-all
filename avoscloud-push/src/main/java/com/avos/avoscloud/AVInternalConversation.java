@@ -18,6 +18,7 @@ import com.avos.avoscloud.im.v2.AVIMConversationEventHandler;
 import com.avos.avoscloud.im.v2.AVIMMessage;
 import com.avos.avoscloud.im.v2.AVIMMessageManagerHelper;
 import com.avos.avoscloud.im.v2.AVIMMessageOption;
+import com.avos.avoscloud.im.v2.AVIMMessageQueryDirection;
 import com.avos.avoscloud.im.v2.Conversation;
 import com.avos.avoscloud.im.v2.Conversation.AVIMOperation;
 import com.avos.avospush.session.CommandPacket;
@@ -216,6 +217,13 @@ class AVInternalConversation {
 
   public void queryHistoryMessages(String msgId, long timestamp, int limit, String toMsgId,
       long toTimestamp, int requestId) {
+    queryHistoryMessages(msgId, timestamp, false, toMsgId, toTimestamp, false,
+        AVIMMessageQueryDirection.AVIMMessageQueryDirectionFromNewToOld.getCode(), limit, requestId);
+  }
+
+  public void queryHistoryMessages(String msgId, long timestamp, boolean sclosed,
+                                   String toMsgId, long toTimestamp, boolean toclosed,
+                                   int direct, int limit, int requestId) {
     if (!checkSessionStatus(AVIMOperation.CONVERSATION_QUIT, requestId)) {
       return;
     }
@@ -223,8 +231,8 @@ class AVInternalConversation {
         AVIMOperation.CONVERSATION_MESSAGE_QUERY.getCode(), session.getSelfPeerId(),
         conversationId, requestId));
     PushService.sendData(ConversationMessageQueryPacket.getConversationMessageQueryPacket(
-      session.getSelfPeerId(), conversationId, msgId, timestamp, limit, toMsgId, toTimestamp,
-      requestId));
+        session.getSelfPeerId(), conversationId, msgId, timestamp, sclosed, toMsgId, toTimestamp, toclosed,
+        direct, limit, requestId));
   }
 
   public void mute(int requestId) {
@@ -316,12 +324,15 @@ class AVInternalConversation {
       this.updateInfo(attr, requestId);
     } else if (operationCode == AVIMOperation.CONVERSATION_MESSAGE_QUERY.getCode()) {
       // timestamp = 0时，原来的 (Long) 会发生强制转型错误(Integer cannot cast to Long)
-      this.queryHistoryMessages((String) params.get(Conversation.PARAM_MESSAGE_QUERY_MSGID),
-          ((Number) params.get(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP)).longValue(),
-          (Integer) params.get(Conversation.PARAM_MESSAGE_QUERY_LIMIT),
-          (String) params.get(Conversation.PARAM_MESSAGE_QUERY_TO_MSGID),
-          ((Number) params.get(Conversation.PARAM_MESSAGE_QUERY_TO_TIMESTAMP)).longValue(),
-          requestId);
+      String msgId = (String) params.get(Conversation.PARAM_MESSAGE_QUERY_MSGID);
+      long ts = ((Number) params.get(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP)).longValue();
+      boolean sclosed = (Boolean) params.get(Conversation.PARAM_MESSAGE_QUERY_STARTCLOSED);
+      String toMsgId = (String) params.get(Conversation.PARAM_MESSAGE_QUERY_TO_MSGID);
+      long tts = ((Number) params.get(Conversation.PARAM_MESSAGE_QUERY_TO_TIMESTAMP)).longValue();
+      boolean tclosed = (Boolean) params.get(Conversation.PARAM_MESSAGE_QUERY_TOCLOSED);
+      int direct = (Integer) params.get(Conversation.PARAM_MESSAGE_QUERY_DIRECT);
+      int limit = (Integer) params.get(Conversation.PARAM_MESSAGE_QUERY_LIMIT);
+      this.queryHistoryMessages(msgId, ts, sclosed, toMsgId, tts, tclosed, direct, limit, requestId);
     } else if (operationCode == AVIMOperation.CONVERSATION_MUTE.getCode()) {
       mute(requestId);
     } else if (operationCode == AVIMOperation.CONVERSATION_UNMUTE.getCode()) {
