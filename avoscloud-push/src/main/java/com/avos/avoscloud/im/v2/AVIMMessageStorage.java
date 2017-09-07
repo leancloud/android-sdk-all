@@ -1,5 +1,6 @@
 package com.avos.avoscloud.im.v2;
 
+import android.annotation.TargetApi;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -29,11 +30,12 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by lbt05 on 4/13/15.
  */
+@TargetApi(8)
 class AVIMMessageStorage {
   static final String DB_NAME_PREFIX = "com.avos.avoscloud.im.v2.";
   static final String MESSAGE_TABLE = "messages";
   static final String MESSAGE_INDEX = "message_index";
-  static final int DB_VERSION = 7;
+  static final int DB_VERSION = 8;
   static final String COLUMN_MESSAGE_ID = "message_id";
   static final String COLUMN_TIMESTAMP = "timestamp";
   static final String COLUMN_CONVERSATION_ID = "conversation_id";
@@ -45,6 +47,8 @@ class AVIMMessageStorage {
   static final String COLUMN_STATUS = "status";
   static final String COLUMN_BREAKPOINT = "breakpoint";
   static final String COLUMN_DEDUPLICATED_TOKEN = "dtoken";
+  static final String COLUMN_MSG_MENTION_ALL = "mentionAll";
+  static final String COLUMN_MSG_MENTION_LIST = "mentionList";
 
   static final String CONVERSATION_TABLE = "conversations";
   static final String COLUMN_EXPIREAT = "expireAt";
@@ -58,6 +62,7 @@ class AVIMMessageStorage {
   static final String COLUMN_LASTMESSAGE = "last_message";
   static final String COLUMN_TRANSIENT = "isTransient";
   static final String COLUMN_UNREAD_COUNT = "unread_count";
+  static final String COLUMN_CONV_MENTIONED = "mentioned";
   static final String COLUMN_CONVERSATION_READAT = "readAt";
   static final String COLUMN_CONVRESATION_DELIVEREDAT = "deliveredAt";
 
@@ -199,6 +204,9 @@ class AVIMMessageStorage {
       if (oldVersion == 6) {
         upgradeToVersion7(sqLiteDatabase);
       }
+      if (oldVersion == 7) {
+        upgradeToVersion8(sqLiteDatabase);
+      }
     }
 
     private void upgradeToVersion2(SQLiteDatabase db) {
@@ -248,6 +256,21 @@ class AVIMMessageStorage {
       try {
         if (!columnExists(db, MESSAGE_TABLE, COLUMN_MESSAGE_UPDATEAT)) {
           db.execSQL(getAddColumnSql(MESSAGE_TABLE, COLUMN_MESSAGE_UPDATEAT, NUMBERIC));
+        }
+      } catch (Exception e) {
+      }
+    }
+
+    private void upgradeToVersion8(SQLiteDatabase db) {
+      try {
+        if (!columnExists(db, MESSAGE_TABLE, COLUMN_MSG_MENTION_ALL)) {
+          db.execSQL(getAddColumnSql(MESSAGE_TABLE, COLUMN_MSG_MENTION_ALL, INTEGER));
+        }
+        if (!columnExists(db, MESSAGE_TABLE, COLUMN_MSG_MENTION_LIST)) {
+          db.execSQL(getAddColumnSql(MESSAGE_TABLE, COLUMN_MSG_MENTION_LIST, TEXT));
+        }
+        if (!columnExists(db, CONVERSATION_TABLE, COLUMN_CONV_MENTIONED)) {
+          db.execSQL(getAddColumnSql(CONVERSATION_TABLE, COLUMN_CONV_MENTIONED, INTEGER));
         }
       } catch (Exception e) {
       }
@@ -323,6 +346,10 @@ class AVIMMessageStorage {
       values.put(COLUMN_STATUS, AVIMMessageStatus.AVIMMessageStatusFailed.getStatusCode());
       values.put(COLUMN_BREAKPOINT, 0);
       values.put(COLUMN_DEDUPLICATED_TOKEN, message.uniqueToken);
+
+      values.put(COLUMN_MSG_MENTION_ALL, message.isMentionAll()? 1: 0);
+      values.put(COLUMN_MSG_MENTION_LIST, message.getMentionListString());
+
       long ret = db.insertWithOnConflict(MESSAGE_TABLE, null, values, SQLiteDatabase.CONFLICT_IGNORE);
       return ret != -1;
     } catch (Exception ex) {
@@ -376,6 +403,9 @@ class AVIMMessageStorage {
       values.put(COLUMN_MESSAGE_UPDATEAT, message.getUpdateAt());
       values.put(COLUMN_STATUS, message.getMessageStatus().getStatusCode());
       values.put(COLUMN_BREAKPOINT, breakpoint ? 1 : 0);
+
+      values.put(COLUMN_MSG_MENTION_ALL, message.isMentionAll()? 1: 0);
+      values.put(COLUMN_MSG_MENTION_LIST, message.getMentionListString());
 
       try {
         long itemId =
@@ -469,6 +499,10 @@ class AVIMMessageStorage {
     values.put(COLUMN_MESSAGE_READAT, message.getReadAt());
     values.put(COLUMN_MESSAGE_UPDATEAT, message.getUpdateAt());
     values.put(COLUMN_MESSAGE_ID, message.getMessageId());
+
+    values.put(COLUMN_MSG_MENTION_ALL, message.isMentionAll()? 1: 0);
+    values.put(COLUMN_MSG_MENTION_LIST, message.getMentionListString());
+
     long itemId =
         db.update(MESSAGE_TABLE, values, getWhereClause(COLUMN_MESSAGE_ID),
             new String[] {originalId});
@@ -624,6 +658,9 @@ class AVIMMessageStorage {
     byte[] payload = cursor.getBlob(cursor.getColumnIndex(COLUMN_PAYLOAD));
     String uniqueToken = cursor.getString(cursor.getColumnIndex(COLUMN_DEDUPLICATED_TOKEN));
 
+    int mentionAll = cursor.getInt(cursor.getColumnIndex(COLUMN_MSG_MENTION_ALL));
+    String mentionListStr = cursor.getString(cursor.getColumnIndex(COLUMN_MSG_MENTION_LIST));
+
     String content = new String(payload);
     int status = cursor.getInt(cursor.getColumnIndex(COLUMN_STATUS));
 
@@ -633,6 +670,11 @@ class AVIMMessageStorage {
     message.setUniqueToken(uniqueToken);
     message.setMessageStatus(AVIMMessage.AVIMMessageStatus.getMessageStatus(status));
     message.setUpdateAt(updateAt);
+    message.setMentionAll( mentionAll == 1);
+    if (!AVUtils.isBlankString(mentionListStr)) {
+      String[] mentionArray = mentionListStr.split(",");
+      message.setMentionList(Arrays.asList(mentionArray));
+    }
     return AVIMMessageManager.parseTypedMessage(message);
   }
 
@@ -734,6 +776,9 @@ class AVIMMessageStorage {
       values.put(COLUMN_MEMBERS, JSON.toJSONString(conversation.getMembers()));
       values.put(COLUMN_TRANSIENT, conversation.isTransient ? 1 : 0);
       values.put(COLUMN_UNREAD_COUNT, conversation.getUnreadMessagesCount());
+
+      values.put(COLUMN_CONV_MENTIONED, conversation.unreadMessagesMentioned()? 1:0);
+
       values.put(COLUMN_CONVERSATION_READAT, conversation.getLastReadAt());
       values.put(COLUMN_CONVRESATION_DELIVEREDAT, conversation.getLastDeliveredAt());
       values.put(COLUMN_CONVERSATION_ID, conversation.getConversationId());
@@ -756,11 +801,14 @@ class AVIMMessageStorage {
     return false;
   }
 
-  boolean updateConversationUreadCount(String conversationId, long unreadCount) {
+  boolean updateConversationUreadCount(String conversationId, long unreadCount, boolean mentioned) {
     if (getConversation(conversationId) != null) {
       SQLiteDatabase db = dbHelper.getWritableDatabase();
       ContentValues values = new ContentValues();
       values.put(COLUMN_UNREAD_COUNT, unreadCount);
+
+      values.put(COLUMN_CONV_MENTIONED, mentioned? 1:0);
+
       long dbId = db.update(CONVERSATION_TABLE, values, getWhereClause(COLUMN_CONVERSATION_ID),
         new String[] {conversationId});
       return dbId != -1;
@@ -808,6 +856,7 @@ class AVIMMessageStorage {
     long lastMessageTS = cursor.getLong(cursor.getColumnIndex(COLUMN_LM));
     int transientValue = cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSIENT));
     int unreadCount = cursor.getInt(cursor.getColumnIndex(COLUMN_UNREAD_COUNT));
+    int mentioned = cursor.getInt(cursor.getColumnIndex(COLUMN_CONV_MENTIONED));
     long readAt = cursor.getLong(cursor.getColumnIndex(COLUMN_CONVERSATION_READAT));
     long deliveredAt = cursor.getLong(cursor.getColumnIndex(COLUMN_CONVRESATION_DELIVEREDAT));
     String lastMessage = cursor.getString(cursor.getColumnIndex(COLUMN_LASTMESSAGE));
@@ -842,6 +891,7 @@ class AVIMMessageStorage {
     conversation.lastMessageAt = new Date(lastMessageTS);
     conversation.isTransient = transientValue == 1;
     conversation.unreadMessagesCount = unreadCount;
+    conversation.unreadMessagesMentioned = mentioned == 1;
     conversation.lastReadAt = readAt;
     conversation.lastDeliveredAt = deliveredAt;
     return conversation;

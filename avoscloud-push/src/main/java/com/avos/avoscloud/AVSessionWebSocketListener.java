@@ -166,6 +166,8 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
     final boolean isTransient = directCommand.hasTransient() && directCommand.getTransient();
     final boolean hasMore = directCommand.hasHasMore() && directCommand.getHasMore();
     final long patchTimestamp = directCommand.getPatchTimestamp();
+    final boolean mentionAll = directCommand.hasMentionAll()? directCommand.getMentionAll() : false;
+    final List<String> mentionList = directCommand.getMentionPidsList();
 
     try {
       if (!isTransient) {
@@ -183,6 +185,8 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
         message.setMessageId(messageId);
         message.setContent(msg);
         message.setUpdateAt(patchTimestamp);
+        message.setMentionAll(mentionAll);
+        message.setMentionList(mentionList);
         conversation.onMessage(message, hasMore, isTransient);
       }
     } catch (Exception e) {
@@ -444,8 +448,9 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
           message.setContent(unreadTuple.getData());
           message.setUpdateAt(unreadTuple.getPatchTimestamp());
           String conversationId = unreadTuple.getCid();
+          boolean mentioned = unreadTuple.getMentioned();
           AVInternalConversation conversation = session.getConversation(conversationId);
-          conversation.onUnreadMessagesEvent(message, unreadTuple.getUnread());
+          conversation.onUnreadMessagesEvent(message, unreadTuple.getUnread(), mentioned);
         }
       }
     }

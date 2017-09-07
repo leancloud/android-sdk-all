@@ -6,9 +6,14 @@ import android.os.Parcelable;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.avos.avoscloud.AVUtils;
+
+import java.util.List;
 import java.util.UUID;
 
 public class AVIMMessage implements Parcelable {
+  public static int MENTION_TYPE_NONE = 0;
+  public static int MENTION_TYPE_PORTION = 1;
+  public static int MENTION_TYPE_ALL = 2;
 
   public AVIMMessage() {
     this(null, null);
@@ -224,6 +229,33 @@ public class AVIMMessage implements Parcelable {
     return 0;
   }
 
+  public boolean mentioned() {
+    return isMentionAll() || (null != mentionList && mentionList.contains("currentUser"));
+  }
+
+  public void setMentionList(List<String> peerIdList) {
+    this.mentionList = peerIdList;
+  }
+
+  public List<String> getMentionList() {
+    return this.mentionList;
+  }
+  public String getMentionListString() {
+    if (null == this.mentionList) {
+      return "";
+    }
+    return this.mentionList.toString();
+  }
+
+  public boolean isMentionAll() {
+    return mentionAll;
+  }
+
+  public void setMentionAll(boolean mentionAll) {
+    this.mentionAll = mentionAll;
+  }
+
+
   String conversationId;
   String content;
   String from;
@@ -231,6 +263,9 @@ public class AVIMMessage implements Parcelable {
   long deliveredAt;
   long readAt;
   long updateAt;
+  List<String> mentionList = null;
+
+  boolean mentionAll = false;
 
   String messageId;
   String uniqueToken;
@@ -251,6 +286,8 @@ public class AVIMMessage implements Parcelable {
     out.writeInt(status.getStatusCode());
     out.writeInt(ioType.getIOType());
     out.writeString(uniqueToken);
+    out.writeByte((byte)(mentionAll ?1:0));
+    out.writeStringList(mentionList);
   }
 
 
@@ -266,6 +303,8 @@ public class AVIMMessage implements Parcelable {
     this.status = AVIMMessageStatus.getMessageStatus(in.readInt());
     this.ioType = AVIMMessageIOType.getMessageIOType(in.readInt());
     this.uniqueToken = in.readString();
+    this.mentionAll = in.readByte() != 0;
+    in.readStringList(this.mentionList);
     this.initMessage(in);
   }
 
