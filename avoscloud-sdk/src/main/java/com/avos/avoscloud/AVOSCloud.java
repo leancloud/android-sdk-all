@@ -144,7 +144,12 @@ public class AVOSCloud {
       throw new IllegalArgumentException("Parameter(context or applicationId or clientKey) is illegal.");
     }
     if (null != AVOSCloud.applicationContext) {
-      throw new IllegalStateException("Can't initialize more than once.");
+      if (applicationId.equals(AVOSCloud.applicationId) && clientKey.equals(AVOSCloud.clientKey)) {
+        // ignore duplicated init.
+        return;
+      } else {
+        throw new IllegalStateException("Can't initialize more than once.");
+      }
     }
     AVOSCloud.applicationId = applicationId;
     AVOSCloud.clientKey = clientKey;
@@ -175,7 +180,15 @@ public class AVOSCloud {
       throw new IllegalArgumentException("Parameter(context or applicationId or clientKey) is illegal.");
     }
     if (null != AVOSCloud.applicationContext) {
-      throw new IllegalStateException("Can't initialize more than once.");
+      if (applicationId.equals(AVOSCloud.applicationId) && clientKey.equals(AVOSCloud.clientKey)) {
+        // ignore duplicated init.
+        if (null != callback) {
+          callback.internalDone(null);
+        }
+        return;
+      } else {
+        throw new IllegalStateException("Can't initialize more than once.");
+      }
     }
 
     AVOSCloud.applicationId = applicationId;
