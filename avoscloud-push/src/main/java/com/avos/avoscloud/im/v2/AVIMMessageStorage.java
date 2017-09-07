@@ -671,6 +671,7 @@ class AVIMMessageStorage {
     message.setMessageStatus(AVIMMessage.AVIMMessageStatus.getMessageStatus(status));
     message.setUpdateAt(updateAt);
     message.setMentionAll( mentionAll == 1);
+    message.setCurrentClient(this.clientId);
     if (!AVUtils.isBlankString(mentionListStr)) {
       String[] mentionArray = mentionListStr.split(",");
       message.setMentionList(Arrays.asList(mentionArray));

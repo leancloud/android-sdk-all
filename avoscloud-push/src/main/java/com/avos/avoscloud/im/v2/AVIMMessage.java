@@ -11,9 +11,6 @@ import java.util.List;
 import java.util.UUID;
 
 public class AVIMMessage implements Parcelable {
-  public static int MENTION_TYPE_NONE = 0;
-  public static int MENTION_TYPE_PORTION = 1;
-  public static int MENTION_TYPE_ALL = 2;
 
   public AVIMMessage() {
     this(null, null);
@@ -230,7 +227,7 @@ public class AVIMMessage implements Parcelable {
   }
 
   public boolean mentioned() {
-    return isMentionAll() || (null != mentionList && mentionList.contains("currentUser"));
+    return isMentionAll() || (null != mentionList && mentionList.contains(currentClient));
   }
 
   public void setMentionList(List<String> peerIdList) {
@@ -255,6 +252,9 @@ public class AVIMMessage implements Parcelable {
     this.mentionAll = mentionAll;
   }
 
+  void setCurrentClient(String clientId) {
+    this.currentClient = clientId;
+  }
 
   String conversationId;
   String content;
@@ -266,6 +266,7 @@ public class AVIMMessage implements Parcelable {
   List<String> mentionList = null;
 
   boolean mentionAll = false;
+  String currentClient = null;
 
   String messageId;
   String uniqueToken;

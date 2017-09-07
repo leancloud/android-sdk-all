@@ -6,6 +6,7 @@ package com.avos.avoscloud.im.v2;
 public class AVIMMessageManagerHelper {
   public static void processMessage(AVIMMessage message, AVIMClient client, boolean hasMore,
       boolean isTransient) {
+    message.setCurrentClient(client.getClientId());
     AVIMMessageManager.processMessage(message, client, hasMore, isTransient);
   }
 
