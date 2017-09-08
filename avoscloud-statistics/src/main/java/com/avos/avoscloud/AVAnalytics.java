@@ -566,6 +566,7 @@ public class AVAnalytics {
       java.util.HashMap<java.lang.String, java.lang.String> stringStringHashMap,
       java.lang.String primaryKey) {
     AnalyticsEvent event = impl.beginEvent(context, eventId, "", primaryKey);
+    event.addAttributes(stringStringHashMap);
     event.setPrimaryKey(primaryKey);
   }
 

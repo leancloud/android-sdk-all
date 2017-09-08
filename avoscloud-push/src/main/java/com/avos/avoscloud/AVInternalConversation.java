@@ -1,6 +1,8 @@
 package com.avos.avoscloud;
 
+import android.annotation.TargetApi;
 import android.os.Bundle;
+import android.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +31,7 @@ import com.avos.avospush.session.ConversationMessageQueryPacket;
 import com.avos.avospush.session.MessagePatchModifyPacket;
 import com.avos.avospush.session.UnreadMessagesClearPacket;
 
+@TargetApi(11)
 class AVInternalConversation {
   AVSession session;
   String conversationId;
@@ -176,7 +179,7 @@ class AVInternalConversation {
       .sendData(ConversationDirectMessagePacket.getConversationMessagePacket(
         session.getSelfPeerId(),
         conversationId,
-        message.getContent(),
+        message.getContent(), message.isMentionAll(), message.getMentionList(),
         AVIMMessageManagerHelper.getMessageToken(message),
         messageOption,
         requestId));
@@ -292,7 +295,7 @@ class AVInternalConversation {
     PushService.sendData(packet);
 
     // 因为没有返回值，所以在发送 command 后直接置 unreadCount 为 0 并发送事件
-    onUnreadMessagesEvent(null, 0);
+    onUnreadMessagesEvent(null, 0, false);
   }
 
   private boolean checkSessionStatus(AVIMOperation operation, int requestId) {
@@ -600,13 +603,14 @@ class AVInternalConversation {
   /**
    * process the unread messages event
    */
-  void onUnreadMessagesEvent(AVIMMessage message, int unreadCount) {
+  void onUnreadMessagesEvent(AVIMMessage message, int unreadCount, boolean mentioned) {
     AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
     if (handler != null) {
       AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
       AVIMConversation conversation = client.getConversation(this.conversationId);
       if (conversation.getUnreadMessagesCount() != unreadCount) {
-        handler.processEvent(Conversation.STATUS_ON_UNREAD_EVENT, message, unreadCount, conversation);
+        Pair<Integer, Boolean> unreadInfo = new Pair<>(unreadCount, mentioned);
+        handler.processEvent(Conversation.STATUS_ON_UNREAD_EVENT, message, unreadInfo, conversation);
       }
     }
   }

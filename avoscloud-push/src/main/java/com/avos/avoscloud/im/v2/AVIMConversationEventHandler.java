@@ -1,5 +1,8 @@
 package com.avos.avoscloud.im.v2;
 
+import android.annotation.TargetApi;
+import android.util.Pair;
+
 import com.avos.avoscloud.AVIMEventHandler;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationCallback;
 
@@ -9,6 +12,7 @@ import java.util.List;
  * 用于处理AVIMConversation中产生的事件
  * Created by lbt05 on 1/29/15.
  */
+@TargetApi(11)
 public abstract class AVIMConversationEventHandler extends AVIMEventHandler {
   /**
    * 实现本方法以处理聊天对话中的参与者离开事件
@@ -126,7 +130,8 @@ public abstract class AVIMConversationEventHandler extends AVIMEventHandler {
         onKicked(conversation.client, conversation, (String) operator);
         break;
       case Conversation.STATUS_ON_UNREAD_EVENT:
-        conversation.updateUnreadCountAndMessage((AVIMMessage)operator, (int)operand);
+        Pair<Integer, Boolean> unreadInfo = (Pair<Integer, Boolean>)operand;
+        conversation.updateUnreadCountAndMessage((AVIMMessage)operator, unreadInfo.first, unreadInfo.second);
         onUnreadMessagesCountUpdated(conversation.client, conversation);
         break;
       case Conversation.STATUS_ON_MESSAGE_READ:

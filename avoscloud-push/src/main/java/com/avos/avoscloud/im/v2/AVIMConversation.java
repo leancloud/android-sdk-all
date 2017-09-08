@@ -85,6 +85,7 @@ public class AVIMConversation {
    * 未读消息数量
    */
   int unreadMessagesCount = 0;
+  boolean unreadMessagesMentioned = false;
 
   /**
    * 对方最后收到消息的时间，此处仅针对双人会话有效
@@ -970,7 +971,7 @@ public class AVIMConversation {
     unreadMessagesCount = getUnreadMessagesCount() + num;
   }
 
-  void updateUnreadCountAndMessage(AVIMMessage lastMessage, int unreadCount) {
+  void updateUnreadCountAndMessage(AVIMMessage lastMessage, int unreadCount, boolean mentioned) {
     if (null != lastMessage) {
       setLastMessage(lastMessage);
       storage.insertMessage(lastMessage, true);
@@ -978,7 +979,8 @@ public class AVIMConversation {
 
     if (unreadMessagesCount != unreadCount) {
       unreadMessagesCount = unreadCount;
-      storage.updateConversationUreadCount(conversationId, unreadMessagesCount);
+      unreadMessagesMentioned = mentioned;
+      storage.updateConversationUreadCount(conversationId, unreadMessagesCount, mentioned);
     }
   }
 
@@ -988,6 +990,14 @@ public class AVIMConversation {
    */
   public int getUnreadMessagesCount() {
     return unreadMessagesCount;
+  }
+
+  /**
+   * 判断当前未读消息中是否有提及当前用户的消息存在。
+   * @return
+   */
+  public boolean unreadMessagesMentioned() {
+    return unreadMessagesMentioned;
   }
 
   /**
