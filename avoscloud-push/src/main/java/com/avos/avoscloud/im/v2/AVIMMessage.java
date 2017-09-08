@@ -324,6 +324,7 @@ public class AVIMMessage implements Parcelable {
     this.ioType = AVIMMessageIOType.getMessageIOType(in.readInt());
     this.uniqueToken = in.readString();
     this.mentionAll = in.readByte() != 0;
+    this.mentionList = new ArrayList<>(0);
     in.readStringList(this.mentionList);
     this.initMessage(in);
   }

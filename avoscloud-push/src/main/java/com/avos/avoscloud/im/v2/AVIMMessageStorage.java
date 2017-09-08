@@ -135,6 +135,8 @@ class AVIMMessageStorage {
             + COLUMN_STATUS + " INTEGER, "
             + COLUMN_BREAKPOINT + " INTEGER, "
             + COLUMN_DEDUPLICATED_TOKEN + " VARCHAR(32), "
+            + COLUMN_MSG_MENTION_ALL + " INTEGER default 0, "
+            + COLUMN_MSG_MENTION_LIST + " TEXT NULL, "
             + "PRIMARY KEY(" + COLUMN_CONVERSATION_ID + "," + COLUMN_MESSAGE_ID + ")) ";
 
     static final String MESSAGE_UNIQUE_INDEX_SQL =
@@ -157,6 +159,7 @@ class AVIMMessageStorage {
         + COLUMN_CONVRESATION_DELIVEREDAT + " NUMBERIC,"
         + COLUMN_LM + " NUMBERIC,"
         + COLUMN_LASTMESSAGE + " TEXT,"
+        + COLUMN_CONV_MENTIONED + " INTEGER default 0,"
         + "PRIMARY KEY(" + COLUMN_CONVERSATION_ID + "))";
 
     public DBHelper(Context context, String clientId) {
