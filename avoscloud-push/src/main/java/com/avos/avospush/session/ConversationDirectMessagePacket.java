@@ -4,9 +4,13 @@ import com.avos.avoscloud.Messages;
 import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.im.v2.AVIMMessageOption;
 
+import java.util.List;
+
 public class ConversationDirectMessagePacket extends PeerBasedCommandPacket {
   String conversationId;
   String message;
+  boolean mentionAll = false;
+  List<String> mentionList = null;
   String messageToken;
   AVIMMessageOption messageOption;
 
@@ -34,6 +38,22 @@ public class ConversationDirectMessagePacket extends PeerBasedCommandPacket {
     this.messageOption = option;
   }
 
+  public boolean isMentionAll() {
+    return mentionAll;
+  }
+
+  public void setMentionAll(boolean mentionAll) {
+    this.mentionAll = mentionAll;
+  }
+
+  public List<String> getMentionList() {
+    return mentionList;
+  }
+
+  public void setMentionList(List<String> mentionList) {
+    this.mentionList = mentionList;
+  }
+
   @Override
   protected Messages.GenericCommand.Builder getGenericCommandBuilder() {
     Messages.GenericCommand.Builder builder = super.getGenericCommandBuilder();
@@ -50,6 +70,10 @@ public class ConversationDirectMessagePacket extends PeerBasedCommandPacket {
     Messages.DirectCommand.Builder builder = Messages.DirectCommand.newBuilder();
     builder.setMsg(message);
     builder.setCid(conversationId);
+    builder.setMentionAll(mentionAll);
+    if (null != mentionList && mentionList.size() > 0) {
+      builder.addAllMentionPids(mentionList);
+    }
 
     if (null != messageOption) {
       if (messageOption.isReceipt()) {
@@ -76,20 +100,26 @@ public class ConversationDirectMessagePacket extends PeerBasedCommandPacket {
   }
 
   public static ConversationDirectMessagePacket getConversationMessagePacket(String peerId,
-                                                                             String conversationId, String msg, AVIMMessageOption messageOption, int requestId) {
+                                                                             String conversationId,
+                                                                             String msg, boolean mentionAll, List<String> mentionList,
+                                                                             AVIMMessageOption messageOption, int requestId) {
     ConversationDirectMessagePacket cdmp = new ConversationDirectMessagePacket();
     cdmp.setPeerId(peerId);
     cdmp.setConversationId(conversationId);
     cdmp.setRequestId(requestId);
     cdmp.setMessageOption(messageOption);
     cdmp.setMessage(msg);
+    cdmp.setMentionAll(mentionAll);
+    cdmp.setMentionList(mentionList);
     return cdmp;
   }
 
   public static ConversationDirectMessagePacket getConversationMessagePacket(String peerId,
-                                                                             String conversationId, String msg, String messageToken, AVIMMessageOption option, int requestId) {
+                                                                             String conversationId,
+                                                                             String msg, boolean mentionAll, List<String> mentionList,
+                                                                             String messageToken, AVIMMessageOption option, int requestId) {
     ConversationDirectMessagePacket cdmp =
-      getConversationMessagePacket(peerId, conversationId, msg, option, requestId);
+      getConversationMessagePacket(peerId, conversationId, msg, mentionAll, mentionList, option, requestId);
     cdmp.messageToken = messageToken;
     return cdmp;
   }

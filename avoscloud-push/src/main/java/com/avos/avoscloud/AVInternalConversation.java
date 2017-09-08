@@ -179,7 +179,7 @@ class AVInternalConversation {
       .sendData(ConversationDirectMessagePacket.getConversationMessagePacket(
         session.getSelfPeerId(),
         conversationId,
-        message.getContent(),
+        message.getContent(), message.isMentionAll(), message.getMentionList(),
         AVIMMessageManagerHelper.getMessageToken(message),
         messageOption,
         requestId));

@@ -7,6 +7,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.avos.avoscloud.AVUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -241,7 +243,24 @@ public class AVIMMessage implements Parcelable {
     if (null == this.mentionList) {
       return "";
     }
-    return this.mentionList.toString();
+    StringBuilder builder = new StringBuilder();
+    for (int i = 0; i < this.mentionList.size(); i++) {
+      builder.append(this.mentionList.get(i));
+      if (i != this.mentionList.size() - 1) {
+        builder.append(",");
+      }
+    }
+    return builder.toString();
+  }
+  
+  public void setMentionListString(String content) {
+    if (AVUtils.isBlankString(content)) {
+      this.mentionList = null;
+    } else {
+      String[] peerIdArray = content.split(",");
+      this.mentionList = new ArrayList<>(peerIdArray.length);
+      this.mentionList.addAll(Arrays.asList(peerIdArray));
+    }
   }
 
   public boolean isMentionAll() {

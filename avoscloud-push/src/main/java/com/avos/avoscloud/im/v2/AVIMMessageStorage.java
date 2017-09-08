@@ -673,8 +673,7 @@ class AVIMMessageStorage {
     message.setMentionAll( mentionAll == 1);
     message.setCurrentClient(this.clientId);
     if (!AVUtils.isBlankString(mentionListStr)) {
-      String[] mentionArray = mentionListStr.split(",");
-      message.setMentionList(Arrays.asList(mentionArray));
+      message.setMentionListString(mentionListStr);
     }
     return AVIMMessageManager.parseTypedMessage(message);
   }
@@ -857,7 +856,9 @@ class AVIMMessageStorage {
     long lastMessageTS = cursor.getLong(cursor.getColumnIndex(COLUMN_LM));
     int transientValue = cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSIENT));
     int unreadCount = cursor.getInt(cursor.getColumnIndex(COLUMN_UNREAD_COUNT));
+
     int mentioned = cursor.getInt(cursor.getColumnIndex(COLUMN_CONV_MENTIONED));
+
     long readAt = cursor.getLong(cursor.getColumnIndex(COLUMN_CONVERSATION_READAT));
     long deliveredAt = cursor.getLong(cursor.getColumnIndex(COLUMN_CONVRESATION_DELIVEREDAT));
     String lastMessage = cursor.getString(cursor.getColumnIndex(COLUMN_LASTMESSAGE));
