@@ -282,8 +282,8 @@ public class AVIMMessage implements Parcelable {
   long deliveredAt;
   long readAt;
   long updateAt;
-  List<String> mentionList = null;
 
+  List<String> mentionList = null;
   boolean mentionAll = false;
   String currentClient = null;
 
@@ -306,8 +306,9 @@ public class AVIMMessage implements Parcelable {
     out.writeInt(status.getStatusCode());
     out.writeInt(ioType.getIOType());
     out.writeString(uniqueToken);
-    out.writeByte((byte)(mentionAll ?1:0));
-    out.writeStringList(mentionList);
+
+    out.writeInt(mentionAll? 1: 0);
+    out.writeString(getMentionListString());
   }
 
 
@@ -323,9 +324,12 @@ public class AVIMMessage implements Parcelable {
     this.status = AVIMMessageStatus.getMessageStatus(in.readInt());
     this.ioType = AVIMMessageIOType.getMessageIOType(in.readInt());
     this.uniqueToken = in.readString();
-    this.mentionAll = in.readByte() != 0;
-    this.mentionList = new ArrayList<>(0);
-    in.readStringList(this.mentionList);
+
+    int mentionFlag = in.readInt();
+    this.mentionAll =  (mentionFlag == 1);
+    String mentionLst = in.readString();
+    setMentionListString(mentionLst);
+
     this.initMessage(in);
   }
 
