@@ -1,5 +1,6 @@
 package com.avos.avospush.session;
 
+import com.avos.avoscloud.LogUtil;
 import com.avos.avoscloud.Messages;
 import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.im.v2.AVIMMessageOption;
@@ -70,7 +71,9 @@ public class ConversationDirectMessagePacket extends PeerBasedCommandPacket {
     Messages.DirectCommand.Builder builder = Messages.DirectCommand.newBuilder();
     builder.setMsg(message);
     builder.setCid(conversationId);
-    builder.setMentionAll(mentionAll);
+    if (mentionAll) {
+      builder.setMentionAll(mentionAll);
+    }
     if (null != mentionList && mentionList.size() > 0) {
       builder.addAllMentionPids(mentionList);
     }

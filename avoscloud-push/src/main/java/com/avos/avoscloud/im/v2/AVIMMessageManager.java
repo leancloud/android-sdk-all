@@ -233,6 +233,9 @@ public class AVIMMessageManager {
           typedMessage.setMessageStatus(message.getMessageStatus());
           typedMessage.setMessageIOType(message.getMessageIOType());
           typedMessage.uniqueToken = message.uniqueToken;
+          typedMessage.currentClient = message.currentClient;
+          typedMessage.mentionAll = message.mentionAll;
+          typedMessage.mentionList = message.mentionList;
           message = typedMessage;
         } catch (Exception e) {}
       }
