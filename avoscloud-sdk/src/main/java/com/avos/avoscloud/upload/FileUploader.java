@@ -199,7 +199,12 @@ public class FileUploader extends HttpClientUploader {
     }
   }
 
+  public static void setUploadHeader(String key, String value) {
+    UPLOAD_HEADERS.put(key, value);
+  }
+
   public static interface FileUploadProgressCallback {
     void onProgress(int progress);
   }
+  static HashMap<String, String> UPLOAD_HEADERS = new HashMap<>();
 }

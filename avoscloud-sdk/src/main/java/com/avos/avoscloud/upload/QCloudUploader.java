@@ -150,6 +150,11 @@ class QCloudUploader extends HttpClientUploader {
       requestBuilder.url(uploadUrl);
       requestBuilder.header(HEADER_AUTHORIZATION, token);
       requestBuilder.header(HEADER_CONTENT_TYPE, MULTIPART_FORM_DATA);
+
+      for(String key: FileUploader.UPLOAD_HEADERS.keySet()) {
+        requestBuilder.header(key, FileUploader.UPLOAD_HEADERS.get(key));
+      }
+
       requestBuilder.post(builder.build());
 
       Request request = requestBuilder.build();
