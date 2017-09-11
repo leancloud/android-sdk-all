@@ -36,6 +36,15 @@ import java.util.Map;
 public final class AVFile {
 
   /**
+   * set http header while uploading.
+   * @param key - header name
+   * @param value - header value
+   */
+  public static void setUploadHeader(String key, String value) {
+    FileUploader.setUploadHeader(key, value);
+  }
+
+  /**
    * 需要上传但是未上传的 dirty 会标记为 true
    */
   private boolean dirty;

@@ -9,6 +9,7 @@ import com.avos.avoscloud.ProgressCallback;
 import com.avos.avoscloud.SaveCallback;
 import com.avos.avoscloud.utils.AVFileUtil;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +25,9 @@ import okhttp3.Response;
  * Created by summer on 13-5-27.
  */
 class S3Uploader extends HttpClientUploader {
+  private static String DEFAULT_HEADER_CACHE_CONTROL = "Cache-Control";
+  private static String DEFAULT_HEADER_CACHE_CONTROL_VALUE = "public, max-age=31536000";
+
   private volatile Call call;
   private String uploadUrl;
   private int retryTimes = DEFAULT_RETRY_TIMES;
@@ -93,6 +97,12 @@ class S3Uploader extends HttpClientUploader {
 
         builder.put(requestBody);
         builder.addHeader("Content-Type", mimeType);
+        if (!FileUploader.UPLOAD_HEADERS.containsKey(DEFAULT_HEADER_CACHE_CONTROL)) {
+          builder.addHeader(DEFAULT_HEADER_CACHE_CONTROL, DEFAULT_HEADER_CACHE_CONTROL_VALUE);
+        }
+        for(String key: FileUploader.UPLOAD_HEADERS.keySet()) {
+          builder.addHeader(key, FileUploader.UPLOAD_HEADERS.get(key));
+        }
 
         // Send it
         call = httpClient.newCall(builder.build());
