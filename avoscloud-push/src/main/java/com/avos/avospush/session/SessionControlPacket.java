@@ -105,8 +105,10 @@ public class SessionControlPacket extends PeerBasedCommandPacket {
       builder.setUa(USERAGENT);
       if (!AVUtils.isBlankString(tag)) {
         builder.setTag(tag);
-        builder.setDeviceId(AVInstallation.getCurrentInstallation().getInstallationId());
       }
+    }
+    if (op.equals(SessionControlOp.OPEN) || op.equals(SessionControlOp.CLOSE)) {
+      builder.setDeviceId(AVInstallation.getCurrentInstallation().getInstallationId());
     }
 
     if (!AVUtils.isBlankString(signature)) {
