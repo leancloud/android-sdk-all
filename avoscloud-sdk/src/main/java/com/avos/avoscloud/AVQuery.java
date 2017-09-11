@@ -82,6 +82,7 @@ public class AVQuery<T extends AVObject> {
   }
 
   private static final String TAG = "com.avos.avoscloud.AVQuery";
+  private final static String CLOUD_QUERY_PATH = "cloudQuery";
 
   private Class<T> clazz;
   private String className;
@@ -94,7 +95,6 @@ public class AVQuery<T extends AVObject> {
   // different from queryPath. externalQueryPath is used by caller directly to
   // create special end point for certain query.
   private String externalQueryPath;
-  private final static String CLOUD_QUERY_PATH = "cloudQuery";
   QueryConditions conditions;
 
   // getter/setter for fastjson.
@@ -264,6 +264,23 @@ public class AVQuery<T extends AVObject> {
    */
   public AVQuery(String theClassName) {
     this(theClassName, null);
+  }
+
+  /**
+   * clone a new query object, which fully same to this.
+   *
+   * @return a new AVQuery object.
+   */
+  public AVQuery clone() {
+    AVQuery query = new AVQuery(this.className, this.clazz);
+
+    query.isRunning = false;
+    query.cachePolicy = this.cachePolicy;
+    query.maxCacheAge = this.maxCacheAge;
+    query.queryPath = this.queryPath;
+    query.externalQueryPath = this.externalQueryPath;
+    query.conditions = null != this.conditions? this.conditions.clone(): null;
+    return query;
   }
 
   AVQuery(String theClassName, Class<T> clazz) {

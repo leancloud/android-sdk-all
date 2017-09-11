@@ -1,5 +1,7 @@
 package com.avos.avoscloud;
 
+import android.app.DownloadManager;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,6 +29,24 @@ public class QueryConditions {
     where = new HashMap<String, List<QueryOperation>>();
     include = new LinkedList<String>();
     parameters = new HashMap<String, String>();
+  }
+
+  /**
+   * clone a same object.
+   *
+   * @return a new QueryConditions object.
+   */
+  public QueryConditions clone() {
+    QueryConditions condition = new QueryConditions();
+    condition.where.putAll(this.where);
+    condition.include.addAll(this.include);
+    condition.parameters.putAll(this.parameters);
+    condition.selectKeys(this.selectedKeys);
+    condition.setLimit(this.limit);
+    condition.setTrace(this.trace);
+    condition.setSkip(this.skip);
+    condition.setOrder(this.order);
+    return condition;
   }
 
   public int getLimit() {
@@ -127,7 +147,9 @@ public class QueryConditions {
     if (selectedKeys == null) {
       selectedKeys = new HashSet<String>();
     }
-    selectedKeys.addAll(keys);
+    if (null != keys) {
+      selectedKeys.addAll(keys);
+    }
   }
 
   public Map<String, Object> compileWhereOperationMap() {
