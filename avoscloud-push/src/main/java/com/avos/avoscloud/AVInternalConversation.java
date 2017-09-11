@@ -438,9 +438,13 @@ class AVInternalConversation {
         Object data = item.getData();
         long timestamp = item.getTimestamp();
         String msgId = item.getMsgId();
+        boolean mentionAll = item.hasMentionAll()? item.getMentionAll():false;
+        List<String> mentionList = item.getMentionPidsList();
 
         AVIMMessage message = new AVIMMessage(this.conversationId, from, timestamp, ackAt, readAt);
         message.setMessageId(msgId);
+        message.setMentionAll(mentionAll);
+        message.setMentionList(mentionList);
 
         if (data instanceof String || data instanceof JSON) {
           message.setContent(data.toString());

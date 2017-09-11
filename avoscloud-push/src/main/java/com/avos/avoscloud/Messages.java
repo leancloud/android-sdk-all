@@ -2900,6 +2900,34 @@ public final class Messages {
      * <code>optional int64 patchTimestamp = 7;</code>
      */
     long getPatchTimestamp();
+
+    /**
+     * <code>optional bool mentionAll = 8;</code>
+     */
+    boolean hasMentionAll();
+    /**
+     * <code>optional bool mentionAll = 8;</code>
+     */
+    boolean getMentionAll();
+
+    /**
+     * <code>repeated string mentionPids = 9;</code>
+     */
+    java.util.List<java.lang.String>
+        getMentionPidsList();
+    /**
+     * <code>repeated string mentionPids = 9;</code>
+     */
+    int getMentionPidsCount();
+    /**
+     * <code>repeated string mentionPids = 9;</code>
+     */
+    java.lang.String getMentionPids(int index);
+    /**
+     * <code>repeated string mentionPids = 9;</code>
+     */
+    com.google.protobuf.ByteString
+        getMentionPidsBytes(int index);
   }
   /**
    * Protobuf type {@code com.avos.avoscloud.LogItem}
@@ -2921,6 +2949,8 @@ public final class Messages {
       ackAt_ = 0L;
       readAt_ = 0L;
       patchTimestamp_ = 0L;
+      mentionAll_ = false;
+      mentionPids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
     }
 
     @java.lang.Override
@@ -2989,6 +3019,20 @@ public final class Messages {
               patchTimestamp_ = input.readInt64();
               break;
             }
+            case 64: {
+              bitField0_ |= 0x00000080;
+              mentionAll_ = input.readBool();
+              break;
+            }
+            case 74: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              if (!((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
+                mentionPids_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000100;
+              }
+              mentionPids_.add(bs);
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -2997,6 +3041,9 @@ public final class Messages {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
+        if (((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
+          mentionPids_ = mentionPids_.getUnmodifiableView();
+        }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
@@ -3200,6 +3247,50 @@ public final class Messages {
       return patchTimestamp_;
     }
 
+    public static final int MENTIONALL_FIELD_NUMBER = 8;
+    private boolean mentionAll_;
+    /**
+     * <code>optional bool mentionAll = 8;</code>
+     */
+    public boolean hasMentionAll() {
+      return ((bitField0_ & 0x00000080) == 0x00000080);
+    }
+    /**
+     * <code>optional bool mentionAll = 8;</code>
+     */
+    public boolean getMentionAll() {
+      return mentionAll_;
+    }
+
+    public static final int MENTIONPIDS_FIELD_NUMBER = 9;
+    private com.google.protobuf.LazyStringList mentionPids_;
+    /**
+     * <code>repeated string mentionPids = 9;</code>
+     */
+    public com.google.protobuf.ProtocolStringList
+        getMentionPidsList() {
+      return mentionPids_;
+    }
+    /**
+     * <code>repeated string mentionPids = 9;</code>
+     */
+    public int getMentionPidsCount() {
+      return mentionPids_.size();
+    }
+    /**
+     * <code>repeated string mentionPids = 9;</code>
+     */
+    public java.lang.String getMentionPids(int index) {
+      return mentionPids_.get(index);
+    }
+    /**
+     * <code>repeated string mentionPids = 9;</code>
+     */
+    public com.google.protobuf.ByteString
+        getMentionPidsBytes(int index) {
+      return mentionPids_.getByteString(index);
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -3233,6 +3324,12 @@ public final class Messages {
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         output.writeInt64(7, patchTimestamp_);
       }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        output.writeBool(8, mentionAll_);
+      }
+      for (int i = 0; i < mentionPids_.size(); i++) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 9, mentionPids_.getRaw(i));
+      }
       unknownFields.writeTo(output);
     }
 
@@ -3265,6 +3362,18 @@ public final class Messages {
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt64Size(7, patchTimestamp_);
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(8, mentionAll_);
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < mentionPids_.size(); i++) {
+          dataSize += computeStringSizeNoTag(mentionPids_.getRaw(i));
+        }
+        size += dataSize;
+        size += 1 * getMentionPidsList().size();
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -3317,6 +3426,13 @@ public final class Messages {
         result = result && (getPatchTimestamp()
             == other.getPatchTimestamp());
       }
+      result = result && (hasMentionAll() == other.hasMentionAll());
+      if (hasMentionAll()) {
+        result = result && (getMentionAll()
+            == other.getMentionAll());
+      }
+      result = result && getMentionPidsList()
+          .equals(other.getMentionPidsList());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -3359,6 +3475,15 @@ public final class Messages {
         hash = (37 * hash) + PATCHTIMESTAMP_FIELD_NUMBER;
         hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
             getPatchTimestamp());
+      }
+      if (hasMentionAll()) {
+        hash = (37 * hash) + MENTIONALL_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+            getMentionAll());
+      }
+      if (getMentionPidsCount() > 0) {
+        hash = (37 * hash) + MENTIONPIDS_FIELD_NUMBER;
+        hash = (53 * hash) + getMentionPidsList().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -3503,6 +3628,10 @@ public final class Messages {
         bitField0_ = (bitField0_ & ~0x00000020);
         patchTimestamp_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000040);
+        mentionAll_ = false;
+        bitField0_ = (bitField0_ & ~0x00000080);
+        mentionPids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000100);
         return this;
       }
 
@@ -3555,6 +3684,15 @@ public final class Messages {
           to_bitField0_ |= 0x00000040;
         }
         result.patchTimestamp_ = patchTimestamp_;
+        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+          to_bitField0_ |= 0x00000080;
+        }
+        result.mentionAll_ = mentionAll_;
+        if (((bitField0_ & 0x00000100) == 0x00000100)) {
+          mentionPids_ = mentionPids_.getUnmodifiableView();
+          bitField0_ = (bitField0_ & ~0x00000100);
+        }
+        result.mentionPids_ = mentionPids_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -3623,6 +3761,19 @@ public final class Messages {
         }
         if (other.hasPatchTimestamp()) {
           setPatchTimestamp(other.getPatchTimestamp());
+        }
+        if (other.hasMentionAll()) {
+          setMentionAll(other.getMentionAll());
+        }
+        if (!other.mentionPids_.isEmpty()) {
+          if (mentionPids_.isEmpty()) {
+            mentionPids_ = other.mentionPids_;
+            bitField0_ = (bitField0_ & ~0x00000100);
+          } else {
+            ensureMentionPidsIsMutable();
+            mentionPids_.addAll(other.mentionPids_);
+          }
+          onChanged();
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -4004,6 +4155,131 @@ public final class Messages {
       public Builder clearPatchTimestamp() {
         bitField0_ = (bitField0_ & ~0x00000040);
         patchTimestamp_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private boolean mentionAll_ ;
+      /**
+       * <code>optional bool mentionAll = 8;</code>
+       */
+      public boolean hasMentionAll() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
+      }
+      /**
+       * <code>optional bool mentionAll = 8;</code>
+       */
+      public boolean getMentionAll() {
+        return mentionAll_;
+      }
+      /**
+       * <code>optional bool mentionAll = 8;</code>
+       */
+      public Builder setMentionAll(boolean value) {
+        bitField0_ |= 0x00000080;
+        mentionAll_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool mentionAll = 8;</code>
+       */
+      public Builder clearMentionAll() {
+        bitField0_ = (bitField0_ & ~0x00000080);
+        mentionAll_ = false;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.LazyStringList mentionPids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensureMentionPidsIsMutable() {
+        if (!((bitField0_ & 0x00000100) == 0x00000100)) {
+          mentionPids_ = new com.google.protobuf.LazyStringArrayList(mentionPids_);
+          bitField0_ |= 0x00000100;
+         }
+      }
+      /**
+       * <code>repeated string mentionPids = 9;</code>
+       */
+      public com.google.protobuf.ProtocolStringList
+          getMentionPidsList() {
+        return mentionPids_.getUnmodifiableView();
+      }
+      /**
+       * <code>repeated string mentionPids = 9;</code>
+       */
+      public int getMentionPidsCount() {
+        return mentionPids_.size();
+      }
+      /**
+       * <code>repeated string mentionPids = 9;</code>
+       */
+      public java.lang.String getMentionPids(int index) {
+        return mentionPids_.get(index);
+      }
+      /**
+       * <code>repeated string mentionPids = 9;</code>
+       */
+      public com.google.protobuf.ByteString
+          getMentionPidsBytes(int index) {
+        return mentionPids_.getByteString(index);
+      }
+      /**
+       * <code>repeated string mentionPids = 9;</code>
+       */
+      public Builder setMentionPids(
+          int index, java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureMentionPidsIsMutable();
+        mentionPids_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string mentionPids = 9;</code>
+       */
+      public Builder addMentionPids(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureMentionPidsIsMutable();
+        mentionPids_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string mentionPids = 9;</code>
+       */
+      public Builder addAllMentionPids(
+          java.lang.Iterable<java.lang.String> values) {
+        ensureMentionPidsIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, mentionPids_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string mentionPids = 9;</code>
+       */
+      public Builder clearMentionPids() {
+        mentionPids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000100);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string mentionPids = 9;</code>
+       */
+      public Builder addMentionPidsBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureMentionPidsIsMutable();
+        mentionPids_.add(value);
         onChanged();
         return this;
       }
@@ -34227,126 +34503,127 @@ public final class Messages {
       "eadTuple\022\013\n\003cid\030\001 \002(\t\022\016\n\006unread\030\002 \002(\005\022\013\n" +
       "\003mid\030\003 \001(\t\022\021\n\ttimestamp\030\004 \001(\003\022\014\n\004from\030\005 " +
       "\001(\t\022\014\n\004data\030\006 \001(\t\022\026\n\016patchTimestamp\030\007 \001(" +
-      "\003\022\021\n\tmentioned\030\010 \001(\010\"~\n\007LogItem\022\014\n\004from\030" +
-      "\001 \001(\t\022\014\n\004data\030\002 \001(\t\022\021\n\ttimestamp\030\003 \001(\003\022\r" +
-      "\n\005msgId\030\004 \001(\t\022\r\n\005ackAt\030\005 \001(\003\022\016\n\006readAt\030\006" +
-      " \001(\003\022\026\n\016patchTimestamp\030\007 \001(\003\"_\n\013DataComm" +
-      "and\022\013\n\003ids\030\001 \003(\t\0222\n\003msg\030\002 \003(\0132%.com.avos",
-      ".avoscloud.JsonObjectMessage\022\017\n\007offline\030" +
-      "\003 \001(\010\"\321\002\n\016SessionCommand\022\t\n\001t\030\001 \001(\003\022\t\n\001n" +
-      "\030\002 \001(\t\022\t\n\001s\030\003 \001(\t\022\n\n\002ua\030\004 \001(\t\022\t\n\001r\030\005 \001(\010" +
-      "\022\013\n\003tag\030\006 \001(\t\022\020\n\010deviceId\030\007 \001(\t\022\026\n\016sessi" +
-      "onPeerIds\030\010 \003(\t\022\034\n\024onlineSessionPeerIds\030" +
-      "\t \003(\t\022\n\n\002st\030\n \001(\t\022\r\n\005stTtl\030\013 \001(\005\022\014\n\004code" +
-      "\030\014 \001(\005\022\016\n\006reason\030\r \001(\t\022\023\n\013deviceToken\030\016 " +
-      "\001(\t\022\n\n\002sp\030\017 \001(\010\022\016\n\006detail\030\020 \001(\t\022\033\n\023lastU" +
-      "nreadNotifTime\030\021 \001(\003\022\025\n\rlastPatchTime\030\022 " +
-      "\001(\003\022\024\n\014configBitmap\030\023 \001(\003\"M\n\014ErrorComman",
-      "d\022\014\n\004code\030\001 \002(\005\022\016\n\006reason\030\002 \002(\t\022\017\n\007appCo" +
-      "de\030\003 \001(\005\022\016\n\006detail\030\004 \001(\t\"\314\002\n\rDirectComma" +
-      "nd\022\013\n\003msg\030\001 \001(\t\022\013\n\003uid\030\002 \001(\t\022\022\n\nfromPeer" +
-      "Id\030\003 \001(\t\022\021\n\ttimestamp\030\004 \001(\003\022\017\n\007offline\030\005" +
-      " \001(\010\022\017\n\007hasMore\030\006 \001(\010\022\021\n\ttoPeerIds\030\007 \003(\t" +
-      "\022\t\n\001r\030\n \001(\010\022\013\n\003cid\030\013 \001(\t\022\n\n\002id\030\014 \001(\t\022\021\n\t" +
-      "transient\030\r \001(\010\022\n\n\002dt\030\016 \001(\t\022\016\n\006roomId\030\017 " +
-      "\001(\t\022\020\n\010pushData\030\020 \001(\t\022\014\n\004will\030\021 \001(\010\022\026\n\016p" +
-      "atchTimestamp\030\022 \001(\003\022\021\n\tbinaryMsg\030\023 \001(\014\022\023" +
-      "\n\013mentionPids\030\024 \003(\t\022\022\n\nmentionAll\030\025 \001(\010\"",
-      "\246\001\n\nAckCommand\022\014\n\004code\030\001 \001(\005\022\016\n\006reason\030\002" +
-      " \001(\t\022\013\n\003mid\030\003 \001(\t\022\013\n\003cid\030\004 \001(\t\022\t\n\001t\030\005 \001(" +
-      "\003\022\013\n\003uid\030\006 \001(\t\022\016\n\006fromts\030\007 \001(\003\022\014\n\004tots\030\010" +
-      " \001(\003\022\014\n\004type\030\t \001(\t\022\013\n\003ids\030\n \003(\t\022\017\n\007appCo" +
-      "de\030\013 \001(\005\"R\n\rUnreadCommand\022.\n\005convs\030\001 \003(\013" +
-      "2\037.com.avos.avoscloud.UnreadTuple\022\021\n\tnot" +
-      "ifTime\030\002 \001(\003\"\370\004\n\013ConvCommand\022\t\n\001m\030\001 \003(\t\022" +
-      "\021\n\ttransient\030\002 \001(\010\022\016\n\006unique\030\003 \001(\010\022\013\n\003ci" +
-      "d\030\004 \001(\t\022\r\n\005cdate\030\005 \001(\t\022\016\n\006initBy\030\006 \001(\t\022\014" +
-      "\n\004sort\030\007 \001(\t\022\r\n\005limit\030\010 \001(\005\022\014\n\004skip\030\t \001(",
-      "\005\022\014\n\004flag\030\n \001(\005\022\r\n\005count\030\013 \001(\005\022\r\n\005udate\030" +
-      "\014 \001(\t\022\t\n\001t\030\r \001(\003\022\t\n\001n\030\016 \001(\t\022\t\n\001s\030\017 \001(\t\022\021" +
-      "\n\tstatusSub\030\020 \001(\010\022\021\n\tstatusPub\030\021 \001(\010\022\021\n\t" +
-      "statusTTL\030\022 \001(\005\022\020\n\010uniqueId\030\023 \001(\t\022\026\n\016tar" +
-      "getClientId\030\024 \001(\t\022\030\n\020maxReadTimestamp\030\025 " +
-      "\001(\003\022\027\n\017maxAckTimestamp\030\026 \001(\003\022\027\n\017queryAll" +
-      "Members\030\027 \001(\010\0227\n\rmaxReadTuples\030\030 \003(\0132 .c" +
-      "om.avos.avoscloud.MaxReadTuple\022\014\n\004cids\030\031" +
-      " \003(\t\0226\n\007results\030d \001(\0132%.com.avos.avosclo" +
-      "ud.JsonObjectMessage\0224\n\005where\030e \001(\0132%.co",
-      "m.avos.avoscloud.JsonObjectMessage\0223\n\004at" +
-      "tr\030g \001(\0132%.com.avos.avoscloud.JsonObject" +
-      "Message\"x\n\013RoomCommand\022\016\n\006roomId\030\001 \001(\t\022\t" +
-      "\n\001s\030\002 \001(\t\022\t\n\001t\030\003 \001(\003\022\t\n\001n\030\004 \001(\t\022\021\n\ttrans" +
-      "ient\030\005 \001(\010\022\023\n\013roomPeerIds\030\006 \003(\t\022\020\n\010byPee" +
-      "rId\030\007 \001(\t\"\306\002\n\013LogsCommand\022\013\n\003cid\030\001 \001(\t\022\t" +
-      "\n\001l\030\002 \001(\005\022\r\n\005limit\030\003 \001(\005\022\t\n\001t\030\004 \001(\003\022\n\n\002t" +
-      "t\030\005 \001(\003\022\014\n\004tmid\030\006 \001(\t\022\013\n\003mid\030\007 \001(\t\022\020\n\010ch" +
-      "ecksum\030\010 \001(\t\022\016\n\006stored\030\t \001(\010\022F\n\tdirectio" +
-      "n\030\n \001(\0162..com.avos.avoscloud.LogsCommand",
-      ".QueryDirection:\003OLD\022\021\n\ttIncluded\030\013 \001(\010\022" +
-      "\022\n\nttIncluded\030\014 \001(\010\022)\n\004logs\030i \003(\0132\033.com." +
-      "avos.avoscloud.LogItem\"\"\n\016QueryDirection" +
-      "\022\007\n\003OLD\020\001\022\007\n\003NEW\020\002\">\n\nRcpCommand\022\n\n\002id\030\001" +
-      " \001(\t\022\013\n\003cid\030\002 \001(\t\022\t\n\001t\030\003 \001(\003\022\014\n\004read\030\004 \001" +
-      "(\010\"8\n\tReadTuple\022\013\n\003cid\030\001 \002(\t\022\021\n\ttimestam" +
-      "p\030\002 \001(\003\022\013\n\003mid\030\003 \001(\t\"N\n\014MaxReadTuple\022\013\n\003" +
-      "pid\030\001 \001(\t\022\027\n\017maxAckTimestamp\030\002 \001(\003\022\030\n\020ma" +
-      "xReadTimestamp\030\003 \001(\003\"V\n\013ReadCommand\022\013\n\003c" +
-      "id\030\001 \001(\t\022\014\n\004cids\030\002 \003(\t\022,\n\005convs\030\003 \003(\0132\035.",
-      "com.avos.avoscloud.ReadTuple\"f\n\017Presence" +
-      "Command\022.\n\006status\030\001 \001(\0162\036.com.avos.avosc" +
-      "loud.StatusType\022\026\n\016sessionPeerIds\030\002 \003(\t\022" +
-      "\013\n\003cid\030\003 \001(\t\"?\n\rReportCommand\022\022\n\ninitiat" +
-      "ive\030\001 \001(\010\022\014\n\004type\030\002 \001(\t\022\014\n\004data\030\003 \001(\t\"|\n" +
-      "\tPatchItem\022\013\n\003cid\030\001 \001(\t\022\013\n\003mid\030\002 \001(\t\022\021\n\t" +
-      "timestamp\030\003 \001(\003\022\016\n\006recall\030\004 \001(\010\022\014\n\004data\030" +
-      "\005 \001(\t\022\026\n\016patchTimestamp\030\006 \001(\003\022\014\n\004from\030\007 " +
-      "\001(\t\"U\n\014PatchCommand\022.\n\007patches\030\001 \003(\0132\035.c" +
-      "om.avos.avoscloud.PatchItem\022\025\n\rlastPatch",
-      "Time\030\002 \001(\003\"\331\007\n\016GenericCommand\022,\n\003cmd\030\001 \001" +
-      "(\0162\037.com.avos.avoscloud.CommandType\022&\n\002o" +
-      "p\030\002 \001(\0162\032.com.avos.avoscloud.OpType\022\r\n\005a" +
-      "ppId\030\003 \001(\t\022\016\n\006peerId\030\004 \001(\t\022\t\n\001i\030\005 \001(\005\022\026\n" +
-      "\016installationId\030\006 \001(\t\022\020\n\010priority\030\007 \001(\005\022" +
-      "\017\n\007service\030\010 \001(\005\0224\n\013dataMessage\030e \001(\0132\037." +
-      "com.avos.avoscloud.DataCommand\022:\n\016sessio" +
-      "nMessage\030f \001(\0132\".com.avos.avoscloud.Sess" +
-      "ionCommand\0226\n\014errorMessage\030g \001(\0132 .com.a" +
-      "vos.avoscloud.ErrorCommand\0228\n\rdirectMess",
-      "age\030h \001(\0132!.com.avos.avoscloud.DirectCom" +
-      "mand\0222\n\nackMessage\030i \001(\0132\036.com.avos.avos" +
-      "cloud.AckCommand\0228\n\runreadMessage\030j \001(\0132" +
-      "!.com.avos.avoscloud.UnreadCommand\0224\n\013re" +
-      "adMessage\030k \001(\0132\037.com.avos.avoscloud.Rea" +
-      "dCommand\0222\n\nrcpMessage\030l \001(\0132\036.com.avos." +
-      "avoscloud.RcpCommand\0224\n\013logsMessage\030m \001(" +
-      "\0132\037.com.avos.avoscloud.LogsCommand\0224\n\013co" +
-      "nvMessage\030n \001(\0132\037.com.avos.avoscloud.Con" +
-      "vCommand\0224\n\013roomMessage\030o \001(\0132\037.com.avos",
-      ".avoscloud.RoomCommand\022<\n\017presenceMessag" +
-      "e\030p \001(\0132#.com.avos.avoscloud.PresenceCom" +
-      "mand\0228\n\rreportMessage\030q \001(\0132!.com.avos.a" +
-      "voscloud.ReportCommand\0226\n\014patchMessage\030r" +
-      " \001(\0132 .com.avos.avoscloud.PatchCommand*\344" +
-      "\001\n\013CommandType\022\013\n\007session\020\000\022\010\n\004conv\020\001\022\n\n" +
-      "\006direct\020\002\022\007\n\003ack\020\003\022\007\n\003rcp\020\004\022\n\n\006unread\020\005\022" +
-      "\010\n\004logs\020\006\022\t\n\005error\020\007\022\t\n\005login\020\010\022\010\n\004data\020" +
-      "\t\022\010\n\004room\020\n\022\010\n\004read\020\013\022\014\n\010presence\020\014\022\n\n\006r" +
-      "eport\020\r\022\010\n\004echo\020\016\022\014\n\010loggedin\020\017\022\n\n\006logou",
-      "t\020\020\022\r\n\tloggedout\020\021\022\t\n\005patch\020\022*\360\003\n\006OpType" +
-      "\022\010\n\004open\020\001\022\007\n\003add\020\002\022\n\n\006remove\020\003\022\t\n\005close" +
-      "\020\004\022\n\n\006opened\020\005\022\n\n\006closed\020\006\022\t\n\005query\020\007\022\020\n" +
-      "\014query_result\020\010\022\014\n\010conflict\020\t\022\t\n\005added\020\n" +
-      "\022\013\n\007removed\020\013\022\t\n\005start\020\036\022\013\n\007started\020\037\022\n\n" +
-      "\006joined\020 \022\022\n\016members_joined\020!\022\010\n\004left\020\'\022" +
-      "\020\n\014members_left\020(\022\013\n\007results\020*\022\t\n\005count\020" +
-      "+\022\n\n\006result\020,\022\n\n\006update\020-\022\013\n\007updated\020.\022\010" +
-      "\n\004mute\020/\022\n\n\006unmute\0200\022\n\n\006status\0201\022\013\n\007memb" +
-      "ers\0202\022\014\n\010max_read\0203\022\r\n\tis_member\0204\022\010\n\004jo",
-      "in\020P\022\n\n\006invite\020Q\022\t\n\005leave\020R\022\010\n\004kick\020S\022\n\n" +
-      "\006reject\020T\022\013\n\007invited\020U\022\n\n\006kicked\020V\022\n\n\006up" +
-      "load\020d\022\014\n\010uploaded\020e\022\013\n\006modify\020\226\001\022\r\n\010mod" +
-      "ified\020\227\001*\035\n\nStatusType\022\006\n\002on\020\001\022\007\n\003off\020\002B" +
-      "\036\n\022com.avos.avoscloudB\010Messages"
+      "\003\022\021\n\tmentioned\030\010 \001(\010\"\247\001\n\007LogItem\022\014\n\004from" +
+      "\030\001 \001(\t\022\014\n\004data\030\002 \001(\t\022\021\n\ttimestamp\030\003 \001(\003\022" +
+      "\r\n\005msgId\030\004 \001(\t\022\r\n\005ackAt\030\005 \001(\003\022\016\n\006readAt\030" +
+      "\006 \001(\003\022\026\n\016patchTimestamp\030\007 \001(\003\022\022\n\nmention" +
+      "All\030\010 \001(\010\022\023\n\013mentionPids\030\t \003(\t\"_\n\013DataCo",
+      "mmand\022\013\n\003ids\030\001 \003(\t\0222\n\003msg\030\002 \003(\0132%.com.av" +
+      "os.avoscloud.JsonObjectMessage\022\017\n\007offlin" +
+      "e\030\003 \001(\010\"\321\002\n\016SessionCommand\022\t\n\001t\030\001 \001(\003\022\t\n" +
+      "\001n\030\002 \001(\t\022\t\n\001s\030\003 \001(\t\022\n\n\002ua\030\004 \001(\t\022\t\n\001r\030\005 \001" +
+      "(\010\022\013\n\003tag\030\006 \001(\t\022\020\n\010deviceId\030\007 \001(\t\022\026\n\016ses" +
+      "sionPeerIds\030\010 \003(\t\022\034\n\024onlineSessionPeerId" +
+      "s\030\t \003(\t\022\n\n\002st\030\n \001(\t\022\r\n\005stTtl\030\013 \001(\005\022\014\n\004co" +
+      "de\030\014 \001(\005\022\016\n\006reason\030\r \001(\t\022\023\n\013deviceToken\030" +
+      "\016 \001(\t\022\n\n\002sp\030\017 \001(\010\022\016\n\006detail\030\020 \001(\t\022\033\n\023las" +
+      "tUnreadNotifTime\030\021 \001(\003\022\025\n\rlastPatchTime\030",
+      "\022 \001(\003\022\024\n\014configBitmap\030\023 \001(\003\"M\n\014ErrorComm" +
+      "and\022\014\n\004code\030\001 \002(\005\022\016\n\006reason\030\002 \002(\t\022\017\n\007app" +
+      "Code\030\003 \001(\005\022\016\n\006detail\030\004 \001(\t\"\314\002\n\rDirectCom" +
+      "mand\022\013\n\003msg\030\001 \001(\t\022\013\n\003uid\030\002 \001(\t\022\022\n\nfromPe" +
+      "erId\030\003 \001(\t\022\021\n\ttimestamp\030\004 \001(\003\022\017\n\007offline" +
+      "\030\005 \001(\010\022\017\n\007hasMore\030\006 \001(\010\022\021\n\ttoPeerIds\030\007 \003" +
+      "(\t\022\t\n\001r\030\n \001(\010\022\013\n\003cid\030\013 \001(\t\022\n\n\002id\030\014 \001(\t\022\021" +
+      "\n\ttransient\030\r \001(\010\022\n\n\002dt\030\016 \001(\t\022\016\n\006roomId\030" +
+      "\017 \001(\t\022\020\n\010pushData\030\020 \001(\t\022\014\n\004will\030\021 \001(\010\022\026\n" +
+      "\016patchTimestamp\030\022 \001(\003\022\021\n\tbinaryMsg\030\023 \001(\014",
+      "\022\023\n\013mentionPids\030\024 \003(\t\022\022\n\nmentionAll\030\025 \001(" +
+      "\010\"\246\001\n\nAckCommand\022\014\n\004code\030\001 \001(\005\022\016\n\006reason" +
+      "\030\002 \001(\t\022\013\n\003mid\030\003 \001(\t\022\013\n\003cid\030\004 \001(\t\022\t\n\001t\030\005 " +
+      "\001(\003\022\013\n\003uid\030\006 \001(\t\022\016\n\006fromts\030\007 \001(\003\022\014\n\004tots" +
+      "\030\010 \001(\003\022\014\n\004type\030\t \001(\t\022\013\n\003ids\030\n \003(\t\022\017\n\007app" +
+      "Code\030\013 \001(\005\"R\n\rUnreadCommand\022.\n\005convs\030\001 \003" +
+      "(\0132\037.com.avos.avoscloud.UnreadTuple\022\021\n\tn" +
+      "otifTime\030\002 \001(\003\"\370\004\n\013ConvCommand\022\t\n\001m\030\001 \003(" +
+      "\t\022\021\n\ttransient\030\002 \001(\010\022\016\n\006unique\030\003 \001(\010\022\013\n\003" +
+      "cid\030\004 \001(\t\022\r\n\005cdate\030\005 \001(\t\022\016\n\006initBy\030\006 \001(\t",
+      "\022\014\n\004sort\030\007 \001(\t\022\r\n\005limit\030\010 \001(\005\022\014\n\004skip\030\t " +
+      "\001(\005\022\014\n\004flag\030\n \001(\005\022\r\n\005count\030\013 \001(\005\022\r\n\005udat" +
+      "e\030\014 \001(\t\022\t\n\001t\030\r \001(\003\022\t\n\001n\030\016 \001(\t\022\t\n\001s\030\017 \001(\t" +
+      "\022\021\n\tstatusSub\030\020 \001(\010\022\021\n\tstatusPub\030\021 \001(\010\022\021" +
+      "\n\tstatusTTL\030\022 \001(\005\022\020\n\010uniqueId\030\023 \001(\t\022\026\n\016t" +
+      "argetClientId\030\024 \001(\t\022\030\n\020maxReadTimestamp\030" +
+      "\025 \001(\003\022\027\n\017maxAckTimestamp\030\026 \001(\003\022\027\n\017queryA" +
+      "llMembers\030\027 \001(\010\0227\n\rmaxReadTuples\030\030 \003(\0132 " +
+      ".com.avos.avoscloud.MaxReadTuple\022\014\n\004cids" +
+      "\030\031 \003(\t\0226\n\007results\030d \001(\0132%.com.avos.avosc",
+      "loud.JsonObjectMessage\0224\n\005where\030e \001(\0132%." +
+      "com.avos.avoscloud.JsonObjectMessage\0223\n\004" +
+      "attr\030g \001(\0132%.com.avos.avoscloud.JsonObje" +
+      "ctMessage\"x\n\013RoomCommand\022\016\n\006roomId\030\001 \001(\t" +
+      "\022\t\n\001s\030\002 \001(\t\022\t\n\001t\030\003 \001(\003\022\t\n\001n\030\004 \001(\t\022\021\n\ttra" +
+      "nsient\030\005 \001(\010\022\023\n\013roomPeerIds\030\006 \003(\t\022\020\n\010byP" +
+      "eerId\030\007 \001(\t\"\306\002\n\013LogsCommand\022\013\n\003cid\030\001 \001(\t" +
+      "\022\t\n\001l\030\002 \001(\005\022\r\n\005limit\030\003 \001(\005\022\t\n\001t\030\004 \001(\003\022\n\n" +
+      "\002tt\030\005 \001(\003\022\014\n\004tmid\030\006 \001(\t\022\013\n\003mid\030\007 \001(\t\022\020\n\010" +
+      "checksum\030\010 \001(\t\022\016\n\006stored\030\t \001(\010\022F\n\tdirect",
+      "ion\030\n \001(\0162..com.avos.avoscloud.LogsComma" +
+      "nd.QueryDirection:\003OLD\022\021\n\ttIncluded\030\013 \001(" +
+      "\010\022\022\n\nttIncluded\030\014 \001(\010\022)\n\004logs\030i \003(\0132\033.co" +
+      "m.avos.avoscloud.LogItem\"\"\n\016QueryDirecti" +
+      "on\022\007\n\003OLD\020\001\022\007\n\003NEW\020\002\">\n\nRcpCommand\022\n\n\002id" +
+      "\030\001 \001(\t\022\013\n\003cid\030\002 \001(\t\022\t\n\001t\030\003 \001(\003\022\014\n\004read\030\004" +
+      " \001(\010\"8\n\tReadTuple\022\013\n\003cid\030\001 \002(\t\022\021\n\ttimest" +
+      "amp\030\002 \001(\003\022\013\n\003mid\030\003 \001(\t\"N\n\014MaxReadTuple\022\013" +
+      "\n\003pid\030\001 \001(\t\022\027\n\017maxAckTimestamp\030\002 \001(\003\022\030\n\020" +
+      "maxReadTimestamp\030\003 \001(\003\"V\n\013ReadCommand\022\013\n",
+      "\003cid\030\001 \001(\t\022\014\n\004cids\030\002 \003(\t\022,\n\005convs\030\003 \003(\0132" +
+      "\035.com.avos.avoscloud.ReadTuple\"f\n\017Presen" +
+      "ceCommand\022.\n\006status\030\001 \001(\0162\036.com.avos.avo" +
+      "scloud.StatusType\022\026\n\016sessionPeerIds\030\002 \003(" +
+      "\t\022\013\n\003cid\030\003 \001(\t\"?\n\rReportCommand\022\022\n\niniti" +
+      "ative\030\001 \001(\010\022\014\n\004type\030\002 \001(\t\022\014\n\004data\030\003 \001(\t\"" +
+      "|\n\tPatchItem\022\013\n\003cid\030\001 \001(\t\022\013\n\003mid\030\002 \001(\t\022\021" +
+      "\n\ttimestamp\030\003 \001(\003\022\016\n\006recall\030\004 \001(\010\022\014\n\004dat" +
+      "a\030\005 \001(\t\022\026\n\016patchTimestamp\030\006 \001(\003\022\014\n\004from\030" +
+      "\007 \001(\t\"U\n\014PatchCommand\022.\n\007patches\030\001 \003(\0132\035",
+      ".com.avos.avoscloud.PatchItem\022\025\n\rlastPat" +
+      "chTime\030\002 \001(\003\"\331\007\n\016GenericCommand\022,\n\003cmd\030\001" +
+      " \001(\0162\037.com.avos.avoscloud.CommandType\022&\n" +
+      "\002op\030\002 \001(\0162\032.com.avos.avoscloud.OpType\022\r\n" +
+      "\005appId\030\003 \001(\t\022\016\n\006peerId\030\004 \001(\t\022\t\n\001i\030\005 \001(\005\022" +
+      "\026\n\016installationId\030\006 \001(\t\022\020\n\010priority\030\007 \001(" +
+      "\005\022\017\n\007service\030\010 \001(\005\0224\n\013dataMessage\030e \001(\0132" +
+      "\037.com.avos.avoscloud.DataCommand\022:\n\016sess" +
+      "ionMessage\030f \001(\0132\".com.avos.avoscloud.Se" +
+      "ssionCommand\0226\n\014errorMessage\030g \001(\0132 .com",
+      ".avos.avoscloud.ErrorCommand\0228\n\rdirectMe" +
+      "ssage\030h \001(\0132!.com.avos.avoscloud.DirectC" +
+      "ommand\0222\n\nackMessage\030i \001(\0132\036.com.avos.av" +
+      "oscloud.AckCommand\0228\n\runreadMessage\030j \001(" +
+      "\0132!.com.avos.avoscloud.UnreadCommand\0224\n\013" +
+      "readMessage\030k \001(\0132\037.com.avos.avoscloud.R" +
+      "eadCommand\0222\n\nrcpMessage\030l \001(\0132\036.com.avo" +
+      "s.avoscloud.RcpCommand\0224\n\013logsMessage\030m " +
+      "\001(\0132\037.com.avos.avoscloud.LogsCommand\0224\n\013" +
+      "convMessage\030n \001(\0132\037.com.avos.avoscloud.C",
+      "onvCommand\0224\n\013roomMessage\030o \001(\0132\037.com.av" +
+      "os.avoscloud.RoomCommand\022<\n\017presenceMess" +
+      "age\030p \001(\0132#.com.avos.avoscloud.PresenceC" +
+      "ommand\0228\n\rreportMessage\030q \001(\0132!.com.avos" +
+      ".avoscloud.ReportCommand\0226\n\014patchMessage" +
+      "\030r \001(\0132 .com.avos.avoscloud.PatchCommand" +
+      "*\344\001\n\013CommandType\022\013\n\007session\020\000\022\010\n\004conv\020\001\022" +
+      "\n\n\006direct\020\002\022\007\n\003ack\020\003\022\007\n\003rcp\020\004\022\n\n\006unread\020" +
+      "\005\022\010\n\004logs\020\006\022\t\n\005error\020\007\022\t\n\005login\020\010\022\010\n\004dat" +
+      "a\020\t\022\010\n\004room\020\n\022\010\n\004read\020\013\022\014\n\010presence\020\014\022\n\n",
+      "\006report\020\r\022\010\n\004echo\020\016\022\014\n\010loggedin\020\017\022\n\n\006log" +
+      "out\020\020\022\r\n\tloggedout\020\021\022\t\n\005patch\020\022*\360\003\n\006OpTy" +
+      "pe\022\010\n\004open\020\001\022\007\n\003add\020\002\022\n\n\006remove\020\003\022\t\n\005clo" +
+      "se\020\004\022\n\n\006opened\020\005\022\n\n\006closed\020\006\022\t\n\005query\020\007\022" +
+      "\020\n\014query_result\020\010\022\014\n\010conflict\020\t\022\t\n\005added" +
+      "\020\n\022\013\n\007removed\020\013\022\t\n\005start\020\036\022\013\n\007started\020\037\022" +
+      "\n\n\006joined\020 \022\022\n\016members_joined\020!\022\010\n\004left\020" +
+      "\'\022\020\n\014members_left\020(\022\013\n\007results\020*\022\t\n\005coun" +
+      "t\020+\022\n\n\006result\020,\022\n\n\006update\020-\022\013\n\007updated\020." +
+      "\022\010\n\004mute\020/\022\n\n\006unmute\0200\022\n\n\006status\0201\022\013\n\007me",
+      "mbers\0202\022\014\n\010max_read\0203\022\r\n\tis_member\0204\022\010\n\004" +
+      "join\020P\022\n\n\006invite\020Q\022\t\n\005leave\020R\022\010\n\004kick\020S\022" +
+      "\n\n\006reject\020T\022\013\n\007invited\020U\022\n\n\006kicked\020V\022\n\n\006" +
+      "upload\020d\022\014\n\010uploaded\020e\022\013\n\006modify\020\226\001\022\r\n\010m" +
+      "odified\020\227\001*\035\n\nStatusType\022\006\n\002on\020\001\022\007\n\003off\020" +
+      "\002B%\n\022com.avos.avoscloudB\010Messages\242\002\004AVIM"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -34377,7 +34654,7 @@ public final class Messages {
     internal_static_com_avos_avoscloud_LogItem_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_avos_avoscloud_LogItem_descriptor,
-        new java.lang.String[] { "From", "Data", "Timestamp", "MsgId", "AckAt", "ReadAt", "PatchTimestamp", });
+        new java.lang.String[] { "From", "Data", "Timestamp", "MsgId", "AckAt", "ReadAt", "PatchTimestamp", "MentionAll", "MentionPids", });
     internal_static_com_avos_avoscloud_DataCommand_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_com_avos_avoscloud_DataCommand_fieldAccessorTable = new
