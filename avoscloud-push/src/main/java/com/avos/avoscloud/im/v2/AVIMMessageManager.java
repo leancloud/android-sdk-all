@@ -138,7 +138,7 @@ public class AVIMMessageManager {
     final AVIMConversation conversation = client.getConversation(message.getConversationId());
     conversation.setLastMessage(message);
     if (!isTransient) {
-      conversation.increaseUnreadCount(1);
+      conversation.increaseUnreadCount(1, message.mentioned());
     }
     conversation.setLastMessageAt(new Date(message.getTimestamp()));
 

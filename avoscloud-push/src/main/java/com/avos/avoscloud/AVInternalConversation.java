@@ -614,6 +614,12 @@ class AVInternalConversation {
       AVIMConversation conversation = client.getConversation(this.conversationId);
       if (conversation.getUnreadMessagesCount() != unreadCount) {
         Pair<Integer, Boolean> unreadInfo = new Pair<>(unreadCount, mentioned);
+        if (null != message) {
+          message.setMessageIOType(AVIMMessage.AVIMMessageIOType.AVIMMessageIOTypeIn);
+          message.setMessageStatus(AVIMMessage.AVIMMessageStatus.AVIMMessageStatusSent);
+          message = AVIMMessageManagerHelper.parseTypedMessage(message);
+        }
+
         handler.processEvent(Conversation.STATUS_ON_UNREAD_EVENT, message, unreadInfo, conversation);
       }
     }
