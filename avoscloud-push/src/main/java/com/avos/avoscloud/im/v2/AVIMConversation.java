@@ -967,8 +967,12 @@ public class AVIMConversation {
     }
   }
 
-  void increaseUnreadCount(int num) {
+  void increaseUnreadCount(int num, boolean mentioned) {
     unreadMessagesCount = getUnreadMessagesCount() + num;
+    if (mentioned) {
+      unreadMessagesMentioned = mentioned;
+    }
+
   }
 
   void updateUnreadCountAndMessage(AVIMMessage lastMessage, int unreadCount, boolean mentioned) {
