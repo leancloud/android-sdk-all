@@ -115,47 +115,82 @@ public class AVSession {
         this.sessionListener.onSessionOpen(context, this, requestId);
         return;
       }
-      SignatureCallback callback = new SignatureCallback() {
 
-        @Override
-        public void onSignatureReady(Signature sig, AVException e) {
-          if (e == null) {
-            conversationOperationCache.offer(Operation.getOperation(
-                  AVIMOperation.CLIENT_OPEN.getCode(), selfId, null, requestId));
-            SessionControlPacket scp = SessionControlPacket.genSessionCommand(selfId,
-              null, SessionControlPacket.SessionControlOp.OPEN,
-              sig, getLastNotifyTime(), getLastPatchTime(), requestId);
-            scp.setTag(tag);
-            // 注意，forceSingleLogin 代表是否强制登陆，若为 true, reconnectionRequest 应为 false
-            scp.setReconnectionRequest(!parcel.isForceSingleLogin());
-            PushService.sendData(scp);
-          } else {
-            sessionListener.onError(AVOSCloud.applicationContext, AVSession.this, e,
-                OPERATION_OPEN_SESSION, requestId);
-          }
-        }
-
-        @Override
-        public boolean cacheSignature() {
-          return false;
-        }
-
-        @Override
-        public Signature computeSignature() throws SignatureException {
-          SignatureFactory signatureFactory = AVIMOptions.getGlobalOptions().getSignatureFactory();
-          if (null == signatureFactory && !AVUtils.isBlankString(getSessionToken())) {
-            signatureFactory  = new AVUserSignatureFactory(getSessionToken());
-          }
-          if (null != signatureFactory) {
-            return signatureFactory.createSignature(selfId, new ArrayList<String>());
-          }
-          return null;
-        }
-      };
-      new SignatureTask(callback).execute(this.selfId);
+      openWithSignature(requestId, !parcel.isForceSingleLogin(), true);
     } catch (Exception e) {
       sessionListener.onError(AVOSCloud.applicationContext, this, e,
           OPERATION_OPEN_SESSION, requestId);
+    }
+  }
+
+  void reopen() {
+    if (!AVUtils.isBlankString(sessionToken)) {
+      openWithSessionToken();
+    } else {
+      int requestId = AVUtils.getNextIMRequestId();
+      openWithSignature(requestId, true, false);
+    }
+  }
+
+  /**
+   * 使用im-sessionToken来登录
+   */
+  private void openWithSessionToken() {
+    SessionControlPacket scp = SessionControlPacket.genSessionCommand(
+        this.getSelfPeerId(), null, SessionControlPacket.SessionControlOp.OPEN, null, this.getLastNotifyTime(), this.getLastPatchTime(), null);
+    scp.setSessionToken(sessionToken);
+    scp.setReconnectionRequest(true);
+    PushService.sendData(scp);
+  }
+
+  /**
+   * 使用签名登陆
+   */
+  private void openWithSignature(final int requestId, final boolean reconnectionFlag, final boolean notifyListener) {
+    final SignatureCallback callback = new SignatureCallback() {
+      @Override
+      public void onSignatureReady(Signature sig, AVException exception) {
+        if (null != exception) {
+          if (notifyListener) {
+            sessionListener.onError(AVOSCloud.applicationContext, AVSession.this, exception,
+                OPERATION_OPEN_SESSION, requestId);
+          } else {
+            LogUtil.log.d("failed to generate signaure. cause:", exception);
+          }
+        } else {
+          conversationOperationCache.offer(Operation.getOperation(
+              AVIMOperation.CLIENT_OPEN.getCode(), getSelfPeerId(), null, requestId));
+          SessionControlPacket scp = SessionControlPacket.genSessionCommand(
+              getSelfPeerId(), null,
+              SessionControlPacket.SessionControlOp.OPEN, sig, getLastNotifyTime(), getLastPatchTime(), requestId);
+          scp.setTag(tag);
+          scp.setReconnectionRequest(reconnectionFlag);
+          PushService.sendData(scp);
+        }
+      }
+
+      @Override
+      public Signature computeSignature() throws SignatureException {
+        SignatureFactory signatureFactory = AVIMOptions.getGlobalOptions().getSignatureFactory();
+        if (null == signatureFactory && !AVUtils.isBlankString(getSessionToken())) {
+          signatureFactory = new AVUserSignatureFactory(getSessionToken());
+        }
+        if (null != signatureFactory) {
+          return signatureFactory.createSignature(getSelfPeerId(), new ArrayList<String>());
+        }
+        return null;
+      }
+    };
+    // 在某些特定的rom上，socket回来的线程会与Service本身的线程不一致，导致AsyncTask调用出现异常
+    if (!AVUtils.isMainThread()) {
+      AVOSCloud.handler.post(new Runnable() {
+        @Override
+        public void run() {
+          new SignatureTask(callback).execute(getSelfPeerId());
+        }
+      });
+    } else {
+      new SignatureTask(callback).execute(getSelfPeerId());
     }
   }
 
