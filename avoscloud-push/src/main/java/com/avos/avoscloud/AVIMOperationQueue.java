@@ -1,5 +1,6 @@
 package com.avos.avoscloud;
 
+import com.avos.avoscloud.im.v2.AVIMOptions;
 import com.avos.avoscloud.im.v2.Conversation.AVIMOperation;
 import com.avos.avospush.session.CommandPacket;
 import com.avos.avospush.session.MessageQueue;
@@ -74,7 +75,7 @@ class AVIMOperationQueue {
         }
       };
       timeoutCache.put(op.requestId, timeoutTask);
-      timeoutHandler.postDelayed(timeoutTask, AVSession.timeoutInSecs * 1000);
+      timeoutHandler.postDelayed(timeoutTask, AVIMOptions.getGlobalOptions().getTimeoutInSecs() * 1000);
     }
     operationQueue.offer(op);
   }

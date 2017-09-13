@@ -6,6 +6,7 @@ import java.util.List;
  * Created by nsun on 5/15/14.
  */
 public interface SignatureFactory {
+  public static final int SIGNATURE_FAILED_LOGIN = 4102;
 
   /**
    * 实现一个基础签名方法 其中的签名算法会在SessionManager和AVIMClient(V2)中被使用
