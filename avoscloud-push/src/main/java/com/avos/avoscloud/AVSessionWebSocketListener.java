@@ -9,6 +9,7 @@ import com.avos.avoscloud.PendingMessageCache.Message;
 import com.avos.avoscloud.SignatureFactory.SignatureException;
 import com.avos.avoscloud.im.v2.AVIMException;
 import com.avos.avoscloud.im.v2.AVIMMessage;
+import com.avos.avoscloud.im.v2.AVIMOptions;
 import com.avos.avoscloud.im.v2.AVIMTypedMessage;
 import com.avos.avoscloud.im.v2.Conversation;
 import com.avos.avoscloud.im.v2.Conversation.AVIMOperation;
@@ -96,15 +97,12 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
 
       @Override
       public Signature computeSignature() throws SignatureException {
-        final SignatureFactory signatureFactory = AVSession.getSignatureFactory();
+        SignatureFactory signatureFactory = AVIMOptions.getGlobalOptions().getSignatureFactory();
+        if (null == signatureFactory && !AVUtils.isBlankString(session.getSessionToken())) {
+          signatureFactory = new AVUserSignatureFactory(session.getSessionToken());
+        }
         if (null != signatureFactory) {
           return signatureFactory.createSignature(session.getSelfPeerId(), new ArrayList<String>());
-        } else if (!AVUtils.isBlankString(session.getSessionToken())) {
-          try {
-            return new AVUserSinatureFactory(session.getSessionToken()).getOpenSignature();
-          } catch (AVException e) {
-            throw  new SignatureException(e.getCode(), e.getMessage());
-          }
         }
         return null;
       }

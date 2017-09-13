@@ -49,7 +49,7 @@ public class AVIMClient {
   private static boolean isAutoOpen = true;
 
   public SignatureFactory getSignatureFactory() {
-    return AVSession.getSignatureFactory();
+    return AVIMOptions.getGlobalOptions().getSignatureFactory();
   }
 
   /**
@@ -60,7 +60,7 @@ public class AVIMClient {
    */
 
   public static void setSignatureFactory(SignatureFactory factory) {
-    AVSession.setSignatureFactory(factory);
+    AVIMOptions.getGlobalOptions().setSignatureFactory(factory);
   }
 
   /**
@@ -72,7 +72,7 @@ public class AVIMClient {
    */
 
   public static void setTimeoutInSecs(int timeoutInSecs) {
-    AVSession.setTimeoutInSecs(timeoutInSecs);
+    AVIMOptions.getGlobalOptions().setTimeoutInSecs(timeoutInSecs);
   }
 
   /**

@@ -21,6 +21,7 @@ import com.avos.avoscloud.im.v2.AVIMMessage;
 import com.avos.avoscloud.im.v2.AVIMMessageManagerHelper;
 import com.avos.avoscloud.im.v2.AVIMMessageOption;
 import com.avos.avoscloud.im.v2.AVIMMessageQueryDirection;
+import com.avos.avoscloud.im.v2.AVIMOptions;
 import com.avos.avoscloud.im.v2.Conversation;
 import com.avos.avoscloud.im.v2.Conversation.AVIMOperation;
 import com.avos.avospush.session.CommandPacket;
@@ -69,7 +70,7 @@ class AVInternalConversation {
 
       @Override
       public Signature computeSignature() throws SignatureException {
-        final SignatureFactory signatureFactory = AVSession.getSignatureFactory();
+        final SignatureFactory signatureFactory = AVIMOptions.getGlobalOptions().getSignatureFactory();
         if (null != signatureFactory) {
           // 服务器端为了兼容老版本，这里需要使用group的invite
           return signatureFactory.createConversationSignature(conversationId,
@@ -105,7 +106,7 @@ class AVInternalConversation {
       @Override
       public Signature computeSignature() throws SignatureException {
         // 服务器端为兼容老版本，签名使用kick的action
-        final SignatureFactory signatureFactory = AVSession.getSignatureFactory();
+        final SignatureFactory signatureFactory = AVIMOptions.getGlobalOptions().getSignatureFactory();
         if (signatureFactory != null) {
           return signatureFactory.createConversationSignature(conversationId,
               session.getSelfPeerId(), members, GROUP_KICK);
@@ -137,7 +138,7 @@ class AVInternalConversation {
 
       @Override
       public Signature computeSignature() throws SignatureException {
-        final SignatureFactory signatureFactory = AVSession.getSignatureFactory();
+        final SignatureFactory signatureFactory = AVIMOptions.getGlobalOptions().getSignatureFactory();
         if (null != signatureFactory) {
           // 服务器端为了兼容老版本，这里需要使用group的invite
           return signatureFactory.createConversationSignature(conversationId,

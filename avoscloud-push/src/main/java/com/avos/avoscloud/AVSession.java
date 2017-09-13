@@ -7,6 +7,7 @@ import com.avos.avoscloud.AVIMOperationQueue.Operation;
 import com.avos.avoscloud.PendingMessageCache.Message;
 import com.avos.avoscloud.SignatureFactory.SignatureException;
 import com.avos.avoscloud.im.v2.AVIMMessage;
+import com.avos.avoscloud.im.v2.AVIMOptions;
 import com.avos.avoscloud.im.v2.Conversation.AVIMOperation;
 import com.avos.avospush.push.AVWebSocketListener;
 import com.avos.avospush.session.CommandPacket;
@@ -35,8 +36,6 @@ public class AVSession {
 
   public static final String ERROR_INVALID_SESSION_ID = "Null id in session id list.";
 
-  static int timeoutInSecs = 15;
-
   /**
    * 用于 read 的多端同步
    */
@@ -53,7 +52,6 @@ public class AVSession {
   private final String AVUSER_SESSION_TOKEN = "avuserSessionToken";
 
   private final Context context;
-  final AVInternalSessionListener sessionListener;
   private final String selfId;
   String tag;
   private String sessionToken = null;
@@ -72,6 +70,9 @@ public class AVSession {
   private final ConcurrentHashMap<String, AVInternalConversation> sessionConversationCache =
       new ConcurrentHashMap<String, AVInternalConversation>();
 
+  // responsable for session event(open/close/resume/error)
+  final AVInternalSessionListener sessionListener;
+  // responsable for im protocol: directCommand/sessionCommand, etc
   private final AVSessionWebSocketListener websocketListener;
 
   /**
@@ -79,16 +80,6 @@ public class AVSession {
    * true 为仅推送数量，false 为推送具体消息
    */
   private static boolean onlyPushCount = false;
-
-  private static SignatureFactory signatureFactory;
-
-  public static SignatureFactory getSignatureFactory() {
-    return signatureFactory;
-  }
-
-  public static void setSignatureFactory(SignatureFactory factory) {
-    AVSession.signatureFactory = factory;
-  }
 
   public AVWebSocketListener getWebSocketListener() {
     return this.websocketListener;
@@ -103,6 +94,12 @@ public class AVSession {
     conversationOperationCache = new AVIMOperationQueue(selfId);
   }
 
+  /**
+   * open a new session
+   *
+   * @param parcel
+   * @param requestId
+   */
   public void open(final AVIMClientParcel parcel, final int requestId) {
     this.tag = parcel.getClientTag();
     updateSessionToken(parcel.getSessionToken());
@@ -145,15 +142,12 @@ public class AVSession {
 
         @Override
         public Signature computeSignature() throws SignatureException {
-          final SignatureFactory signatureFactory = AVSession.getSignatureFactory();
+          SignatureFactory signatureFactory = AVIMOptions.getGlobalOptions().getSignatureFactory();
+          if (null == signatureFactory && !AVUtils.isBlankString(getSessionToken())) {
+            signatureFactory  = new AVUserSignatureFactory(getSessionToken());
+          }
           if (null != signatureFactory) {
             return signatureFactory.createSignature(selfId, new ArrayList<String>());
-          } else if (!AVUtils.isBlankString(getSessionToken())) {
-            try {
-              return new AVUserSinatureFactory(getSessionToken()).getOpenSignature();
-            } catch (AVException e) {
-              throw  new SignatureException(e.getCode(), e.getMessage());
-            }
           }
           return null;
         }
@@ -308,6 +302,7 @@ public class AVSession {
 
       @Override
       public Signature computeSignature() throws SignatureException {
+        SignatureFactory signatureFactory = AVIMOptions.getGlobalOptions().getSignatureFactory();
         if (signatureFactory != null) {
           return signatureFactory.createSignature(selfId, members);
         }
@@ -331,10 +326,6 @@ public class AVSession {
    */
   public static boolean isOnlyPushCount() {
     return onlyPushCount;
-  }
-
-  public static void setTimeoutInSecs(int timeout) {
-    timeoutInSecs = timeout;
   }
 
   long getLastNotifyTime() {
