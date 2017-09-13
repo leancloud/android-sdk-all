@@ -23,7 +23,6 @@ public class AVDefaultSessionListener extends AVInternalSessionListener {
 
   @Override
   public void onSessionOpen(Context context, AVSession session, int requestId) {
-
     // 既然已经成功了，就往缓存里面添加一条记录
     AVSessionCacheHelper.getTagCacheInstance().addSession(session.getSelfPeerId(), session.tag);
     // 这里需要给AVIMClient那边发一个LocalBoardcastMessage

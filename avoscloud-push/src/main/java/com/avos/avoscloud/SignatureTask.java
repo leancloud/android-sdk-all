@@ -7,7 +7,7 @@ import android.os.AsyncTask;
  */
 class SignatureTask extends AsyncTask<String, Integer, Signature> {
   SignatureCallback callback;
-  AVException signatureException;
+  AVException signatureException = null;
 
   public SignatureTask(SignatureCallback callback) {
     this.callback = callback;
