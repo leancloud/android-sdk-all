@@ -10,13 +10,13 @@ import java.util.Map;
 /**
  * Created by wli on 2017/7/28.
  */
-public class AVUserSinatureFactory implements SignatureFactory {
+public class AVUserSignatureFactory implements SignatureFactory {
 
   private static final String RTM_SIGN_ENDPOINT = "rtm/sign";
 
   private String sessionToken;
 
-  public AVUserSinatureFactory(String sessionToken) {
+  public AVUserSignatureFactory(String sessionToken) {
     this.sessionToken = sessionToken;
   }
 

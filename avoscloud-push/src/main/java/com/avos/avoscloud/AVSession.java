@@ -144,7 +144,7 @@ public class AVSession {
         public Signature computeSignature() throws SignatureException {
           SignatureFactory signatureFactory = AVIMOptions.getGlobalOptions().getSignatureFactory();
           if (null == signatureFactory && !AVUtils.isBlankString(getSessionToken())) {
-            signatureFactory  = new AVUserSinatureFactory(getSessionToken());
+            signatureFactory  = new AVUserSignatureFactory(getSessionToken());
           }
           if (null != signatureFactory) {
             return signatureFactory.createSignature(selfId, new ArrayList<String>());

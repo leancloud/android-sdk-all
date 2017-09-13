@@ -99,7 +99,7 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
       public Signature computeSignature() throws SignatureException {
         SignatureFactory signatureFactory = AVIMOptions.getGlobalOptions().getSignatureFactory();
         if (null == signatureFactory && !AVUtils.isBlankString(session.getSessionToken())) {
-          signatureFactory = new AVUserSinatureFactory(session.getSessionToken());
+          signatureFactory = new AVUserSignatureFactory(session.getSessionToken());
         }
         if (null != signatureFactory) {
           return signatureFactory.createSignature(session.getSelfPeerId(), new ArrayList<String>());
