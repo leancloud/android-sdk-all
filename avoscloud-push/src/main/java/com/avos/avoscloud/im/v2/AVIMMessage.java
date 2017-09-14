@@ -228,17 +228,34 @@ public class AVIMMessage implements Parcelable {
     return 0;
   }
 
+  /**
+   * 判断消息里面是否 mention 了当前用户
+   * @return
+   */
   public boolean mentioned() {
     return isMentionAll() || (null != mentionList && mentionList.contains(currentClient));
   }
 
+  /**
+   * 设置 mention 用户列表
+   * @param peerIdList mention peer id list
+   */
   public void setMentionList(List<String> peerIdList) {
     this.mentionList = peerIdList;
   }
 
+  /**
+   * 获取 mention 用户列表
+   * @return
+   */
   public List<String> getMentionList() {
     return this.mentionList;
   }
+
+  /**
+   * 获取 mention 用户列表的字符串（逗号分隔）
+   * @return
+   */
   public String getMentionListString() {
     if (null == this.mentionList) {
       return "";
@@ -252,7 +269,11 @@ public class AVIMMessage implements Parcelable {
     }
     return builder.toString();
   }
-  
+
+  /**
+   * 设置 mention 用户列表字符串（逗号分隔），功能与 #setMentionList(List<String> peerIdList) 相同，两者调用一个即可。
+   * @param content
+   */
   public void setMentionListString(String content) {
     if (AVUtils.isBlankString(content)) {
       this.mentionList = null;
@@ -263,10 +284,18 @@ public class AVIMMessage implements Parcelable {
     }
   }
 
+  /**
+   * 判断是否 mention 了所有人
+   * @return
+   */
   public boolean isMentionAll() {
     return mentionAll;
   }
 
+  /**
+   * 设置是否 mention 所有人
+   * @param mentionAll
+   */
   public void setMentionAll(boolean mentionAll) {
     this.mentionAll = mentionAll;
   }

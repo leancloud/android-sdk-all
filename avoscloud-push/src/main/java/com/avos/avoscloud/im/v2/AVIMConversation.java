@@ -507,6 +507,14 @@ public class AVIMConversation {
         });
   }
 
+  /**
+   * 根据指定的区间来查询历史消息，可以指定区间开闭、查询方向以及最大条目限制
+   * @param interval  - 区间，由起止 AVIMMessageIntervalBound 组成
+   * @param direction - 查询方向，支持向前（AVIMMessageQueryDirection.AVIMMessageQueryDirectionFromNewToOld）
+   *                    或向后（AVIMMessageQueryDirection.AVIMMessageQueryDirectionFromOldToNew）查询
+   * @param limit     - 结果最大条目限制
+   * @param callback  - 结果回调函数
+   */
   public void queryMessages(final AVIMMessageInterval interval, AVIMMessageQueryDirection direction, final int limit,
                             final AVIMMessagesQueryCallback callback) {
     if (null == interval || limit < 0) {

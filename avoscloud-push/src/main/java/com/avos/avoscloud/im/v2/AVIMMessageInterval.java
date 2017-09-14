@@ -1,6 +1,7 @@
 package com.avos.avoscloud.im.v2;
 
 /**
+ * Message Query Interval
  * Created by fengjunwen on 2017/9/5.
  */
 
@@ -19,10 +20,24 @@ public class AVIMMessageInterval {
     }
   }
 
+  /**
+   * create query bound
+   * @param messageId - message id
+   * @param timestamp - message timestamp
+   * @param closed    - included specified message flag.
+   *                    true: include
+   *                    false: not include.
+   * @return  query interval bound instance
+   */
   public static AVIMMessageIntervalBound createBound(String messageId, long timestamp, boolean closed) {
     return new AVIMMessageIntervalBound(messageId, timestamp, closed);
   }
 
+  /**
+   * query interval constructor.
+   * @param start - interval start bound
+   * @param end   - interval end bound
+   */
   public AVIMMessageInterval(AVIMMessageIntervalBound start, AVIMMessageIntervalBound end) {
     this.startIntervalBound = start;
     this.endIntervalBound = end;
