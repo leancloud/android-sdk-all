@@ -7,11 +7,11 @@ import android.os.Message;
 /**
  * Created by lbt05 on 2/13/15.
  */
-abstract class BasicAnalyticsRequestDispatcher extends AnalyticsRequestController {
+abstract class BasicAnalyticsRequestController extends AnalyticsRequestController {
 
   Handler asyncHandler;
 
-  BasicAnalyticsRequestDispatcher(
+  BasicAnalyticsRequestController(
       final AnalyticsRequestController.AnalyticsRequestDispatcher dispatcher) {
 
     asyncHandler = new android.os.Handler(controllerThread.getLooper()) {
@@ -26,13 +26,14 @@ abstract class BasicAnalyticsRequestDispatcher extends AnalyticsRequestControlle
     };
   }
 
+  /**
+   * prepare request to send
+   */
   public void prepareRequest() {}
 
-  public boolean requestValidate(Message message) {
-    return true;
-  }
-
+  /**
+   * after request sent.
+   */
   public void onRequestDone() {
-
   }
 }

@@ -18,29 +18,25 @@ import org.json.JSONObject;
  */
 class AnalyticsImpl implements AnalyticsRequestController.AnalyticsRequestDispatcher {
   private static AnalyticsImpl instance;
-  static boolean enableDebugLog = AVOSCloud.showInternalDebugLog();
-  private String appChannel = "AVOS Cloud";
-
-  private boolean autoLocation;
-
   private static final Map<String/* sid */, AnalyticsSession> sessions =
       new ConcurrentHashMap<String, AnalyticsSession>();
-  private String currentSessionId;
-  static private long sessionThreshold = 30 * 1000;
-
+  private static long SESSIONTHRESHOLD = 30 * 1000;
   private static final String TAG = AnalyticsImpl.class.getSimpleName();
+  private static final String FIRSTBOOTTAG = "firstBoot";
+  private static final List<String> WHITELIST = new LinkedList<String>();
+  private static boolean REPORTENABLEFLAG = true;
+
+  private String appChannel = "AVOS Cloud";
+  private boolean autoLocation;
+  private String currentSessionId;
+
   private AVUncaughtExceptionHandler handler = null;
   private AnalyticsOnlineConfig onlineConfig = null;
   private AVOnlineConfigureListener listener = null;
   private Map<String, String> customInfo;
 
-  static private final String firstBootTag = "firstBoot";
-  static private final List<String> whiteList = new LinkedList<String>();
-
-  private static boolean analysisReportEnableFlag = true;
-
   private AnalyticsRequestController requestController;
-  RealTimeRequestController realTimeController;
+  private RealTimeRequestController realTimeController;
 
   private AnalyticsImpl() {
     super();
@@ -78,14 +74,6 @@ class AnalyticsImpl implements AnalyticsRequestController.AnalyticsRequestDispat
     return appChannel;
   }
 
-  void setEnableDebugLog(boolean b) {
-    enableDebugLog = b;
-  }
-
-  boolean isEnableDebugLog() {
-    return enableDebugLog;
-  }
-
   void enableCrashReport(Context context, boolean enable) {
     if (enable && handler == null) {
       handler = new AVUncaughtExceptionHandler(context);
@@ -98,7 +86,7 @@ class AnalyticsImpl implements AnalyticsRequestController.AnalyticsRequestDispat
   private ReportPolicy getReportPolicy(Context context) {
     ReportPolicy value = onlineConfig.getReportPolicy();
     // add white list for realtime requirement business clients
-    if (value == ReportPolicy.REALTIME && whiteList.contains(AVOSCloud.applicationId)) {
+    if (value == ReportPolicy.REALTIME && WHITELIST.contains(AVOSCloud.applicationId)) {
       return ReportPolicy.REALTIME;
     }
     if (value == ReportPolicy.REALTIME && (!AnalyticsUtils.inDebug(context))) {
@@ -153,7 +141,7 @@ class AnalyticsImpl implements AnalyticsRequestController.AnalyticsRequestDispat
   }
 
   void setSessionContinueMillis(long ms) {
-    sessionThreshold = ms;
+    SESSIONTHRESHOLD = ms;
   }
 
   public void setSessionDuration(long ms) {
@@ -185,7 +173,7 @@ class AnalyticsImpl implements AnalyticsRequestController.AnalyticsRequestDispat
     AnalyticsSession cachedSession =
         AnalyticsSessionCacheRepository.getInstance().getCachedSession();
 
-    if (enableDebugLog && cachedSession != null) {
+    if (AVOSCloud.showInternalDebugLog() && cachedSession != null) {
       LogUtil.avlog.i("get cached sessions:" + cachedSession.getSessionId());
     }
     if (cachedSession != null) {
@@ -269,7 +257,7 @@ class AnalyticsImpl implements AnalyticsRequestController.AnalyticsRequestDispat
   }
 
   private long getSessionTimeoutThreshold() {
-    return sessionThreshold;
+    return SESSIONTHRESHOLD;
   }
 
   boolean shouldRegardAsNewSession() {
@@ -343,7 +331,7 @@ class AnalyticsImpl implements AnalyticsRequestController.AnalyticsRequestDispat
   }
 
   void debugDump(Context context) {
-    if (!enableDebugLog) {
+    if (!AVOSCloud.showInternalDebugLog()) {
       return;
     }
 
@@ -358,7 +346,9 @@ class AnalyticsImpl implements AnalyticsRequestController.AnalyticsRequestDispat
       Log.d(TAG, "report policy:" + onlineConfig.getReportPolicy());
     }
     // 未开启统计，忽略
-    if (!isEnableStats()) return;
+    if (!isEnableStats()) {
+      return;
+    }
     if (requestController != null) {
       requestController.requestToSend(currentSessionId);
     }
@@ -380,7 +370,7 @@ class AnalyticsImpl implements AnalyticsRequestController.AnalyticsRequestDispat
         Map<String, Object> map = session.jsonMap(context, customInfo, true);
         if (map != null) {
           String jsonString = JSON.toJSONString(map);
-          if (enableDebugLog) {
+          if (AVOSCloud.showInternalDebugLog()) {
             LogUtil.log.i(jsonString);
           }
           sendAnalysisRequest(jsonString, true, true, new GenericObjectCallback() {
@@ -393,14 +383,14 @@ class AnalyticsImpl implements AnalyticsRequestController.AnalyticsRequestDispat
             @Override
             public void onSuccess(String content, AVException e) {
               // once success, we clear the events.
-              if (enableDebugLog) {
+              if (AVOSCloud.showInternalDebugLog()) {
                 Log.i(TAG, "Save success: " + content);
               }
             }
 
             @Override
             public void onFailure(Throwable error, String content) {
-              if (enableDebugLog) {
+              if (AVOSCloud.showInternalDebugLog()) {
                 Log.i(TAG, "Save failed: " + content);
               }
 
@@ -423,14 +413,14 @@ class AnalyticsImpl implements AnalyticsRequestController.AnalyticsRequestDispat
   }
 
   void updateOnlineConfig() {
-    if (enableDebugLog) {
+    if (AVOSCloud.showInternalDebugLog()) {
       Log.d(TAG, "try to update statistics config from online data");
     }
     onlineConfig.update();
   }
 
   void updateOnlineConfig(Context context, AVCallback<Map<String, Object>> callback) {
-    if (enableDebugLog) {
+    if (AVOSCloud.showInternalDebugLog()) {
       Log.d(TAG, "try to update statistics config from online data");
     }
     onlineConfig.update(context, callback);
@@ -439,21 +429,21 @@ class AnalyticsImpl implements AnalyticsRequestController.AnalyticsRequestDispat
   void reportFirstBoot(Context context) {
     SharedPreferences sharedPref =
         context.getSharedPreferences("AVOSCloud-SDK", Context.MODE_PRIVATE);
-    boolean firstBoot = sharedPref.getBoolean(firstBootTag, true);
+    boolean firstBoot = sharedPref.getBoolean(FIRSTBOOTTAG, true);
     if (firstBoot) {
       sendInstantRecordingRequest();
       Map<String, Object> firstBootMap = getCurrentSession(false).firstBootMap(context, customInfo);
       if (firstBootMap != null) {
-        if (enableDebugLog) {
+        if (AVOSCloud.showInternalDebugLog()) {
           LogUtil.avlog.d("report data on first boot");
         }
         String jsonString = JSON.toJSONString(firstBootMap);
         sendAnalysisRequest(jsonString, false, true, null);
       }
       SharedPreferences.Editor editor = sharedPref.edit();
-      editor.putBoolean(firstBootTag, false);
+      editor.putBoolean(FIRSTBOOTTAG, false);
       editor.commit();
-    } else if (enableDebugLog) {
+    } else if (AVOSCloud.showInternalDebugLog()) {
       LogUtil.avlog.d("no need to first boot report");
     }
   }
@@ -473,18 +463,18 @@ class AnalyticsImpl implements AnalyticsRequestController.AnalyticsRequestDispat
 
   private static void sendAnalysisRequest(String jsonString, boolean sync, boolean eventually,
       GenericObjectCallback callback) {
-    if (analysisReportEnableFlag) {
+    if (REPORTENABLEFLAG) {
       PaasClient.statistisInstance().postObject("stats/collect", jsonString, sync, eventually,
           callback, null, AVUtils.md5(jsonString));
     }
   }
 
   synchronized void setAnalyticsEnabled(boolean enable) {
-    analysisReportEnableFlag = enable;
+    REPORTENABLEFLAG = enable;
   }
 
   private synchronized void sendArchivedRequests(boolean sync) {
-    if (analysisReportEnableFlag) {
+    if (REPORTENABLEFLAG) {
       PaasClient.statistisInstance().handleAllArchivedRequest(sync);
     }
   }

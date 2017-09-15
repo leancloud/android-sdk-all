@@ -32,6 +32,8 @@ public class AVAnalytics {
   static private String endPoint = "statistics";
   static private String appOpen = "_appOpen";
   static private String appOpenWithPush = "_appOpenWithPush";
+  static private String DEFAULT_EVENT_APPOPEN = "!AV!AppOpen";
+  static private String DEFAULT_EVENT_APPOPEN_PUSH = "!AV!PushOpen";
   static AnalyticsImpl impl = AnalyticsImpl.getInstance();
 
   /**
@@ -56,7 +58,7 @@ public class AVAnalytics {
 
   static public void trackAppOpened(Intent intent) {
     Map<String, String> map = statisticsDictionary(appOpen);
-    onEvent(AVOSCloud.applicationContext, "!AV!AppOpen", map);
+    onEvent(AVOSCloud.applicationContext, DEFAULT_EVENT_APPOPEN, map);
     // It's opened by push notification.
     if (intent != null && intent.getIntExtra(AVConstants.PUSH_INTENT_KEY, -1) == 1) {
       trackPushOpened(intent);
@@ -73,7 +75,7 @@ public class AVAnalytics {
 
   private static void trackPushOpened(Intent intent) {
     Map<String, String> map = statisticsDictionary(appOpenWithPush);
-    onEvent(AVOSCloud.applicationContext, "!AV!PushOpen", map);
+    onEvent(AVOSCloud.applicationContext, DEFAULT_EVENT_APPOPEN_PUSH, map);
   }
 
   /**
@@ -244,8 +246,9 @@ public class AVAnalytics {
    * @return .
    * @since 1.4.1
    */
+  @Deprecated
   public static void setDebugMode(boolean enable) {
-    impl.setEnableDebugLog(enable);
+//    impl.setEnableDebugLog(enable);
   }
 
   /**
@@ -333,9 +336,6 @@ public class AVAnalytics {
         new GenericObjectCallback() {
           @Override
           public void onSuccess(String content, AVException e) {
-            if (impl.isEnableDebugLog()) {
-              Log.i(TAG, "Save success: " + content);
-            }
             if (callback != null) {
               callback.internalDone(null);
             }
@@ -343,9 +343,6 @@ public class AVAnalytics {
 
           @Override
           public void onFailure(Throwable error, String content) {
-            if (impl.isEnableDebugLog()) {
-              Log.i(TAG, "Save failed: " + content);
-            }
             if (callback != null) {
               callback.internalDone(AVErrorUtils.createException(error, content));
             }
