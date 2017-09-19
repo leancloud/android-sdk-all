@@ -2,6 +2,8 @@ package com.avos.avoscloud.im.v2;
 
 import android.os.Parcel;
 
+import com.avos.avoscloud.LogUtil;
+
 /**
  * Created by fengjunwen on 2017/9/19.
  */
@@ -53,6 +55,8 @@ public class AVIMBinaryMessage extends AVIMMessage {
   public byte[] getBytes() {
     return bytes;
   }
+
+  public static final AVIMMessageCreator<AVIMBinaryMessage> CREATOR = new AVIMMessageCreator(AVIMBinaryMessage.class);
 
   @Override
   public void writeToParcel(Parcel out, int flags) {

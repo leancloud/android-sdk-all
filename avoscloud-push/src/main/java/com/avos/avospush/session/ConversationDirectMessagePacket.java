@@ -10,12 +10,12 @@ import java.util.List;
 
 public class ConversationDirectMessagePacket extends PeerBasedCommandPacket {
   String conversationId;
-  String message;
+  String message = null;
   boolean mentionAll = false;
   List<String> mentionList = null;
-  String messageToken;
+  String messageToken = null;
   AVIMMessageOption messageOption;
-  ByteString binaryMessage;
+  ByteString binaryMessage = null;
 
   public ConversationDirectMessagePacket() {
     this.setCmd("direct");
@@ -79,7 +79,9 @@ public class ConversationDirectMessagePacket extends PeerBasedCommandPacket {
 
   protected Messages.DirectCommand getDirectCommand() {
     Messages.DirectCommand.Builder builder = Messages.DirectCommand.newBuilder();
-    builder.setMsg(message);
+    if (null != message) {
+      builder.setMsg(message);
+    }
     builder.setCid(conversationId);
     if (mentionAll) {
       builder.setMentionAll(mentionAll);

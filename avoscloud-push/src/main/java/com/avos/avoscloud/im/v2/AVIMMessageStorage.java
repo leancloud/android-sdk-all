@@ -9,7 +9,6 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
 import com.avos.avoscloud.AVOSCloud;
@@ -822,7 +821,7 @@ class AVIMMessageStorage {
       if (null != message) {
         if (message instanceof AVIMBinaryMessage) {
           byte[] bytes = ((AVIMBinaryMessage)message).getBytes();
-          String base64Msg = AVUtils.Base64Encode(bytes);
+          String base64Msg = AVUtils.base64Encode(bytes);
           values.put(COLUMN_LASTMESSAGE, base64Msg);
           values.put(COLUMN_CONV_LASTMESSAGE_INNERTYPE, MESSAGE_INNERTYPE_BIN);
         } else {
@@ -947,7 +946,7 @@ class AVIMMessageStorage {
         conversation.lastMessage = msg;
       } else {
         AVIMBinaryMessage binaryMsg = AVIMBinaryMessage.createInstanceFromMessage(msg);
-        binaryMsg.setBytes(AVUtils.Base64Decode(lastMessage));
+        binaryMsg.setBytes(AVUtils.base64Decode(lastMessage));
         conversation.lastMessage = binaryMsg;
       }
     } catch (Exception e) {

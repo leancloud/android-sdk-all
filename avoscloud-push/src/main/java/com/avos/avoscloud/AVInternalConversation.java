@@ -461,7 +461,7 @@ class AVInternalConversation {
         AVIMMessage message = null;
         if (isBinaryMsg && null != data) {
           message = new AVIMBinaryMessage(this.conversationId, from, timestamp,ackAt, readAt);
-          ((AVIMBinaryMessage)message).setBytes(AVUtils.Base64Decode(data.toString()));
+          ((AVIMBinaryMessage)message).setBytes(AVUtils.base64Decode(data.toString()));
         } else if (data instanceof String || data instanceof JSON) {
           message = new AVIMMessage(this.conversationId, from, timestamp, ackAt, readAt);
           message.setContent(data.toString());
