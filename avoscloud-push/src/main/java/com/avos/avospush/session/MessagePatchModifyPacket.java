@@ -1,5 +1,6 @@
 package com.avos.avospush.session;
 
+import java.util.List;
 import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.Messages;
 
@@ -18,6 +19,8 @@ public class MessagePatchModifyPacket extends PeerBasedCommandPacket {
   private long timestamp;
   private String messageData;
   private boolean isRecall;
+  private boolean mentionAll;
+  private List<String> mentionList;
 
   @Override
   protected Messages.GenericCommand.Builder getGenericCommandBuilder() {
@@ -42,18 +45,26 @@ public class MessagePatchModifyPacket extends PeerBasedCommandPacket {
     if (!AVUtils.isBlankString(messageData)) {
       patchItemBuilder.setData(messageData);
     }
+    patchItemBuilder.setMentionAll(mentionAll);
+    if (null != mentionList) {
+      patchItemBuilder.addAllMentionPids(mentionList);
+    }
     patchItemBuilder.setRecall(isRecall);
     builder.addPatches(patchItemBuilder.build());
     return builder.build();
   }
 
-  public static MessagePatchModifyPacket getMessagePatchPacketForUpdate(String peerId, String conversationId, String messageId, String data, long timestamp, int requestId) {
+  public static MessagePatchModifyPacket getMessagePatchPacketForUpdate(String peerId, String conversationId,
+                                                                        String messageId, String data, boolean mentionAll, List<String> mentionList,
+                                                                        long timestamp, int requestId) {
     MessagePatchModifyPacket packet = new MessagePatchModifyPacket();
     packet.conversationId = conversationId;
     packet.messageId = messageId;
     packet.timestamp = timestamp;
     packet.messageData = data;
     packet.isRecall = false;
+    packet.mentionAll = mentionAll;
+    packet.mentionList = mentionList;
     packet.setRequestId(requestId);
     packet.setPeerId(peerId);
     return packet;
