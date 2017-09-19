@@ -55,18 +55,24 @@ class AVPushConnectionManager implements AVPushWebSocketClient.AVSocketListener 
       }
     });
 
-    initConnection();
     initSessionsIfExists();
+    boolean initializeConn = true;
     if (AVOSCloud.isGcmOpen()) {
       try {
         Class<?> gcmManagerClass = Class.forName("com.avos.avoscloud.AVGcmManager");
         Method getTokenMethod = gcmManagerClass.getMethod("getGcmTokenInBackground", Context.class);
         getTokenMethod.invoke(gcmManagerClass, ctx);
+        initializeConn = false;
       } catch (Exception e) {
         if (AVOSCloud.isDebugLogEnabled()) {
           LogUtil.avlog.i("gcm library not started since not included");
         }
       }
+    }
+    if (initializeConn) {
+      initConnection();
+    } else {
+      LogUtil.log.d("skip initialize connection bcz of GCM Push using");
     }
     LogUtil.log.d("end of AVPushConnectionManager(Context)");
   }
@@ -97,11 +103,12 @@ class AVPushConnectionManager implements AVPushWebSocketClient.AVSocketListener 
 
   public void initConnection(final AVCallback cl) {
     if (socketClient != null && socketClient.isOpen()) {
-      LogUtil.avlog.d("push connection is open");
+      LogUtil.log.d("push connection is open");
       return;
     } else if (socketClient != null) {
       socketClient.cancelReconnect();
     }
+    LogUtil.log.d("try to query connection server via push router.");
     router.fetchPushServer();
     if (null != cl) {
       connectionCallbacks.add(cl);
@@ -188,6 +195,8 @@ class AVPushConnectionManager implements AVPushWebSocketClient.AVSocketListener 
       if (AVOSCloud.isDebugLogEnabled()) {
         LogUtil.avlog.d("connect to server: " + pushServer);
       }
+    } else {
+      LogUtil.log.d("skip create socketClient.");
     }
   }
 

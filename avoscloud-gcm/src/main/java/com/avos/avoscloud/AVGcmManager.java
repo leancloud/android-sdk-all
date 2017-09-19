@@ -41,6 +41,7 @@ public class AVGcmManager {
         try {
           String token = InstanceID.getInstance(context).getToken(GCM_SENDER_ID,
             GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
+          LogUtil.log.d("retrieved token:" + token + " from GCM");
 
           AVInstallation installation = AVInstallation.getCurrentInstallation();
           if (!installation.containsKey(AVInstallation.VENDOR)
@@ -51,9 +52,7 @@ public class AVGcmManager {
             installation.put(AVInstallation.REGISTRATION_ID, token);
             installation.save();
 
-            if (AVOSCloud.isDebugLogEnabled()) {
-              LogUtil.log.d("GCM registration success!");
-            }
+            LogUtil.log.d("GCM registration success! registrationId=" + token);
           }
         } catch (IOException e) {
           LogUtil.log.e("Exception happended during get gcm token", e);
