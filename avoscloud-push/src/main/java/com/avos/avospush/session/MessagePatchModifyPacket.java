@@ -3,6 +3,7 @@ package com.avos.avospush.session;
 import java.util.List;
 import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.Messages;
+import com.google.protobuf.ByteString;
 
 /**
  * Created by wli on 2017/6/28.
@@ -21,6 +22,7 @@ public class MessagePatchModifyPacket extends PeerBasedCommandPacket {
   private boolean isRecall;
   private boolean mentionAll;
   private List<String> mentionList;
+  private ByteString binaryData = null;
 
   @Override
   protected Messages.GenericCommand.Builder getGenericCommandBuilder() {
@@ -50,18 +52,25 @@ public class MessagePatchModifyPacket extends PeerBasedCommandPacket {
       patchItemBuilder.addAllMentionPids(mentionList);
     }
     patchItemBuilder.setRecall(isRecall);
+    if (null != binaryData) {
+      patchItemBuilder.setDataBytes(binaryData);
+    }
     builder.addPatches(patchItemBuilder.build());
+
     return builder.build();
   }
 
   public static MessagePatchModifyPacket getMessagePatchPacketForUpdate(String peerId, String conversationId,
-                                                                        String messageId, String data, boolean mentionAll, List<String> mentionList,
+                                                                        String messageId, String data, byte[] binaryData, boolean mentionAll, List<String> mentionList,
                                                                         long timestamp, int requestId) {
     MessagePatchModifyPacket packet = new MessagePatchModifyPacket();
     packet.conversationId = conversationId;
     packet.messageId = messageId;
     packet.timestamp = timestamp;
     packet.messageData = data;
+    if (null != binaryData) {
+      packet.binaryData = ByteString.copyFrom(binaryData);
+    }
     packet.isRecall = false;
     packet.mentionAll = mentionAll;
     packet.mentionList = mentionList;

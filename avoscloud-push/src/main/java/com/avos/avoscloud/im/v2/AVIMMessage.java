@@ -340,7 +340,6 @@ public class AVIMMessage implements Parcelable {
     out.writeString(getMentionListString());
   }
 
-
   public AVIMMessage(Parcel in) {
     this.conversationId = in.readString();
     this.setContent(in.readString());

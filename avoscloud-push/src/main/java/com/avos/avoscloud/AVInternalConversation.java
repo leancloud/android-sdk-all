@@ -14,6 +14,7 @@ import com.alibaba.fastjson.JSON;
 import com.avos.avoscloud.AVIMOperationQueue.Operation;
 import com.avos.avoscloud.PendingMessageCache.Message;
 import com.avos.avoscloud.SignatureFactory.SignatureException;
+import com.avos.avoscloud.im.v2.AVIMBinaryMessage;
 import com.avos.avoscloud.im.v2.AVIMClient;
 import com.avos.avoscloud.im.v2.AVIMConversation;
 import com.avos.avoscloud.im.v2.AVIMConversationEventHandler;
@@ -166,6 +167,10 @@ class AVInternalConversation {
     if (!checkSessionStatus(AVIMOperation.CONVERSATION_SEND_MESSAGE, requestId)) {
       return;
     }
+    byte[] binaryMessage = null;
+    if (message instanceof AVIMBinaryMessage) {
+      binaryMessage = ((AVIMBinaryMessage) message).getBytes();
+    }
 
     if (!messageOption.isTransient()) {
       session.storeMessage((Message.getMessage(message.getContent(),
@@ -180,7 +185,7 @@ class AVInternalConversation {
       .sendData(ConversationDirectMessagePacket.getConversationMessagePacket(
         session.getSelfPeerId(),
         conversationId,
-        message.getContent(), message.isMentionAll(), message.getMentionList(),
+        message.getContent(), binaryMessage, message.isMentionAll(), message.getMentionList(),
         AVIMMessageManagerHelper.getMessageToken(message),
         messageOption,
         requestId));
@@ -203,11 +208,17 @@ class AVInternalConversation {
       String messageId = pushServiceParcel.getOldMessage().getMessageId();
       long timeStamp = pushServiceParcel.getOldMessage().getTimestamp();
 
-      String data = pushServiceParcel.getNewMessage().getContent();
-      boolean mentionAll = pushServiceParcel.getNewMessage().isMentionAll();
-      List<String> mentionList = pushServiceParcel.getNewMessage().getMentionList();
+      AVIMMessage newMessage = pushServiceParcel.getNewMessage();
+      String data = newMessage.getContent();
+      boolean mentionAll = newMessage.isMentionAll();
+      List<String> mentionList = newMessage.getMentionList();
+      byte[] binaryData = null;
+      if (newMessage instanceof AVIMBinaryMessage) {
+        binaryData = ((AVIMBinaryMessage) newMessage).getBytes();
+      }
+
       PushService.sendData(MessagePatchModifyPacket.getMessagePatchPacketForUpdate(session.getSelfPeerId(), conversationId,
-          messageId, data, mentionAll, mentionList, timeStamp, requestId));
+          messageId, data, binaryData, mentionAll, mentionList, timeStamp, requestId));
     }
   }
 
@@ -445,17 +456,22 @@ class AVInternalConversation {
         String msgId = item.getMsgId();
         boolean mentionAll = item.hasMentionAll()? item.getMentionAll():false;
         List<String> mentionList = item.getMentionPidsList();
+        boolean isBinaryMsg = item.hasBin() && item.getBin();
 
-        AVIMMessage message = new AVIMMessage(this.conversationId, from, timestamp, ackAt, readAt);
-        message.setMessageId(msgId);
-        message.setMentionAll(mentionAll);
-        message.setMentionList(mentionList);
-
-        if (data instanceof String || data instanceof JSON) {
+        AVIMMessage message = null;
+        if (isBinaryMsg && null != data) {
+          message = new AVIMBinaryMessage(this.conversationId, from, timestamp,ackAt, readAt);
+          ((AVIMBinaryMessage)message).setBytes(AVUtils.Base64Decode(data.toString()));
+        } else if (data instanceof String || data instanceof JSON) {
+          message = new AVIMMessage(this.conversationId, from, timestamp, ackAt, readAt);
           message.setContent(data.toString());
         } else {
           continue;
         }
+        message.setMessageId(msgId);
+        message.setMentionAll(mentionAll);
+        message.setMentionList(mentionList);
+
         message = AVIMMessageManagerHelper.parseTypedMessage(message);
         messageList.add(message);
       }
