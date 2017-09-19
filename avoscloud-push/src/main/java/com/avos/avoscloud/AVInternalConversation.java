@@ -199,11 +199,15 @@ class AVInternalConversation {
       String messageId = pushServiceParcel.getRecallMessage().getMessageId();
       long timeStamp = pushServiceParcel.getRecallMessage().getTimestamp();
       PushService.sendData(MessagePatchModifyPacket.getMessagePatchPacketForRecall(session.getSelfPeerId(), conversationId, messageId, timeStamp, requestId));
-    } else {
+    } else if (operation.equals(AVIMOperation.CONVERSATION_UPDATE_MESSAGE)){
       String messageId = pushServiceParcel.getOldMessage().getMessageId();
       long timeStamp = pushServiceParcel.getOldMessage().getTimestamp();
+
       String data = pushServiceParcel.getNewMessage().getContent();
-      PushService.sendData(MessagePatchModifyPacket.getMessagePatchPacketForUpdate(session.getSelfPeerId(), conversationId, messageId, data, timeStamp, requestId));
+      boolean mentionAll = pushServiceParcel.getNewMessage().isMentionAll();
+      List<String> mentionList = pushServiceParcel.getNewMessage().getMentionList();
+      PushService.sendData(MessagePatchModifyPacket.getMessagePatchPacketForUpdate(session.getSelfPeerId(), conversationId,
+          messageId, data, mentionAll, mentionList, timeStamp, requestId));
     }
   }
 
