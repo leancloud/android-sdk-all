@@ -1083,8 +1083,24 @@ public class AVUtils {
   }
 
   public static String Base64Encode(String data) {
-    return android.util.Base64.encodeToString(data.getBytes(), android.util.Base64.URL_SAFE
-        | android.util.Base64.NO_WRAP);
+    if (null == data) {
+      return "";
+    }
+    return Base64Encode(data.getBytes());
+  }
+
+  public static String Base64Encode(byte[] val) {
+    if (null == val) {
+      return "";
+    }
+    return android.util.Base64.encodeToString(val, android.util.Base64.URL_SAFE | android.util.Base64.NO_WRAP);
+  }
+
+  public static byte[] Base64Decode(String data) {
+    if (null == data) {
+      return null;
+    }
+    return android.util.Base64.decode(data.getBytes(), android.util.Base64.URL_SAFE | android.util.Base64.NO_WRAP);
   }
 
   public static Handler getUIThreadHandler() {
