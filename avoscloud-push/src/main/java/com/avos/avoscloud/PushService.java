@@ -438,7 +438,11 @@ public class PushService extends Service {
           AVInternalConversation conversation = session.getConversation(conversationId);
           if (null != conversation) {
             conversation.patchMessage(parcel, operation, requestId);
+          } else {
+            LogUtil.log.d("can't find out conversation with id:" + conversationId);
           }
+        } else {
+          LogUtil.log.d("conversationId is mandatory for MessageRecall or MessageUpdate.");
         }
         break;
     }
