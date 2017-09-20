@@ -5,28 +5,58 @@ import android.os.Parcel;
 import com.avos.avoscloud.LogUtil;
 
 /**
+ * 二进制消息类型。
+ *
  * Created by fengjunwen on 2017/9/19.
  */
 
 public class AVIMBinaryMessage extends AVIMMessage {
   private byte[] bytes = new byte[0];
 
+  /**
+   * default constructor
+   */
   public AVIMBinaryMessage() {
     super();
   }
 
+  /**
+   * constructor
+   * @param conversationId - conversation id
+   * @param from           - message sender
+   */
   public AVIMBinaryMessage(String conversationId, String from) {
     super(conversationId, from);
   }
 
+  /**
+   * constructor
+   * @param conversationId - conversation id
+   * @param from           - message sender
+   * @param timestamp      - message send timestamp
+   * @param deliveredAt    - message deliver timestamp
+   */
   public AVIMBinaryMessage(String conversationId, String from, long timestamp, long deliveredAt) {
     super(conversationId, from, timestamp, deliveredAt);
   }
 
+  /**
+   * constructor
+   * @param conversationId - conversation id
+   * @param from           - message sender
+   * @param timestamp      - message send timestamp
+   * @param deliveredAt    - message deliver timestamp
+   * @param readAt         - message read timestamp
+   */
   public AVIMBinaryMessage(String conversationId, String from, long timestamp, long deliveredAt, long readAt) {
     super(conversationId, from, timestamp, deliveredAt, readAt);
   }
 
+  /**
+   * create binary instance by copying AVIMMessage instance(except content field).
+   * @param other
+   * @return
+   */
   public static AVIMBinaryMessage createInstanceFromMessage(AVIMMessage other) {
     if (null == other) {
       return null;
@@ -49,9 +79,18 @@ public class AVIMBinaryMessage extends AVIMMessage {
     return msg;
   }
 
+  /**
+   * set binary content.
+   * @param val
+   */
   public void setBytes(byte[] val) {
     bytes = val;
   }
+
+  /**
+   * get binary content.
+   * @return
+   */
   public byte[] getBytes() {
     return bytes;
   }
