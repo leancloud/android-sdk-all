@@ -347,6 +347,9 @@ class AVIMMessageStorage {
   }
 
   public void insertMessage(AVIMMessage message, boolean breakpoint) {
+    if (null == message) {
+      return;
+    }
     insertMessages(Arrays.asList(message), breakpoint);
   }
 
@@ -450,7 +453,7 @@ class AVIMMessageStorage {
 
       try {
         long itemId =
-            db.insertWithOnConflict(MESSAGE_TABLE, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+            db.insertWithOnConflict(MESSAGE_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         boolean insert = itemId > -1;
         if (insert) {
           insertCount++;
@@ -472,7 +475,10 @@ class AVIMMessageStorage {
    * @param conversationId
    */
   public void insertContinuousMessages(List<AVIMMessage> messages, String conversationId) {
-    if (messages.isEmpty()) return;
+    if (null == messages || messages.isEmpty() || AVUtils.isBlankString(conversationId)) {
+      return;
+    }
+
     AVIMMessage firstMessage = messages.get(0);
     List<AVIMMessage> tailMessages = messages.subList(1, messages.size());
     AVIMMessage lastMessage = messages.get(messages.size() - 1);
@@ -632,7 +638,7 @@ class AVIMMessageStorage {
       while (!cursor.isAfterLast()) {
         AVIMMessage message = createMessageFromCursor(cursor);
         boolean breakpoint = cursor.getInt(cursor.getColumnIndex(COLUMN_BREAKPOINT)) != 0;
-        System.out.println("msg: {" + message.toString() + "}, breakpoint=" + breakpoint);
+        System.out.println("msg: {id=" + message.getMessageId() + ", ts=" + message.getTimestamp() + ", breakpoint=" + breakpoint + "}");
         cursor.moveToNext();
       }
     }
@@ -941,11 +947,11 @@ class AVIMMessageStorage {
       if (!AVUtils.isBlankContent(instanceData)) {
         conversation.instanceData.putAll(JSON.parseObject(instanceData, HashMap.class));
       }
-      AVIMMessage msg = JSON.parseObject(lastMessage, AVIMMessage.class);
       if (lastMessageInnerType != MESSAGE_INNERTYPE_BIN) {
+        AVIMMessage msg = JSON.parseObject(lastMessage, AVIMMessage.class);
         conversation.lastMessage = msg;
       } else {
-        AVIMBinaryMessage binaryMsg = AVIMBinaryMessage.createInstanceFromMessage(msg);
+        AVIMBinaryMessage binaryMsg = new AVIMBinaryMessage(conversationId, null);// don't care who sent message.
         binaryMsg.setBytes(AVUtils.base64Decode(lastMessage));
         conversation.lastMessage = binaryMsg;
       }
