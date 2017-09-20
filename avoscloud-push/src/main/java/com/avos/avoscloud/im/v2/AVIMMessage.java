@@ -396,7 +396,7 @@ public class AVIMMessage implements Parcelable {
    */
   public enum AVIMMessageStatus {
     AVIMMessageStatusNone(0), AVIMMessageStatusSending(1), AVIMMessageStatusSent(2),
-    AVIMMessageStatusReceipt(3), AVIMMessageStatusFailed(4);
+    AVIMMessageStatusReceipt(3), AVIMMessageStatusFailed(4), AVIMMessageStatusRecalled(5);
     int statusCode;
 
     AVIMMessageStatus(int status) {
@@ -419,6 +419,8 @@ public class AVIMMessage implements Parcelable {
           return AVIMMessageStatusReceipt;
         case 4:
           return AVIMMessageStatusFailed;
+        case 5:
+          return AVIMMessageStatusRecalled;
         default:
           return null;
       }

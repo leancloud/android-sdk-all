@@ -566,6 +566,7 @@ class AVIMMessageStorage {
       values.put(COLUMN_PAYLOAD, message.getContent());
       values.put(COLUMN_MSG_INNERTYPE, MESSAGE_INNERTYPE_PLAIN);
     }
+    values.put(COLUMN_STATUS, message.getMessageStatus().getStatusCode());
     values.put(COLUMN_MESSAGE_UPDATEAT, message.getUpdateAt());
     long itemId = db.update(MESSAGE_TABLE, values, getWhereClause(COLUMN_MESSAGE_ID),
         new String[] {message.getMessageId()});
