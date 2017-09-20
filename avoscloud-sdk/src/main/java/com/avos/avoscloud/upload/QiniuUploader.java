@@ -8,7 +8,6 @@ import com.avos.avoscloud.AVFile;
 import com.avos.avoscloud.AVOSCloud;
 import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.upload.FileUploader.ProgressCalculator;
-import com.avos.avoscloud.upload.FileUploader.FileUploadProgressCallback;
 import com.avos.avoscloud.LogUtil;
 import com.avos.avoscloud.ProgressCallback;
 import com.avos.avoscloud.SaveCallback;
@@ -146,7 +145,7 @@ class QiniuUploader extends HttpClientUploader {
 
   private QiniuMKFileResponseData makeFile(int dataSize, String key, int retry) throws Exception {
     try {
-      String endPoint = String.format(QINIU_MKFILE_EP, dataSize, AVUtils.Base64Encode(key));
+      String endPoint = String.format(QINIU_MKFILE_EP, dataSize, AVUtils.base64Encode(key));
       List<String> list = new LinkedList<String>();
       Collections.addAll(list, uploadFileCtx);
       final String joinedFileCtx = AVUtils.joinCollection(list, ",");

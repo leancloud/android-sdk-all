@@ -25,6 +25,14 @@ android.libraryVariants.all { variant ->
     artifacts.add('archives', task);
 }
 
+task androidReleaseJar(type: Jar) {
+    from "$buildDir/intermediates/classes/release/"
+    exclude '**/BuildConfig.class'
+    exclude '**/R.class'
+    exclude '**/R$*.class'
+}
+androidReleaseJar.dependsOn(assemble)
+
 dependencies {
     compile files('libs/HwPush_SDK_V2705.jar', 'libs/MiPush_SDK_Client_3_2_2.jar')
     compile project(':avoscloud-push')

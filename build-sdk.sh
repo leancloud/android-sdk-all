@@ -20,7 +20,7 @@ sed -i '' "s/sdkVersion = .*;/sdkVersion = \"$version\";/" avoscloud-sdk/src/mai
 sed -i '' "s/include ':Statistics'//" settings.gradle
 sed -i '' "s/include ':paas_unit_test_application'//" settings.gradle
 
-gradle clean assemble uploadArchives
+gradle clean androidReleaseJar uploadArchives
 
 releaseDir="build/release-$version"
 
@@ -37,6 +37,8 @@ cp avoscloud-push/build/libs/avoscloud-push-*.jar $releaseDir/
 cp avoscloud-mixpush/build/libs/avoscloud-mixpush-*.jar $releaseDir/
 cp avoscloud-mixpush/libs/HwPush_SDK_*.jar $releaseDir/
 cp avoscloud-mixpush/libs/MiPush_SDK_Client_*.jar $releaseDir/
+
+cp avoscloud-gcm/build/libs/avoscloud-gcm-*.jar $releaseDir/
 
 cp avoscloud-statistics/build/libs/avoscloud-statistics-*.jar $releaseDir/
 

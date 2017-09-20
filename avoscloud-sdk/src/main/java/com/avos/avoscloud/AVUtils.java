@@ -1082,9 +1082,28 @@ public class AVUtils {
     return (Double.compare(Double.parseDouble(firstNumber), Double.parseDouble(secondNumber)) == 1);
   }
 
-  public static String Base64Encode(String data) {
-    return android.util.Base64.encodeToString(data.getBytes(), android.util.Base64.URL_SAFE
-        | android.util.Base64.NO_WRAP);
+  public static String base64Encode(String data) {
+    if (null == data) {
+      return "";
+    }
+    return base64Encode(data.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
+  }
+
+  private static String base64Encode(byte[] val, int flags) {
+    if (null == val) {
+      return "";
+    }
+    return android.util.Base64.encodeToString(val, flags);
+  }
+  public static String base64Encode(byte[] data) {
+    return base64Encode(data, Base64.NO_WRAP);
+  }
+
+  public static byte[] base64Decode(String data) {
+    if (null == data) {
+      return null;
+    }
+    return android.util.Base64.decode(data.getBytes(), android.util.Base64.NO_WRAP);
   }
 
   public static Handler getUIThreadHandler() {

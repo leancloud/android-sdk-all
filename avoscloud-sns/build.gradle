@@ -35,6 +35,12 @@ android.libraryVariants.all { variant ->
     artifacts.add('archives', task);
 }
 
+task androidReleaseJar(type: Jar) {
+    from "$buildDir/intermediates/classes/release/"
+    exclude 'com/avos/avoscloud/R.class'
+}
+androidReleaseJar.dependsOn(assemble)
+
 dependencies {
     compile project(':avoscloud-sdk')
     compile 'cn.leancloud.android:qq-sdk:1.6.1-leancloud'

@@ -260,7 +260,7 @@ class QiniuAccessor {
   public QiniuMKFileResponseData makeFile(int fileTotalSize, List<String> uploadFileCtxs, int retry)
       throws Exception {
     try {
-      String endPoint = String.format(QINIU_MKFILE_EP, fileTotalSize, AVUtils.Base64Encode(this.fileKey));
+      String endPoint = String.format(QINIU_MKFILE_EP, fileTotalSize, AVUtils.base64Encode(this.fileKey));
       final String joinedFileCtx = AVUtils.joinCollection(uploadFileCtxs, ",");
       Request.Builder builder = new Request.Builder();
       builder.url(endPoint);

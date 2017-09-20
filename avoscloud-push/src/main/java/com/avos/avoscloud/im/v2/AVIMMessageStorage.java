@@ -9,7 +9,6 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
 import com.avos.avoscloud.AVOSCloud;
@@ -32,10 +31,12 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @TargetApi(8)
 class AVIMMessageStorage {
+  static final int MESSAGE_INNERTYPE_BIN = 1;
+  static final int MESSAGE_INNERTYPE_PLAIN = 0;
   static final String DB_NAME_PREFIX = "com.avos.avoscloud.im.v2.";
   static final String MESSAGE_TABLE = "messages";
   static final String MESSAGE_INDEX = "message_index";
-  static final int DB_VERSION = 8;
+  static final int DB_VERSION = 9;
   static final String COLUMN_MESSAGE_ID = "message_id";
   static final String COLUMN_TIMESTAMP = "timestamp";
   static final String COLUMN_CONVERSATION_ID = "conversation_id";
@@ -49,6 +50,7 @@ class AVIMMessageStorage {
   static final String COLUMN_DEDUPLICATED_TOKEN = "dtoken";
   static final String COLUMN_MSG_MENTION_ALL = "mentionAll";
   static final String COLUMN_MSG_MENTION_LIST = "mentionList";
+  static final String COLUMN_MSG_INNERTYPE = "iType";
 
   static final String CONVERSATION_TABLE = "conversations";
   static final String COLUMN_EXPIREAT = "expireAt";
@@ -65,6 +67,7 @@ class AVIMMessageStorage {
   static final String COLUMN_CONV_MENTIONED = "mentioned";
   static final String COLUMN_CONVERSATION_READAT = "readAt";
   static final String COLUMN_CONVRESATION_DELIVEREDAT = "deliveredAt";
+  static final String COLUMN_CONV_LASTMESSAGE_INNERTYPE = "last_msg_iType";
 
   static final String NUMBERIC = "NUMBERIC";
   static final String INTEGER = "INTEGER";
@@ -137,6 +140,7 @@ class AVIMMessageStorage {
             + COLUMN_DEDUPLICATED_TOKEN + " VARCHAR(32), "
             + COLUMN_MSG_MENTION_ALL + " INTEGER default 0, "
             + COLUMN_MSG_MENTION_LIST + " TEXT NULL, "
+            + COLUMN_MSG_INNERTYPE + " INTEGER default 0, "
             + "PRIMARY KEY(" + COLUMN_CONVERSATION_ID + "," + COLUMN_MESSAGE_ID + ")) ";
 
     static final String MESSAGE_UNIQUE_INDEX_SQL =
@@ -160,6 +164,7 @@ class AVIMMessageStorage {
         + COLUMN_LM + " NUMBERIC,"
         + COLUMN_LASTMESSAGE + " TEXT,"
         + COLUMN_CONV_MENTIONED + " INTEGER default 0,"
+        + COLUMN_CONV_LASTMESSAGE_INNERTYPE + " INTEGER default 0, "
         + "PRIMARY KEY(" + COLUMN_CONVERSATION_ID + "))";
 
     public DBHelper(Context context, String clientId) {
@@ -173,6 +178,10 @@ class AVIMMessageStorage {
 
     private static String getAddColumnSql(String table, String column, String type) {
       return String.format("ALTER TABLE %s ADD COLUMN %s %s;", table, column, type);
+    }
+
+    private static String getAddColumnSql(String table, String column, String type, String defaultV) {
+      return String.format("ALTER TABLE %s ADD COLUMN %s %s default %s;", table, column, type, defaultV);
     }
 
     @Override
@@ -206,9 +215,15 @@ class AVIMMessageStorage {
       }
       if (oldVersion == 6) {
         upgradeToVersion7(sqLiteDatabase);
+        oldVersion += 1;
       }
       if (oldVersion == 7) {
         upgradeToVersion8(sqLiteDatabase);
+        oldVersion += 1;
+      }
+      if (oldVersion == 8) {
+        upgradeToVersion9(sqLiteDatabase);
+        oldVersion += 1;
       }
     }
 
@@ -267,13 +282,25 @@ class AVIMMessageStorage {
     private void upgradeToVersion8(SQLiteDatabase db) {
       try {
         if (!columnExists(db, MESSAGE_TABLE, COLUMN_MSG_MENTION_ALL)) {
-          db.execSQL(getAddColumnSql(MESSAGE_TABLE, COLUMN_MSG_MENTION_ALL, INTEGER));
+          db.execSQL(getAddColumnSql(MESSAGE_TABLE, COLUMN_MSG_MENTION_ALL, INTEGER, "0"));
         }
         if (!columnExists(db, MESSAGE_TABLE, COLUMN_MSG_MENTION_LIST)) {
           db.execSQL(getAddColumnSql(MESSAGE_TABLE, COLUMN_MSG_MENTION_LIST, TEXT));
         }
         if (!columnExists(db, CONVERSATION_TABLE, COLUMN_CONV_MENTIONED)) {
-          db.execSQL(getAddColumnSql(CONVERSATION_TABLE, COLUMN_CONV_MENTIONED, INTEGER));
+          db.execSQL(getAddColumnSql(CONVERSATION_TABLE, COLUMN_CONV_MENTIONED, INTEGER, "0"));
+        }
+      } catch (Exception e) {
+      }
+    }
+
+    private void upgradeToVersion9(SQLiteDatabase db) {
+      try {
+        if (!columnExists(db, MESSAGE_TABLE, COLUMN_MSG_INNERTYPE)) {
+          db.execSQL(getAddColumnSql(MESSAGE_TABLE, COLUMN_MSG_INNERTYPE, INTEGER, "0"));
+        }
+        if (!columnExists(db, CONVERSATION_TABLE, COLUMN_CONV_LASTMESSAGE_INNERTYPE)) {
+          db.execSQL(getAddColumnSql(CONVERSATION_TABLE, COLUMN_CONV_LASTMESSAGE_INNERTYPE, INTEGER, "0"));
         }
       } catch (Exception e) {
       }
@@ -320,6 +347,9 @@ class AVIMMessageStorage {
   }
 
   public void insertMessage(AVIMMessage message, boolean breakpoint) {
+    if (null == message) {
+      return;
+    }
     insertMessages(Arrays.asList(message), breakpoint);
   }
 
@@ -342,7 +372,12 @@ class AVIMMessageStorage {
       values.put(COLUMN_MESSAGE_ID, internalMessageId);
       values.put(COLUMN_TIMESTAMP, message.getTimestamp());
       values.put(COLUMN_FROM_PEER_ID, message.getFrom());
-      values.put(COLUMN_PAYLOAD, message.getContent().getBytes());
+      if (message instanceof AVIMBinaryMessage) {
+        values.put(COLUMN_PAYLOAD, ((AVIMBinaryMessage)message).getBytes());
+        values.put(COLUMN_MSG_INNERTYPE, MESSAGE_INNERTYPE_BIN);
+      } else {
+        values.put(COLUMN_PAYLOAD, message.getContent().getBytes());
+      }
       values.put(COLUMN_MESSAGE_DELIVEREDAT, message.getDeliveredAt());
       values.put(COLUMN_MESSAGE_READAT, message.getReadAt());
       values.put(COLUMN_MESSAGE_UPDATEAT, message.getUpdateAt());
@@ -400,7 +435,13 @@ class AVIMMessageStorage {
       values.put(COLUMN_MESSAGE_ID, message.getMessageId());
       values.put(COLUMN_TIMESTAMP, message.getTimestamp());
       values.put(COLUMN_FROM_PEER_ID, message.getFrom());
-      values.put(COLUMN_PAYLOAD, message.getContent().getBytes());
+      if (message instanceof AVIMBinaryMessage) {
+        values.put(COLUMN_PAYLOAD, ((AVIMBinaryMessage)message).getBytes());
+        values.put(COLUMN_MSG_INNERTYPE, MESSAGE_INNERTYPE_BIN);
+      } else {
+        values.put(COLUMN_PAYLOAD, message.getContent().getBytes());
+        values.put(COLUMN_MSG_INNERTYPE, MESSAGE_INNERTYPE_PLAIN);
+      }
       values.put(COLUMN_MESSAGE_DELIVEREDAT, message.getDeliveredAt());
       values.put(COLUMN_MESSAGE_READAT, message.getReadAt());
       values.put(COLUMN_MESSAGE_UPDATEAT, message.getUpdateAt());
@@ -412,7 +453,7 @@ class AVIMMessageStorage {
 
       try {
         long itemId =
-            db.insertWithOnConflict(MESSAGE_TABLE, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+            db.insertWithOnConflict(MESSAGE_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         boolean insert = itemId > -1;
         if (insert) {
           insertCount++;
@@ -434,7 +475,10 @@ class AVIMMessageStorage {
    * @param conversationId
    */
   public void insertContinuousMessages(List<AVIMMessage> messages, String conversationId) {
-    if (messages.isEmpty()) return;
+    if (null == messages || messages.isEmpty() || AVUtils.isBlankString(conversationId)) {
+      return;
+    }
+
     AVIMMessage firstMessage = messages.get(0);
     List<AVIMMessage> tailMessages = messages.subList(1, messages.size());
     AVIMMessage lastMessage = messages.get(messages.size() - 1);
@@ -515,7 +559,14 @@ class AVIMMessageStorage {
   synchronized boolean updateMessageForPatch(AVIMMessage message) {
     SQLiteDatabase db = dbHelper.getWritableDatabase();
     ContentValues values = new ContentValues();
-    values.put(COLUMN_PAYLOAD, message.getContent());
+    if (message instanceof AVIMBinaryMessage) {
+      values.put(COLUMN_PAYLOAD, ((AVIMBinaryMessage)message).getBytes());
+      values.put(COLUMN_MSG_INNERTYPE, MESSAGE_INNERTYPE_BIN);
+    } else {
+      values.put(COLUMN_PAYLOAD, message.getContent());
+      values.put(COLUMN_MSG_INNERTYPE, MESSAGE_INNERTYPE_PLAIN);
+    }
+    values.put(COLUMN_STATUS, message.getMessageStatus().getStatusCode());
     values.put(COLUMN_MESSAGE_UPDATEAT, message.getUpdateAt());
     long itemId = db.update(MESSAGE_TABLE, values, getWhereClause(COLUMN_MESSAGE_ID),
         new String[] {message.getMessageId()});
@@ -588,7 +639,7 @@ class AVIMMessageStorage {
       while (!cursor.isAfterLast()) {
         AVIMMessage message = createMessageFromCursor(cursor);
         boolean breakpoint = cursor.getInt(cursor.getColumnIndex(COLUMN_BREAKPOINT)) != 0;
-        System.out.println("msg: {" + message.toString() + "}, breakpoint=" + breakpoint);
+        System.out.println("msg: {id=" + message.getMessageId() + ", ts=" + message.getTimestamp() + ", breakpoint=" + breakpoint + "}");
         cursor.moveToNext();
       }
     }
@@ -660,16 +711,20 @@ class AVIMMessageStorage {
     long updateAt = cursor.getLong(cursor.getColumnIndex(COLUMN_MESSAGE_UPDATEAT));
     byte[] payload = cursor.getBlob(cursor.getColumnIndex(COLUMN_PAYLOAD));
     String uniqueToken = cursor.getString(cursor.getColumnIndex(COLUMN_DEDUPLICATED_TOKEN));
-
+    int status = cursor.getInt(cursor.getColumnIndex(COLUMN_STATUS));
     int mentionAll = cursor.getInt(cursor.getColumnIndex(COLUMN_MSG_MENTION_ALL));
     String mentionListStr = cursor.getString(cursor.getColumnIndex(COLUMN_MSG_MENTION_LIST));
+    int innerType = cursor.getInt(cursor.getColumnIndex(COLUMN_MSG_INNERTYPE));
 
-    String content = new String(payload);
-    int status = cursor.getInt(cursor.getColumnIndex(COLUMN_STATUS));
-
-    AVIMMessage message = new AVIMMessage(cid, from, timestamp, deliveredAt, readAt);
+    AVIMMessage message = null;
+    if (innerType == MESSAGE_INNERTYPE_BIN) {
+      message = new AVIMBinaryMessage(cid, from, timestamp, deliveredAt, readAt);
+      ((AVIMBinaryMessage)message).setBytes(payload);
+    } else {
+      message = new AVIMMessage(cid, from, timestamp, deliveredAt, readAt);
+      message.setContent(new String(payload));
+    }
     message.setMessageId(mid);
-    message.setContent(content);
     message.setUniqueToken(uniqueToken);
     message.setMessageStatus(AVIMMessage.AVIMMessageStatus.getMessageStatus(status));
     message.setUpdateAt(updateAt);
@@ -769,12 +824,19 @@ class AVIMMessageStorage {
         values.put(COLUMN_LM, conversation.lastMessageAt.getTime());
       }
 
-      String lastMessage = null;
       final AVIMMessage message = conversation.getLastMessage();
       if (null != message) {
-        lastMessage = JSON.toJSONString(message);
+        if (message instanceof AVIMBinaryMessage) {
+          byte[] bytes = ((AVIMBinaryMessage)message).getBytes();
+          String base64Msg = AVUtils.base64Encode(bytes);
+          values.put(COLUMN_LASTMESSAGE, base64Msg);
+          values.put(COLUMN_CONV_LASTMESSAGE_INNERTYPE, MESSAGE_INNERTYPE_BIN);
+        } else {
+          String lastMessage = JSON.toJSONString(message);
+          values.put(COLUMN_LASTMESSAGE, lastMessage);
+          values.put(COLUMN_CONV_LASTMESSAGE_INNERTYPE, MESSAGE_INNERTYPE_PLAIN);
+        }
       }
-      values.put(COLUMN_LASTMESSAGE, lastMessage);
 
       values.put(COLUMN_MEMBERS, JSON.toJSONString(conversation.getMembers()));
       values.put(COLUMN_TRANSIENT, conversation.isTransient ? 1 : 0);
@@ -865,6 +927,7 @@ class AVIMMessageStorage {
     long readAt = cursor.getLong(cursor.getColumnIndex(COLUMN_CONVERSATION_READAT));
     long deliveredAt = cursor.getLong(cursor.getColumnIndex(COLUMN_CONVRESATION_DELIVEREDAT));
     String lastMessage = cursor.getString(cursor.getColumnIndex(COLUMN_LASTMESSAGE));
+    int lastMessageInnerType = cursor.getInt(cursor.getColumnIndex(COLUMN_CONV_LASTMESSAGE_INNERTYPE));
 
     AVIMConversation conversation =
         new AVIMConversation(AVIMClient.getInstance(clientId), conversationId);
@@ -885,8 +948,14 @@ class AVIMMessageStorage {
       if (!AVUtils.isBlankContent(instanceData)) {
         conversation.instanceData.putAll(JSON.parseObject(instanceData, HashMap.class));
       }
-
-      conversation.lastMessage = JSON.parseObject(lastMessage, AVIMMessage.class);
+      if (lastMessageInnerType != MESSAGE_INNERTYPE_BIN) {
+        AVIMMessage msg = JSON.parseObject(lastMessage, AVIMMessage.class);
+        conversation.lastMessage = msg;
+      } else {
+        AVIMBinaryMessage binaryMsg = new AVIMBinaryMessage(conversationId, null);// don't care who sent message.
+        binaryMsg.setBytes(AVUtils.base64Decode(lastMessage));
+        conversation.lastMessage = binaryMsg;
+      }
     } catch (Exception e) {
       if (AVOSCloud.isDebugLogEnabled()) {
         LogUtil.avlog.e("error during conversation cache parse:" + e.getMessage());
