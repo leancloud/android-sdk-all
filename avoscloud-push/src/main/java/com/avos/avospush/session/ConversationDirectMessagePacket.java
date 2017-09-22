@@ -4,16 +4,18 @@ import com.avos.avoscloud.LogUtil;
 import com.avos.avoscloud.Messages;
 import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.im.v2.AVIMMessageOption;
+import com.google.protobuf.ByteString;
 
 import java.util.List;
 
 public class ConversationDirectMessagePacket extends PeerBasedCommandPacket {
   String conversationId;
-  String message;
+  String message = null;
   boolean mentionAll = false;
   List<String> mentionList = null;
-  String messageToken;
+  String messageToken = null;
   AVIMMessageOption messageOption;
+  ByteString binaryMessage = null;
 
   public ConversationDirectMessagePacket() {
     this.setCmd("direct");
@@ -55,6 +57,14 @@ public class ConversationDirectMessagePacket extends PeerBasedCommandPacket {
     this.mentionList = mentionList;
   }
 
+  public void setBinaryMessage(byte[] bytes) {
+    if (null == bytes) {
+      this.binaryMessage = null;
+    } else {
+      this.binaryMessage = ByteString.copyFrom(bytes);
+    }
+  }
+
   @Override
   protected Messages.GenericCommand.Builder getGenericCommandBuilder() {
     Messages.GenericCommand.Builder builder = super.getGenericCommandBuilder();
@@ -69,7 +79,9 @@ public class ConversationDirectMessagePacket extends PeerBasedCommandPacket {
 
   protected Messages.DirectCommand getDirectCommand() {
     Messages.DirectCommand.Builder builder = Messages.DirectCommand.newBuilder();
-    builder.setMsg(message);
+    if (null != message) {
+      builder.setMsg(message);
+    }
     builder.setCid(conversationId);
     if (mentionAll) {
       builder.setMentionAll(mentionAll);
@@ -99,12 +111,17 @@ public class ConversationDirectMessagePacket extends PeerBasedCommandPacket {
     if (!AVUtils.isBlankString(messageToken)) {
       builder.setDt(messageToken);
     }
+
+    if (null != binaryMessage) {
+      builder.setBinaryMsg(binaryMessage);
+    }
+
     return builder.build();
   }
 
   public static ConversationDirectMessagePacket getConversationMessagePacket(String peerId,
                                                                              String conversationId,
-                                                                             String msg, boolean mentionAll, List<String> mentionList,
+                                                                             String msg, byte[] binaryMsg, boolean mentionAll, List<String> mentionList,
                                                                              AVIMMessageOption messageOption, int requestId) {
     ConversationDirectMessagePacket cdmp = new ConversationDirectMessagePacket();
     cdmp.setPeerId(peerId);
@@ -114,15 +131,16 @@ public class ConversationDirectMessagePacket extends PeerBasedCommandPacket {
     cdmp.setMessage(msg);
     cdmp.setMentionAll(mentionAll);
     cdmp.setMentionList(mentionList);
+    cdmp.setBinaryMessage(binaryMsg);
     return cdmp;
   }
 
   public static ConversationDirectMessagePacket getConversationMessagePacket(String peerId,
                                                                              String conversationId,
-                                                                             String msg, boolean mentionAll, List<String> mentionList,
+                                                                             String msg, byte[] binaryMsg, boolean mentionAll, List<String> mentionList,
                                                                              String messageToken, AVIMMessageOption option, int requestId) {
     ConversationDirectMessagePacket cdmp =
-      getConversationMessagePacket(peerId, conversationId, msg, mentionAll, mentionList, option, requestId);
+      getConversationMessagePacket(peerId, conversationId, msg, binaryMsg, mentionAll, mentionList, option, requestId);
     cdmp.messageToken = messageToken;
     return cdmp;
   }

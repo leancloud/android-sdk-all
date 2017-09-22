@@ -322,8 +322,8 @@ public class AVIMConversation {
         AVIMOperation.CONVERSATION_MESSAGE_QUERY, cb);
   }
 
-  private void queryMessagesFromCache(String msgId, long timestamp, int limit,
-      final AVIMMessagesQueryCallback callback) {
+  private void queryMessagesFromCache(final String msgId, final long timestamp, final int limit,
+                                      final AVIMMessagesQueryCallback callback) {
     if (null != callback) {
       storage.getMessages(msgId, timestamp, limit, conversationId,
         new AVIMMessageStorage.StorageQueryCallback() {
@@ -573,7 +573,7 @@ public class AVIMConversation {
   private void processLastMessageResult(List<AVIMMessage> resultMessages, AVIMException e,
       AVIMSingleMessageQueryCallback callback) {
     if (e == null) {
-      if (resultMessages.size() > 0) {
+      if (resultMessages != null && resultMessages.size() > 0) {
         callback.internalDone(resultMessages.get(0), null);
       } else {
         callback.done(null, null);
@@ -1228,6 +1228,7 @@ public class AVIMConversation {
     AVIMMessage recalledMessage = new AVIMRecalledMessage();
     copyMessageWithoutContent(oldMessage, recalledMessage);
     recalledMessage.setUpdateAt(patchTime);
+    recalledMessage.setMessageStatus(AVIMMessage.AVIMMessageStatus.AVIMMessageStatusRecalled);
     updateLocalMessage(recalledMessage);
     callback.internalDone(recalledMessage, null);
   }

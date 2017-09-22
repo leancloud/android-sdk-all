@@ -26,6 +26,12 @@ android {
     }
 }
 
+task androidReleaseJar(type: Jar) {
+    from "$buildDir/intermediates/classes/release/"
+    exclude 'com/avos/avoscloud/R.class'
+}
+androidReleaseJar.dependsOn(assemble)
+
 android.libraryVariants.all { variant ->
     def name = variant.buildType.name
     def task = project.tasks.create "jar${name.capitalize()}", Jar

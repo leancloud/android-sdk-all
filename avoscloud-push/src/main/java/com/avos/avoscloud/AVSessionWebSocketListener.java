@@ -7,6 +7,7 @@ import java.util.List;
 import com.avos.avoscloud.AVIMOperationQueue.Operation;
 import com.avos.avoscloud.PendingMessageCache.Message;
 import com.avos.avoscloud.SignatureFactory.SignatureException;
+import com.avos.avoscloud.im.v2.AVIMBinaryMessage;
 import com.avos.avoscloud.im.v2.AVIMException;
 import com.avos.avoscloud.im.v2.AVIMMessage;
 import com.avos.avoscloud.im.v2.AVIMOptions;
@@ -21,6 +22,7 @@ import com.avos.avospush.session.MessageReceiptCache;
 import com.avos.avospush.session.SessionAckPacket;
 import com.avos.avospush.session.SessionControlPacket;
 import com.avos.avospush.session.StaleMessageDepot;
+import com.google.protobuf.ByteString;
 
 class AVSessionWebSocketListener implements AVWebSocketListener {
 
@@ -83,6 +85,7 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
   @Override
   public void onDirectCommand(Messages.DirectCommand directCommand) {
     final String msg = directCommand.getMsg();
+    final ByteString binaryMsg = directCommand.getBinaryMsg();
     final String fromPeerId = directCommand.getFromPeerId();
     final String conversationId = directCommand.getCid();
     final Long timestamp = directCommand.getTimestamp();
@@ -105,9 +108,15 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
 
       if (depot.putStableMessage(messageId) && !AVUtils.isBlankString(conversationId)) {
         AVInternalConversation conversation = session.getConversation(conversationId);
-        AVIMMessage message = new AVIMMessage(conversationId, fromPeerId, timestamp, -1);
+        AVIMMessage message = null;
+        if (AVUtils.isBlankString(msg) && null != binaryMsg) {
+          message = new AVIMBinaryMessage(conversationId, fromPeerId, timestamp, -1);
+          ((AVIMBinaryMessage)message).setBytes(binaryMsg.toByteArray());
+        } else {
+          message = new AVIMMessage(conversationId, fromPeerId, timestamp, -1);
+          message.setContent(msg);
+        }
         message.setMessageId(messageId);
-        message.setContent(msg);
         message.setUpdateAt(patchTimestamp);
         message.setMentionAll(mentionAll);
         message.setMentionList(mentionList);
@@ -367,12 +376,26 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
       List<Messages.UnreadTuple> unreadTupleList = unreadCommand.getConvsList();
       if (null != unreadTupleList) {
         for (Messages.UnreadTuple unreadTuple : unreadTupleList) {
-          AVIMMessage message = new AVIMMessage(unreadTuple.getCid(), unreadTuple.getFrom(), unreadTuple.getTimestamp(), -1);
-          message.setMessageId(unreadTuple.getMid());
-          message.setContent(unreadTuple.getData());
-          message.setUpdateAt(unreadTuple.getPatchTimestamp());
+          String msgId = unreadTuple.getMid();
+          String msgContent = unreadTuple.getData();
+          long ts = unreadTuple.getPatchTimestamp();
+          long updateTS = unreadTuple.getPatchTimestamp();
           String conversationId = unreadTuple.getCid();
           boolean mentioned = unreadTuple.getMentioned();
+          ByteString binaryMsg = unreadTuple.getBinaryMsg();
+          String from = unreadTuple.getFrom();
+
+          AVIMMessage message = null;
+          if (AVUtils.isBlankString(msgContent) && null != binaryMsg) {
+            message = new AVIMBinaryMessage(conversationId, from, ts, -1);
+            ((AVIMBinaryMessage)message).setBytes(binaryMsg.toByteArray());
+          } else {
+            message = new AVIMMessage(conversationId, from, ts, -1);
+            message.setContent(msgContent);
+          }
+          message.setMessageId(msgId);
+          message.setUpdateAt(updateTS);
+
           AVInternalConversation conversation = session.getConversation(conversationId);
           conversation.onUnreadMessagesEvent(message, unreadTuple.getUnread(), mentioned);
         }

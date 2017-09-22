@@ -11,6 +11,9 @@ android {
         versionName "1.0"
     }
 
+    sourceSets {  //this one may not be needed. But wont hurt.
+        androidTest.setRoot('src/androidTest')
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
@@ -37,6 +40,14 @@ android.libraryVariants.all { variant ->
     task.from variant.javaCompile.destinationDir
     artifacts.add('archives', task);
 }
+
+task androidReleaseJar(type: Jar) {
+    from "$buildDir/intermediates/classes/release/"
+    exclude '**/BuildConfig.class'
+    exclude '**/R.class'
+    exclude '**/R$*.class'
+}
+androidReleaseJar.dependsOn(assemble)
 
 dependencies {
     compile project(':avoscloud-sdk')

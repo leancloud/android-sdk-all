@@ -24,6 +24,12 @@ android.libraryVariants.all { variant ->
     artifacts.add('archives', task);
 }
 
+task androidReleaseJar(type: Jar) {
+    from "$buildDir/intermediates/classes/release/"
+    exclude 'com/avos/avoscloud/R.class'
+}
+androidReleaseJar.dependsOn(assemble)
+
 dependencies {
     compile 'com.android.support:appcompat-v7:25.+'
     compile 'com.android.support:support-v4:25.+'
