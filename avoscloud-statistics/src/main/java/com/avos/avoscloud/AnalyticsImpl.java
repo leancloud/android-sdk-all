@@ -23,7 +23,7 @@ class AnalyticsImpl implements AnalyticsRequestController.AnalyticsRequestDispat
   private static long SESSIONTHRESHOLD = 30 * 1000;
   private static final String TAG = AnalyticsImpl.class.getSimpleName();
   private static final String FIRSTBOOTTAG = "firstBoot";
-  private static final List<String> WHITELIST = new LinkedList<String>();
+//  private static final List<String> WHITELIST = new LinkedList<String>();
   private static boolean REPORTENABLEFLAG = true;
 
   private String appChannel = "AVOS Cloud";
@@ -86,12 +86,12 @@ class AnalyticsImpl implements AnalyticsRequestController.AnalyticsRequestDispat
   private ReportPolicy getReportPolicy(Context context) {
     ReportPolicy value = onlineConfig.getReportPolicy();
     // add white list for realtime requirement business clients
-    if (value == ReportPolicy.REALTIME && WHITELIST.contains(AVOSCloud.applicationId)) {
-      return ReportPolicy.REALTIME;
-    }
-    if (value == ReportPolicy.REALTIME && (!AnalyticsUtils.inDebug(context))) {
-      return ReportPolicy.BATCH;
-    }
+//    if (value == ReportPolicy.REALTIME && WHITELIST.contains(AVOSCloud.applicationId)) {
+//      return ReportPolicy.REALTIME;
+//    }
+//    if (value == ReportPolicy.REALTIME && (!AnalyticsUtils.inDebug(context))) {
+//      return ReportPolicy.BATCH;
+//    }
     if (value == ReportPolicy.SENDWIFIONLY && (!AnalyticsUtils.inDebug(context))) {
       return ReportPolicy.BATCH;
     }
@@ -416,7 +416,7 @@ class AnalyticsImpl implements AnalyticsRequestController.AnalyticsRequestDispat
     if (AVOSCloud.showInternalDebugLog()) {
       Log.d(TAG, "try to update statistics config from online data");
     }
-    onlineConfig.update();
+    updateOnlineConfig(null, null);
   }
 
   void updateOnlineConfig(Context context, AVCallback<Map<String, Object>> callback) {

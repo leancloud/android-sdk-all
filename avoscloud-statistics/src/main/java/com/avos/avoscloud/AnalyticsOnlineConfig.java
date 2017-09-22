@@ -27,10 +27,6 @@ class AnalyticsOnlineConfig {
     this.parent = ref;
   }
 
-  void update() {
-    this.update(true);
-  }
-
   /**
    * 请求自定义参数
    * @param context
@@ -49,17 +45,21 @@ class AnalyticsOnlineConfig {
         public void onSuccess(String content, AVException e) {
           try {
             Map<String, Object> jsonMap = JSONHelper.mapFromString(content);
-            Object parameters = jsonMap.get("parameters");
-            if (parameters != null && parameters instanceof Map) {
-              callback.internalDone((Map<String, Object>) parameters, e);
-            } else {
-              callback.internalDone(null, e);
+            if (null != callback) {
+              Object parameters = jsonMap.get("parameters");
+              if (parameters != null && parameters instanceof Map) {
+                callback.internalDone((Map<String, Object>) parameters, e);
+              } else {
+                callback.internalDone(null, e);
+              }
             }
+            updateConfig(jsonMap, true);
           } catch (JSONException e1) {
-            callback.internalDone(null, new AVException(e1));
+            if (null != callback) {
+              callback.internalDone(null, new AVException(e1));
+            }
             e1.printStackTrace();
           }
-          updateConfig(content, true);
         }
 
         @Override
@@ -70,9 +70,11 @@ class AnalyticsOnlineConfig {
       });
   }
 
-  private void updateConfig(String content, boolean updatePolicy) {
+  private void updateConfig(Map<String, Object> jsonMap, boolean updatePolicy) {
+    if (null == jsonMap) {
+      return;
+    }
     try {
-      Map<String, Object> jsonMap = JSONHelper.mapFromString(content);
       Object parameters = jsonMap.get("parameters");
       boolean notifyListener = false;
       if (parameters != null && parameters instanceof Map) {
@@ -100,27 +102,6 @@ class AnalyticsOnlineConfig {
     } catch (Exception exception) {
       exception.printStackTrace();
     }
-  }
-
-  private void update(final boolean updatePolicy) {
-    String endPoint = String.format("statistics/apps/%s/sendPolicy", AVOSCloud.applicationId);
-    PaasClient.statistisInstance().getObject(endPoint, null, false, null,
-      new GenericObjectCallback() {
-        @Override
-        public boolean isRequestStatisticNeed() {
-          return false;
-        }
-
-        @Override
-        public void onSuccess(String content, AVException e) {
-          updateConfig(content, updatePolicy);
-        }
-
-        @Override
-        public void onFailure(Throwable error, String content) {
-          LogUtil.log.e("Failed " + content);
-        }
-      });
   }
 
   boolean isEnableStats() {
