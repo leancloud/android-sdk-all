@@ -11,7 +11,7 @@ import android.os.Message;
  *
  * Created by lbt05 on 2/13/15.
  */
-class BoosterRequestController extends BasicAnalyticsRequestDispatcher {
+class BoosterRequestController extends BasicAnalyticsRequestController {
   String currentSessionId;
   String tmpSessionId;
 
@@ -39,7 +39,7 @@ class BoosterRequestController extends BasicAnalyticsRequestDispatcher {
 
   @Override
   public void prepareRequest() {
-    if (AVOSCloud.isDebugLogEnabled() && AnalyticsImpl.enableDebugLog) {
+    if (AVOSCloud.isDebugLogEnabled() && AVOSCloud.showInternalDebugLog()) {
       LogUtil.avlog.d("sent analytics request on booster");
     }
   }

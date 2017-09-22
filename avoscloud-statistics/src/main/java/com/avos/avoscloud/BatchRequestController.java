@@ -9,14 +9,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 class BatchRequestController extends IntervalRequestController {
 
-  private final AtomicInteger messageCount;
+  private final AtomicInteger messageCount = new AtomicInteger(0);;
   // 消息数量的上限是30，但是由于start跟end事件都会触发，所以实际触发数量为消息数的2倍
   private final int messageCountThreshold = 60;
 
   BatchRequestController(String sessionId, final AnalyticsRequestDispatcher dispatcher,
       long defaultInterval) {
     super(sessionId, dispatcher, defaultInterval);
-    messageCount = new AtomicInteger(0);
   }
 
   private int getMessageCount() {
@@ -38,7 +37,7 @@ class BatchRequestController extends IntervalRequestController {
 
   @Override
   public void prepareRequest() {
-    if (AVOSCloud.isDebugLogEnabled() && AnalyticsImpl.enableDebugLog) {
+    if (AVOSCloud.isDebugLogEnabled() && AVOSCloud.showInternalDebugLog()) {
       LogUtil.avlog.d("send stats batch request");
     }
   }

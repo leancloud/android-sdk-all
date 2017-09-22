@@ -38,14 +38,17 @@ public class AnalyticsUtils {
     if (info == null || !info.isConnectedOrConnecting() || withinInBlackList()) {
       map.put("access_subtype", "offline");
       map.put("access", "offline");
-      map.put("carrier", "");
     } else {
       map.put("access_subtype", info.getSubtypeName());
       map.put("access", cleanNetworkTypeName(info.getTypeName()));
       TelephonyManager manager =
           (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
       String carrierName = manager.getNetworkOperatorName();
-      map.put("carrier", carrierName);
+      if (AVUtils.isBlankString(carrierName)) {
+        map.put("carrier", "unknown");
+      } else {
+        map.put("carrier", carrierName);
+      }
     }
     return map;
   }

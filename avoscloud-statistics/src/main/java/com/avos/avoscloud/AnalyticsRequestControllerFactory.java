@@ -1,6 +1,13 @@
 package com.avos.avoscloud;
 
 class AnalyticsRequestControllerFactory {
+  /**
+   * 生成 RequestController 实例
+   * @param sessionId
+   * @param reportPolicy
+   * @param implement
+   * @return
+   */
   static AnalyticsRequestController getAnalyticsRequestController(String sessionId,
       ReportPolicy reportPolicy, AnalyticsImpl implement) {
     AnalyticsRequestController requestController = null;
@@ -11,7 +18,7 @@ class AnalyticsRequestControllerFactory {
         break;
       case REALTIME:
       case SENDWIFIONLY:
-        requestController = implement.realTimeController;
+        requestController = new RealTimeRequestController(implement);//implement.realTimeController;
         break;
       case SEND_ON_EXIT:
         requestController = new BoosterRequestController(sessionId, implement);

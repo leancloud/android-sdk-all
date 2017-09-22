@@ -7,7 +7,7 @@ import android.os.Message;
 /**
  * Created by lbt05 on 2/11/15.
  */
-class RealTimeRequestController extends BasicAnalyticsRequestDispatcher {
+class RealTimeRequestController extends BasicAnalyticsRequestController {
 
   RealTimeRequestController(final AnalyticsRequestDispatcher dispatcher) {
     super(dispatcher);
@@ -56,7 +56,7 @@ class RealTimeRequestController extends BasicAnalyticsRequestDispatcher {
 
   @Override
   public void prepareRequest() {
-    if (AVOSCloud.isDebugLogEnabled() && AnalyticsImpl.enableDebugLog) {
+    if (AVOSCloud.isDebugLogEnabled() && AVOSCloud.showInternalDebugLog()) {
       LogUtil.avlog.d("sent real time analytics request");
     }
   }

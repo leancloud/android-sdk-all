@@ -14,7 +14,7 @@ class IntervalRequestController extends BoosterRequestController {
       long countDownInterval) {
     super(sessionId, dispatcher);
     timer =
-        new IntervalTimer(AnalyticsRequestController.controllerThread.getLooper(),
+        new IntervalTimer(controllerThread.getLooper(),
             countDownInterval) {
           @Override
           public void onTrigger() {
@@ -48,6 +48,6 @@ class IntervalRequestController extends BoosterRequestController {
   @Override
   public void onRequestDone() {
     currentSessionId = tmpSessionId;
-    this.skip();
+    skip();
   }
 }
