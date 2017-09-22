@@ -188,7 +188,6 @@ class AnalyticsImpl implements AnalyticsRequestController.AnalyticsRequestDispat
       session = createSession();
     }
     currentSessionId = session.getSessionId();
-    updateOnlineConfig();
   }
 
   void endSession() {

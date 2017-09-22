@@ -65,7 +65,9 @@ class AnalyticsOnlineConfig {
         @Override
         public void onFailure(Throwable error, String content) {
           LogUtil.log.e("Failed " + content);
-          callback.internalDone(null, new AVException(error));
+          if (null != callback) {
+            callback.internalDone(null, new AVException(error));
+          }
         }
       });
   }

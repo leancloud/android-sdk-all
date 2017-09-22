@@ -55,6 +55,7 @@ public class AVOSCloud {
 
   /**
    * 服务区分，注意 name 值不能随意修改修改，要根据这个值来拼 host
+   * RTM is indicating router server.
    */
   public enum SERVER_TYPE {
     API("api"), PUSH("push"), RTM("rtm"), STATS("stats"), ENGINE("engine");
