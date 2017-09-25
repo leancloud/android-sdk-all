@@ -186,11 +186,11 @@ public class AVSession {
       AVOSCloud.handler.post(new Runnable() {
         @Override
         public void run() {
-          new SignatureTask(callback).execute(getSelfPeerId());
+          new SignatureTask(callback).commit(getSelfPeerId());
         }
       });
     } else {
-      new SignatureTask(callback).execute(getSelfPeerId());
+      new SignatureTask(callback).commit(getSelfPeerId());
     }
   }
 
@@ -344,7 +344,7 @@ public class AVSession {
         return null;
       }
     };
-    new SignatureTask(callback).execute(this.selfId);
+    new SignatureTask(callback).commit(this.selfId);
   }
 
   /**
