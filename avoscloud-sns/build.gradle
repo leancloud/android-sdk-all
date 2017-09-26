@@ -32,14 +32,9 @@ android.libraryVariants.all { variant ->
     def task = project.tasks.create "jar${name.capitalize()}", Jar
     task.dependsOn variant.javaCompile
     task.from variant.javaCompile.destinationDir
+    task.exclude 'com/avos/avoscloud/R.class'
     artifacts.add('archives', task);
 }
-
-task androidReleaseJar(type: Jar) {
-    from "$buildDir/intermediates/classes/release/"
-    exclude 'com/avos/avoscloud/R.class'
-}
-androidReleaseJar.dependsOn(assemble)
 
 dependencies {
     compile project(':avoscloud-sdk')
