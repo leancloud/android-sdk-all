@@ -20,7 +20,7 @@ sed -i '' "s/sdkVersion = .*;/sdkVersion = \"$version\";/" avoscloud-sdk/src/mai
 sed -i '' "s/include ':Statistics'//" settings.gradle
 sed -i '' "s/include ':paas_unit_test_application'//" settings.gradle
 
-gradle clean androidReleaseJar uploadArchives
+gradle clean assemble uploadArchives
 
 releaseDir="build/release-$version"
 
