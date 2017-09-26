@@ -1,6 +1,7 @@
 package com.avos.avoscloud;
 
 import android.os.AsyncTask;
+import android.os.Build;
 
 /**
  * Created by wli on 2017/7/26.
@@ -45,5 +46,13 @@ class SignatureTask extends AsyncTask<String, Integer, Signature> {
   @Override
   protected void onPostExecute(Signature result) {
     callback.onSignatureReady(result, signatureException);
+  }
+
+  public AsyncTask<String, Integer, Signature> commit(String... params) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+      return executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, params);
+    } else {
+      return execute(params);
+    }
   }
 }

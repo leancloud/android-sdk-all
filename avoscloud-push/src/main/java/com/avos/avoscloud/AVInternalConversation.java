@@ -80,7 +80,7 @@ class AVInternalConversation {
         return null;
       }
     };
-    new SignatureTask(callback).execute(session.getSelfPeerId());
+    new SignatureTask(callback).commit(session.getSelfPeerId());
   }
 
   public void kickMembers(final List<String> members, final int requestId) {
@@ -115,7 +115,7 @@ class AVInternalConversation {
         return null;
       }
     };
-    new SignatureTask(callback).execute(session.getSelfPeerId());
+    new SignatureTask(callback).commit(session.getSelfPeerId());
   }
 
   public void join(final int requestId) {
@@ -149,7 +149,7 @@ class AVInternalConversation {
         return null;
       }
     };
-    new SignatureTask(callback).execute(session.getSelfPeerId());
+    new SignatureTask(callback).commit(session.getSelfPeerId());
   }
 
   public void updateInfo(Map<String, Object> attr, int requestId) {

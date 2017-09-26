@@ -154,9 +154,8 @@ public class AVSession {
           if (notifyListener) {
             sessionListener.onError(AVOSCloud.applicationContext, AVSession.this, exception,
                 OPERATION_OPEN_SESSION, requestId);
-          } else {
-            LogUtil.log.d("failed to generate signaure. cause:", exception);
           }
+          LogUtil.log.d("failed to generate signaure. cause:", exception);
         } else {
           conversationOperationCache.offer(Operation.getOperation(
               AVIMOperation.CLIENT_OPEN.getCode(), getSelfPeerId(), null, requestId));
@@ -186,11 +185,11 @@ public class AVSession {
       AVOSCloud.handler.post(new Runnable() {
         @Override
         public void run() {
-          new SignatureTask(callback).execute(getSelfPeerId());
+          new SignatureTask(callback).commit(getSelfPeerId());
         }
       });
     } else {
-      new SignatureTask(callback).execute(getSelfPeerId());
+      new SignatureTask(callback).commit(getSelfPeerId());
     }
   }
 
@@ -344,7 +343,7 @@ public class AVSession {
         return null;
       }
     };
-    new SignatureTask(callback).execute(this.selfId);
+    new SignatureTask(callback).commit(this.selfId);
   }
 
   /**
