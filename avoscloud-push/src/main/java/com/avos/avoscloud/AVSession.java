@@ -154,9 +154,8 @@ public class AVSession {
           if (notifyListener) {
             sessionListener.onError(AVOSCloud.applicationContext, AVSession.this, exception,
                 OPERATION_OPEN_SESSION, requestId);
-          } else {
-            LogUtil.log.d("failed to generate signaure. cause:", exception);
           }
+          LogUtil.log.d("failed to generate signaure. cause:", exception);
         } else {
           conversationOperationCache.offer(Operation.getOperation(
               AVIMOperation.CLIENT_OPEN.getCode(), getSelfPeerId(), null, requestId));
