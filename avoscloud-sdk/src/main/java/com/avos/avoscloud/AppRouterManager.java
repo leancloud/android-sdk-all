@@ -61,6 +61,7 @@ public class AppRouterManager {
 
   static void setServer(AVOSCloud.SERVER_TYPE server, String host) {
     customApiMaps.put(server.name, host);
+    RequestStatisticsUtil.REPORT_INTERNAL_STATS = false;
   }
 
   String getStorageServer() {

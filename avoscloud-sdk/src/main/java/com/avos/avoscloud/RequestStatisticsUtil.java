@@ -25,6 +25,7 @@ class RequestStatisticsUtil {
   private static final String LAST_SENDTIME = "lastSendTime";
   private static int TIME_INTERVAL = 24 * 3600 * 1000;
   private static RequestStatisticsUtil sInstance;
+  public static Boolean REPORT_INTERNAL_STATS = true;
 
   /**
    * 最近一次更新成功的时间
@@ -56,6 +57,9 @@ class RequestStatisticsUtil {
    * @param time 请求所耗费的时间
    */
   public void recordRequestTime(int statusCode, boolean isTimeOut, long time) {
+    if (!REPORT_INTERNAL_STATS) {
+      return;
+    }
     if (time > 0 && time < AVOSCloud.getNetworkTimeout() * 2) {
       requestStatistics.addRequestData(statusCode, isTimeOut, time);
       requestStatistics.saveToPreference();
@@ -66,6 +70,9 @@ class RequestStatisticsUtil {
    * 如果距离上次发送超过一天的时间，则将数据发送至服务器，同步发送
    */
   public void sendToServer() {
+    if (!REPORT_INTERNAL_STATS) {
+      return;
+    }
     if (isNeedToSend()) {
       sendData(new RequestStatistics());
     }
