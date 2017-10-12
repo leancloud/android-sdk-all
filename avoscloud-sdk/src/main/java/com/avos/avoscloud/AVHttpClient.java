@@ -113,8 +113,7 @@ public class AVHttpClient {
       } catch (IOException e) {
         if (requestStatistics) {
           long timeInterval = System.currentTimeMillis() - requestStartTime;
-          RequestStatisticsUtil.getInstance()
-            .recordRequestTime(0, e instanceof SocketTimeoutException, timeInterval);
+          RequestStatisticsUtil.getInstance().recordRequestTime(0, e instanceof SocketTimeoutException, timeInterval);
         }
         throw e;
       }

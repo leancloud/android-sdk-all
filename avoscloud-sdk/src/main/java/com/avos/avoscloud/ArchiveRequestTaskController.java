@@ -17,6 +17,9 @@ public class ArchiveRequestTaskController {
   private static final long TIME_DELAY_FOR_ARCHIVEREQUEST = 30;
 
   public static synchronized void schedule() {
+    if (!RequestStatisticsUtil.REPORT_INTERNAL_STATS) {
+      return;
+    }
     boolean cancelled = true;
     if (scheduledExecutorService == null) {
       scheduledExecutorService = Executors.newScheduledThreadPool(1);
