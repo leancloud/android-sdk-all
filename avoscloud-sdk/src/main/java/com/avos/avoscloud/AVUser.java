@@ -2274,7 +2274,9 @@ public class AVUser extends AVObject {
       return;
     }
     Map<String, Object> data = new HashMap<String, Object>();
-    data.put(authDataTag, authData);
+    Map<String, Object> authMap = new HashMap<String, Object>();
+    authMap.put(platform, authData);
+    data.put(authDataTag, authMap);
     String jsonString = JSON.toJSONString(data);
     PaasClient.storageInstance().postObject(AVUSER_ENDPOINT, jsonString, false, false,
         new GenericObjectCallback() {
@@ -2287,6 +2289,11 @@ public class AVUser extends AVObject {
               }
               AVUtils.copyPropertiesFromJsonStringToAVObject(content, userObject);
               userObject.processAuthData(null);
+              if (platform.equals(SNS_SINA_WEIBO)) {
+                userObject.sinaWeiboToken = (String)authData.get(accessTokenTag);
+              } else if (platform.equals(SNS_TENCENT_WEIBO)) {
+                userObject.qqWeiboToken = (String)authData.get(accessTokenTag);
+              }
               AVUser.changeCurrentUser(userObject, true);
               if (callback != null) {
                 callback.internalDone(userObject, null);
