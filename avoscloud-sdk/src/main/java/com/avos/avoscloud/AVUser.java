@@ -26,18 +26,23 @@ public class AVUser extends AVObject {
   private transient String qqWeiboToken;
   private transient boolean needTransferFromAnonymousUser;
   private boolean anonymous;
-  public static final String LOG_TAG = AVUser.class.getSimpleName();
 
+  public static final String LOG_TAG = AVUser.class.getSimpleName();
   public static final String FOLLOWER_TAG = "follower";
   public static final String FOLLOWEE_TAG = "followee";
   public static final String SESSION_TOKEN_KEY = "sessionToken";
-
   public static final String SMS_VALIDATE_TOKEN = "validate_token";
   public static final String SMS_PHONE_NUMBER = "mobilePhoneNumber";
-
   public static final String AVUSER_ENDPOINT = "users";
+  public static final String SNS_TENCENT_WEIBO = "qq";
+  public static final String SNS_SINA_WEIBO = "weibo";
+  public static final String SNS_TENCENT_WEIXIN = "weixin";
 
   private static Class<? extends AVUser> subClazz;
+  private static final String accessTokenTag = "access_token";
+  private static final String expiresAtTag = "expires_at";
+  private static final String authDataTag = "authData";
+  private static final String anonymousTag = "anonymous";
 
   static private File currentUserArchivePath() {
     File file = new File(AVPersistenceUtils.getPaasDocumentDir() + "/currentUser");
@@ -2217,14 +2222,92 @@ public class AVUser extends AVObject {
 
 
   /**
-   * 生成一个新的AarseUser，并且将AVUser与SNS平台获取的userInfo关联。
+   * 生成一个新的 AVUser，并且将AVUser与SNS平台获取的userInfo关联。
    * 
    * @param userInfo 包含第三方授权必要信息的内部类
    * @param callback 关联完成后，调用的回调函数。
    */
+  @Deprecated
   static public void loginWithAuthData(AVThirdPartyUserAuth userInfo,
       final LogInCallback<AVUser> callback) {
     loginWithAuthData(AVUser.class, userInfo, callback);
+  }
+
+  /**
+   * 生成一个新的 AVUser，并且将AVUser与SNS平台获取的 authData 关联。
+   *
+   * @param authData 包含第三方授权必要信息
+   * @param platform 平台
+   * @param callback 关联完成后，调用的回调函数。
+   */
+  public static void loginWithAuthData(final Map<String, Object> authData, final String platform, final LogInCallback callback) {
+    loginWithAuthData(AVUser.class, authData, platform, callback);
+  }
+
+  /**
+   * 生成一个新的 AVUser 子类化对象，并且将该对象与 SNS 平台获取的 authData 关联。
+   *
+   * @param clazz 子类化的AVUer的class对象
+   * @param authData 在 SNS 登录成功后，返回的userInfo信息。
+   * @param platform 平台
+   * @param callback 关联完成后，调用的回调函数。
+   * @since 1.4.4
+   */
+  public static <T extends AVUser> void loginWithAuthData(final Class<T> clazz, final Map<String, Object> authData,
+                                                          final String platform, final LogInCallback callback) {
+    if (null == clazz) {
+      if (null != callback) {
+        callback.internalDone(AVErrorUtils.createException(AVException.OTHER_CAUSE, "illegal parameter. clazz must not null/empty."));
+      }
+      return;
+    }
+    if (null == authData || authData.isEmpty()) {
+      if (null != callback) {
+        callback.internalDone(AVErrorUtils.createException(AVException.OTHER_CAUSE, "illegal parameter. authdata must not null/empty."));
+      }
+      return;
+    }
+    if (AVUtils.isBlankString(platform)) {
+      if (null != callback) {
+        callback.internalDone(AVErrorUtils.createException(AVException.OTHER_CAUSE, "illegal parameter. platform must not null/empty."));
+      }
+      return;
+    }
+    Map<String, Object> data = new HashMap<String, Object>();
+    Map<String, Object> authMap = new HashMap<String, Object>();
+    authMap.put(platform, authData);
+    data.put(authDataTag, authMap);
+    String jsonString = JSON.toJSONString(data);
+    PaasClient.storageInstance().postObject(AVUSER_ENDPOINT, jsonString, false, false,
+        new GenericObjectCallback() {
+          @Override
+          public void onSuccess(String content, AVException e) {
+            if (e == null) {
+              AVUser userObject = AVUser.newAVUser(clazz, callback);
+              if (userObject == null) {
+                return;
+              }
+              AVUtils.copyPropertiesFromJsonStringToAVObject(content, userObject);
+              userObject.processAuthData(null);
+              if (platform.equals(SNS_SINA_WEIBO)) {
+                userObject.sinaWeiboToken = (String)authData.get(accessTokenTag);
+              } else if (platform.equals(SNS_TENCENT_WEIBO)) {
+                userObject.qqWeiboToken = (String)authData.get(accessTokenTag);
+              }
+              AVUser.changeCurrentUser(userObject, true);
+              if (callback != null) {
+                callback.internalDone(userObject, null);
+              }
+            }
+          }
+
+          @Override
+          public void onFailure(Throwable error, String content) {
+            if (callback != null) {
+              callback.internalDone(null, AVErrorUtils.createException(error, content));
+            }
+          }
+        }, null, null);
   }
 
   /**
@@ -2235,6 +2318,7 @@ public class AVUser extends AVObject {
    * @param callback 关联完成后，调用的回调函数。
    * @since 1.4.4
    */
+  @Deprecated
   static public <T extends AVUser> void loginWithAuthData(final Class<T> clazz,
       final AVThirdPartyUserAuth userInfo, final LogInCallback<T> callback) {
     if (userInfo == null) {
@@ -2283,6 +2367,7 @@ public class AVUser extends AVObject {
    * @param callback 关联完成后，调用的回调函数。
    * @since 1.4.4
    */
+  @Deprecated
   static public void associateWithAuthData(AVUser user, AVThirdPartyUserAuth userInfo,
       final SaveCallback callback) {
     if (userInfo == null) {
@@ -2301,6 +2386,61 @@ public class AVUser extends AVObject {
     user.saveInBackground(callback);
   }
 
+  public void associateWithAuthData(Map<String, Object> authData, String platform, final SaveCallback callback) {
+    if (null == authData || authData.isEmpty()) {
+      if (null != callback) {
+        callback.internalDone(AVErrorUtils.createException(AVException.OTHER_CAUSE, "illegal parameter. authdata must not null/empty."));
+      }
+      return;
+    }
+    if (AVUtils.isBlankString(platform)) {
+      if (null != callback) {
+        callback.internalDone(AVErrorUtils.createException(AVException.OTHER_CAUSE, "illegal parameter. platform must not null/empty."));
+      }
+      return;
+    }
+    Map<String, Object> authDataAttr = new HashMap<String, Object>();
+    authDataAttr.put(platform, authData);
+    Object existedAuthData = this.get(authDataTag);
+    if (existedAuthData != null && existedAuthData instanceof Map) {
+      authDataAttr.putAll((Map<String, Object>)existedAuthData);
+    }
+    this.put(authDataTag, authDataAttr);
+    this.markAnonymousUserTransfer();
+    this.saveInBackground(callback);
+  }
+
+  public void dissociateAuthData(final String platform, final SaveCallback callback) {
+    if (AVUtils.isBlankString(platform)) {
+      if (null != callback) {
+        callback.internalDone(AVErrorUtils.createException(AVException.OTHER_CAUSE, "illegal parameter. platform must not null/empty."));
+      }
+      return;
+    }
+    Map<String, Object> authData = (Map<String, Object>) this.get(authDataTag);
+    if (authData != null) {
+      authData.remove(platform);
+    }
+    this.put(authDataTag, authData);
+    if (this.isAuthenticated() && !AVUtils.isBlankString(getObjectId())) {
+      this.saveInBackground(new SaveCallback() {
+        @Override
+        public void done(AVException e) {
+          processAuthData(new AVThirdPartyUserAuth(null, null, platform, null));
+          if (null != callback) {
+            callback.internalDone(e);
+          }
+        }
+      });
+    } else {
+      if (null != callback) {
+        callback.internalDone(new AVException(AVException.SESSION_MISSING,
+            "the user object missing a valid session"));
+      }
+    }
+  }
+
+  @Deprecated
   static public void dissociateAuthData(final AVUser user, final String type,
       final SaveCallback callback) {
     Map<String, Object> authData = (Map<String, Object>) user.get(authDataTag);
@@ -2327,11 +2467,6 @@ public class AVUser extends AVObject {
     }
   }
 
-  private static final String accessTokenTag = "access_token";
-  private static final String expiresAtTag = "expires_at";
-  private static final String authDataTag = "authData";
-  private static final String anonymousTag = "anonymous";
-
   protected void processAuthData(AVThirdPartyUserAuth auth) {
     Map<String, Object> authData = (Map<String, Object>) this.get(authDataTag);
     // 匿名用户转化为正式用户
@@ -2344,16 +2479,16 @@ public class AVUser extends AVObject {
       needTransferFromAnonymousUser = false;
     }
     if (authData != null) {
-      if (authData.containsKey(AVThirdPartyUserAuth.SNS_SINA_WEIBO)) {
+      if (authData.containsKey(SNS_SINA_WEIBO)) {
         Map<String, Object> sinaAuthData =
-            (Map<String, Object>) authData.get(AVThirdPartyUserAuth.SNS_SINA_WEIBO);
+            (Map<String, Object>) authData.get(SNS_SINA_WEIBO);
         this.sinaWeiboToken = (String) sinaAuthData.get(accessTokenTag);
       } else {
         this.sinaWeiboToken = null;
       }
-      if (authData.containsKey(AVThirdPartyUserAuth.SNS_TENCENT_WEIBO)) {
+      if (authData.containsKey(SNS_TENCENT_WEIBO)) {
         Map<String, Object> qqAuthData =
-            (Map<String, Object>) authData.get(AVThirdPartyUserAuth.SNS_TENCENT_WEIBO);
+            (Map<String, Object>) authData.get(SNS_TENCENT_WEIBO);
         this.qqWeiboToken = (String) qqAuthData.get(accessTokenTag);
       } else {
         this.qqWeiboToken = null;
@@ -2365,17 +2500,18 @@ public class AVUser extends AVObject {
       }
     }
     if (auth != null) {
-      if (auth.snsType.equals(AVThirdPartyUserAuth.SNS_SINA_WEIBO)) {
+      if (auth.snsType.equals(SNS_SINA_WEIBO)) {
         sinaWeiboToken = auth.accessToken;
         return;
       }
-      if (auth.snsType.equals(AVThirdPartyUserAuth.SNS_TENCENT_WEIBO)) {
+      if (auth.snsType.equals(SNS_TENCENT_WEIBO)) {
         qqWeiboToken = auth.accessToken;
         return;
       }
     }
   }
 
+  @Deprecated
   public static class AVThirdPartyUserAuth {
     String accessToken;
     String expiredAt;
