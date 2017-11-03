@@ -95,6 +95,10 @@ public final class Messages {
      * <code>patch = 18;</code>
      */
     patch(18),
+    /**
+     * <code>pubsub = 19;</code>
+     */
+    pubsub(19),
     ;
 
     /**
@@ -173,6 +177,10 @@ public final class Messages {
      * <code>patch = 18;</code>
      */
     public static final int patch_VALUE = 18;
+    /**
+     * <code>pubsub = 19;</code>
+     */
+    public static final int pubsub_VALUE = 19;
 
 
     public final int getNumber() {
@@ -208,6 +216,7 @@ public final class Messages {
         case 16: return logout;
         case 17: return loggedout;
         case 18: return patch;
+        case 19: return pubsub;
         default: return null;
       }
     }
@@ -311,6 +320,14 @@ public final class Messages {
      */
     removed(11),
     /**
+     * <code>refresh = 12;</code>
+     */
+    refresh(12),
+    /**
+     * <code>refreshed = 13;</code>
+     */
+    refreshed(13),
+    /**
      * <pre>
      * conv
      * </pre>
@@ -394,6 +411,18 @@ public final class Messages {
      */
     is_member(52),
     /**
+     * <code>property_update = 53;</code>
+     */
+    property_update(53),
+    /**
+     * <code>property_updated = 54;</code>
+     */
+    property_updated(54),
+    /**
+     * <code>property_changed = 55;</code>
+     */
+    property_changed(55),
+    /**
      * <pre>
      * room
      * </pre>
@@ -442,6 +471,30 @@ public final class Messages {
      * <code>uploaded = 101;</code>
      */
     uploaded(101),
+    /**
+     * <pre>
+     * pubsub
+     * </pre>
+     *
+     * <code>subscribe = 120;</code>
+     */
+    subscribe(120),
+    /**
+     * <code>subscribed = 121;</code>
+     */
+    subscribed(121),
+    /**
+     * <code>unsubscribe = 122;</code>
+     */
+    unsubscribe(122),
+    /**
+     * <code>unsubscribed = 123;</code>
+     */
+    unsubscribed(123),
+    /**
+     * <code>is_subscribed = 124;</code>
+     */
+    is_subscribed(124),
     /**
      * <pre>
      * patch
@@ -504,6 +557,14 @@ public final class Messages {
      * <code>removed = 11;</code>
      */
     public static final int removed_VALUE = 11;
+    /**
+     * <code>refresh = 12;</code>
+     */
+    public static final int refresh_VALUE = 12;
+    /**
+     * <code>refreshed = 13;</code>
+     */
+    public static final int refreshed_VALUE = 13;
     /**
      * <pre>
      * conv
@@ -588,6 +649,18 @@ public final class Messages {
      */
     public static final int is_member_VALUE = 52;
     /**
+     * <code>property_update = 53;</code>
+     */
+    public static final int property_update_VALUE = 53;
+    /**
+     * <code>property_updated = 54;</code>
+     */
+    public static final int property_updated_VALUE = 54;
+    /**
+     * <code>property_changed = 55;</code>
+     */
+    public static final int property_changed_VALUE = 55;
+    /**
      * <pre>
      * room
      * </pre>
@@ -638,6 +711,30 @@ public final class Messages {
     public static final int uploaded_VALUE = 101;
     /**
      * <pre>
+     * pubsub
+     * </pre>
+     *
+     * <code>subscribe = 120;</code>
+     */
+    public static final int subscribe_VALUE = 120;
+    /**
+     * <code>subscribed = 121;</code>
+     */
+    public static final int subscribed_VALUE = 121;
+    /**
+     * <code>unsubscribe = 122;</code>
+     */
+    public static final int unsubscribe_VALUE = 122;
+    /**
+     * <code>unsubscribed = 123;</code>
+     */
+    public static final int unsubscribed_VALUE = 123;
+    /**
+     * <code>is_subscribed = 124;</code>
+     */
+    public static final int is_subscribed_VALUE = 124;
+    /**
+     * <pre>
      * patch
      * </pre>
      *
@@ -675,6 +772,8 @@ public final class Messages {
         case 9: return conflict;
         case 10: return added;
         case 11: return removed;
+        case 12: return refresh;
+        case 13: return refreshed;
         case 30: return start;
         case 31: return started;
         case 32: return joined;
@@ -692,6 +791,9 @@ public final class Messages {
         case 50: return members;
         case 51: return max_read;
         case 52: return is_member;
+        case 53: return property_update;
+        case 54: return property_updated;
+        case 55: return property_changed;
         case 80: return join;
         case 81: return invite;
         case 82: return leave;
@@ -701,6 +803,11 @@ public final class Messages {
         case 86: return kicked;
         case 100: return upload;
         case 101: return uploaded;
+        case 120: return subscribe;
+        case 121: return subscribed;
+        case 122: return unsubscribe;
+        case 123: return unsubscribed;
+        case 124: return is_subscribed;
         case 150: return modify;
         case 151: return modified;
         default: return null;
@@ -4505,6 +4612,891 @@ public final class Messages {
     }
 
     public com.avos.avoscloud.Messages.LogItem getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface ConvPropertyOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:com.avos.avoscloud.ConvProperty)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>optional string pid = 1;</code>
+     */
+    boolean hasPid();
+    /**
+     * <code>optional string pid = 1;</code>
+     */
+    java.lang.String getPid();
+    /**
+     * <code>optional string pid = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getPidBytes();
+
+    /**
+     * <code>optional string role = 2;</code>
+     */
+    boolean hasRole();
+    /**
+     * <code>optional string role = 2;</code>
+     */
+    java.lang.String getRole();
+    /**
+     * <code>optional string role = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getRoleBytes();
+
+    /**
+     * <code>optional string propertyId = 3;</code>
+     */
+    boolean hasPropertyId();
+    /**
+     * <code>optional string propertyId = 3;</code>
+     */
+    java.lang.String getPropertyId();
+    /**
+     * <code>optional string propertyId = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getPropertyIdBytes();
+  }
+  /**
+   * Protobuf type {@code com.avos.avoscloud.ConvProperty}
+   */
+  public  static final class ConvProperty extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:com.avos.avoscloud.ConvProperty)
+      ConvPropertyOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use ConvProperty.newBuilder() to construct.
+    private ConvProperty(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private ConvProperty() {
+      pid_ = "";
+      role_ = "";
+      propertyId_ = "";
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private ConvProperty(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000001;
+              pid_ = bs;
+              break;
+            }
+            case 18: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000002;
+              role_ = bs;
+              break;
+            }
+            case 26: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000004;
+              propertyId_ = bs;
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.avos.avoscloud.Messages.internal_static_com_avos_avoscloud_ConvProperty_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.avos.avoscloud.Messages.internal_static_com_avos_avoscloud_ConvProperty_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.avos.avoscloud.Messages.ConvProperty.class, com.avos.avoscloud.Messages.ConvProperty.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int PID_FIELD_NUMBER = 1;
+    private volatile java.lang.Object pid_;
+    /**
+     * <code>optional string pid = 1;</code>
+     */
+    public boolean hasPid() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>optional string pid = 1;</code>
+     */
+    public java.lang.String getPid() {
+      java.lang.Object ref = pid_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          pid_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string pid = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getPidBytes() {
+      java.lang.Object ref = pid_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        pid_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int ROLE_FIELD_NUMBER = 2;
+    private volatile java.lang.Object role_;
+    /**
+     * <code>optional string role = 2;</code>
+     */
+    public boolean hasRole() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional string role = 2;</code>
+     */
+    public java.lang.String getRole() {
+      java.lang.Object ref = role_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          role_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string role = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getRoleBytes() {
+      java.lang.Object ref = role_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        role_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int PROPERTYID_FIELD_NUMBER = 3;
+    private volatile java.lang.Object propertyId_;
+    /**
+     * <code>optional string propertyId = 3;</code>
+     */
+    public boolean hasPropertyId() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional string propertyId = 3;</code>
+     */
+    public java.lang.String getPropertyId() {
+      java.lang.Object ref = propertyId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          propertyId_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string propertyId = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getPropertyIdBytes() {
+      java.lang.Object ref = propertyId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        propertyId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, pid_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, role_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, propertyId_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, pid_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, role_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, propertyId_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof com.avos.avoscloud.Messages.ConvProperty)) {
+        return super.equals(obj);
+      }
+      com.avos.avoscloud.Messages.ConvProperty other = (com.avos.avoscloud.Messages.ConvProperty) obj;
+
+      boolean result = true;
+      result = result && (hasPid() == other.hasPid());
+      if (hasPid()) {
+        result = result && getPid()
+            .equals(other.getPid());
+      }
+      result = result && (hasRole() == other.hasRole());
+      if (hasRole()) {
+        result = result && getRole()
+            .equals(other.getRole());
+      }
+      result = result && (hasPropertyId() == other.hasPropertyId());
+      if (hasPropertyId()) {
+        result = result && getPropertyId()
+            .equals(other.getPropertyId());
+      }
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasPid()) {
+        hash = (37 * hash) + PID_FIELD_NUMBER;
+        hash = (53 * hash) + getPid().hashCode();
+      }
+      if (hasRole()) {
+        hash = (37 * hash) + ROLE_FIELD_NUMBER;
+        hash = (53 * hash) + getRole().hashCode();
+      }
+      if (hasPropertyId()) {
+        hash = (37 * hash) + PROPERTYID_FIELD_NUMBER;
+        hash = (53 * hash) + getPropertyId().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static com.avos.avoscloud.Messages.ConvProperty parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.avos.avoscloud.Messages.ConvProperty parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.avos.avoscloud.Messages.ConvProperty parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.avos.avoscloud.Messages.ConvProperty parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.avos.avoscloud.Messages.ConvProperty parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.avos.avoscloud.Messages.ConvProperty parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.avos.avoscloud.Messages.ConvProperty parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.avos.avoscloud.Messages.ConvProperty parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.avos.avoscloud.Messages.ConvProperty parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static com.avos.avoscloud.Messages.ConvProperty parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.avos.avoscloud.Messages.ConvProperty parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.avos.avoscloud.Messages.ConvProperty parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(com.avos.avoscloud.Messages.ConvProperty prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code com.avos.avoscloud.ConvProperty}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:com.avos.avoscloud.ConvProperty)
+        com.avos.avoscloud.Messages.ConvPropertyOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.avos.avoscloud.Messages.internal_static_com_avos_avoscloud_ConvProperty_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.avos.avoscloud.Messages.internal_static_com_avos_avoscloud_ConvProperty_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.avos.avoscloud.Messages.ConvProperty.class, com.avos.avoscloud.Messages.ConvProperty.Builder.class);
+      }
+
+      // Construct using com.avos.avoscloud.Messages.ConvProperty.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        pid_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        role_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
+        propertyId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.avos.avoscloud.Messages.internal_static_com_avos_avoscloud_ConvProperty_descriptor;
+      }
+
+      public com.avos.avoscloud.Messages.ConvProperty getDefaultInstanceForType() {
+        return com.avos.avoscloud.Messages.ConvProperty.getDefaultInstance();
+      }
+
+      public com.avos.avoscloud.Messages.ConvProperty build() {
+        com.avos.avoscloud.Messages.ConvProperty result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public com.avos.avoscloud.Messages.ConvProperty buildPartial() {
+        com.avos.avoscloud.Messages.ConvProperty result = new com.avos.avoscloud.Messages.ConvProperty(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.pid_ = pid_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.role_ = role_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.propertyId_ = propertyId_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.avos.avoscloud.Messages.ConvProperty) {
+          return mergeFrom((com.avos.avoscloud.Messages.ConvProperty)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.avos.avoscloud.Messages.ConvProperty other) {
+        if (other == com.avos.avoscloud.Messages.ConvProperty.getDefaultInstance()) return this;
+        if (other.hasPid()) {
+          bitField0_ |= 0x00000001;
+          pid_ = other.pid_;
+          onChanged();
+        }
+        if (other.hasRole()) {
+          bitField0_ |= 0x00000002;
+          role_ = other.role_;
+          onChanged();
+        }
+        if (other.hasPropertyId()) {
+          bitField0_ |= 0x00000004;
+          propertyId_ = other.propertyId_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.avos.avoscloud.Messages.ConvProperty parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.avos.avoscloud.Messages.ConvProperty) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private java.lang.Object pid_ = "";
+      /**
+       * <code>optional string pid = 1;</code>
+       */
+      public boolean hasPid() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>optional string pid = 1;</code>
+       */
+      public java.lang.String getPid() {
+        java.lang.Object ref = pid_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            pid_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string pid = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getPidBytes() {
+        java.lang.Object ref = pid_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          pid_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string pid = 1;</code>
+       */
+      public Builder setPid(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        pid_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string pid = 1;</code>
+       */
+      public Builder clearPid() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        pid_ = getDefaultInstance().getPid();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string pid = 1;</code>
+       */
+      public Builder setPidBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        pid_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object role_ = "";
+      /**
+       * <code>optional string role = 2;</code>
+       */
+      public boolean hasRole() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional string role = 2;</code>
+       */
+      public java.lang.String getRole() {
+        java.lang.Object ref = role_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            role_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string role = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getRoleBytes() {
+        java.lang.Object ref = role_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          role_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string role = 2;</code>
+       */
+      public Builder setRole(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        role_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string role = 2;</code>
+       */
+      public Builder clearRole() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        role_ = getDefaultInstance().getRole();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string role = 2;</code>
+       */
+      public Builder setRoleBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        role_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object propertyId_ = "";
+      /**
+       * <code>optional string propertyId = 3;</code>
+       */
+      public boolean hasPropertyId() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional string propertyId = 3;</code>
+       */
+      public java.lang.String getPropertyId() {
+        java.lang.Object ref = propertyId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            propertyId_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string propertyId = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getPropertyIdBytes() {
+        java.lang.Object ref = propertyId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          propertyId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string propertyId = 3;</code>
+       */
+      public Builder setPropertyId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        propertyId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string propertyId = 3;</code>
+       */
+      public Builder clearPropertyId() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        propertyId_ = getDefaultInstance().getPropertyId();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string propertyId = 3;</code>
+       */
+      public Builder setPropertyIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        propertyId_ = value;
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:com.avos.avoscloud.ConvProperty)
+    }
+
+    // @@protoc_insertion_point(class_scope:com.avos.avoscloud.ConvProperty)
+    private static final com.avos.avoscloud.Messages.ConvProperty DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new com.avos.avoscloud.Messages.ConvProperty();
+    }
+
+    public static com.avos.avoscloud.Messages.ConvProperty getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    @java.lang.Deprecated public static final com.google.protobuf.Parser<ConvProperty>
+        PARSER = new com.google.protobuf.AbstractParser<ConvProperty>() {
+      public ConvProperty parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+          return new ConvProperty(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<ConvProperty> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ConvProperty> getParserForType() {
+      return PARSER;
+    }
+
+    public com.avos.avoscloud.Messages.ConvProperty getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -15302,6 +16294,51 @@ public final class Messages {
         getCidsBytes(int index);
 
     /**
+     * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+     */
+    boolean hasProperty();
+    /**
+     * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+     */
+    com.avos.avoscloud.Messages.ConvProperty getProperty();
+    /**
+     * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+     */
+    com.avos.avoscloud.Messages.ConvPropertyOrBuilder getPropertyOrBuilder();
+
+    /**
+     * <code>optional bool tempConv = 27;</code>
+     */
+    boolean hasTempConv();
+    /**
+     * <code>optional bool tempConv = 27;</code>
+     */
+    boolean getTempConv();
+
+    /**
+     * <code>optional int32 tempConvTTL = 28;</code>
+     */
+    boolean hasTempConvTTL();
+    /**
+     * <code>optional int32 tempConvTTL = 28;</code>
+     */
+    int getTempConvTTL();
+
+    /**
+     * <code>optional string tempConvId = 29;</code>
+     */
+    boolean hasTempConvId();
+    /**
+     * <code>optional string tempConvId = 29;</code>
+     */
+    java.lang.String getTempConvId();
+    /**
+     * <code>optional string tempConvId = 29;</code>
+     */
+    com.google.protobuf.ByteString
+        getTempConvIdBytes();
+
+    /**
      * <code>optional .com.avos.avoscloud.JsonObjectMessage results = 100;</code>
      */
     boolean hasResults();
@@ -15378,6 +16415,9 @@ public final class Messages {
       queryAllMembers_ = false;
       maxReadTuples_ = java.util.Collections.emptyList();
       cids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      tempConv_ = false;
+      tempConvTTL_ = 0;
+      tempConvId_ = "";
     }
 
     @java.lang.Override
@@ -15554,9 +16594,38 @@ public final class Messages {
               cids_.add(bs);
               break;
             }
+            case 210: {
+              com.avos.avoscloud.Messages.ConvProperty.Builder subBuilder = null;
+              if (((bitField0_ & 0x00400000) == 0x00400000)) {
+                subBuilder = property_.toBuilder();
+              }
+              property_ = input.readMessage(com.avos.avoscloud.Messages.ConvProperty.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(property_);
+                property_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00400000;
+              break;
+            }
+            case 216: {
+              bitField0_ |= 0x00800000;
+              tempConv_ = input.readBool();
+              break;
+            }
+            case 224: {
+              bitField0_ |= 0x01000000;
+              tempConvTTL_ = input.readInt32();
+              break;
+            }
+            case 234: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x02000000;
+              tempConvId_ = bs;
+              break;
+            }
             case 802: {
               com.avos.avoscloud.Messages.JsonObjectMessage.Builder subBuilder = null;
-              if (((bitField0_ & 0x00400000) == 0x00400000)) {
+              if (((bitField0_ & 0x04000000) == 0x04000000)) {
                 subBuilder = results_.toBuilder();
               }
               results_ = input.readMessage(com.avos.avoscloud.Messages.JsonObjectMessage.PARSER, extensionRegistry);
@@ -15564,12 +16633,12 @@ public final class Messages {
                 subBuilder.mergeFrom(results_);
                 results_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00400000;
+              bitField0_ |= 0x04000000;
               break;
             }
             case 810: {
               com.avos.avoscloud.Messages.JsonObjectMessage.Builder subBuilder = null;
-              if (((bitField0_ & 0x00800000) == 0x00800000)) {
+              if (((bitField0_ & 0x08000000) == 0x08000000)) {
                 subBuilder = where_.toBuilder();
               }
               where_ = input.readMessage(com.avos.avoscloud.Messages.JsonObjectMessage.PARSER, extensionRegistry);
@@ -15577,12 +16646,12 @@ public final class Messages {
                 subBuilder.mergeFrom(where_);
                 where_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00800000;
+              bitField0_ |= 0x08000000;
               break;
             }
             case 826: {
               com.avos.avoscloud.Messages.JsonObjectMessage.Builder subBuilder = null;
-              if (((bitField0_ & 0x01000000) == 0x01000000)) {
+              if (((bitField0_ & 0x10000000) == 0x10000000)) {
                 subBuilder = attr_.toBuilder();
               }
               attr_ = input.readMessage(com.avos.avoscloud.Messages.JsonObjectMessage.PARSER, extensionRegistry);
@@ -15590,7 +16659,7 @@ public final class Messages {
                 subBuilder.mergeFrom(attr_);
                 attr_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x01000000;
+              bitField0_ |= 0x10000000;
               break;
             }
           }
@@ -16293,13 +17362,106 @@ public final class Messages {
       return cids_.getByteString(index);
     }
 
+    public static final int PROPERTY_FIELD_NUMBER = 26;
+    private com.avos.avoscloud.Messages.ConvProperty property_;
+    /**
+     * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+     */
+    public boolean hasProperty() {
+      return ((bitField0_ & 0x00400000) == 0x00400000);
+    }
+    /**
+     * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+     */
+    public com.avos.avoscloud.Messages.ConvProperty getProperty() {
+      return property_ == null ? com.avos.avoscloud.Messages.ConvProperty.getDefaultInstance() : property_;
+    }
+    /**
+     * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+     */
+    public com.avos.avoscloud.Messages.ConvPropertyOrBuilder getPropertyOrBuilder() {
+      return property_ == null ? com.avos.avoscloud.Messages.ConvProperty.getDefaultInstance() : property_;
+    }
+
+    public static final int TEMPCONV_FIELD_NUMBER = 27;
+    private boolean tempConv_;
+    /**
+     * <code>optional bool tempConv = 27;</code>
+     */
+    public boolean hasTempConv() {
+      return ((bitField0_ & 0x00800000) == 0x00800000);
+    }
+    /**
+     * <code>optional bool tempConv = 27;</code>
+     */
+    public boolean getTempConv() {
+      return tempConv_;
+    }
+
+    public static final int TEMPCONVTTL_FIELD_NUMBER = 28;
+    private int tempConvTTL_;
+    /**
+     * <code>optional int32 tempConvTTL = 28;</code>
+     */
+    public boolean hasTempConvTTL() {
+      return ((bitField0_ & 0x01000000) == 0x01000000);
+    }
+    /**
+     * <code>optional int32 tempConvTTL = 28;</code>
+     */
+    public int getTempConvTTL() {
+      return tempConvTTL_;
+    }
+
+    public static final int TEMPCONVID_FIELD_NUMBER = 29;
+    private volatile java.lang.Object tempConvId_;
+    /**
+     * <code>optional string tempConvId = 29;</code>
+     */
+    public boolean hasTempConvId() {
+      return ((bitField0_ & 0x02000000) == 0x02000000);
+    }
+    /**
+     * <code>optional string tempConvId = 29;</code>
+     */
+    public java.lang.String getTempConvId() {
+      java.lang.Object ref = tempConvId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          tempConvId_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string tempConvId = 29;</code>
+     */
+    public com.google.protobuf.ByteString
+        getTempConvIdBytes() {
+      java.lang.Object ref = tempConvId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        tempConvId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     public static final int RESULTS_FIELD_NUMBER = 100;
     private com.avos.avoscloud.Messages.JsonObjectMessage results_;
     /**
      * <code>optional .com.avos.avoscloud.JsonObjectMessage results = 100;</code>
      */
     public boolean hasResults() {
-      return ((bitField0_ & 0x00400000) == 0x00400000);
+      return ((bitField0_ & 0x04000000) == 0x04000000);
     }
     /**
      * <code>optional .com.avos.avoscloud.JsonObjectMessage results = 100;</code>
@@ -16320,7 +17482,7 @@ public final class Messages {
      * <code>optional .com.avos.avoscloud.JsonObjectMessage where = 101;</code>
      */
     public boolean hasWhere() {
-      return ((bitField0_ & 0x00800000) == 0x00800000);
+      return ((bitField0_ & 0x08000000) == 0x08000000);
     }
     /**
      * <code>optional .com.avos.avoscloud.JsonObjectMessage where = 101;</code>
@@ -16341,7 +17503,7 @@ public final class Messages {
      * <code>optional .com.avos.avoscloud.JsonObjectMessage attr = 103;</code>
      */
     public boolean hasAttr() {
-      return ((bitField0_ & 0x01000000) == 0x01000000);
+      return ((bitField0_ & 0x10000000) == 0x10000000);
     }
     /**
      * <code>optional .com.avos.avoscloud.JsonObjectMessage attr = 103;</code>
@@ -16462,12 +17624,24 @@ public final class Messages {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 25, cids_.getRaw(i));
       }
       if (((bitField0_ & 0x00400000) == 0x00400000)) {
-        output.writeMessage(100, getResults());
+        output.writeMessage(26, getProperty());
       }
       if (((bitField0_ & 0x00800000) == 0x00800000)) {
-        output.writeMessage(101, getWhere());
+        output.writeBool(27, tempConv_);
       }
       if (((bitField0_ & 0x01000000) == 0x01000000)) {
+        output.writeInt32(28, tempConvTTL_);
+      }
+      if (((bitField0_ & 0x02000000) == 0x02000000)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 29, tempConvId_);
+      }
+      if (((bitField0_ & 0x04000000) == 0x04000000)) {
+        output.writeMessage(100, getResults());
+      }
+      if (((bitField0_ & 0x08000000) == 0x08000000)) {
+        output.writeMessage(101, getWhere());
+      }
+      if (((bitField0_ & 0x10000000) == 0x10000000)) {
         output.writeMessage(103, getAttr());
       }
       unknownFields.writeTo(output);
@@ -16579,13 +17753,28 @@ public final class Messages {
       }
       if (((bitField0_ & 0x00400000) == 0x00400000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(100, getResults());
+          .computeMessageSize(26, getProperty());
       }
       if (((bitField0_ & 0x00800000) == 0x00800000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(101, getWhere());
+          .computeBoolSize(27, tempConv_);
       }
       if (((bitField0_ & 0x01000000) == 0x01000000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(28, tempConvTTL_);
+      }
+      if (((bitField0_ & 0x02000000) == 0x02000000)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(29, tempConvId_);
+      }
+      if (((bitField0_ & 0x04000000) == 0x04000000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(100, getResults());
+      }
+      if (((bitField0_ & 0x08000000) == 0x08000000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(101, getWhere());
+      }
+      if (((bitField0_ & 0x10000000) == 0x10000000)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(103, getAttr());
       }
@@ -16721,6 +17910,26 @@ public final class Messages {
           .equals(other.getMaxReadTuplesList());
       result = result && getCidsList()
           .equals(other.getCidsList());
+      result = result && (hasProperty() == other.hasProperty());
+      if (hasProperty()) {
+        result = result && getProperty()
+            .equals(other.getProperty());
+      }
+      result = result && (hasTempConv() == other.hasTempConv());
+      if (hasTempConv()) {
+        result = result && (getTempConv()
+            == other.getTempConv());
+      }
+      result = result && (hasTempConvTTL() == other.hasTempConvTTL());
+      if (hasTempConvTTL()) {
+        result = result && (getTempConvTTL()
+            == other.getTempConvTTL());
+      }
+      result = result && (hasTempConvId() == other.hasTempConvId());
+      if (hasTempConvId()) {
+        result = result && getTempConvId()
+            .equals(other.getTempConvId());
+      }
       result = result && (hasResults() == other.hasResults());
       if (hasResults()) {
         result = result && getResults()
@@ -16854,6 +18063,23 @@ public final class Messages {
       if (getCidsCount() > 0) {
         hash = (37 * hash) + CIDS_FIELD_NUMBER;
         hash = (53 * hash) + getCidsList().hashCode();
+      }
+      if (hasProperty()) {
+        hash = (37 * hash) + PROPERTY_FIELD_NUMBER;
+        hash = (53 * hash) + getProperty().hashCode();
+      }
+      if (hasTempConv()) {
+        hash = (37 * hash) + TEMPCONV_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+            getTempConv());
+      }
+      if (hasTempConvTTL()) {
+        hash = (37 * hash) + TEMPCONVTTL_FIELD_NUMBER;
+        hash = (53 * hash) + getTempConvTTL();
+      }
+      if (hasTempConvId()) {
+        hash = (37 * hash) + TEMPCONVID_FIELD_NUMBER;
+        hash = (53 * hash) + getTempConvId().hashCode();
       }
       if (hasResults()) {
         hash = (37 * hash) + RESULTS_FIELD_NUMBER;
@@ -16993,6 +18219,7 @@ public final class Messages {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
           getMaxReadTuplesFieldBuilder();
+          getPropertyFieldBuilder();
           getResultsFieldBuilder();
           getWhereFieldBuilder();
           getAttrFieldBuilder();
@@ -17054,24 +18281,36 @@ public final class Messages {
         }
         cids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x01000000);
+        if (propertyBuilder_ == null) {
+          property_ = null;
+        } else {
+          propertyBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x02000000);
+        tempConv_ = false;
+        bitField0_ = (bitField0_ & ~0x04000000);
+        tempConvTTL_ = 0;
+        bitField0_ = (bitField0_ & ~0x08000000);
+        tempConvId_ = "";
+        bitField0_ = (bitField0_ & ~0x10000000);
         if (resultsBuilder_ == null) {
           results_ = null;
         } else {
           resultsBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x02000000);
+        bitField0_ = (bitField0_ & ~0x20000000);
         if (whereBuilder_ == null) {
           where_ = null;
         } else {
           whereBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x04000000);
+        bitField0_ = (bitField0_ & ~0x40000000);
         if (attrBuilder_ == null) {
           attr_ = null;
         } else {
           attrBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x08000000);
+        bitField0_ = (bitField0_ & ~0x80000000);
         return this;
       }
 
@@ -17206,21 +18445,41 @@ public final class Messages {
         if (((from_bitField0_ & 0x02000000) == 0x02000000)) {
           to_bitField0_ |= 0x00400000;
         }
+        if (propertyBuilder_ == null) {
+          result.property_ = property_;
+        } else {
+          result.property_ = propertyBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x04000000) == 0x04000000)) {
+          to_bitField0_ |= 0x00800000;
+        }
+        result.tempConv_ = tempConv_;
+        if (((from_bitField0_ & 0x08000000) == 0x08000000)) {
+          to_bitField0_ |= 0x01000000;
+        }
+        result.tempConvTTL_ = tempConvTTL_;
+        if (((from_bitField0_ & 0x10000000) == 0x10000000)) {
+          to_bitField0_ |= 0x02000000;
+        }
+        result.tempConvId_ = tempConvId_;
+        if (((from_bitField0_ & 0x20000000) == 0x20000000)) {
+          to_bitField0_ |= 0x04000000;
+        }
         if (resultsBuilder_ == null) {
           result.results_ = results_;
         } else {
           result.results_ = resultsBuilder_.build();
         }
-        if (((from_bitField0_ & 0x04000000) == 0x04000000)) {
-          to_bitField0_ |= 0x00800000;
+        if (((from_bitField0_ & 0x40000000) == 0x40000000)) {
+          to_bitField0_ |= 0x08000000;
         }
         if (whereBuilder_ == null) {
           result.where_ = where_;
         } else {
           result.where_ = whereBuilder_.build();
         }
-        if (((from_bitField0_ & 0x08000000) == 0x08000000)) {
-          to_bitField0_ |= 0x01000000;
+        if (((from_bitField0_ & 0x80000000) == 0x80000000)) {
+          to_bitField0_ |= 0x10000000;
         }
         if (attrBuilder_ == null) {
           result.attr_ = attr_;
@@ -17397,6 +18656,20 @@ public final class Messages {
             ensureCidsIsMutable();
             cids_.addAll(other.cids_);
           }
+          onChanged();
+        }
+        if (other.hasProperty()) {
+          mergeProperty(other.getProperty());
+        }
+        if (other.hasTempConv()) {
+          setTempConv(other.getTempConv());
+        }
+        if (other.hasTempConvTTL()) {
+          setTempConvTTL(other.getTempConvTTL());
+        }
+        if (other.hasTempConvId()) {
+          bitField0_ |= 0x10000000;
+          tempConvId_ = other.tempConvId_;
           onChanged();
         }
         if (other.hasResults()) {
@@ -18977,6 +20250,264 @@ public final class Messages {
         return this;
       }
 
+      private com.avos.avoscloud.Messages.ConvProperty property_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          com.avos.avoscloud.Messages.ConvProperty, com.avos.avoscloud.Messages.ConvProperty.Builder, com.avos.avoscloud.Messages.ConvPropertyOrBuilder> propertyBuilder_;
+      /**
+       * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+       */
+      public boolean hasProperty() {
+        return ((bitField0_ & 0x02000000) == 0x02000000);
+      }
+      /**
+       * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+       */
+      public com.avos.avoscloud.Messages.ConvProperty getProperty() {
+        if (propertyBuilder_ == null) {
+          return property_ == null ? com.avos.avoscloud.Messages.ConvProperty.getDefaultInstance() : property_;
+        } else {
+          return propertyBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+       */
+      public Builder setProperty(com.avos.avoscloud.Messages.ConvProperty value) {
+        if (propertyBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          property_ = value;
+          onChanged();
+        } else {
+          propertyBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x02000000;
+        return this;
+      }
+      /**
+       * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+       */
+      public Builder setProperty(
+          com.avos.avoscloud.Messages.ConvProperty.Builder builderForValue) {
+        if (propertyBuilder_ == null) {
+          property_ = builderForValue.build();
+          onChanged();
+        } else {
+          propertyBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x02000000;
+        return this;
+      }
+      /**
+       * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+       */
+      public Builder mergeProperty(com.avos.avoscloud.Messages.ConvProperty value) {
+        if (propertyBuilder_ == null) {
+          if (((bitField0_ & 0x02000000) == 0x02000000) &&
+              property_ != null &&
+              property_ != com.avos.avoscloud.Messages.ConvProperty.getDefaultInstance()) {
+            property_ =
+              com.avos.avoscloud.Messages.ConvProperty.newBuilder(property_).mergeFrom(value).buildPartial();
+          } else {
+            property_ = value;
+          }
+          onChanged();
+        } else {
+          propertyBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x02000000;
+        return this;
+      }
+      /**
+       * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+       */
+      public Builder clearProperty() {
+        if (propertyBuilder_ == null) {
+          property_ = null;
+          onChanged();
+        } else {
+          propertyBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x02000000);
+        return this;
+      }
+      /**
+       * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+       */
+      public com.avos.avoscloud.Messages.ConvProperty.Builder getPropertyBuilder() {
+        bitField0_ |= 0x02000000;
+        onChanged();
+        return getPropertyFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+       */
+      public com.avos.avoscloud.Messages.ConvPropertyOrBuilder getPropertyOrBuilder() {
+        if (propertyBuilder_ != null) {
+          return propertyBuilder_.getMessageOrBuilder();
+        } else {
+          return property_ == null ?
+              com.avos.avoscloud.Messages.ConvProperty.getDefaultInstance() : property_;
+        }
+      }
+      /**
+       * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          com.avos.avoscloud.Messages.ConvProperty, com.avos.avoscloud.Messages.ConvProperty.Builder, com.avos.avoscloud.Messages.ConvPropertyOrBuilder> 
+          getPropertyFieldBuilder() {
+        if (propertyBuilder_ == null) {
+          propertyBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              com.avos.avoscloud.Messages.ConvProperty, com.avos.avoscloud.Messages.ConvProperty.Builder, com.avos.avoscloud.Messages.ConvPropertyOrBuilder>(
+                  getProperty(),
+                  getParentForChildren(),
+                  isClean());
+          property_ = null;
+        }
+        return propertyBuilder_;
+      }
+
+      private boolean tempConv_ ;
+      /**
+       * <code>optional bool tempConv = 27;</code>
+       */
+      public boolean hasTempConv() {
+        return ((bitField0_ & 0x04000000) == 0x04000000);
+      }
+      /**
+       * <code>optional bool tempConv = 27;</code>
+       */
+      public boolean getTempConv() {
+        return tempConv_;
+      }
+      /**
+       * <code>optional bool tempConv = 27;</code>
+       */
+      public Builder setTempConv(boolean value) {
+        bitField0_ |= 0x04000000;
+        tempConv_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool tempConv = 27;</code>
+       */
+      public Builder clearTempConv() {
+        bitField0_ = (bitField0_ & ~0x04000000);
+        tempConv_ = false;
+        onChanged();
+        return this;
+      }
+
+      private int tempConvTTL_ ;
+      /**
+       * <code>optional int32 tempConvTTL = 28;</code>
+       */
+      public boolean hasTempConvTTL() {
+        return ((bitField0_ & 0x08000000) == 0x08000000);
+      }
+      /**
+       * <code>optional int32 tempConvTTL = 28;</code>
+       */
+      public int getTempConvTTL() {
+        return tempConvTTL_;
+      }
+      /**
+       * <code>optional int32 tempConvTTL = 28;</code>
+       */
+      public Builder setTempConvTTL(int value) {
+        bitField0_ |= 0x08000000;
+        tempConvTTL_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int32 tempConvTTL = 28;</code>
+       */
+      public Builder clearTempConvTTL() {
+        bitField0_ = (bitField0_ & ~0x08000000);
+        tempConvTTL_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object tempConvId_ = "";
+      /**
+       * <code>optional string tempConvId = 29;</code>
+       */
+      public boolean hasTempConvId() {
+        return ((bitField0_ & 0x10000000) == 0x10000000);
+      }
+      /**
+       * <code>optional string tempConvId = 29;</code>
+       */
+      public java.lang.String getTempConvId() {
+        java.lang.Object ref = tempConvId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            tempConvId_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string tempConvId = 29;</code>
+       */
+      public com.google.protobuf.ByteString
+          getTempConvIdBytes() {
+        java.lang.Object ref = tempConvId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          tempConvId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string tempConvId = 29;</code>
+       */
+      public Builder setTempConvId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x10000000;
+        tempConvId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string tempConvId = 29;</code>
+       */
+      public Builder clearTempConvId() {
+        bitField0_ = (bitField0_ & ~0x10000000);
+        tempConvId_ = getDefaultInstance().getTempConvId();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string tempConvId = 29;</code>
+       */
+      public Builder setTempConvIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x10000000;
+        tempConvId_ = value;
+        onChanged();
+        return this;
+      }
+
       private com.avos.avoscloud.Messages.JsonObjectMessage results_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
           com.avos.avoscloud.Messages.JsonObjectMessage, com.avos.avoscloud.Messages.JsonObjectMessage.Builder, com.avos.avoscloud.Messages.JsonObjectMessageOrBuilder> resultsBuilder_;
@@ -18984,7 +20515,7 @@ public final class Messages {
        * <code>optional .com.avos.avoscloud.JsonObjectMessage results = 100;</code>
        */
       public boolean hasResults() {
-        return ((bitField0_ & 0x02000000) == 0x02000000);
+        return ((bitField0_ & 0x20000000) == 0x20000000);
       }
       /**
        * <code>optional .com.avos.avoscloud.JsonObjectMessage results = 100;</code>
@@ -19009,7 +20540,7 @@ public final class Messages {
         } else {
           resultsBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x02000000;
+        bitField0_ |= 0x20000000;
         return this;
       }
       /**
@@ -19023,7 +20554,7 @@ public final class Messages {
         } else {
           resultsBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x02000000;
+        bitField0_ |= 0x20000000;
         return this;
       }
       /**
@@ -19031,7 +20562,7 @@ public final class Messages {
        */
       public Builder mergeResults(com.avos.avoscloud.Messages.JsonObjectMessage value) {
         if (resultsBuilder_ == null) {
-          if (((bitField0_ & 0x02000000) == 0x02000000) &&
+          if (((bitField0_ & 0x20000000) == 0x20000000) &&
               results_ != null &&
               results_ != com.avos.avoscloud.Messages.JsonObjectMessage.getDefaultInstance()) {
             results_ =
@@ -19043,7 +20574,7 @@ public final class Messages {
         } else {
           resultsBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x02000000;
+        bitField0_ |= 0x20000000;
         return this;
       }
       /**
@@ -19056,14 +20587,14 @@ public final class Messages {
         } else {
           resultsBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x02000000);
+        bitField0_ = (bitField0_ & ~0x20000000);
         return this;
       }
       /**
        * <code>optional .com.avos.avoscloud.JsonObjectMessage results = 100;</code>
        */
       public com.avos.avoscloud.Messages.JsonObjectMessage.Builder getResultsBuilder() {
-        bitField0_ |= 0x02000000;
+        bitField0_ |= 0x20000000;
         onChanged();
         return getResultsFieldBuilder().getBuilder();
       }
@@ -19102,7 +20633,7 @@ public final class Messages {
        * <code>optional .com.avos.avoscloud.JsonObjectMessage where = 101;</code>
        */
       public boolean hasWhere() {
-        return ((bitField0_ & 0x04000000) == 0x04000000);
+        return ((bitField0_ & 0x40000000) == 0x40000000);
       }
       /**
        * <code>optional .com.avos.avoscloud.JsonObjectMessage where = 101;</code>
@@ -19127,7 +20658,7 @@ public final class Messages {
         } else {
           whereBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x04000000;
+        bitField0_ |= 0x40000000;
         return this;
       }
       /**
@@ -19141,7 +20672,7 @@ public final class Messages {
         } else {
           whereBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x04000000;
+        bitField0_ |= 0x40000000;
         return this;
       }
       /**
@@ -19149,7 +20680,7 @@ public final class Messages {
        */
       public Builder mergeWhere(com.avos.avoscloud.Messages.JsonObjectMessage value) {
         if (whereBuilder_ == null) {
-          if (((bitField0_ & 0x04000000) == 0x04000000) &&
+          if (((bitField0_ & 0x40000000) == 0x40000000) &&
               where_ != null &&
               where_ != com.avos.avoscloud.Messages.JsonObjectMessage.getDefaultInstance()) {
             where_ =
@@ -19161,7 +20692,7 @@ public final class Messages {
         } else {
           whereBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x04000000;
+        bitField0_ |= 0x40000000;
         return this;
       }
       /**
@@ -19174,14 +20705,14 @@ public final class Messages {
         } else {
           whereBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x04000000);
+        bitField0_ = (bitField0_ & ~0x40000000);
         return this;
       }
       /**
        * <code>optional .com.avos.avoscloud.JsonObjectMessage where = 101;</code>
        */
       public com.avos.avoscloud.Messages.JsonObjectMessage.Builder getWhereBuilder() {
-        bitField0_ |= 0x04000000;
+        bitField0_ |= 0x40000000;
         onChanged();
         return getWhereFieldBuilder().getBuilder();
       }
@@ -19220,7 +20751,7 @@ public final class Messages {
        * <code>optional .com.avos.avoscloud.JsonObjectMessage attr = 103;</code>
        */
       public boolean hasAttr() {
-        return ((bitField0_ & 0x08000000) == 0x08000000);
+        return ((bitField0_ & 0x80000000) == 0x80000000);
       }
       /**
        * <code>optional .com.avos.avoscloud.JsonObjectMessage attr = 103;</code>
@@ -19245,7 +20776,7 @@ public final class Messages {
         } else {
           attrBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x08000000;
+        bitField0_ |= 0x80000000;
         return this;
       }
       /**
@@ -19259,7 +20790,7 @@ public final class Messages {
         } else {
           attrBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x08000000;
+        bitField0_ |= 0x80000000;
         return this;
       }
       /**
@@ -19267,7 +20798,7 @@ public final class Messages {
        */
       public Builder mergeAttr(com.avos.avoscloud.Messages.JsonObjectMessage value) {
         if (attrBuilder_ == null) {
-          if (((bitField0_ & 0x08000000) == 0x08000000) &&
+          if (((bitField0_ & 0x80000000) == 0x80000000) &&
               attr_ != null &&
               attr_ != com.avos.avoscloud.Messages.JsonObjectMessage.getDefaultInstance()) {
             attr_ =
@@ -19279,7 +20810,7 @@ public final class Messages {
         } else {
           attrBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x08000000;
+        bitField0_ |= 0x80000000;
         return this;
       }
       /**
@@ -19292,14 +20823,14 @@ public final class Messages {
         } else {
           attrBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x08000000);
+        bitField0_ = (bitField0_ & ~0x80000000);
         return this;
       }
       /**
        * <code>optional .com.avos.avoscloud.JsonObjectMessage attr = 103;</code>
        */
       public com.avos.avoscloud.Messages.JsonObjectMessage.Builder getAttrBuilder() {
-        bitField0_ |= 0x08000000;
+        bitField0_ |= 0x80000000;
         onChanged();
         return getAttrFieldBuilder().getBuilder();
       }
@@ -23060,6 +24591,20 @@ public final class Messages {
      * <code>optional bool read = 4;</code>
      */
     boolean getRead();
+
+    /**
+     * <code>optional string from = 5;</code>
+     */
+    boolean hasFrom();
+    /**
+     * <code>optional string from = 5;</code>
+     */
+    java.lang.String getFrom();
+    /**
+     * <code>optional string from = 5;</code>
+     */
+    com.google.protobuf.ByteString
+        getFromBytes();
   }
   /**
    * Protobuf type {@code com.avos.avoscloud.RcpCommand}
@@ -23078,6 +24623,7 @@ public final class Messages {
       cid_ = "";
       t_ = 0L;
       read_ = false;
+      from_ = "";
     }
 
     @java.lang.Override
@@ -23128,6 +24674,12 @@ public final class Messages {
             case 32: {
               bitField0_ |= 0x00000008;
               read_ = input.readBool();
+              break;
+            }
+            case 42: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000010;
+              from_ = bs;
               break;
             }
           }
@@ -23269,6 +24821,48 @@ public final class Messages {
       return read_;
     }
 
+    public static final int FROM_FIELD_NUMBER = 5;
+    private volatile java.lang.Object from_;
+    /**
+     * <code>optional string from = 5;</code>
+     */
+    public boolean hasFrom() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>optional string from = 5;</code>
+     */
+    public java.lang.String getFrom() {
+      java.lang.Object ref = from_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          from_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string from = 5;</code>
+     */
+    public com.google.protobuf.ByteString
+        getFromBytes() {
+      java.lang.Object ref = from_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        from_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -23293,6 +24887,9 @@ public final class Messages {
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeBool(4, read_);
       }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, from_);
+      }
       unknownFields.writeTo(output);
     }
 
@@ -23314,6 +24911,9 @@ public final class Messages {
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(4, read_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, from_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -23351,6 +24951,11 @@ public final class Messages {
         result = result && (getRead()
             == other.getRead());
       }
+      result = result && (hasFrom() == other.hasFrom());
+      if (hasFrom()) {
+        result = result && getFrom()
+            .equals(other.getFrom());
+      }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -23379,6 +24984,10 @@ public final class Messages {
         hash = (37 * hash) + READ_FIELD_NUMBER;
         hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
             getRead());
+      }
+      if (hasFrom()) {
+        hash = (37 * hash) + FROM_FIELD_NUMBER;
+        hash = (53 * hash) + getFrom().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -23517,6 +25126,8 @@ public final class Messages {
         bitField0_ = (bitField0_ & ~0x00000004);
         read_ = false;
         bitField0_ = (bitField0_ & ~0x00000008);
+        from_ = "";
+        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
 
@@ -23557,6 +25168,10 @@ public final class Messages {
           to_bitField0_ |= 0x00000008;
         }
         result.read_ = read_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.from_ = from_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -23614,6 +25229,11 @@ public final class Messages {
         }
         if (other.hasRead()) {
           setRead(other.getRead());
+        }
+        if (other.hasFrom()) {
+          bitField0_ |= 0x00000010;
+          from_ = other.from_;
+          onChanged();
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -23855,6 +25475,82 @@ public final class Messages {
       public Builder clearRead() {
         bitField0_ = (bitField0_ & ~0x00000008);
         read_ = false;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object from_ = "";
+      /**
+       * <code>optional string from = 5;</code>
+       */
+      public boolean hasFrom() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>optional string from = 5;</code>
+       */
+      public java.lang.String getFrom() {
+        java.lang.Object ref = from_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            from_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string from = 5;</code>
+       */
+      public com.google.protobuf.ByteString
+          getFromBytes() {
+        java.lang.Object ref = from_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          from_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string from = 5;</code>
+       */
+      public Builder setFrom(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
+        from_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string from = 5;</code>
+       */
+      public Builder clearFrom() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        from_ = getDefaultInstance().getFrom();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string from = 5;</code>
+       */
+      public Builder setFromBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
+        from_ = value;
         onChanged();
         return this;
       }
@@ -30747,6 +32443,1665 @@ public final class Messages {
 
   }
 
+  public interface PubsubCommandOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:com.avos.avoscloud.PubsubCommand)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>optional string cid = 1;</code>
+     */
+    boolean hasCid();
+    /**
+     * <code>optional string cid = 1;</code>
+     */
+    java.lang.String getCid();
+    /**
+     * <code>optional string cid = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getCidBytes();
+
+    /**
+     * <code>repeated string cids = 2;</code>
+     */
+    java.util.List<java.lang.String>
+        getCidsList();
+    /**
+     * <code>repeated string cids = 2;</code>
+     */
+    int getCidsCount();
+    /**
+     * <code>repeated string cids = 2;</code>
+     */
+    java.lang.String getCids(int index);
+    /**
+     * <code>repeated string cids = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getCidsBytes(int index);
+
+    /**
+     * <code>optional string topic = 3;</code>
+     */
+    boolean hasTopic();
+    /**
+     * <code>optional string topic = 3;</code>
+     */
+    java.lang.String getTopic();
+    /**
+     * <code>optional string topic = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getTopicBytes();
+
+    /**
+     * <code>optional string subtopic = 4;</code>
+     */
+    boolean hasSubtopic();
+    /**
+     * <code>optional string subtopic = 4;</code>
+     */
+    java.lang.String getSubtopic();
+    /**
+     * <code>optional string subtopic = 4;</code>
+     */
+    com.google.protobuf.ByteString
+        getSubtopicBytes();
+
+    /**
+     * <code>repeated string topics = 5;</code>
+     */
+    java.util.List<java.lang.String>
+        getTopicsList();
+    /**
+     * <code>repeated string topics = 5;</code>
+     */
+    int getTopicsCount();
+    /**
+     * <code>repeated string topics = 5;</code>
+     */
+    java.lang.String getTopics(int index);
+    /**
+     * <code>repeated string topics = 5;</code>
+     */
+    com.google.protobuf.ByteString
+        getTopicsBytes(int index);
+
+    /**
+     * <code>repeated string subtopics = 6;</code>
+     */
+    java.util.List<java.lang.String>
+        getSubtopicsList();
+    /**
+     * <code>repeated string subtopics = 6;</code>
+     */
+    int getSubtopicsCount();
+    /**
+     * <code>repeated string subtopics = 6;</code>
+     */
+    java.lang.String getSubtopics(int index);
+    /**
+     * <code>repeated string subtopics = 6;</code>
+     */
+    com.google.protobuf.ByteString
+        getSubtopicsBytes(int index);
+
+    /**
+     * <code>optional .com.avos.avoscloud.JsonObjectMessage results = 7;</code>
+     */
+    boolean hasResults();
+    /**
+     * <code>optional .com.avos.avoscloud.JsonObjectMessage results = 7;</code>
+     */
+    com.avos.avoscloud.Messages.JsonObjectMessage getResults();
+    /**
+     * <code>optional .com.avos.avoscloud.JsonObjectMessage results = 7;</code>
+     */
+    com.avos.avoscloud.Messages.JsonObjectMessageOrBuilder getResultsOrBuilder();
+  }
+  /**
+   * Protobuf type {@code com.avos.avoscloud.PubsubCommand}
+   */
+  public  static final class PubsubCommand extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:com.avos.avoscloud.PubsubCommand)
+      PubsubCommandOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use PubsubCommand.newBuilder() to construct.
+    private PubsubCommand(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private PubsubCommand() {
+      cid_ = "";
+      cids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      topic_ = "";
+      subtopic_ = "";
+      topics_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      subtopics_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private PubsubCommand(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000001;
+              cid_ = bs;
+              break;
+            }
+            case 18: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+                cids_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000002;
+              }
+              cids_.add(bs);
+              break;
+            }
+            case 26: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000002;
+              topic_ = bs;
+              break;
+            }
+            case 34: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000004;
+              subtopic_ = bs;
+              break;
+            }
+            case 42: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+                topics_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000010;
+              }
+              topics_.add(bs);
+              break;
+            }
+            case 50: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              if (!((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+                subtopics_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000020;
+              }
+              subtopics_.add(bs);
+              break;
+            }
+            case 58: {
+              com.avos.avoscloud.Messages.JsonObjectMessage.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000008) == 0x00000008)) {
+                subBuilder = results_.toBuilder();
+              }
+              results_ = input.readMessage(com.avos.avoscloud.Messages.JsonObjectMessage.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(results_);
+                results_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000008;
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+          cids_ = cids_.getUnmodifiableView();
+        }
+        if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+          topics_ = topics_.getUnmodifiableView();
+        }
+        if (((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+          subtopics_ = subtopics_.getUnmodifiableView();
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.avos.avoscloud.Messages.internal_static_com_avos_avoscloud_PubsubCommand_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.avos.avoscloud.Messages.internal_static_com_avos_avoscloud_PubsubCommand_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.avos.avoscloud.Messages.PubsubCommand.class, com.avos.avoscloud.Messages.PubsubCommand.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int CID_FIELD_NUMBER = 1;
+    private volatile java.lang.Object cid_;
+    /**
+     * <code>optional string cid = 1;</code>
+     */
+    public boolean hasCid() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>optional string cid = 1;</code>
+     */
+    public java.lang.String getCid() {
+      java.lang.Object ref = cid_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          cid_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string cid = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getCidBytes() {
+      java.lang.Object ref = cid_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        cid_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int CIDS_FIELD_NUMBER = 2;
+    private com.google.protobuf.LazyStringList cids_;
+    /**
+     * <code>repeated string cids = 2;</code>
+     */
+    public com.google.protobuf.ProtocolStringList
+        getCidsList() {
+      return cids_;
+    }
+    /**
+     * <code>repeated string cids = 2;</code>
+     */
+    public int getCidsCount() {
+      return cids_.size();
+    }
+    /**
+     * <code>repeated string cids = 2;</code>
+     */
+    public java.lang.String getCids(int index) {
+      return cids_.get(index);
+    }
+    /**
+     * <code>repeated string cids = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getCidsBytes(int index) {
+      return cids_.getByteString(index);
+    }
+
+    public static final int TOPIC_FIELD_NUMBER = 3;
+    private volatile java.lang.Object topic_;
+    /**
+     * <code>optional string topic = 3;</code>
+     */
+    public boolean hasTopic() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional string topic = 3;</code>
+     */
+    public java.lang.String getTopic() {
+      java.lang.Object ref = topic_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          topic_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string topic = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getTopicBytes() {
+      java.lang.Object ref = topic_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        topic_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int SUBTOPIC_FIELD_NUMBER = 4;
+    private volatile java.lang.Object subtopic_;
+    /**
+     * <code>optional string subtopic = 4;</code>
+     */
+    public boolean hasSubtopic() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional string subtopic = 4;</code>
+     */
+    public java.lang.String getSubtopic() {
+      java.lang.Object ref = subtopic_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          subtopic_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string subtopic = 4;</code>
+     */
+    public com.google.protobuf.ByteString
+        getSubtopicBytes() {
+      java.lang.Object ref = subtopic_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        subtopic_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int TOPICS_FIELD_NUMBER = 5;
+    private com.google.protobuf.LazyStringList topics_;
+    /**
+     * <code>repeated string topics = 5;</code>
+     */
+    public com.google.protobuf.ProtocolStringList
+        getTopicsList() {
+      return topics_;
+    }
+    /**
+     * <code>repeated string topics = 5;</code>
+     */
+    public int getTopicsCount() {
+      return topics_.size();
+    }
+    /**
+     * <code>repeated string topics = 5;</code>
+     */
+    public java.lang.String getTopics(int index) {
+      return topics_.get(index);
+    }
+    /**
+     * <code>repeated string topics = 5;</code>
+     */
+    public com.google.protobuf.ByteString
+        getTopicsBytes(int index) {
+      return topics_.getByteString(index);
+    }
+
+    public static final int SUBTOPICS_FIELD_NUMBER = 6;
+    private com.google.protobuf.LazyStringList subtopics_;
+    /**
+     * <code>repeated string subtopics = 6;</code>
+     */
+    public com.google.protobuf.ProtocolStringList
+        getSubtopicsList() {
+      return subtopics_;
+    }
+    /**
+     * <code>repeated string subtopics = 6;</code>
+     */
+    public int getSubtopicsCount() {
+      return subtopics_.size();
+    }
+    /**
+     * <code>repeated string subtopics = 6;</code>
+     */
+    public java.lang.String getSubtopics(int index) {
+      return subtopics_.get(index);
+    }
+    /**
+     * <code>repeated string subtopics = 6;</code>
+     */
+    public com.google.protobuf.ByteString
+        getSubtopicsBytes(int index) {
+      return subtopics_.getByteString(index);
+    }
+
+    public static final int RESULTS_FIELD_NUMBER = 7;
+    private com.avos.avoscloud.Messages.JsonObjectMessage results_;
+    /**
+     * <code>optional .com.avos.avoscloud.JsonObjectMessage results = 7;</code>
+     */
+    public boolean hasResults() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>optional .com.avos.avoscloud.JsonObjectMessage results = 7;</code>
+     */
+    public com.avos.avoscloud.Messages.JsonObjectMessage getResults() {
+      return results_ == null ? com.avos.avoscloud.Messages.JsonObjectMessage.getDefaultInstance() : results_;
+    }
+    /**
+     * <code>optional .com.avos.avoscloud.JsonObjectMessage results = 7;</code>
+     */
+    public com.avos.avoscloud.Messages.JsonObjectMessageOrBuilder getResultsOrBuilder() {
+      return results_ == null ? com.avos.avoscloud.Messages.JsonObjectMessage.getDefaultInstance() : results_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      if (hasResults()) {
+        if (!getResults().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, cid_);
+      }
+      for (int i = 0; i < cids_.size(); i++) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, cids_.getRaw(i));
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, topic_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, subtopic_);
+      }
+      for (int i = 0; i < topics_.size(); i++) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, topics_.getRaw(i));
+      }
+      for (int i = 0; i < subtopics_.size(); i++) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 6, subtopics_.getRaw(i));
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeMessage(7, getResults());
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, cid_);
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < cids_.size(); i++) {
+          dataSize += computeStringSizeNoTag(cids_.getRaw(i));
+        }
+        size += dataSize;
+        size += 1 * getCidsList().size();
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, topic_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, subtopic_);
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < topics_.size(); i++) {
+          dataSize += computeStringSizeNoTag(topics_.getRaw(i));
+        }
+        size += dataSize;
+        size += 1 * getTopicsList().size();
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < subtopics_.size(); i++) {
+          dataSize += computeStringSizeNoTag(subtopics_.getRaw(i));
+        }
+        size += dataSize;
+        size += 1 * getSubtopicsList().size();
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(7, getResults());
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof com.avos.avoscloud.Messages.PubsubCommand)) {
+        return super.equals(obj);
+      }
+      com.avos.avoscloud.Messages.PubsubCommand other = (com.avos.avoscloud.Messages.PubsubCommand) obj;
+
+      boolean result = true;
+      result = result && (hasCid() == other.hasCid());
+      if (hasCid()) {
+        result = result && getCid()
+            .equals(other.getCid());
+      }
+      result = result && getCidsList()
+          .equals(other.getCidsList());
+      result = result && (hasTopic() == other.hasTopic());
+      if (hasTopic()) {
+        result = result && getTopic()
+            .equals(other.getTopic());
+      }
+      result = result && (hasSubtopic() == other.hasSubtopic());
+      if (hasSubtopic()) {
+        result = result && getSubtopic()
+            .equals(other.getSubtopic());
+      }
+      result = result && getTopicsList()
+          .equals(other.getTopicsList());
+      result = result && getSubtopicsList()
+          .equals(other.getSubtopicsList());
+      result = result && (hasResults() == other.hasResults());
+      if (hasResults()) {
+        result = result && getResults()
+            .equals(other.getResults());
+      }
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasCid()) {
+        hash = (37 * hash) + CID_FIELD_NUMBER;
+        hash = (53 * hash) + getCid().hashCode();
+      }
+      if (getCidsCount() > 0) {
+        hash = (37 * hash) + CIDS_FIELD_NUMBER;
+        hash = (53 * hash) + getCidsList().hashCode();
+      }
+      if (hasTopic()) {
+        hash = (37 * hash) + TOPIC_FIELD_NUMBER;
+        hash = (53 * hash) + getTopic().hashCode();
+      }
+      if (hasSubtopic()) {
+        hash = (37 * hash) + SUBTOPIC_FIELD_NUMBER;
+        hash = (53 * hash) + getSubtopic().hashCode();
+      }
+      if (getTopicsCount() > 0) {
+        hash = (37 * hash) + TOPICS_FIELD_NUMBER;
+        hash = (53 * hash) + getTopicsList().hashCode();
+      }
+      if (getSubtopicsCount() > 0) {
+        hash = (37 * hash) + SUBTOPICS_FIELD_NUMBER;
+        hash = (53 * hash) + getSubtopicsList().hashCode();
+      }
+      if (hasResults()) {
+        hash = (37 * hash) + RESULTS_FIELD_NUMBER;
+        hash = (53 * hash) + getResults().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static com.avos.avoscloud.Messages.PubsubCommand parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.avos.avoscloud.Messages.PubsubCommand parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.avos.avoscloud.Messages.PubsubCommand parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.avos.avoscloud.Messages.PubsubCommand parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.avos.avoscloud.Messages.PubsubCommand parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.avos.avoscloud.Messages.PubsubCommand parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.avos.avoscloud.Messages.PubsubCommand parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.avos.avoscloud.Messages.PubsubCommand parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.avos.avoscloud.Messages.PubsubCommand parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static com.avos.avoscloud.Messages.PubsubCommand parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.avos.avoscloud.Messages.PubsubCommand parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.avos.avoscloud.Messages.PubsubCommand parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(com.avos.avoscloud.Messages.PubsubCommand prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code com.avos.avoscloud.PubsubCommand}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:com.avos.avoscloud.PubsubCommand)
+        com.avos.avoscloud.Messages.PubsubCommandOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.avos.avoscloud.Messages.internal_static_com_avos_avoscloud_PubsubCommand_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.avos.avoscloud.Messages.internal_static_com_avos_avoscloud_PubsubCommand_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.avos.avoscloud.Messages.PubsubCommand.class, com.avos.avoscloud.Messages.PubsubCommand.Builder.class);
+      }
+
+      // Construct using com.avos.avoscloud.Messages.PubsubCommand.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getResultsFieldBuilder();
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        cid_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        cids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        topic_ = "";
+        bitField0_ = (bitField0_ & ~0x00000004);
+        subtopic_ = "";
+        bitField0_ = (bitField0_ & ~0x00000008);
+        topics_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000010);
+        subtopics_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000020);
+        if (resultsBuilder_ == null) {
+          results_ = null;
+        } else {
+          resultsBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000040);
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.avos.avoscloud.Messages.internal_static_com_avos_avoscloud_PubsubCommand_descriptor;
+      }
+
+      public com.avos.avoscloud.Messages.PubsubCommand getDefaultInstanceForType() {
+        return com.avos.avoscloud.Messages.PubsubCommand.getDefaultInstance();
+      }
+
+      public com.avos.avoscloud.Messages.PubsubCommand build() {
+        com.avos.avoscloud.Messages.PubsubCommand result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public com.avos.avoscloud.Messages.PubsubCommand buildPartial() {
+        com.avos.avoscloud.Messages.PubsubCommand result = new com.avos.avoscloud.Messages.PubsubCommand(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.cid_ = cid_;
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          cids_ = cids_.getUnmodifiableView();
+          bitField0_ = (bitField0_ & ~0x00000002);
+        }
+        result.cids_ = cids_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.topic_ = topic_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.subtopic_ = subtopic_;
+        if (((bitField0_ & 0x00000010) == 0x00000010)) {
+          topics_ = topics_.getUnmodifiableView();
+          bitField0_ = (bitField0_ & ~0x00000010);
+        }
+        result.topics_ = topics_;
+        if (((bitField0_ & 0x00000020) == 0x00000020)) {
+          subtopics_ = subtopics_.getUnmodifiableView();
+          bitField0_ = (bitField0_ & ~0x00000020);
+        }
+        result.subtopics_ = subtopics_;
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        if (resultsBuilder_ == null) {
+          result.results_ = results_;
+        } else {
+          result.results_ = resultsBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.avos.avoscloud.Messages.PubsubCommand) {
+          return mergeFrom((com.avos.avoscloud.Messages.PubsubCommand)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.avos.avoscloud.Messages.PubsubCommand other) {
+        if (other == com.avos.avoscloud.Messages.PubsubCommand.getDefaultInstance()) return this;
+        if (other.hasCid()) {
+          bitField0_ |= 0x00000001;
+          cid_ = other.cid_;
+          onChanged();
+        }
+        if (!other.cids_.isEmpty()) {
+          if (cids_.isEmpty()) {
+            cids_ = other.cids_;
+            bitField0_ = (bitField0_ & ~0x00000002);
+          } else {
+            ensureCidsIsMutable();
+            cids_.addAll(other.cids_);
+          }
+          onChanged();
+        }
+        if (other.hasTopic()) {
+          bitField0_ |= 0x00000004;
+          topic_ = other.topic_;
+          onChanged();
+        }
+        if (other.hasSubtopic()) {
+          bitField0_ |= 0x00000008;
+          subtopic_ = other.subtopic_;
+          onChanged();
+        }
+        if (!other.topics_.isEmpty()) {
+          if (topics_.isEmpty()) {
+            topics_ = other.topics_;
+            bitField0_ = (bitField0_ & ~0x00000010);
+          } else {
+            ensureTopicsIsMutable();
+            topics_.addAll(other.topics_);
+          }
+          onChanged();
+        }
+        if (!other.subtopics_.isEmpty()) {
+          if (subtopics_.isEmpty()) {
+            subtopics_ = other.subtopics_;
+            bitField0_ = (bitField0_ & ~0x00000020);
+          } else {
+            ensureSubtopicsIsMutable();
+            subtopics_.addAll(other.subtopics_);
+          }
+          onChanged();
+        }
+        if (other.hasResults()) {
+          mergeResults(other.getResults());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (hasResults()) {
+          if (!getResults().isInitialized()) {
+            return false;
+          }
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.avos.avoscloud.Messages.PubsubCommand parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.avos.avoscloud.Messages.PubsubCommand) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private java.lang.Object cid_ = "";
+      /**
+       * <code>optional string cid = 1;</code>
+       */
+      public boolean hasCid() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>optional string cid = 1;</code>
+       */
+      public java.lang.String getCid() {
+        java.lang.Object ref = cid_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            cid_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string cid = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getCidBytes() {
+        java.lang.Object ref = cid_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          cid_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string cid = 1;</code>
+       */
+      public Builder setCid(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        cid_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string cid = 1;</code>
+       */
+      public Builder clearCid() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        cid_ = getDefaultInstance().getCid();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string cid = 1;</code>
+       */
+      public Builder setCidBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        cid_ = value;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.LazyStringList cids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensureCidsIsMutable() {
+        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+          cids_ = new com.google.protobuf.LazyStringArrayList(cids_);
+          bitField0_ |= 0x00000002;
+         }
+      }
+      /**
+       * <code>repeated string cids = 2;</code>
+       */
+      public com.google.protobuf.ProtocolStringList
+          getCidsList() {
+        return cids_.getUnmodifiableView();
+      }
+      /**
+       * <code>repeated string cids = 2;</code>
+       */
+      public int getCidsCount() {
+        return cids_.size();
+      }
+      /**
+       * <code>repeated string cids = 2;</code>
+       */
+      public java.lang.String getCids(int index) {
+        return cids_.get(index);
+      }
+      /**
+       * <code>repeated string cids = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getCidsBytes(int index) {
+        return cids_.getByteString(index);
+      }
+      /**
+       * <code>repeated string cids = 2;</code>
+       */
+      public Builder setCids(
+          int index, java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureCidsIsMutable();
+        cids_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string cids = 2;</code>
+       */
+      public Builder addCids(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureCidsIsMutable();
+        cids_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string cids = 2;</code>
+       */
+      public Builder addAllCids(
+          java.lang.Iterable<java.lang.String> values) {
+        ensureCidsIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, cids_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string cids = 2;</code>
+       */
+      public Builder clearCids() {
+        cids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string cids = 2;</code>
+       */
+      public Builder addCidsBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureCidsIsMutable();
+        cids_.add(value);
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object topic_ = "";
+      /**
+       * <code>optional string topic = 3;</code>
+       */
+      public boolean hasTopic() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional string topic = 3;</code>
+       */
+      public java.lang.String getTopic() {
+        java.lang.Object ref = topic_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            topic_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string topic = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getTopicBytes() {
+        java.lang.Object ref = topic_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          topic_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string topic = 3;</code>
+       */
+      public Builder setTopic(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        topic_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string topic = 3;</code>
+       */
+      public Builder clearTopic() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        topic_ = getDefaultInstance().getTopic();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string topic = 3;</code>
+       */
+      public Builder setTopicBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        topic_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object subtopic_ = "";
+      /**
+       * <code>optional string subtopic = 4;</code>
+       */
+      public boolean hasSubtopic() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>optional string subtopic = 4;</code>
+       */
+      public java.lang.String getSubtopic() {
+        java.lang.Object ref = subtopic_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            subtopic_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string subtopic = 4;</code>
+       */
+      public com.google.protobuf.ByteString
+          getSubtopicBytes() {
+        java.lang.Object ref = subtopic_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          subtopic_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string subtopic = 4;</code>
+       */
+      public Builder setSubtopic(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        subtopic_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string subtopic = 4;</code>
+       */
+      public Builder clearSubtopic() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        subtopic_ = getDefaultInstance().getSubtopic();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string subtopic = 4;</code>
+       */
+      public Builder setSubtopicBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        subtopic_ = value;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.LazyStringList topics_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensureTopicsIsMutable() {
+        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
+          topics_ = new com.google.protobuf.LazyStringArrayList(topics_);
+          bitField0_ |= 0x00000010;
+         }
+      }
+      /**
+       * <code>repeated string topics = 5;</code>
+       */
+      public com.google.protobuf.ProtocolStringList
+          getTopicsList() {
+        return topics_.getUnmodifiableView();
+      }
+      /**
+       * <code>repeated string topics = 5;</code>
+       */
+      public int getTopicsCount() {
+        return topics_.size();
+      }
+      /**
+       * <code>repeated string topics = 5;</code>
+       */
+      public java.lang.String getTopics(int index) {
+        return topics_.get(index);
+      }
+      /**
+       * <code>repeated string topics = 5;</code>
+       */
+      public com.google.protobuf.ByteString
+          getTopicsBytes(int index) {
+        return topics_.getByteString(index);
+      }
+      /**
+       * <code>repeated string topics = 5;</code>
+       */
+      public Builder setTopics(
+          int index, java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureTopicsIsMutable();
+        topics_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string topics = 5;</code>
+       */
+      public Builder addTopics(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureTopicsIsMutable();
+        topics_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string topics = 5;</code>
+       */
+      public Builder addAllTopics(
+          java.lang.Iterable<java.lang.String> values) {
+        ensureTopicsIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, topics_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string topics = 5;</code>
+       */
+      public Builder clearTopics() {
+        topics_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000010);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string topics = 5;</code>
+       */
+      public Builder addTopicsBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureTopicsIsMutable();
+        topics_.add(value);
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.LazyStringList subtopics_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensureSubtopicsIsMutable() {
+        if (!((bitField0_ & 0x00000020) == 0x00000020)) {
+          subtopics_ = new com.google.protobuf.LazyStringArrayList(subtopics_);
+          bitField0_ |= 0x00000020;
+         }
+      }
+      /**
+       * <code>repeated string subtopics = 6;</code>
+       */
+      public com.google.protobuf.ProtocolStringList
+          getSubtopicsList() {
+        return subtopics_.getUnmodifiableView();
+      }
+      /**
+       * <code>repeated string subtopics = 6;</code>
+       */
+      public int getSubtopicsCount() {
+        return subtopics_.size();
+      }
+      /**
+       * <code>repeated string subtopics = 6;</code>
+       */
+      public java.lang.String getSubtopics(int index) {
+        return subtopics_.get(index);
+      }
+      /**
+       * <code>repeated string subtopics = 6;</code>
+       */
+      public com.google.protobuf.ByteString
+          getSubtopicsBytes(int index) {
+        return subtopics_.getByteString(index);
+      }
+      /**
+       * <code>repeated string subtopics = 6;</code>
+       */
+      public Builder setSubtopics(
+          int index, java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureSubtopicsIsMutable();
+        subtopics_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string subtopics = 6;</code>
+       */
+      public Builder addSubtopics(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureSubtopicsIsMutable();
+        subtopics_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string subtopics = 6;</code>
+       */
+      public Builder addAllSubtopics(
+          java.lang.Iterable<java.lang.String> values) {
+        ensureSubtopicsIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, subtopics_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string subtopics = 6;</code>
+       */
+      public Builder clearSubtopics() {
+        subtopics_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000020);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string subtopics = 6;</code>
+       */
+      public Builder addSubtopicsBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureSubtopicsIsMutable();
+        subtopics_.add(value);
+        onChanged();
+        return this;
+      }
+
+      private com.avos.avoscloud.Messages.JsonObjectMessage results_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          com.avos.avoscloud.Messages.JsonObjectMessage, com.avos.avoscloud.Messages.JsonObjectMessage.Builder, com.avos.avoscloud.Messages.JsonObjectMessageOrBuilder> resultsBuilder_;
+      /**
+       * <code>optional .com.avos.avoscloud.JsonObjectMessage results = 7;</code>
+       */
+      public boolean hasResults() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      /**
+       * <code>optional .com.avos.avoscloud.JsonObjectMessage results = 7;</code>
+       */
+      public com.avos.avoscloud.Messages.JsonObjectMessage getResults() {
+        if (resultsBuilder_ == null) {
+          return results_ == null ? com.avos.avoscloud.Messages.JsonObjectMessage.getDefaultInstance() : results_;
+        } else {
+          return resultsBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .com.avos.avoscloud.JsonObjectMessage results = 7;</code>
+       */
+      public Builder setResults(com.avos.avoscloud.Messages.JsonObjectMessage value) {
+        if (resultsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          results_ = value;
+          onChanged();
+        } else {
+          resultsBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000040;
+        return this;
+      }
+      /**
+       * <code>optional .com.avos.avoscloud.JsonObjectMessage results = 7;</code>
+       */
+      public Builder setResults(
+          com.avos.avoscloud.Messages.JsonObjectMessage.Builder builderForValue) {
+        if (resultsBuilder_ == null) {
+          results_ = builderForValue.build();
+          onChanged();
+        } else {
+          resultsBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000040;
+        return this;
+      }
+      /**
+       * <code>optional .com.avos.avoscloud.JsonObjectMessage results = 7;</code>
+       */
+      public Builder mergeResults(com.avos.avoscloud.Messages.JsonObjectMessage value) {
+        if (resultsBuilder_ == null) {
+          if (((bitField0_ & 0x00000040) == 0x00000040) &&
+              results_ != null &&
+              results_ != com.avos.avoscloud.Messages.JsonObjectMessage.getDefaultInstance()) {
+            results_ =
+              com.avos.avoscloud.Messages.JsonObjectMessage.newBuilder(results_).mergeFrom(value).buildPartial();
+          } else {
+            results_ = value;
+          }
+          onChanged();
+        } else {
+          resultsBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000040;
+        return this;
+      }
+      /**
+       * <code>optional .com.avos.avoscloud.JsonObjectMessage results = 7;</code>
+       */
+      public Builder clearResults() {
+        if (resultsBuilder_ == null) {
+          results_ = null;
+          onChanged();
+        } else {
+          resultsBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000040);
+        return this;
+      }
+      /**
+       * <code>optional .com.avos.avoscloud.JsonObjectMessage results = 7;</code>
+       */
+      public com.avos.avoscloud.Messages.JsonObjectMessage.Builder getResultsBuilder() {
+        bitField0_ |= 0x00000040;
+        onChanged();
+        return getResultsFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .com.avos.avoscloud.JsonObjectMessage results = 7;</code>
+       */
+      public com.avos.avoscloud.Messages.JsonObjectMessageOrBuilder getResultsOrBuilder() {
+        if (resultsBuilder_ != null) {
+          return resultsBuilder_.getMessageOrBuilder();
+        } else {
+          return results_ == null ?
+              com.avos.avoscloud.Messages.JsonObjectMessage.getDefaultInstance() : results_;
+        }
+      }
+      /**
+       * <code>optional .com.avos.avoscloud.JsonObjectMessage results = 7;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          com.avos.avoscloud.Messages.JsonObjectMessage, com.avos.avoscloud.Messages.JsonObjectMessage.Builder, com.avos.avoscloud.Messages.JsonObjectMessageOrBuilder> 
+          getResultsFieldBuilder() {
+        if (resultsBuilder_ == null) {
+          resultsBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              com.avos.avoscloud.Messages.JsonObjectMessage, com.avos.avoscloud.Messages.JsonObjectMessage.Builder, com.avos.avoscloud.Messages.JsonObjectMessageOrBuilder>(
+                  getResults(),
+                  getParentForChildren(),
+                  isClean());
+          results_ = null;
+        }
+        return resultsBuilder_;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:com.avos.avoscloud.PubsubCommand)
+    }
+
+    // @@protoc_insertion_point(class_scope:com.avos.avoscloud.PubsubCommand)
+    private static final com.avos.avoscloud.Messages.PubsubCommand DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new com.avos.avoscloud.Messages.PubsubCommand();
+    }
+
+    public static com.avos.avoscloud.Messages.PubsubCommand getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    @java.lang.Deprecated public static final com.google.protobuf.Parser<PubsubCommand>
+        PARSER = new com.google.protobuf.AbstractParser<PubsubCommand>() {
+      public PubsubCommand parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+          return new PubsubCommand(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<PubsubCommand> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<PubsubCommand> getParserForType() {
+      return PARSER;
+    }
+
+    public com.avos.avoscloud.Messages.PubsubCommand getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   public interface GenericCommandOrBuilder extends
       // @@protoc_insertion_point(interface_extends:com.avos.avoscloud.GenericCommand)
       com.google.protobuf.MessageOrBuilder {
@@ -31019,6 +34374,19 @@ public final class Messages {
      * <code>optional .com.avos.avoscloud.PatchCommand patchMessage = 114;</code>
      */
     com.avos.avoscloud.Messages.PatchCommandOrBuilder getPatchMessageOrBuilder();
+
+    /**
+     * <code>optional .com.avos.avoscloud.PubsubCommand pubsubMessage = 115;</code>
+     */
+    boolean hasPubsubMessage();
+    /**
+     * <code>optional .com.avos.avoscloud.PubsubCommand pubsubMessage = 115;</code>
+     */
+    com.avos.avoscloud.Messages.PubsubCommand getPubsubMessage();
+    /**
+     * <code>optional .com.avos.avoscloud.PubsubCommand pubsubMessage = 115;</code>
+     */
+    com.avos.avoscloud.Messages.PubsubCommandOrBuilder getPubsubMessageOrBuilder();
   }
   /**
    * Protobuf type {@code com.avos.avoscloud.GenericCommand}
@@ -31306,6 +34674,19 @@ public final class Messages {
                 patchMessage_ = subBuilder.buildPartial();
               }
               bitField0_ |= 0x00200000;
+              break;
+            }
+            case 922: {
+              com.avos.avoscloud.Messages.PubsubCommand.Builder subBuilder = null;
+              if (((bitField0_ & 0x00400000) == 0x00400000)) {
+                subBuilder = pubsubMessage_.toBuilder();
+              }
+              pubsubMessage_ = input.readMessage(com.avos.avoscloud.Messages.PubsubCommand.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(pubsubMessage_);
+                pubsubMessage_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00400000;
               break;
             }
           }
@@ -31830,6 +35211,27 @@ public final class Messages {
       return patchMessage_ == null ? com.avos.avoscloud.Messages.PatchCommand.getDefaultInstance() : patchMessage_;
     }
 
+    public static final int PUBSUBMESSAGE_FIELD_NUMBER = 115;
+    private com.avos.avoscloud.Messages.PubsubCommand pubsubMessage_;
+    /**
+     * <code>optional .com.avos.avoscloud.PubsubCommand pubsubMessage = 115;</code>
+     */
+    public boolean hasPubsubMessage() {
+      return ((bitField0_ & 0x00400000) == 0x00400000);
+    }
+    /**
+     * <code>optional .com.avos.avoscloud.PubsubCommand pubsubMessage = 115;</code>
+     */
+    public com.avos.avoscloud.Messages.PubsubCommand getPubsubMessage() {
+      return pubsubMessage_ == null ? com.avos.avoscloud.Messages.PubsubCommand.getDefaultInstance() : pubsubMessage_;
+    }
+    /**
+     * <code>optional .com.avos.avoscloud.PubsubCommand pubsubMessage = 115;</code>
+     */
+    public com.avos.avoscloud.Messages.PubsubCommandOrBuilder getPubsubMessageOrBuilder() {
+      return pubsubMessage_ == null ? com.avos.avoscloud.Messages.PubsubCommand.getDefaultInstance() : pubsubMessage_;
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -31862,6 +35264,12 @@ public final class Messages {
       }
       if (hasConvMessage()) {
         if (!getConvMessage().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasPubsubMessage()) {
+        if (!getPubsubMessage().isInitialized()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -31937,6 +35345,9 @@ public final class Messages {
       }
       if (((bitField0_ & 0x00200000) == 0x00200000)) {
         output.writeMessage(114, getPatchMessage());
+      }
+      if (((bitField0_ & 0x00400000) == 0x00400000)) {
+        output.writeMessage(115, getPubsubMessage());
       }
       unknownFields.writeTo(output);
     }
@@ -32030,6 +35441,10 @@ public final class Messages {
       if (((bitField0_ & 0x00200000) == 0x00200000)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(114, getPatchMessage());
+      }
+      if (((bitField0_ & 0x00400000) == 0x00400000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(115, getPubsubMessage());
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -32155,6 +35570,11 @@ public final class Messages {
         result = result && getPatchMessage()
             .equals(other.getPatchMessage());
       }
+      result = result && (hasPubsubMessage() == other.hasPubsubMessage());
+      if (hasPubsubMessage()) {
+        result = result && getPubsubMessage()
+            .equals(other.getPubsubMessage());
+      }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -32253,6 +35673,10 @@ public final class Messages {
       if (hasPatchMessage()) {
         hash = (37 * hash) + PATCHMESSAGE_FIELD_NUMBER;
         hash = (53 * hash) + getPatchMessage().hashCode();
+      }
+      if (hasPubsubMessage()) {
+        hash = (37 * hash) + PUBSUBMESSAGE_FIELD_NUMBER;
+        hash = (53 * hash) + getPubsubMessage().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -32393,6 +35817,7 @@ public final class Messages {
           getPresenceMessageFieldBuilder();
           getReportMessageFieldBuilder();
           getPatchMessageFieldBuilder();
+          getPubsubMessageFieldBuilder();
         }
       }
       public Builder clear() {
@@ -32497,6 +35922,12 @@ public final class Messages {
           patchMessageBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00200000);
+        if (pubsubMessageBuilder_ == null) {
+          pubsubMessage_ = null;
+        } else {
+          pubsubMessageBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00400000);
         return this;
       }
 
@@ -32665,6 +36096,14 @@ public final class Messages {
         } else {
           result.patchMessage_ = patchMessageBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00400000) == 0x00400000)) {
+          to_bitField0_ |= 0x00400000;
+        }
+        if (pubsubMessageBuilder_ == null) {
+          result.pubsubMessage_ = pubsubMessage_;
+        } else {
+          result.pubsubMessage_ = pubsubMessageBuilder_.build();
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -32779,6 +36218,9 @@ public final class Messages {
         if (other.hasPatchMessage()) {
           mergePatchMessage(other.getPatchMessage());
         }
+        if (other.hasPubsubMessage()) {
+          mergePubsubMessage(other.getPubsubMessage());
+        }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
@@ -32807,6 +36249,11 @@ public final class Messages {
         }
         if (hasConvMessage()) {
           if (!getConvMessage().isInitialized()) {
+            return false;
+          }
+        }
+        if (hasPubsubMessage()) {
+          if (!getPubsubMessage().isInitialized()) {
             return false;
           }
         }
@@ -34879,6 +38326,124 @@ public final class Messages {
         }
         return patchMessageBuilder_;
       }
+
+      private com.avos.avoscloud.Messages.PubsubCommand pubsubMessage_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          com.avos.avoscloud.Messages.PubsubCommand, com.avos.avoscloud.Messages.PubsubCommand.Builder, com.avos.avoscloud.Messages.PubsubCommandOrBuilder> pubsubMessageBuilder_;
+      /**
+       * <code>optional .com.avos.avoscloud.PubsubCommand pubsubMessage = 115;</code>
+       */
+      public boolean hasPubsubMessage() {
+        return ((bitField0_ & 0x00400000) == 0x00400000);
+      }
+      /**
+       * <code>optional .com.avos.avoscloud.PubsubCommand pubsubMessage = 115;</code>
+       */
+      public com.avos.avoscloud.Messages.PubsubCommand getPubsubMessage() {
+        if (pubsubMessageBuilder_ == null) {
+          return pubsubMessage_ == null ? com.avos.avoscloud.Messages.PubsubCommand.getDefaultInstance() : pubsubMessage_;
+        } else {
+          return pubsubMessageBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .com.avos.avoscloud.PubsubCommand pubsubMessage = 115;</code>
+       */
+      public Builder setPubsubMessage(com.avos.avoscloud.Messages.PubsubCommand value) {
+        if (pubsubMessageBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          pubsubMessage_ = value;
+          onChanged();
+        } else {
+          pubsubMessageBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00400000;
+        return this;
+      }
+      /**
+       * <code>optional .com.avos.avoscloud.PubsubCommand pubsubMessage = 115;</code>
+       */
+      public Builder setPubsubMessage(
+          com.avos.avoscloud.Messages.PubsubCommand.Builder builderForValue) {
+        if (pubsubMessageBuilder_ == null) {
+          pubsubMessage_ = builderForValue.build();
+          onChanged();
+        } else {
+          pubsubMessageBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00400000;
+        return this;
+      }
+      /**
+       * <code>optional .com.avos.avoscloud.PubsubCommand pubsubMessage = 115;</code>
+       */
+      public Builder mergePubsubMessage(com.avos.avoscloud.Messages.PubsubCommand value) {
+        if (pubsubMessageBuilder_ == null) {
+          if (((bitField0_ & 0x00400000) == 0x00400000) &&
+              pubsubMessage_ != null &&
+              pubsubMessage_ != com.avos.avoscloud.Messages.PubsubCommand.getDefaultInstance()) {
+            pubsubMessage_ =
+              com.avos.avoscloud.Messages.PubsubCommand.newBuilder(pubsubMessage_).mergeFrom(value).buildPartial();
+          } else {
+            pubsubMessage_ = value;
+          }
+          onChanged();
+        } else {
+          pubsubMessageBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00400000;
+        return this;
+      }
+      /**
+       * <code>optional .com.avos.avoscloud.PubsubCommand pubsubMessage = 115;</code>
+       */
+      public Builder clearPubsubMessage() {
+        if (pubsubMessageBuilder_ == null) {
+          pubsubMessage_ = null;
+          onChanged();
+        } else {
+          pubsubMessageBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00400000);
+        return this;
+      }
+      /**
+       * <code>optional .com.avos.avoscloud.PubsubCommand pubsubMessage = 115;</code>
+       */
+      public com.avos.avoscloud.Messages.PubsubCommand.Builder getPubsubMessageBuilder() {
+        bitField0_ |= 0x00400000;
+        onChanged();
+        return getPubsubMessageFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .com.avos.avoscloud.PubsubCommand pubsubMessage = 115;</code>
+       */
+      public com.avos.avoscloud.Messages.PubsubCommandOrBuilder getPubsubMessageOrBuilder() {
+        if (pubsubMessageBuilder_ != null) {
+          return pubsubMessageBuilder_.getMessageOrBuilder();
+        } else {
+          return pubsubMessage_ == null ?
+              com.avos.avoscloud.Messages.PubsubCommand.getDefaultInstance() : pubsubMessage_;
+        }
+      }
+      /**
+       * <code>optional .com.avos.avoscloud.PubsubCommand pubsubMessage = 115;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          com.avos.avoscloud.Messages.PubsubCommand, com.avos.avoscloud.Messages.PubsubCommand.Builder, com.avos.avoscloud.Messages.PubsubCommandOrBuilder> 
+          getPubsubMessageFieldBuilder() {
+        if (pubsubMessageBuilder_ == null) {
+          pubsubMessageBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              com.avos.avoscloud.Messages.PubsubCommand, com.avos.avoscloud.Messages.PubsubCommand.Builder, com.avos.avoscloud.Messages.PubsubCommandOrBuilder>(
+                  getPubsubMessage(),
+                  getParentForChildren(),
+                  isClean());
+          pubsubMessage_ = null;
+        }
+        return pubsubMessageBuilder_;
+      }
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
@@ -34943,6 +38508,11 @@ public final class Messages {
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_avos_avoscloud_LogItem_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_com_avos_avoscloud_ConvProperty_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_com_avos_avoscloud_ConvProperty_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_com_avos_avoscloud_DataCommand_descriptor;
   private static final 
@@ -35029,6 +38599,11 @@ public final class Messages {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_avos_avoscloud_PatchCommand_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_com_avos_avoscloud_PubsubCommand_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_com_avos_avoscloud_PubsubCommand_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_com_avos_avoscloud_GenericCommand_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -35052,125 +38627,140 @@ public final class Messages {
       "\021\n\ttimestamp\030\003 \001(\003\022\r\n\005msgId\030\004 \001(\t\022\r\n\005ack" +
       "At\030\005 \001(\003\022\016\n\006readAt\030\006 \001(\003\022\026\n\016patchTimesta" +
       "mp\030\007 \001(\003\022\022\n\nmentionAll\030\010 \001(\010\022\023\n\013mentionP",
-      "ids\030\t \003(\t\022\013\n\003bin\030\n \001(\010\"_\n\013DataCommand\022\013\n" +
-      "\003ids\030\001 \003(\t\0222\n\003msg\030\002 \003(\0132%.com.avos.avosc" +
-      "loud.JsonObjectMessage\022\017\n\007offline\030\003 \001(\010\"" +
-      "\321\002\n\016SessionCommand\022\t\n\001t\030\001 \001(\003\022\t\n\001n\030\002 \001(\t" +
-      "\022\t\n\001s\030\003 \001(\t\022\n\n\002ua\030\004 \001(\t\022\t\n\001r\030\005 \001(\010\022\013\n\003ta" +
-      "g\030\006 \001(\t\022\020\n\010deviceId\030\007 \001(\t\022\026\n\016sessionPeer" +
-      "Ids\030\010 \003(\t\022\034\n\024onlineSessionPeerIds\030\t \003(\t\022" +
-      "\n\n\002st\030\n \001(\t\022\r\n\005stTtl\030\013 \001(\005\022\014\n\004code\030\014 \001(\005" +
-      "\022\016\n\006reason\030\r \001(\t\022\023\n\013deviceToken\030\016 \001(\t\022\n\n" +
-      "\002sp\030\017 \001(\010\022\016\n\006detail\030\020 \001(\t\022\033\n\023lastUnreadN",
-      "otifTime\030\021 \001(\003\022\025\n\rlastPatchTime\030\022 \001(\003\022\024\n" +
-      "\014configBitmap\030\023 \001(\003\"M\n\014ErrorCommand\022\014\n\004c" +
-      "ode\030\001 \002(\005\022\016\n\006reason\030\002 \002(\t\022\017\n\007appCode\030\003 \001" +
-      "(\005\022\016\n\006detail\030\004 \001(\t\"\314\002\n\rDirectCommand\022\013\n\003" +
-      "msg\030\001 \001(\t\022\013\n\003uid\030\002 \001(\t\022\022\n\nfromPeerId\030\003 \001" +
-      "(\t\022\021\n\ttimestamp\030\004 \001(\003\022\017\n\007offline\030\005 \001(\010\022\017" +
-      "\n\007hasMore\030\006 \001(\010\022\021\n\ttoPeerIds\030\007 \003(\t\022\t\n\001r\030" +
-      "\n \001(\010\022\013\n\003cid\030\013 \001(\t\022\n\n\002id\030\014 \001(\t\022\021\n\ttransi" +
-      "ent\030\r \001(\010\022\n\n\002dt\030\016 \001(\t\022\016\n\006roomId\030\017 \001(\t\022\020\n" +
-      "\010pushData\030\020 \001(\t\022\014\n\004will\030\021 \001(\010\022\026\n\016patchTi",
-      "mestamp\030\022 \001(\003\022\021\n\tbinaryMsg\030\023 \001(\014\022\023\n\013ment" +
-      "ionPids\030\024 \003(\t\022\022\n\nmentionAll\030\025 \001(\010\"\246\001\n\nAc" +
-      "kCommand\022\014\n\004code\030\001 \001(\005\022\016\n\006reason\030\002 \001(\t\022\013" +
-      "\n\003mid\030\003 \001(\t\022\013\n\003cid\030\004 \001(\t\022\t\n\001t\030\005 \001(\003\022\013\n\003u" +
-      "id\030\006 \001(\t\022\016\n\006fromts\030\007 \001(\003\022\014\n\004tots\030\010 \001(\003\022\014" +
-      "\n\004type\030\t \001(\t\022\013\n\003ids\030\n \003(\t\022\017\n\007appCode\030\013 \001" +
-      "(\005\"R\n\rUnreadCommand\022.\n\005convs\030\001 \003(\0132\037.com" +
-      ".avos.avoscloud.UnreadTuple\022\021\n\tnotifTime" +
-      "\030\002 \001(\003\"\370\004\n\013ConvCommand\022\t\n\001m\030\001 \003(\t\022\021\n\ttra" +
-      "nsient\030\002 \001(\010\022\016\n\006unique\030\003 \001(\010\022\013\n\003cid\030\004 \001(",
-      "\t\022\r\n\005cdate\030\005 \001(\t\022\016\n\006initBy\030\006 \001(\t\022\014\n\004sort" +
-      "\030\007 \001(\t\022\r\n\005limit\030\010 \001(\005\022\014\n\004skip\030\t \001(\005\022\014\n\004f" +
-      "lag\030\n \001(\005\022\r\n\005count\030\013 \001(\005\022\r\n\005udate\030\014 \001(\t\022" +
-      "\t\n\001t\030\r \001(\003\022\t\n\001n\030\016 \001(\t\022\t\n\001s\030\017 \001(\t\022\021\n\tstat" +
-      "usSub\030\020 \001(\010\022\021\n\tstatusPub\030\021 \001(\010\022\021\n\tstatus" +
-      "TTL\030\022 \001(\005\022\020\n\010uniqueId\030\023 \001(\t\022\026\n\016targetCli" +
-      "entId\030\024 \001(\t\022\030\n\020maxReadTimestamp\030\025 \001(\003\022\027\n" +
-      "\017maxAckTimestamp\030\026 \001(\003\022\027\n\017queryAllMember" +
-      "s\030\027 \001(\010\0227\n\rmaxReadTuples\030\030 \003(\0132 .com.avo" +
-      "s.avoscloud.MaxReadTuple\022\014\n\004cids\030\031 \003(\t\0226",
-      "\n\007results\030d \001(\0132%.com.avos.avoscloud.Jso" +
-      "nObjectMessage\0224\n\005where\030e \001(\0132%.com.avos" +
-      ".avoscloud.JsonObjectMessage\0223\n\004attr\030g \001" +
-      "(\0132%.com.avos.avoscloud.JsonObjectMessag" +
-      "e\"x\n\013RoomCommand\022\016\n\006roomId\030\001 \001(\t\022\t\n\001s\030\002 " +
-      "\001(\t\022\t\n\001t\030\003 \001(\003\022\t\n\001n\030\004 \001(\t\022\021\n\ttransient\030\005" +
-      " \001(\010\022\023\n\013roomPeerIds\030\006 \003(\t\022\020\n\010byPeerId\030\007 " +
-      "\001(\t\"\306\002\n\013LogsCommand\022\013\n\003cid\030\001 \001(\t\022\t\n\001l\030\002 " +
-      "\001(\005\022\r\n\005limit\030\003 \001(\005\022\t\n\001t\030\004 \001(\003\022\n\n\002tt\030\005 \001(" +
-      "\003\022\014\n\004tmid\030\006 \001(\t\022\013\n\003mid\030\007 \001(\t\022\020\n\010checksum",
-      "\030\010 \001(\t\022\016\n\006stored\030\t \001(\010\022F\n\tdirection\030\n \001(" +
-      "\0162..com.avos.avoscloud.LogsCommand.Query" +
-      "Direction:\003OLD\022\021\n\ttIncluded\030\013 \001(\010\022\022\n\nttI" +
-      "ncluded\030\014 \001(\010\022)\n\004logs\030i \003(\0132\033.com.avos.a" +
-      "voscloud.LogItem\"\"\n\016QueryDirection\022\007\n\003OL" +
-      "D\020\001\022\007\n\003NEW\020\002\">\n\nRcpCommand\022\n\n\002id\030\001 \001(\t\022\013" +
-      "\n\003cid\030\002 \001(\t\022\t\n\001t\030\003 \001(\003\022\014\n\004read\030\004 \001(\010\"8\n\t" +
-      "ReadTuple\022\013\n\003cid\030\001 \002(\t\022\021\n\ttimestamp\030\002 \001(" +
-      "\003\022\013\n\003mid\030\003 \001(\t\"N\n\014MaxReadTuple\022\013\n\003pid\030\001 " +
-      "\001(\t\022\027\n\017maxAckTimestamp\030\002 \001(\003\022\030\n\020maxReadT",
-      "imestamp\030\003 \001(\003\"V\n\013ReadCommand\022\013\n\003cid\030\001 \001" +
-      "(\t\022\014\n\004cids\030\002 \003(\t\022,\n\005convs\030\003 \003(\0132\035.com.av" +
-      "os.avoscloud.ReadTuple\"f\n\017PresenceComman" +
-      "d\022.\n\006status\030\001 \001(\0162\036.com.avos.avoscloud.S" +
-      "tatusType\022\026\n\016sessionPeerIds\030\002 \003(\t\022\013\n\003cid" +
-      "\030\003 \001(\t\"?\n\rReportCommand\022\022\n\ninitiative\030\001 " +
-      "\001(\010\022\014\n\004type\030\002 \001(\t\022\014\n\004data\030\003 \001(\t\"\270\001\n\tPatc" +
-      "hItem\022\013\n\003cid\030\001 \001(\t\022\013\n\003mid\030\002 \001(\t\022\021\n\ttimes" +
-      "tamp\030\003 \001(\003\022\016\n\006recall\030\004 \001(\010\022\014\n\004data\030\005 \001(\t" +
-      "\022\026\n\016patchTimestamp\030\006 \001(\003\022\014\n\004from\030\007 \001(\t\022\021",
-      "\n\tbinaryMsg\030\010 \001(\014\022\022\n\nmentionAll\030\t \001(\010\022\023\n" +
-      "\013mentionPids\030\n \003(\t\"U\n\014PatchCommand\022.\n\007pa" +
-      "tches\030\001 \003(\0132\035.com.avos.avoscloud.PatchIt" +
-      "em\022\025\n\rlastPatchTime\030\002 \001(\003\"\331\007\n\016GenericCom" +
-      "mand\022,\n\003cmd\030\001 \001(\0162\037.com.avos.avoscloud.C" +
-      "ommandType\022&\n\002op\030\002 \001(\0162\032.com.avos.avoscl" +
-      "oud.OpType\022\r\n\005appId\030\003 \001(\t\022\016\n\006peerId\030\004 \001(" +
-      "\t\022\t\n\001i\030\005 \001(\005\022\026\n\016installationId\030\006 \001(\t\022\020\n\010" +
-      "priority\030\007 \001(\005\022\017\n\007service\030\010 \001(\005\0224\n\013dataM" +
-      "essage\030e \001(\0132\037.com.avos.avoscloud.DataCo",
-      "mmand\022:\n\016sessionMessage\030f \001(\0132\".com.avos" +
-      ".avoscloud.SessionCommand\0226\n\014errorMessag" +
-      "e\030g \001(\0132 .com.avos.avoscloud.ErrorComman" +
-      "d\0228\n\rdirectMessage\030h \001(\0132!.com.avos.avos" +
-      "cloud.DirectCommand\0222\n\nackMessage\030i \001(\0132" +
-      "\036.com.avos.avoscloud.AckCommand\0228\n\runrea" +
-      "dMessage\030j \001(\0132!.com.avos.avoscloud.Unre" +
-      "adCommand\0224\n\013readMessage\030k \001(\0132\037.com.avo" +
-      "s.avoscloud.ReadCommand\0222\n\nrcpMessage\030l " +
-      "\001(\0132\036.com.avos.avoscloud.RcpCommand\0224\n\013l",
-      "ogsMessage\030m \001(\0132\037.com.avos.avoscloud.Lo" +
-      "gsCommand\0224\n\013convMessage\030n \001(\0132\037.com.avo" +
-      "s.avoscloud.ConvCommand\0224\n\013roomMessage\030o" +
-      " \001(\0132\037.com.avos.avoscloud.RoomCommand\022<\n" +
-      "\017presenceMessage\030p \001(\0132#.com.avos.avoscl" +
-      "oud.PresenceCommand\0228\n\rreportMessage\030q \001" +
-      "(\0132!.com.avos.avoscloud.ReportCommand\0226\n" +
-      "\014patchMessage\030r \001(\0132 .com.avos.avoscloud" +
-      ".PatchCommand*\344\001\n\013CommandType\022\013\n\007session" +
-      "\020\000\022\010\n\004conv\020\001\022\n\n\006direct\020\002\022\007\n\003ack\020\003\022\007\n\003rcp",
-      "\020\004\022\n\n\006unread\020\005\022\010\n\004logs\020\006\022\t\n\005error\020\007\022\t\n\005l" +
-      "ogin\020\010\022\010\n\004data\020\t\022\010\n\004room\020\n\022\010\n\004read\020\013\022\014\n\010" +
-      "presence\020\014\022\n\n\006report\020\r\022\010\n\004echo\020\016\022\014\n\010logg" +
-      "edin\020\017\022\n\n\006logout\020\020\022\r\n\tloggedout\020\021\022\t\n\005pat" +
-      "ch\020\022*\360\003\n\006OpType\022\010\n\004open\020\001\022\007\n\003add\020\002\022\n\n\006re" +
-      "move\020\003\022\t\n\005close\020\004\022\n\n\006opened\020\005\022\n\n\006closed\020" +
-      "\006\022\t\n\005query\020\007\022\020\n\014query_result\020\010\022\014\n\010confli" +
-      "ct\020\t\022\t\n\005added\020\n\022\013\n\007removed\020\013\022\t\n\005start\020\036\022" +
-      "\013\n\007started\020\037\022\n\n\006joined\020 \022\022\n\016members_join" +
-      "ed\020!\022\010\n\004left\020\'\022\020\n\014members_left\020(\022\013\n\007resu",
-      "lts\020*\022\t\n\005count\020+\022\n\n\006result\020,\022\n\n\006update\020-" +
-      "\022\013\n\007updated\020.\022\010\n\004mute\020/\022\n\n\006unmute\0200\022\n\n\006s" +
-      "tatus\0201\022\013\n\007members\0202\022\014\n\010max_read\0203\022\r\n\tis" +
-      "_member\0204\022\010\n\004join\020P\022\n\n\006invite\020Q\022\t\n\005leave" +
+      "ids\030\t \003(\t\022\013\n\003bin\030\n \001(\010\"=\n\014ConvProperty\022\013" +
+      "\n\003pid\030\001 \001(\t\022\014\n\004role\030\002 \001(\t\022\022\n\npropertyId\030" +
+      "\003 \001(\t\"_\n\013DataCommand\022\013\n\003ids\030\001 \003(\t\0222\n\003msg" +
+      "\030\002 \003(\0132%.com.avos.avoscloud.JsonObjectMe" +
+      "ssage\022\017\n\007offline\030\003 \001(\010\"\321\002\n\016SessionComman" +
+      "d\022\t\n\001t\030\001 \001(\003\022\t\n\001n\030\002 \001(\t\022\t\n\001s\030\003 \001(\t\022\n\n\002ua" +
+      "\030\004 \001(\t\022\t\n\001r\030\005 \001(\010\022\013\n\003tag\030\006 \001(\t\022\020\n\010device" +
+      "Id\030\007 \001(\t\022\026\n\016sessionPeerIds\030\010 \003(\t\022\034\n\024onli" +
+      "neSessionPeerIds\030\t \003(\t\022\n\n\002st\030\n \001(\t\022\r\n\005st" +
+      "Ttl\030\013 \001(\005\022\014\n\004code\030\014 \001(\005\022\016\n\006reason\030\r \001(\t\022",
+      "\023\n\013deviceToken\030\016 \001(\t\022\n\n\002sp\030\017 \001(\010\022\016\n\006deta" +
+      "il\030\020 \001(\t\022\033\n\023lastUnreadNotifTime\030\021 \001(\003\022\025\n" +
+      "\rlastPatchTime\030\022 \001(\003\022\024\n\014configBitmap\030\023 \001" +
+      "(\003\"M\n\014ErrorCommand\022\014\n\004code\030\001 \002(\005\022\016\n\006reas" +
+      "on\030\002 \002(\t\022\017\n\007appCode\030\003 \001(\005\022\016\n\006detail\030\004 \001(" +
+      "\t\"\314\002\n\rDirectCommand\022\013\n\003msg\030\001 \001(\t\022\013\n\003uid\030" +
+      "\002 \001(\t\022\022\n\nfromPeerId\030\003 \001(\t\022\021\n\ttimestamp\030\004" +
+      " \001(\003\022\017\n\007offline\030\005 \001(\010\022\017\n\007hasMore\030\006 \001(\010\022\021" +
+      "\n\ttoPeerIds\030\007 \003(\t\022\t\n\001r\030\n \001(\010\022\013\n\003cid\030\013 \001(" +
+      "\t\022\n\n\002id\030\014 \001(\t\022\021\n\ttransient\030\r \001(\010\022\n\n\002dt\030\016",
+      " \001(\t\022\016\n\006roomId\030\017 \001(\t\022\020\n\010pushData\030\020 \001(\t\022\014" +
+      "\n\004will\030\021 \001(\010\022\026\n\016patchTimestamp\030\022 \001(\003\022\021\n\t" +
+      "binaryMsg\030\023 \001(\014\022\023\n\013mentionPids\030\024 \003(\t\022\022\n\n" +
+      "mentionAll\030\025 \001(\010\"\246\001\n\nAckCommand\022\014\n\004code\030" +
+      "\001 \001(\005\022\016\n\006reason\030\002 \001(\t\022\013\n\003mid\030\003 \001(\t\022\013\n\003ci" +
+      "d\030\004 \001(\t\022\t\n\001t\030\005 \001(\003\022\013\n\003uid\030\006 \001(\t\022\016\n\006fromt" +
+      "s\030\007 \001(\003\022\014\n\004tots\030\010 \001(\003\022\014\n\004type\030\t \001(\t\022\013\n\003i" +
+      "ds\030\n \003(\t\022\017\n\007appCode\030\013 \001(\005\"R\n\rUnreadComma" +
+      "nd\022.\n\005convs\030\001 \003(\0132\037.com.avos.avoscloud.U" +
+      "nreadTuple\022\021\n\tnotifTime\030\002 \001(\003\"\347\005\n\013ConvCo",
+      "mmand\022\t\n\001m\030\001 \003(\t\022\021\n\ttransient\030\002 \001(\010\022\016\n\006u" +
+      "nique\030\003 \001(\010\022\013\n\003cid\030\004 \001(\t\022\r\n\005cdate\030\005 \001(\t\022" +
+      "\016\n\006initBy\030\006 \001(\t\022\014\n\004sort\030\007 \001(\t\022\r\n\005limit\030\010" +
+      " \001(\005\022\014\n\004skip\030\t \001(\005\022\014\n\004flag\030\n \001(\005\022\r\n\005coun" +
+      "t\030\013 \001(\005\022\r\n\005udate\030\014 \001(\t\022\t\n\001t\030\r \001(\003\022\t\n\001n\030\016" +
+      " \001(\t\022\t\n\001s\030\017 \001(\t\022\021\n\tstatusSub\030\020 \001(\010\022\021\n\tst" +
+      "atusPub\030\021 \001(\010\022\021\n\tstatusTTL\030\022 \001(\005\022\020\n\010uniq" +
+      "ueId\030\023 \001(\t\022\026\n\016targetClientId\030\024 \001(\t\022\030\n\020ma" +
+      "xReadTimestamp\030\025 \001(\003\022\027\n\017maxAckTimestamp\030" +
+      "\026 \001(\003\022\027\n\017queryAllMembers\030\027 \001(\010\0227\n\rmaxRea",
+      "dTuples\030\030 \003(\0132 .com.avos.avoscloud.MaxRe" +
+      "adTuple\022\014\n\004cids\030\031 \003(\t\0222\n\010property\030\032 \001(\0132" +
+      " .com.avos.avoscloud.ConvProperty\022\020\n\010tem" +
+      "pConv\030\033 \001(\010\022\023\n\013tempConvTTL\030\034 \001(\005\022\022\n\ntemp" +
+      "ConvId\030\035 \001(\t\0226\n\007results\030d \001(\0132%.com.avos" +
+      ".avoscloud.JsonObjectMessage\0224\n\005where\030e " +
+      "\001(\0132%.com.avos.avoscloud.JsonObjectMessa" +
+      "ge\0223\n\004attr\030g \001(\0132%.com.avos.avoscloud.Js" +
+      "onObjectMessage\"x\n\013RoomCommand\022\016\n\006roomId" +
+      "\030\001 \001(\t\022\t\n\001s\030\002 \001(\t\022\t\n\001t\030\003 \001(\003\022\t\n\001n\030\004 \001(\t\022",
+      "\021\n\ttransient\030\005 \001(\010\022\023\n\013roomPeerIds\030\006 \003(\t\022" +
+      "\020\n\010byPeerId\030\007 \001(\t\"\306\002\n\013LogsCommand\022\013\n\003cid" +
+      "\030\001 \001(\t\022\t\n\001l\030\002 \001(\005\022\r\n\005limit\030\003 \001(\005\022\t\n\001t\030\004 " +
+      "\001(\003\022\n\n\002tt\030\005 \001(\003\022\014\n\004tmid\030\006 \001(\t\022\013\n\003mid\030\007 \001" +
+      "(\t\022\020\n\010checksum\030\010 \001(\t\022\016\n\006stored\030\t \001(\010\022F\n\t" +
+      "direction\030\n \001(\0162..com.avos.avoscloud.Log" +
+      "sCommand.QueryDirection:\003OLD\022\021\n\ttInclude" +
+      "d\030\013 \001(\010\022\022\n\nttIncluded\030\014 \001(\010\022)\n\004logs\030i \003(" +
+      "\0132\033.com.avos.avoscloud.LogItem\"\"\n\016QueryD" +
+      "irection\022\007\n\003OLD\020\001\022\007\n\003NEW\020\002\"L\n\nRcpCommand",
+      "\022\n\n\002id\030\001 \001(\t\022\013\n\003cid\030\002 \001(\t\022\t\n\001t\030\003 \001(\003\022\014\n\004" +
+      "read\030\004 \001(\010\022\014\n\004from\030\005 \001(\t\"8\n\tReadTuple\022\013\n" +
+      "\003cid\030\001 \002(\t\022\021\n\ttimestamp\030\002 \001(\003\022\013\n\003mid\030\003 \001" +
+      "(\t\"N\n\014MaxReadTuple\022\013\n\003pid\030\001 \001(\t\022\027\n\017maxAc" +
+      "kTimestamp\030\002 \001(\003\022\030\n\020maxReadTimestamp\030\003 \001" +
+      "(\003\"V\n\013ReadCommand\022\013\n\003cid\030\001 \001(\t\022\014\n\004cids\030\002" +
+      " \003(\t\022,\n\005convs\030\003 \003(\0132\035.com.avos.avoscloud" +
+      ".ReadTuple\"f\n\017PresenceCommand\022.\n\006status\030" +
+      "\001 \001(\0162\036.com.avos.avoscloud.StatusType\022\026\n" +
+      "\016sessionPeerIds\030\002 \003(\t\022\013\n\003cid\030\003 \001(\t\"?\n\rRe",
+      "portCommand\022\022\n\ninitiative\030\001 \001(\010\022\014\n\004type\030" +
+      "\002 \001(\t\022\014\n\004data\030\003 \001(\t\"\270\001\n\tPatchItem\022\013\n\003cid" +
+      "\030\001 \001(\t\022\013\n\003mid\030\002 \001(\t\022\021\n\ttimestamp\030\003 \001(\003\022\016" +
+      "\n\006recall\030\004 \001(\010\022\014\n\004data\030\005 \001(\t\022\026\n\016patchTim" +
+      "estamp\030\006 \001(\003\022\014\n\004from\030\007 \001(\t\022\021\n\tbinaryMsg\030" +
+      "\010 \001(\014\022\022\n\nmentionAll\030\t \001(\010\022\023\n\013mentionPids" +
+      "\030\n \003(\t\"U\n\014PatchCommand\022.\n\007patches\030\001 \003(\0132" +
+      "\035.com.avos.avoscloud.PatchItem\022\025\n\rlastPa" +
+      "tchTime\030\002 \001(\003\"\246\001\n\rPubsubCommand\022\013\n\003cid\030\001" +
+      " \001(\t\022\014\n\004cids\030\002 \003(\t\022\r\n\005topic\030\003 \001(\t\022\020\n\010sub",
+      "topic\030\004 \001(\t\022\016\n\006topics\030\005 \003(\t\022\021\n\tsubtopics" +
+      "\030\006 \003(\t\0226\n\007results\030\007 \001(\0132%.com.avos.avosc" +
+      "loud.JsonObjectMessage\"\223\010\n\016GenericComman" +
+      "d\022,\n\003cmd\030\001 \001(\0162\037.com.avos.avoscloud.Comm" +
+      "andType\022&\n\002op\030\002 \001(\0162\032.com.avos.avoscloud" +
+      ".OpType\022\r\n\005appId\030\003 \001(\t\022\016\n\006peerId\030\004 \001(\t\022\t" +
+      "\n\001i\030\005 \001(\005\022\026\n\016installationId\030\006 \001(\t\022\020\n\010pri" +
+      "ority\030\007 \001(\005\022\017\n\007service\030\010 \001(\005\0224\n\013dataMess" +
+      "age\030e \001(\0132\037.com.avos.avoscloud.DataComma" +
+      "nd\022:\n\016sessionMessage\030f \001(\0132\".com.avos.av",
+      "oscloud.SessionCommand\0226\n\014errorMessage\030g" +
+      " \001(\0132 .com.avos.avoscloud.ErrorCommand\0228" +
+      "\n\rdirectMessage\030h \001(\0132!.com.avos.avosclo" +
+      "ud.DirectCommand\0222\n\nackMessage\030i \001(\0132\036.c" +
+      "om.avos.avoscloud.AckCommand\0228\n\runreadMe" +
+      "ssage\030j \001(\0132!.com.avos.avoscloud.UnreadC" +
+      "ommand\0224\n\013readMessage\030k \001(\0132\037.com.avos.a" +
+      "voscloud.ReadCommand\0222\n\nrcpMessage\030l \001(\013" +
+      "2\036.com.avos.avoscloud.RcpCommand\0224\n\013logs" +
+      "Message\030m \001(\0132\037.com.avos.avoscloud.LogsC",
+      "ommand\0224\n\013convMessage\030n \001(\0132\037.com.avos.a" +
+      "voscloud.ConvCommand\0224\n\013roomMessage\030o \001(" +
+      "\0132\037.com.avos.avoscloud.RoomCommand\022<\n\017pr" +
+      "esenceMessage\030p \001(\0132#.com.avos.avoscloud" +
+      ".PresenceCommand\0228\n\rreportMessage\030q \001(\0132" +
+      "!.com.avos.avoscloud.ReportCommand\0226\n\014pa" +
+      "tchMessage\030r \001(\0132 .com.avos.avoscloud.Pa" +
+      "tchCommand\0228\n\rpubsubMessage\030s \001(\0132!.com." +
+      "avos.avoscloud.PubsubCommand*\360\001\n\013Command" +
+      "Type\022\013\n\007session\020\000\022\010\n\004conv\020\001\022\n\n\006direct\020\002\022",
+      "\007\n\003ack\020\003\022\007\n\003rcp\020\004\022\n\n\006unread\020\005\022\010\n\004logs\020\006\022" +
+      "\t\n\005error\020\007\022\t\n\005login\020\010\022\010\n\004data\020\t\022\010\n\004room\020" +
+      "\n\022\010\n\004read\020\013\022\014\n\010presence\020\014\022\n\n\006report\020\r\022\010\n" +
+      "\004echo\020\016\022\014\n\010loggedin\020\017\022\n\n\006logout\020\020\022\r\n\tlog" +
+      "gedout\020\021\022\t\n\005patch\020\022\022\n\n\006pubsub\020\023*\242\005\n\006OpTy" +
+      "pe\022\010\n\004open\020\001\022\007\n\003add\020\002\022\n\n\006remove\020\003\022\t\n\005clo" +
+      "se\020\004\022\n\n\006opened\020\005\022\n\n\006closed\020\006\022\t\n\005query\020\007\022" +
+      "\020\n\014query_result\020\010\022\014\n\010conflict\020\t\022\t\n\005added" +
+      "\020\n\022\013\n\007removed\020\013\022\013\n\007refresh\020\014\022\r\n\trefreshe" +
+      "d\020\r\022\t\n\005start\020\036\022\013\n\007started\020\037\022\n\n\006joined\020 \022",
+      "\022\n\016members_joined\020!\022\010\n\004left\020\'\022\020\n\014members" +
+      "_left\020(\022\013\n\007results\020*\022\t\n\005count\020+\022\n\n\006resul" +
+      "t\020,\022\n\n\006update\020-\022\013\n\007updated\020.\022\010\n\004mute\020/\022\n" +
+      "\n\006unmute\0200\022\n\n\006status\0201\022\013\n\007members\0202\022\014\n\010m" +
+      "ax_read\0203\022\r\n\tis_member\0204\022\023\n\017property_upd" +
+      "ate\0205\022\024\n\020property_updated\0206\022\024\n\020property_" +
+      "changed\0207\022\010\n\004join\020P\022\n\n\006invite\020Q\022\t\n\005leave" +
       "\020R\022\010\n\004kick\020S\022\n\n\006reject\020T\022\013\n\007invited\020U\022\n\n" +
-      "\006kicked\020V\022\n\n\006upload\020d\022\014\n\010uploaded\020e\022\013\n\006m" +
-      "odify\020\226\001\022\r\n\010modified\020\227\001*\035\n\nStatusType\022\006\n" +
-      "\002on\020\001\022\007\n\003off\020\002B%\n\022com.avos.avoscloudB\010Me" +
-      "ssages\242\002\004AVIM"
+      "\006kicked\020V\022\n\n\006upload\020d\022\014\n\010uploaded\020e\022\r\n\ts" +
+      "ubscribe\020x\022\016\n\nsubscribed\020y\022\017\n\013unsubscrib",
+      "e\020z\022\020\n\014unsubscribed\020{\022\021\n\ris_subscribed\020|" +
+      "\022\013\n\006modify\020\226\001\022\r\n\010modified\020\227\001*\035\n\nStatusTy" +
+      "pe\022\006\n\002on\020\001\022\007\n\003off\020\002B%\n\022com.avos.avosclou" +
+      "dB\010Messages\242\002\004AVIM"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -35202,114 +38792,126 @@ public final class Messages {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_avos_avoscloud_LogItem_descriptor,
         new java.lang.String[] { "From", "Data", "Timestamp", "MsgId", "AckAt", "ReadAt", "PatchTimestamp", "MentionAll", "MentionPids", "Bin", });
-    internal_static_com_avos_avoscloud_DataCommand_descriptor =
+    internal_static_com_avos_avoscloud_ConvProperty_descriptor =
       getDescriptor().getMessageTypes().get(3);
+    internal_static_com_avos_avoscloud_ConvProperty_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_com_avos_avoscloud_ConvProperty_descriptor,
+        new java.lang.String[] { "Pid", "Role", "PropertyId", });
+    internal_static_com_avos_avoscloud_DataCommand_descriptor =
+      getDescriptor().getMessageTypes().get(4);
     internal_static_com_avos_avoscloud_DataCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_avos_avoscloud_DataCommand_descriptor,
         new java.lang.String[] { "Ids", "Msg", "Offline", });
     internal_static_com_avos_avoscloud_SessionCommand_descriptor =
-      getDescriptor().getMessageTypes().get(4);
+      getDescriptor().getMessageTypes().get(5);
     internal_static_com_avos_avoscloud_SessionCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_avos_avoscloud_SessionCommand_descriptor,
         new java.lang.String[] { "T", "N", "S", "Ua", "R", "Tag", "DeviceId", "SessionPeerIds", "OnlineSessionPeerIds", "St", "StTtl", "Code", "Reason", "DeviceToken", "Sp", "Detail", "LastUnreadNotifTime", "LastPatchTime", "ConfigBitmap", });
     internal_static_com_avos_avoscloud_ErrorCommand_descriptor =
-      getDescriptor().getMessageTypes().get(5);
+      getDescriptor().getMessageTypes().get(6);
     internal_static_com_avos_avoscloud_ErrorCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_avos_avoscloud_ErrorCommand_descriptor,
         new java.lang.String[] { "Code", "Reason", "AppCode", "Detail", });
     internal_static_com_avos_avoscloud_DirectCommand_descriptor =
-      getDescriptor().getMessageTypes().get(6);
+      getDescriptor().getMessageTypes().get(7);
     internal_static_com_avos_avoscloud_DirectCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_avos_avoscloud_DirectCommand_descriptor,
         new java.lang.String[] { "Msg", "Uid", "FromPeerId", "Timestamp", "Offline", "HasMore", "ToPeerIds", "R", "Cid", "Id", "Transient", "Dt", "RoomId", "PushData", "Will", "PatchTimestamp", "BinaryMsg", "MentionPids", "MentionAll", });
     internal_static_com_avos_avoscloud_AckCommand_descriptor =
-      getDescriptor().getMessageTypes().get(7);
+      getDescriptor().getMessageTypes().get(8);
     internal_static_com_avos_avoscloud_AckCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_avos_avoscloud_AckCommand_descriptor,
         new java.lang.String[] { "Code", "Reason", "Mid", "Cid", "T", "Uid", "Fromts", "Tots", "Type", "Ids", "AppCode", });
     internal_static_com_avos_avoscloud_UnreadCommand_descriptor =
-      getDescriptor().getMessageTypes().get(8);
+      getDescriptor().getMessageTypes().get(9);
     internal_static_com_avos_avoscloud_UnreadCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_avos_avoscloud_UnreadCommand_descriptor,
         new java.lang.String[] { "Convs", "NotifTime", });
     internal_static_com_avos_avoscloud_ConvCommand_descriptor =
-      getDescriptor().getMessageTypes().get(9);
+      getDescriptor().getMessageTypes().get(10);
     internal_static_com_avos_avoscloud_ConvCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_avos_avoscloud_ConvCommand_descriptor,
-        new java.lang.String[] { "M", "Transient", "Unique", "Cid", "Cdate", "InitBy", "Sort", "Limit", "Skip", "Flag", "Count", "Udate", "T", "N", "S", "StatusSub", "StatusPub", "StatusTTL", "UniqueId", "TargetClientId", "MaxReadTimestamp", "MaxAckTimestamp", "QueryAllMembers", "MaxReadTuples", "Cids", "Results", "Where", "Attr", });
+        new java.lang.String[] { "M", "Transient", "Unique", "Cid", "Cdate", "InitBy", "Sort", "Limit", "Skip", "Flag", "Count", "Udate", "T", "N", "S", "StatusSub", "StatusPub", "StatusTTL", "UniqueId", "TargetClientId", "MaxReadTimestamp", "MaxAckTimestamp", "QueryAllMembers", "MaxReadTuples", "Cids", "Property", "TempConv", "TempConvTTL", "TempConvId", "Results", "Where", "Attr", });
     internal_static_com_avos_avoscloud_RoomCommand_descriptor =
-      getDescriptor().getMessageTypes().get(10);
+      getDescriptor().getMessageTypes().get(11);
     internal_static_com_avos_avoscloud_RoomCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_avos_avoscloud_RoomCommand_descriptor,
         new java.lang.String[] { "RoomId", "S", "T", "N", "Transient", "RoomPeerIds", "ByPeerId", });
     internal_static_com_avos_avoscloud_LogsCommand_descriptor =
-      getDescriptor().getMessageTypes().get(11);
+      getDescriptor().getMessageTypes().get(12);
     internal_static_com_avos_avoscloud_LogsCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_avos_avoscloud_LogsCommand_descriptor,
         new java.lang.String[] { "Cid", "L", "Limit", "T", "Tt", "Tmid", "Mid", "Checksum", "Stored", "Direction", "TIncluded", "TtIncluded", "Logs", });
     internal_static_com_avos_avoscloud_RcpCommand_descriptor =
-      getDescriptor().getMessageTypes().get(12);
+      getDescriptor().getMessageTypes().get(13);
     internal_static_com_avos_avoscloud_RcpCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_avos_avoscloud_RcpCommand_descriptor,
-        new java.lang.String[] { "Id", "Cid", "T", "Read", });
+        new java.lang.String[] { "Id", "Cid", "T", "Read", "From", });
     internal_static_com_avos_avoscloud_ReadTuple_descriptor =
-      getDescriptor().getMessageTypes().get(13);
+      getDescriptor().getMessageTypes().get(14);
     internal_static_com_avos_avoscloud_ReadTuple_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_avos_avoscloud_ReadTuple_descriptor,
         new java.lang.String[] { "Cid", "Timestamp", "Mid", });
     internal_static_com_avos_avoscloud_MaxReadTuple_descriptor =
-      getDescriptor().getMessageTypes().get(14);
+      getDescriptor().getMessageTypes().get(15);
     internal_static_com_avos_avoscloud_MaxReadTuple_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_avos_avoscloud_MaxReadTuple_descriptor,
         new java.lang.String[] { "Pid", "MaxAckTimestamp", "MaxReadTimestamp", });
     internal_static_com_avos_avoscloud_ReadCommand_descriptor =
-      getDescriptor().getMessageTypes().get(15);
+      getDescriptor().getMessageTypes().get(16);
     internal_static_com_avos_avoscloud_ReadCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_avos_avoscloud_ReadCommand_descriptor,
         new java.lang.String[] { "Cid", "Cids", "Convs", });
     internal_static_com_avos_avoscloud_PresenceCommand_descriptor =
-      getDescriptor().getMessageTypes().get(16);
+      getDescriptor().getMessageTypes().get(17);
     internal_static_com_avos_avoscloud_PresenceCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_avos_avoscloud_PresenceCommand_descriptor,
         new java.lang.String[] { "Status", "SessionPeerIds", "Cid", });
     internal_static_com_avos_avoscloud_ReportCommand_descriptor =
-      getDescriptor().getMessageTypes().get(17);
+      getDescriptor().getMessageTypes().get(18);
     internal_static_com_avos_avoscloud_ReportCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_avos_avoscloud_ReportCommand_descriptor,
         new java.lang.String[] { "Initiative", "Type", "Data", });
     internal_static_com_avos_avoscloud_PatchItem_descriptor =
-      getDescriptor().getMessageTypes().get(18);
+      getDescriptor().getMessageTypes().get(19);
     internal_static_com_avos_avoscloud_PatchItem_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_avos_avoscloud_PatchItem_descriptor,
         new java.lang.String[] { "Cid", "Mid", "Timestamp", "Recall", "Data", "PatchTimestamp", "From", "BinaryMsg", "MentionAll", "MentionPids", });
     internal_static_com_avos_avoscloud_PatchCommand_descriptor =
-      getDescriptor().getMessageTypes().get(19);
+      getDescriptor().getMessageTypes().get(20);
     internal_static_com_avos_avoscloud_PatchCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_avos_avoscloud_PatchCommand_descriptor,
         new java.lang.String[] { "Patches", "LastPatchTime", });
+    internal_static_com_avos_avoscloud_PubsubCommand_descriptor =
+      getDescriptor().getMessageTypes().get(21);
+    internal_static_com_avos_avoscloud_PubsubCommand_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_com_avos_avoscloud_PubsubCommand_descriptor,
+        new java.lang.String[] { "Cid", "Cids", "Topic", "Subtopic", "Topics", "Subtopics", "Results", });
     internal_static_com_avos_avoscloud_GenericCommand_descriptor =
-      getDescriptor().getMessageTypes().get(20);
+      getDescriptor().getMessageTypes().get(22);
     internal_static_com_avos_avoscloud_GenericCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_avos_avoscloud_GenericCommand_descriptor,
-        new java.lang.String[] { "Cmd", "Op", "AppId", "PeerId", "I", "InstallationId", "Priority", "Service", "DataMessage", "SessionMessage", "ErrorMessage", "DirectMessage", "AckMessage", "UnreadMessage", "ReadMessage", "RcpMessage", "LogsMessage", "ConvMessage", "RoomMessage", "PresenceMessage", "ReportMessage", "PatchMessage", });
+        new java.lang.String[] { "Cmd", "Op", "AppId", "PeerId", "I", "InstallationId", "Priority", "Service", "DataMessage", "SessionMessage", "ErrorMessage", "DirectMessage", "AckMessage", "UnreadMessage", "ReadMessage", "RcpMessage", "LogsMessage", "ConvMessage", "RoomMessage", "PresenceMessage", "ReportMessage", "PatchMessage", "PubsubMessage", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

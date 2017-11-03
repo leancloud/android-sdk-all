@@ -260,6 +260,32 @@ public class AVIMClient {
   }
 
   /**
+   * 创建一个开放聊天室
+   */
+  public void createChatRoom(final List<String> conversationMembers, String name,
+                             final Map<String, Object> attributes, final AVIMConversationCreatedCallback callback) {
+    // Todo
+    this.createConversation(conversationMembers, name, attributes, true, callback);
+  }
+
+  /**
+  * 创建一个服务号
+  */
+  public void createServiceConversation(String name, final Map<String, Object> attributes,
+                                        final AVIMConversationCreatedCallback callback) {
+    // Todo
+
+  }
+
+  /**
+   * 创建一个临时对话
+   */
+  public void createTemporaryConversation(final List<String> conversationMembers, String name,
+                                          final AVIMConversationCreatedCallback callback) {
+    // Todo
+
+  }
+  /**
    * 创建一个聊天对话
    * 
    * @param members 对话参与者
