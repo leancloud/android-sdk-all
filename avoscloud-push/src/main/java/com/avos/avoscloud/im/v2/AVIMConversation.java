@@ -97,6 +97,20 @@ public class AVIMConversation {
    */
   long lastReadAt;
 
+  /**
+   * 是否是服务号
+   */
+  boolean isSystem = false;
+
+  /**
+   * 是否是临时对话
+   */
+  boolean isTemporary = false;
+  /**
+   * 临时对话过期时间
+   */
+  long temporaryExpiredat = 0l;
+
   protected AVIMConversation(AVIMClient client, List<String> members,
       Map<String, Object> attributes, boolean isTransient) {
     this.members = new HashSet<String>();
@@ -1420,7 +1434,30 @@ public class AVIMConversation {
     if (AVUtils.isBlankContent(conversationId)) {
       return null;
     }
-    return updateConversation(new AVIMConversation(client, conversationId), jsonObj);
+    boolean systemConv = false;
+    boolean transientConv = false;
+    boolean tempConv = false;
+    if (jsonObj.containsKey(Conversation.SYSTEM)) {
+      systemConv = jsonObj.getBoolean(Conversation.SYSTEM);
+    }
+    if (jsonObj.containsKey(Conversation.TRANSIENT)) {
+      transientConv = jsonObj.getBoolean(Conversation.TRANSIENT);
+    }
+    if (jsonObj.containsKey(Conversation.TEMPORARY)) {
+      tempConv = jsonObj.getBoolean(Conversation.TEMPORARY);
+    }
+    AVIMConversation originConv = null;
+    if (systemConv) {
+      originConv = new AVIMServiceConversation(client, conversationId);
+    } else if (tempConv) {
+      originConv = new AVIMTemporaryConversation(client, conversationId);
+    } else if (transientConv) {
+      originConv = new AVIMChatRoom(client, conversationId);
+    } else {
+      originConv = new AVIMConversation(client, conversationId);
+    }
+
+    return updateConversation(originConv, jsonObj);
   }
 
   private static AVIMConversation updateConversation(AVIMConversation conversation, JSONObject jsonObj) {

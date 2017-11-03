@@ -10,7 +10,9 @@ import java.util.Map;
 public class AVIMChatRoom extends AVIMConversation {
   protected AVIMChatRoom(AVIMClient client, String conversationId){
     super(client, conversationId);
+    isTransient = true;
   }
+
   protected AVIMChatRoom(AVIMClient client, List<String> members,
                              Map<String, Object> attributes) {
     super(client, members, attributes, true);

@@ -166,8 +166,10 @@ public interface Conversation {
   String LAST_MESSAGE_AT = "lm";
   String SYSTEM = "sys";
   String CREATOR = "c";
+  String TEMPORARY = "temp";
+  String TEMPORARYTTL = "ttl";
 
   String[] CONVERSATION_COLUMNS = {MEMBERS, NAME, CREATOR,
     LAST_MESSAGE_AT, AVObject.OBJECT_ID, MUTE, AVObject.UPDATED_AT,
-    AVObject.CREATED_AT, ATTRIBUTE, TRANSIENT, SYSTEM};
+    AVObject.CREATED_AT, ATTRIBUTE, TRANSIENT, SYSTEM, TEMPORARY, TEMPORARYTTL};
 }

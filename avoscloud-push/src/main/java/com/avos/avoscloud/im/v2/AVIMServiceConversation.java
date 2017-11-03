@@ -11,8 +11,10 @@ public class AVIMServiceConversation extends AVIMConversation {
   protected AVIMServiceConversation(AVIMClient client, List<String> members,
                                       Map<String, Object> attributes) {
     super(client, members, attributes, false);
+    isSystem = true;
   }
   protected AVIMServiceConversation(AVIMClient client, String conversationId) {
     super(client, conversationId);
+    isSystem = true;
   }
 }

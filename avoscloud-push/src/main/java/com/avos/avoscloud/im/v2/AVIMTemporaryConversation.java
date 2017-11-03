@@ -11,8 +11,10 @@ public class AVIMTemporaryConversation extends AVIMConversation {
   protected AVIMTemporaryConversation(AVIMClient client, List<String> members,
                              Map<String, Object> attributes) {
     super(client, members, attributes, false);
+    isTemporary = true;
   }
   protected AVIMTemporaryConversation(AVIMClient client, String conversationId) {
     super(client, conversationId);
+    isTemporary = true;
   }
 }
