@@ -357,7 +357,7 @@ public class AVIMClient {
           String createdAt = intent.getExtras().getString(Conversation.callbackCreatedAt);
           AVIMConversation conversation = null;
           if (error == null) {
-            conversation = getConversation(conversationId);
+            conversation = getConversation(conversationId, isTransient, false, false);
             conversation.setMembers(conversationMembers);
             conversation.setAttributesForInit(conversationAttributes);
             conversation.setTransientForInit(isTransient);
@@ -383,6 +383,10 @@ public class AVIMClient {
    * @since 3.0
    */
   public AVIMConversation getConversation(String conversationId) {
+    return this.getConversation(conversationId, false, false, false);
+  }
+
+  public AVIMConversation getConversation(String conversationId, boolean isTransient, boolean isSystem, boolean isTemporary) {
 
     if (!isConversationSync) {
       syncConversationCache();
@@ -392,7 +396,16 @@ public class AVIMClient {
     if (conversation != null) {
       return conversation;
     } else {
-      conversation = new AVIMConversation(this, conversationId);
+      conversation = null;
+      if (isTemporary) {
+        conversation = new AVIMTemporaryConversation(this, conversationId);
+      } else if (isSystem) {
+        conversation = new AVIMServiceConversation(this, conversationId);
+      } else if (isTransient) {
+        conversation = new AVIMChatRoom(this, conversationId);
+      } else {
+        new AVIMConversation(this, conversationId);
+      }
       AVIMConversation elderConversation =
           conversationCache.putIfAbsent(conversationId, conversation);
       return elderConversation == null ? conversation : elderConversation;
