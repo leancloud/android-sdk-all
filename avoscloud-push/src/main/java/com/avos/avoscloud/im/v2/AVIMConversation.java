@@ -1273,7 +1273,7 @@ public class AVIMConversation {
     sendCMDToPushService(dataInString, null, null, operation, callback, occ);
   }
 
-  private void sendCMDToPushService(String dataInString, final AVIMOperation operation,
+  protected void sendCMDToPushService(String dataInString, final AVIMOperation operation,
                                     AVCallback callback) {
     sendCMDToPushService(dataInString, null, null, operation, callback, null);
   }

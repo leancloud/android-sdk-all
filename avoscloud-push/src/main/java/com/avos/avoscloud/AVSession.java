@@ -310,7 +310,7 @@ public class AVSession {
 
   protected void createConversation(final List<String> members,
       final Map<String, Object> attributes,
-      final boolean isTransient, final boolean isUnique,
+      final boolean isTransient, final boolean isUnique, final boolean isTemp, final boolean isSystem,
       final int requestId) {
     if (sessionPaused.get()) {
       RuntimeException se = new RuntimeException("Connection Lost");
@@ -327,7 +327,7 @@ public class AVSession {
               AVIMOperation.CONVERSATION_CREATION.getCode(), getSelfPeerId(), null, requestId));
           PushService.sendData(ConversationControlPacket.genConversationCommand(selfId, null,
               members, ConversationControlPacket.ConversationControlOp.START, attributes, sig,
-              isTransient, isUnique, requestId));
+              isTransient, isUnique, isTemp, isSystem, requestId));
         } else {
           BroadcastUtil.sendIMLocalBroadcast(getSelfPeerId(), null, requestId, e,
               AVIMOperation.CONVERSATION_CREATION);

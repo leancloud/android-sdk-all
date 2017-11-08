@@ -16,6 +16,7 @@ import com.alibaba.fastjson.JSON;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVIMClientParcel;
 import com.avos.avoscloud.AVOSCloud;
+import com.avos.avoscloud.AVRuntimeException;
 import com.avos.avoscloud.AVSession;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.AVUtils;
@@ -264,17 +265,16 @@ public class AVIMClient {
    */
   public void createChatRoom(final List<String> conversationMembers, String name,
                              final Map<String, Object> attributes, final AVIMConversationCreatedCallback callback) {
-    // Todo
     this.createConversation(conversationMembers, name, attributes, true, callback);
   }
 
   /**
   * 创建一个服务号
   */
-  public void createServiceConversation(String name, final Map<String, Object> attributes,
+  private void createServiceConversation(String name, final Map<String, Object> attributes,
                                         final AVIMConversationCreatedCallback callback) {
     // Todo
-
+    throw new AVRuntimeException("can't invoke createServiceConversation within SDK.", new UnsupportedOperationException());
   }
 
   /**
@@ -282,8 +282,7 @@ public class AVIMClient {
    */
   public void createTemporaryConversation(final List<String> conversationMembers, String name,
                                           final AVIMConversationCreatedCallback callback) {
-    // Todo
-
+    this.createConversation(conversationMembers, name, null, false, true, true, false, callback);
   }
   /**
    * 创建一个聊天对话
@@ -315,6 +314,13 @@ public class AVIMClient {
   public void createConversation(final List<String> members, final String name,
       final Map<String, Object> attributes, final boolean isTransient, final boolean isUnique,
       final AVIMConversationCreatedCallback callback) {
+    this.createConversation(members, name, attributes, isTransient, isUnique, false, false, callback);
+  }
+
+  private void createConversation(final List<String> members, final String name,
+                                  final Map<String, Object> attributes, final boolean isTransient, final boolean isUnique,
+                                  final boolean isTemporary, final boolean isSystem,
+                                  final AVIMConversationCreatedCallback callback) {
     try {
       AVUtils.ensureElementsNotNull(members, AVSession.ERROR_INVALID_SESSION_ID);
     } catch (Exception e) {
@@ -340,6 +346,8 @@ public class AVIMClient {
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, conversationMembers);
     params.put(Conversation.PARAM_CONVERSATION_ISUNIQUE, isUnique);
     params.put(Conversation.PARAM_CONVERSATION_ISTRANSIENT, isTransient);
+    params.put(Conversation.PARAM_CONVERSATION_ISTEMPORARY, isTemporary);
+    params.put(Conversation.PARAM_CONVERSATION_ISSYSTEM, isSystem);
     if (conversationAttributes.size() > 0) {
       Map<String, Object> assembledAttributes = AVIMConversation.processAttributes(conversationAttributes, true);
       if (assembledAttributes != null) {
@@ -357,7 +365,7 @@ public class AVIMClient {
           String createdAt = intent.getExtras().getString(Conversation.callbackCreatedAt);
           AVIMConversation conversation = null;
           if (error == null) {
-            conversation = getConversation(conversationId, isTransient, false, false);
+            conversation = getConversation(conversationId, isTransient, isSystem, isTemporary);
             conversation.setMembers(conversationMembers);
             conversation.setAttributesForInit(conversationAttributes);
             conversation.setTransientForInit(isTransient);
@@ -404,7 +412,7 @@ public class AVIMClient {
       } else if (isTransient) {
         conversation = new AVIMChatRoom(this, conversationId);
       } else {
-        new AVIMConversation(this, conversationId);
+        conversation = new AVIMConversation(this, conversationId);
       }
       AVIMConversation elderConversation =
           conversationCache.putIfAbsent(conversationId, conversation);

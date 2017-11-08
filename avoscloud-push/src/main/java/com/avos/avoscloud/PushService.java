@@ -499,7 +499,17 @@ public class PushService extends Service {
         }
 
         boolean isUnique = (Boolean) params.get(Conversation.PARAM_CONVERSATION_ISUNIQUE);
-        session.createConversation(memberList, attribute, isTransient, isUnique, requestId);
+
+        boolean isSystem = false;
+        if (params.containsKey(Conversation.PARAM_CONVERSATION_ISSYSTEM)) {
+          isSystem = (Boolean) params.get(Conversation.PARAM_CONVERSATION_ISSYSTEM);
+        }
+        boolean isTemp = false;
+        if (params.containsKey(Conversation.PARAM_CONVERSATION_ISTEMPORARY)) {
+          isTemp = (Boolean) params.get(Conversation.PARAM_CONVERSATION_ISTEMPORARY);
+        }
+
+        session.createConversation(memberList, attribute, isTransient, isUnique, isTemp, isSystem, requestId);
         break;
       case CONVERSATION_QUERY:
         session.conversationQuery(params, requestId);
