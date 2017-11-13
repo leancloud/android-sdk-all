@@ -875,9 +875,9 @@ class AVIMMessageStorage {
       values.put(COLUMN_CONVERSATION_ID, conversation.getConversationId());
 
       // add temporary conversation data.
-      values.put(COLUMN_CONV_SYSTEM, conversation.isSystem? 1 : 0);
-      values.put(COLUMN_CONV_TEMP, conversation.isTemporary? 1 : 0);
-      values.put(COLUMN_CONV_TEMP_TTL, conversation.temporaryExpiredat);
+      values.put(COLUMN_CONV_SYSTEM, conversation.isSystem()? 1 : 0);
+      values.put(COLUMN_CONV_TEMP, conversation.isTemporary()? 1 : 0);
+      values.put(COLUMN_CONV_TEMP_TTL, conversation.getTemporaryExpiredat());
 
       db.insertWithOnConflict(CONVERSATION_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
     }
@@ -969,7 +969,7 @@ class AVIMMessageStorage {
       conversation = new AVIMTemporaryConversation(AVIMClient.getInstance(clientId), conversationId);
 
       long tempExpiredAt = cursor.getLong(cursor.getColumnIndex(COLUMN_CONV_TEMP_TTL));
-      conversation.temporaryExpiredat = tempExpiredAt;
+      conversation.setTemporaryExpiredat(tempExpiredAt);
     } else if (system > 0) {
       conversation = new AVIMServiceConversation(AVIMClient.getInstance(clientId), conversationId);
     } else if (transientValue > 0) {

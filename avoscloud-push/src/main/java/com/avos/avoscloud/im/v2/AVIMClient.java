@@ -45,7 +45,7 @@ public class AVIMClient {
       new ConcurrentHashMap<String, AVIMClient>();
   ConcurrentHashMap<String, AVIMConversation> conversationCache =
       new ConcurrentHashMap<String, AVIMConversation>();
-  boolean isConversationSync = false;
+  volatile boolean isConversationSync = false;
 
   private static boolean isAutoOpen = true;
 
@@ -282,7 +282,7 @@ public class AVIMClient {
    */
   public void createTemporaryConversation(final List<String> conversationMembers, String name,
                                           final AVIMConversationCreatedCallback callback) {
-    this.createConversation(conversationMembers, name, null, false, true, true, false, callback);
+    this.createConversation(conversationMembers, name, null, false, true, true, callback);
   }
   /**
    * 创建一个聊天对话
@@ -314,13 +314,12 @@ public class AVIMClient {
   public void createConversation(final List<String> members, final String name,
       final Map<String, Object> attributes, final boolean isTransient, final boolean isUnique,
       final AVIMConversationCreatedCallback callback) {
-    this.createConversation(members, name, attributes, isTransient, isUnique, false, false, callback);
+    this.createConversation(members, name, attributes, isTransient, isUnique, false, callback);
   }
 
   private void createConversation(final List<String> members, final String name,
                                   final Map<String, Object> attributes, final boolean isTransient, final boolean isUnique,
-                                  final boolean isTemporary, final boolean isSystem,
-                                  final AVIMConversationCreatedCallback callback) {
+                                  final boolean isTemp, final AVIMConversationCreatedCallback callback) {
     try {
       AVUtils.ensureElementsNotNull(members, AVSession.ERROR_INVALID_SESSION_ID);
     } catch (Exception e) {
@@ -346,8 +345,7 @@ public class AVIMClient {
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, conversationMembers);
     params.put(Conversation.PARAM_CONVERSATION_ISUNIQUE, isUnique);
     params.put(Conversation.PARAM_CONVERSATION_ISTRANSIENT, isTransient);
-    params.put(Conversation.PARAM_CONVERSATION_ISTEMPORARY, isTemporary);
-    params.put(Conversation.PARAM_CONVERSATION_ISSYSTEM, isSystem);
+    params.put(Conversation.PARAM_CONVERSATION_ISTEMPORARY, isTemp);
     if (conversationAttributes.size() > 0) {
       Map<String, Object> assembledAttributes = AVIMConversation.processAttributes(conversationAttributes, true);
       if (assembledAttributes != null) {
@@ -363,9 +361,10 @@ public class AVIMClient {
           String conversationId =
               intent.getExtras().getString(Conversation.callbackConversationKey);
           String createdAt = intent.getExtras().getString(Conversation.callbackCreatedAt);
+          int tempTTL = intent.getExtras().getInt(Conversation.callbackTemporaryTTL, 0);
           AVIMConversation conversation = null;
           if (error == null) {
-            conversation = getConversation(conversationId, isTransient, isSystem, isTemporary);
+            conversation = getConversation(conversationId, isTransient, isTemp);
             conversation.setMembers(conversationMembers);
             conversation.setAttributesForInit(conversationAttributes);
             conversation.setTransientForInit(isTransient);
@@ -373,6 +372,7 @@ public class AVIMClient {
             conversation.setCreator(clientId);
             conversation.setCreatedAt(createdAt);
             conversation.setUpdatedAt(createdAt);
+            conversation.setTemporaryExpiredat(tempTTL);
             storage.insertConversations(Arrays.asList(conversation));
           }
           callback.internalDone(conversation, AVIMException.wrapperAVException(error));
@@ -391,10 +391,10 @@ public class AVIMClient {
    * @since 3.0
    */
   public AVIMConversation getConversation(String conversationId) {
-    return this.getConversation(conversationId, false, false, false);
+    return this.getConversation(conversationId, false, false);
   }
 
-  public AVIMConversation getConversation(String conversationId, boolean isTransient, boolean isSystem, boolean isTemporary) {
+  public AVIMConversation getConversation(String conversationId, boolean isTransient, boolean isTemporary) {
 
     if (!isConversationSync) {
       syncConversationCache();
@@ -407,8 +407,6 @@ public class AVIMClient {
       conversation = null;
       if (isTemporary) {
         conversation = new AVIMTemporaryConversation(this, conversationId);
-      } else if (isSystem) {
-        conversation = new AVIMServiceConversation(this, conversationId);
       } else if (isTransient) {
         conversation = new AVIMChatRoom(this, conversationId);
       } else {

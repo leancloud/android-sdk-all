@@ -153,6 +153,11 @@ public interface Conversation {
   String callbackDeliveredAt = "callbackDeliveredAt";
   String callbackReadAt = "callbackReadAt";
 
+  String callbackTemporary = "callbackTemporary";
+  String callbackTemporaryTTL = "callbackTemporaryTTL";
+  String callbackTransient = "callbackTransient";
+  String callbackSystem = "callbackSystem";
+
   String QUERY_PARAM_OFFSET = "skip";
   String QUERY_PARAM_LIMIT = "limit";
   String QUERY_PARAM_SORT = "sort";

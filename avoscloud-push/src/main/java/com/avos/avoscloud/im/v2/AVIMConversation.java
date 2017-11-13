@@ -102,14 +102,34 @@ public class AVIMConversation {
    */
   boolean isSystem = false;
 
+  public boolean isSystem() {
+    return isSystem;
+  }
   /**
    * 是否是临时对话
    */
   boolean isTemporary = false;
+
+  public boolean isTemporary() {
+    return isTemporary;
+  }
+
+  public void setTemporary(boolean temporary) {
+    isTemporary = temporary;
+  }
+
   /**
    * 临时对话过期时间
    */
   long temporaryExpiredat = 0l;
+
+  protected long getTemporaryExpiredat() {
+    return temporaryExpiredat;
+  }
+
+  protected void setTemporaryExpiredat(long temporaryExpiredat) {
+    this.temporaryExpiredat = temporaryExpiredat;
+  }
 
   protected AVIMConversation(AVIMClient client, List<String> members,
       Map<String, Object> attributes, boolean isTransient) {

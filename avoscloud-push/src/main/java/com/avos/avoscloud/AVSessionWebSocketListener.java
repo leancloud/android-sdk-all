@@ -362,6 +362,7 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
 
   @Override
   public void onHistoryMessageQuery(Integer requestKey, Messages.LogsCommand command) {
+    System.out.println(String.format("onHistoryMessageQuery. requestKey:", requestKey));
     if (null != requestKey && requestKey != CommandPacket.UNSUPPORTED_OPERATION) {
       Operation op = session.conversationOperationCache.poll(requestKey);
       AVInternalConversation conversation = session.getConversation(op.conversationId);

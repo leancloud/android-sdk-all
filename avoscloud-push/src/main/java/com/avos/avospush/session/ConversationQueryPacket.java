@@ -29,7 +29,7 @@ public class ConversationQueryPacket extends PeerBasedCommandPacket {
       // add for support temporary conversation query.
       Object tempConvId = queryParams.get(Conversation.QUERY_PARAM_TEMPCONV);
       if (null != tempConvId && !AVUtils.isBlankString(tempConvId.toString())) {
-        builder.setTempConvId(tempConvId.toString());
+        builder.addTempConvIds(tempConvId.toString());
       }
 
       Object sortParam = queryParams.get("order");
