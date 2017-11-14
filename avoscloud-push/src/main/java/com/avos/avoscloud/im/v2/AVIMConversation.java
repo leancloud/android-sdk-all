@@ -1316,10 +1316,12 @@ public class AVIMConversation {
                   if (timestamp != -1) {
                     message.setTimestamp(timestamp);
                   }
-                  if (null == messageOption || !messageOption.isTransient() && AVIMClient.messageQueryCacheEnabled) {
-
+                  if ((null == messageOption || !messageOption.isTransient())
+                      && AVIMClient.messageQueryCacheEnabled) {
                     setLastMessage(message);
-                    storage.insertLocalMessage(message);
+                    storage.insertMessage(message, false);
+                  } else {
+                    LogUtil.avlog.d("skip inserting into local storage.");
                   }
                   AVIMConversation.this.lastMessageAt = new Date(timestamp);
                   storage.updateConversationLastMessageAt(AVIMConversation.this);

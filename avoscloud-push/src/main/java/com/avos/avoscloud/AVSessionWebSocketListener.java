@@ -197,7 +197,7 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
       // 这里是发送消息异常时的ack
       this.onAckError(requestKey, ackCommand, m);
     } else {
-      if (!AVUtils.isBlankString(m.cid)) {
+      if (null != m && !AVUtils.isBlankString(m.cid)) {
         AVInternalConversation conversation = session.getConversation(m.cid);
         session.conversationOperationCache.poll(requestKey);
         String msgId = ackCommand.getUid();
