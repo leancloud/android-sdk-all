@@ -34,7 +34,7 @@ public interface Conversation {
 
   String PARAM_MESSAGE_PATCH_TIME = "message_patch_time";
 
-  int DEFAULT_CONVERSATION_EXPIRE_TIME_IN_MILLS = 3600000;
+  int DEFAULT_CONVERSATION_EXPIRE_TIME_IN_MILLS = 3600000;  // 1 hour
 
   enum AVIMOperation {
     CONVERSATION_CREATION(40000, "com.avoscloud.v2.im.conversation.creation."),

@@ -121,6 +121,8 @@ class AVIMMessageStorage {
 
     static final String DELETE_LOCAL_MESSAGE = COLUMN_CONVERSATION_ID + " = ? and " + COLUMN_MESSAGE_ID + " = ? and "
         + COLUMN_STATUS + " = ? and " + COLUMN_DEDUPLICATED_TOKEN + " = ? ";
+
+    static final String SELECT_VALID_CONVS = "("+ COLUMN_CONV_TEMP + " < 1 and " + COLUMN_EXPIREAT + " > ?) or (" + COLUMN_CONV_TEMP + "> 0 and " + COLUMN_CONV_TEMP_TTL + " > ?)";
   }
 
   private DBHelper dbHelper;
@@ -927,10 +929,11 @@ class AVIMMessageStorage {
   }
 
   public List<AVIMConversation> getAllCachedConversations() {
+    long currentTs = System.currentTimeMillis();
     SQLiteDatabase db = dbHelper.getReadableDatabase();
     Cursor cursor =
-        db.query(CONVERSATION_TABLE, null, COLUMN_EXPIREAT + " > ?",
-            new String[] {String.valueOf(System.currentTimeMillis())}, null, null, null,
+        db.query(CONVERSATION_TABLE, null, SQL.SELECT_VALID_CONVS,
+            new String[] {String.valueOf(currentTs), String.valueOf(currentTs/1000)}, null, null, null,
             null);
     cursor.moveToFirst();
     List<AVIMConversation> conversations = new LinkedList<AVIMConversation>();
@@ -1009,7 +1012,6 @@ class AVIMMessageStorage {
     }
     conversation.creator = creator;
     conversation.lastMessageAt = new Date(lastMessageTS);
-//    conversation.isTransient = transientValue == 1;
     conversation.unreadMessagesCount = unreadCount;
     conversation.unreadMessagesMentioned = mentioned == 1;
     conversation.lastReadAt = readAt;
