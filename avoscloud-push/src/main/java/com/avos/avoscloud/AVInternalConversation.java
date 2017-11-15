@@ -37,15 +37,17 @@ import com.avos.avospush.session.UnreadMessagesClearPacket;
 class AVInternalConversation {
   AVSession session;
   String conversationId;
+  int convType;
 
   // 服务器端为了兼容老版本，这里需要使用group的invite
   private static final String GROUP_INVITE = "invite";
   private static final String GROUP_KICK = "kick";
 
-  public AVInternalConversation(String conversationId, AVSession session) {
+  public AVInternalConversation(String conversationId, AVSession session, int convType) {
     this.session = session;
     this.conversationId = conversationId;
     this.conversationGene = getConversationGeneString();
+    this.convType = convType;
   }
 
   public void addMembers(final List<String> members, final int requestId) {
@@ -487,12 +489,9 @@ class AVInternalConversation {
     int tempTTL = convCommand.hasTempConvTTL()? convCommand.getTempConvTTL(): 0;
     boolean isTransient = convCommand.hasTransient()? convCommand.getTransient() : false;
 
-    System.out.println(String.format("cid=%s, createdAt=%s, isTemp=%b, isTransient=%b, ttl=%d", cid, createdAt, isTemp, isTransient, tempTTL));
     Bundle bundle = new Bundle();
     bundle.putString(Conversation.callbackCreatedAt, createdAt);
     bundle.putString(Conversation.callbackConversationKey, cid);
-    bundle.putBoolean(Conversation.callbackTemporary, isTemp);
-    bundle.putBoolean(Conversation.callbackTransient, isTransient);
     bundle.putInt(Conversation.callbackTemporaryTTL, tempTTL);
     BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), conversationId, requestId, bundle,
         AVIMOperation.CONVERSATION_CREATION);
@@ -551,7 +550,6 @@ class AVInternalConversation {
   }
 
   void onHistoryMessageQuery(ArrayList<AVIMMessage> messages, int requestId, long deliveredAt, long readAt) {
-    System.out.println(String.format("onHistoryMessageQuery Notify. conv=%s, msgs=%d, requestId=%d", conversationId, messages.size(), requestId));
     Bundle bundle = new Bundle();
     bundle.putParcelableArrayList(Conversation.callbackHistoryMessages, messages);
     bundle.putLong(Conversation.callbackDeliveredAt, deliveredAt);

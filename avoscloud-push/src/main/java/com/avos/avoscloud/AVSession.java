@@ -292,12 +292,12 @@ public class AVSession {
     }
   }
 
-  public AVInternalConversation getConversation(String conversationId) {
+  public AVInternalConversation getConversation(String conversationId, int convType) {
     AVInternalConversation conversation = sessionConversationCache.get(conversationId);
     if (conversation != null) {
       return conversation;
     } else {
-      conversation = new AVInternalConversation(conversationId, this);
+      conversation = new AVInternalConversation(conversationId, this, convType);
       AVInternalConversation elderObject =
           sessionConversationCache.putIfAbsent(conversationId, conversation);
       return elderObject == null ? conversation : elderObject;

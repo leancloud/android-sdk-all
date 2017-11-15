@@ -10,19 +10,23 @@ import com.avos.avoscloud.im.v2.Conversation;
  * Created by lbt05 on 7/17/15.
  */
 public class BroadcastUtil {
-  public static void sendIMLocalBroadcast(String clientId, String conversationId, int requestId, Conversation.AVIMOperation operation) {
+  public static void sendIMLocalBroadcast(String clientId, String conversationId, int requestId,
+                                          Conversation.AVIMOperation operation) {
     sendIMLocalBroadcast(clientId, conversationId, requestId, null, null, operation);
   }
 
-  public static void sendIMLocalBroadcast(String clientId, String conversationId, int requestId, Throwable throwable, Conversation.AVIMOperation operation) {
+  public static void sendIMLocalBroadcast(String clientId, String conversationId, int requestId,
+                                          Throwable throwable, Conversation.AVIMOperation operation) {
     sendIMLocalBroadcast(clientId, conversationId, requestId, null, throwable, operation);
   }
 
-  public static void sendIMLocalBroadcast(String clientId, String conversationId, int requestId, Bundle bundle, Conversation.AVIMOperation operation) {
+  public static void sendIMLocalBroadcast(String clientId, String conversationId, int requestId,
+                                          Bundle bundle, Conversation.AVIMOperation operation) {
     sendIMLocalBroadcast(clientId, conversationId, requestId, bundle, null, operation);
   }
 
-  private static void sendIMLocalBroadcast(String clientId, String conversationId, int requestId, Bundle bundle, Throwable throwable, Conversation.AVIMOperation operation) {
+  private static void sendIMLocalBroadcast(String clientId, String conversationId, int requestId,
+                                           Bundle bundle, Throwable throwable, Conversation.AVIMOperation operation) {
     if (isOperationValid(operation)) {
       String keyHeader = operation.getOperation();
 

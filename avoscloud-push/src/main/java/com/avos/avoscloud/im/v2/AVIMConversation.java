@@ -131,6 +131,18 @@ public class AVIMConversation {
     this.temporaryExpiredat = temporaryExpiredat;
   }
 
+  protected int getType() {
+    if (isSystem()) {
+      return Conversation.CONV_TYPE_SYSTEM;
+    } else if (isTransient()) {
+      return Conversation.CONV_TYPE_TRANSIENT;
+    } else if (isTemporary()) {
+      return Conversation.CONV_TYPE_TEMPORARY;
+    } else {
+      return Conversation.CONV_TYPE_NORMAL;
+    }
+  }
+
   protected AVIMConversation(AVIMClient client, List<String> members,
       Map<String, Object> attributes, boolean isTransient) {
     this.members = new HashSet<String>();
@@ -1234,6 +1246,7 @@ public class AVIMConversation {
     i.putExtra(Conversation.INTENT_KEY_DATA, pushServiceParcel);
     i.putExtra(Conversation.INTENT_KEY_CLIENT, client.clientId);
     i.putExtra(Conversation.INTENT_KEY_CONVERSATION, this.conversationId);
+    i.putExtra(Conversation.INTENT_KEY_CONV_TYPE, this.getType());
     i.putExtra(Conversation.INTENT_KEY_REQUESTID, requestId);
     i.putExtra(Conversation.INTENT_KEY_OPERATION, operation.getCode());
     AVOSCloud.applicationContext.startService(IntentUtil.setupIntentFlags(i));
@@ -1319,6 +1332,7 @@ public class AVIMConversation {
     }
     i.putExtra(Conversation.INTENT_KEY_CLIENT, client.clientId);
     i.putExtra(Conversation.INTENT_KEY_CONVERSATION, this.conversationId);
+    i.putExtra(Conversation.INTENT_KEY_CONV_TYPE, this.getType());
     i.putExtra(Conversation.INTENT_KEY_OPERATION, operation.getCode());
     i.putExtra(Conversation.INTENT_KEY_REQUESTID, requestId);
 
@@ -1428,9 +1442,9 @@ public class AVIMConversation {
         String result = (String)serializable;
         JSONArray jsonArray = JSON.parseArray(String.valueOf(result));
         if (null != jsonArray && !jsonArray.isEmpty()) {
-          updateConversation(AVIMConversation.this, jsonArray.getJSONObject(0));
-          client.conversationCache.put(conversationId, AVIMConversation.this);
-          storage.insertConversations(Arrays.asList(AVIMConversation.this));
+          updateConversation(this, jsonArray.getJSONObject(0));
+          client.conversationCache.put(conversationId, this);
+          storage.insertConversations(Arrays.asList(this));
         }
       } catch (Exception e) {
         return e;

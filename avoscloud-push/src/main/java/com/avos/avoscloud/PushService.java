@@ -425,6 +425,7 @@ public class PushService extends Service {
     int operationCode = intent.getExtras().getInt(Conversation.INTENT_KEY_OPERATION);
     String clientId = intent.getExtras().getString(Conversation.INTENT_KEY_CLIENT);
     String conversationId = intent.getExtras().getString(Conversation.INTENT_KEY_CONVERSATION);
+    int convType = intent.getExtras().getInt(Conversation.INTENT_KEY_CONV_TYPE, Conversation.CONV_TYPE_NORMAL);
     int requestId = intent.getExtras().getInt(Conversation.INTENT_KEY_REQUESTID);
     AVIMOperation operation = AVIMOperation.getAVIMOperation(operationCode);
     AVSession session = sPushConnectionManager.getOrCreateSession(clientId);
@@ -435,7 +436,7 @@ public class PushService extends Service {
       case CONVERSATION_RECALL_MESSAGE:
       case CONVERSATION_UPDATE_MESSAGE:
         if (!AVUtils.isBlankString(conversationId)) {
-          AVInternalConversation conversation = session.getConversation(conversationId);
+          AVInternalConversation conversation = session.getConversation(conversationId, convType);
           if (null != conversation) {
             conversation.patchMessage(parcel, operation, requestId);
           } else {
@@ -452,6 +453,7 @@ public class PushService extends Service {
     int operationCode = intent.getExtras().getInt(Conversation.INTENT_KEY_OPERATION);
     String clientId = intent.getExtras().getString(Conversation.INTENT_KEY_CLIENT);
     String conversationId = intent.getExtras().getString(Conversation.INTENT_KEY_CONVERSATION);
+    int convType = intent.getExtras().getInt(Conversation.INTENT_KEY_CONV_TYPE, Conversation.CONV_TYPE_NORMAL);
     int requestId = intent.getExtras().getInt(Conversation.INTENT_KEY_REQUESTID);
     AVSession session = sPushConnectionManager.getOrCreateSession(clientId);
 
@@ -516,7 +518,7 @@ public class PushService extends Service {
         break;
       case CONVERSATION_SEND_MESSAGE:
         if (!AVUtils.isBlankString(conversationId)) {
-          AVInternalConversation conversation = session.getConversation(conversationId);
+          AVInternalConversation conversation = session.getConversation(conversationId, convType);
           if (null != conversation) {
             AVIMMessage message = intent.getExtras().getParcelable(Conversation.INTENT_KEY_DATA);
             AVIMMessageOption messageOption = null;
@@ -535,7 +537,7 @@ public class PushService extends Service {
         break;
       default:
         if (!AVUtils.isBlankString(conversationId)) {
-          AVInternalConversation conversation = session.getConversation(conversationId);
+          AVInternalConversation conversation = session.getConversation(conversationId, convType);
           if (null != conversation) {
             conversation.processConversationCommandFromClient(operationCode, params, requestId);
           }

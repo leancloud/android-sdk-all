@@ -29,6 +29,7 @@ public interface Conversation {
   String INTENT_KEY_CLIENT_PARCEL = "conversation.client.parcel";
   String INTENT_KEY_CLIENT = "conversation.client";
   String INTENT_KEY_CONVERSATION = "convesration.id";
+  String INTENT_KEY_CONV_TYPE = "conversation.type";
   String INTENT_KEY_OPERATION = "conversation.operation";
   String INTENT_KEY_REQUESTID = "conversation.requestId";
 
@@ -138,6 +139,12 @@ public interface Conversation {
   int STATUS_ON_MESSAGE_UPDATED = 50015;
   int STATUS_ON_MESSAGE_RECALLED = 50016;
 
+  int CONV_TYPE_UNKNOWN = 0;
+  int CONV_TYPE_NORMAL = 1;
+  int CONV_TYPE_TRANSIENT = 2;
+  int CONV_TYPE_SYSTEM = 3;
+  int CONV_TYPE_TEMPORARY = 4;
+
   String callbackExceptionKey = "callbackException";
   String callbackData = "callbackData";
   String callbackClientKey = "callbackclient";
@@ -153,10 +160,11 @@ public interface Conversation {
   String callbackDeliveredAt = "callbackDeliveredAt";
   String callbackReadAt = "callbackReadAt";
 
-  String callbackTemporary = "callbackTemporary";
+//  String callbackTemporary = "callbackTemporary";
   String callbackTemporaryTTL = "callbackTemporaryTTL";
-  String callbackTransient = "callbackTransient";
-  String callbackSystem = "callbackSystem";
+//  String callbackTransient = "callbackTransient";
+//  String callbackSystem = "callbackSystem";
+  String callbackConvType = "callbackConvType";
 
   String QUERY_PARAM_OFFSET = "skip";
   String QUERY_PARAM_LIMIT = "limit";
