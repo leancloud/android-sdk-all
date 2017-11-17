@@ -389,6 +389,11 @@ class AVIMMessageStorage {
         || !AVUtils.isBlankString(message.getMessageId())
         || AVUtils.isBlankString(message.conversationId)
         || AVUtils.isBlankString(message.uniqueToken)) {
+      if (null == message) {
+        LogUtil.avlog.e("message is null");
+      } else {
+        LogUtil.avlog.e(String.format("invalid state. msgId=%s, convId=%s, uniToken=%s", message.getMessageId(), message.conversationId, message.uniqueToken));
+      }
       return false;
     }
 
@@ -417,6 +422,9 @@ class AVIMMessageStorage {
       values.put(COLUMN_MSG_MENTION_LIST, message.getMentionListString());
 
       long ret = db.insertWithOnConflict(MESSAGE_TABLE, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+      if (ret < 0) {
+        LogUtil.avlog.e("failed to insert Message table. values=" + values.toString());
+      }
       return ret != -1;
     } catch (Exception ex) {
       return false;

@@ -2236,9 +2236,19 @@ public class AVUser extends AVObject {
   /**
    * 生成一个新的 AVUser，并且将AVUser与SNS平台获取的 authData 关联。
    *
-   * @param authData 包含第三方授权必要信息
-   * @param platform 平台
+   * @param authData 包含第三方授权必要信息，例如
+   *                {
+   *                 "openid": "abc123",
+   *                 "access_token": "123abc",
+   *                 "expires_in": 1382686496
+   *                }
+   * @param platform 平台名字，可以使用几个预定义的常量：
+   *                 AVUser.SNS_TENCENT_WEIBO  - "qq"
+   *                 AVUser.SNS_SINA_WEIBO     - "weibo"
+   *                 AVUser.SNS_TENCENT_WEIXIN - "weixin"
+   *                 你也可以使用自定义的其他平台名字。
    * @param callback 关联完成后，调用的回调函数。
+   * @since 4.5.3
    */
   public static void loginWithAuthData(final Map<String, Object> authData, final String platform, final LogInCallback callback) {
     loginWithAuthData(AVUser.class, authData, platform, callback);
@@ -2247,11 +2257,20 @@ public class AVUser extends AVObject {
   /**
    * 生成一个新的 AVUser 子类化对象，并且将该对象与 SNS 平台获取的 authData 关联。
    *
-   * @param clazz 子类化的AVUer的class对象
-   * @param authData 在 SNS 登录成功后，返回的userInfo信息。
-   * @param platform 平台
+   * @param clazz 子类化的 AVUe r的 class 对象
+   * @param authData 在 SNS 登录成功后，返回的 authData 信息，例如
+   *                {
+   *                 "openid": "abc123",
+   *                 "access_token": "123abc",
+   *                 "expires_in": 1382686496
+   *                }
+   * @param platform 平台名字，可以使用几个预定义的常量：
+   *                 AVUser.SNS_TENCENT_WEIBO  - "qq"
+   *                 AVUser.SNS_SINA_WEIBO     - "weibo"
+   *                 AVUser.SNS_TENCENT_WEIXIN - "weixin"
+   *                 你也可以使用自定义的其他平台名字。
    * @param callback 关联完成后，调用的回调函数。
-   * @since 1.4.4
+   * @since 4.5.3
    */
   public static <T extends AVUser> void loginWithAuthData(final Class<T> clazz, final Map<String, Object> authData,
                                                           final String platform, final LogInCallback callback) {
@@ -2386,6 +2405,23 @@ public class AVUser extends AVObject {
     user.saveInBackground(callback);
   }
 
+  /**
+   * 将现存的 AVUser 与从 SNS 平台获取的 authData 关联起来。
+   *
+   * @param authData 在 SNS 登录成功后，返回的 authData 信息，例如
+   *                {
+   *                 "openid": "abc123",
+   *                 "access_token": "123abc",
+   *                 "expires_in": 1382686496
+   *                }
+   * @param platform 平台名字，可以使用几个预定义的常量：
+   *                 AVUser.SNS_TENCENT_WEIBO  - "qq"
+   *                 AVUser.SNS_SINA_WEIBO     - "weibo"
+   *                 AVUser.SNS_TENCENT_WEIXIN - "weixin"
+   *                 你也可以使用自定义的其他平台名字。
+   * @param callback 关联完成后，调用的回调函数。
+   * @since 4.5.3
+   */
   public void associateWithAuthData(Map<String, Object> authData, String platform, final SaveCallback callback) {
     if (null == authData || authData.isEmpty()) {
       if (null != callback) {
@@ -2410,6 +2446,17 @@ public class AVUser extends AVObject {
     this.saveInBackground(callback);
   }
 
+  /**
+   * 解除 AVUser 与从 SNS 平台获取的 authData 之间的关联。
+   *
+   * @param platform 平台名字，可以使用几个预定义的常量：
+   *                 AVUser.SNS_TENCENT_WEIBO  - "qq"
+   *                 AVUser.SNS_SINA_WEIBO     - "weibo"
+   *                 AVUser.SNS_TENCENT_WEIXIN - "weixin"
+   *                 你也可以使用自定义的其他平台名字。
+   * @param callback 关联完成后，调用的回调函数。
+   * @since 4.5.3
+   */
   public void dissociateAuthData(final String platform, final SaveCallback callback) {
     if (AVUtils.isBlankString(platform)) {
       if (null != callback) {
