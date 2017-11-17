@@ -34,6 +34,11 @@ public class AVSession {
   static final int OPERATION_CLOSE_SESSION = 10005;
   static final int OPERATION_UNKNOW = -1;
 
+  static final String AUTOLOGININFO_ZONE = "autoLoginInfo";
+  static final String AUTOLOGININFO_KEY_CLIENT = "client";
+  static final String AUTOLOGININFO_KEY_TAG = "tag";
+  static final String AUTOLOGININFO_KEY_SESSIONTOKEN = "sessionToken";
+
   public static final String ERROR_INVALID_SESSION_ID = "Null id in session id list.";
 
   /**
@@ -124,6 +129,9 @@ public class AVSession {
   }
 
   void reopen() {
+    if (AVOSCloud.showInternalDebugLog()) {
+      LogUtil.avlog.d("reopen session with token=" + sessionToken);
+    }
     if (!AVUtils.isBlankString(sessionToken)) {
       openWithSessionToken();
     } else {
@@ -210,6 +218,7 @@ public class AVSession {
 
   protected void close(int requestId) {
     // session的close操作需要做到即便是不成功的，本地也要认为成功了
+    LogUtil.avlog.d("AVSession close.");
 
     try {
       // 都关掉了，我们需要去除Session记录
@@ -217,7 +226,8 @@ public class AVSession {
       AVSessionCacheHelper.IMSessionTokenCache.removeIMSessionToken(getSelfPeerId());
       // 如果session都已不在，缓存消息静静地等到桑田沧海
       this.cleanUp();
-
+      // cleanup persistent session data.
+      AVSession.cleanupAutoLoginInfo();
 
       if (!sessionOpened.compareAndSet(true, false)) {
         this.sessionListener.onSessionClose(context, this, requestId);
@@ -360,6 +370,31 @@ public class AVSession {
    */
   public static boolean isOnlyPushCount() {
     return onlyPushCount;
+  }
+
+  public void serializeToLocal() {
+    AVPersistenceUtils.sharedInstance().savePersistentSettingString(AUTOLOGININFO_ZONE, AUTOLOGININFO_KEY_CLIENT, selfId);
+    AVPersistenceUtils.sharedInstance().savePersistentSettingString(AUTOLOGININFO_ZONE, AUTOLOGININFO_KEY_TAG, tag);
+    AVPersistenceUtils.sharedInstance().savePersistentSettingString(AUTOLOGININFO_ZONE, AUTOLOGININFO_KEY_SESSIONTOKEN, sessionToken);
+  }
+
+  public static void cleanupAutoLoginInfo() {
+    AVPersistenceUtils.sharedInstance().removeKeyZonePersistentSettings(AUTOLOGININFO_ZONE);
+  }
+
+  public static AVSession deserializeFromLocal(AVInternalSessionListener listener) {
+    String clientId = AVPersistenceUtils.sharedInstance().getPersistentSettingString(AUTOLOGININFO_ZONE, AUTOLOGININFO_KEY_CLIENT, "");
+    if (AVUtils.isBlankString(clientId)) {
+      return null;
+    } else {
+      String tag = AVPersistenceUtils.sharedInstance().getPersistentSettingString(AUTOLOGININFO_ZONE, AUTOLOGININFO_KEY_TAG, "");
+      String sessionToken = AVPersistenceUtils.sharedInstance().getPersistentSettingString(AUTOLOGININFO_ZONE, AUTOLOGININFO_KEY_SESSIONTOKEN, "");
+      AVSession session = new AVSession(clientId, listener);
+      session.tag = tag;
+      session.sessionToken = sessionToken;
+      session.sessionResume.set(true);// need to resume this session.
+      return session;
+    }
   }
 
   long getLastNotifyTime() {

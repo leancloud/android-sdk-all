@@ -129,7 +129,7 @@ public class AVPushWebSocketClient extends WebSocketClient {
       listener.processConnectionStatus(null);
       listener.processSessionsStatus(false);
     }
-    LogUtil.avlog.d("onOpen()");
+    LogUtil.avlog.d("AVPushWebSocketClient#onOpen() finished.");
   }
 
   @Override
@@ -139,6 +139,7 @@ public class AVPushWebSocketClient extends WebSocketClient {
     }
   }
 
+  @Override
   public void onMessage(String msg) {
   }
 
@@ -151,7 +152,7 @@ public class AVPushWebSocketClient extends WebSocketClient {
     if (listener != null) {
       listener.processConnectionStatus(new AVException(code, reason));
     }
-    LogUtil.avlog.d("onClose(). local disconnection:" + code + "  " + reason + " :" + remote);
+    LogUtil.avlog.d("AVPushWebSocketClient#onClose(). local disconnection:" + code + "  " + reason + " :" + remote);
     switch (code) {
       case -1:
         LogUtil.avlog.d("connection refused");
@@ -178,7 +179,7 @@ public class AVPushWebSocketClient extends WebSocketClient {
 
   @Override
   public void onError(Exception ex) {
-    ex.printStackTrace();
+    LogUtil.avlog.e("socket error.", ex);
     if (listener != null && AVUtils.isConnected(AVOSCloud.applicationContext)) {
       listener.processRemoteServerNotAvailable();
     }

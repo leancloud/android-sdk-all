@@ -3,6 +3,7 @@ package com.avos.avoscloud;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.avos.avoscloud.java_websocket.framing.CloseFrame;
 import com.avos.avospush.session.LiveQueryLoginPacket;
@@ -136,8 +137,12 @@ class AVPushConnectionManager implements AVPushWebSocketClient.AVSocketListener 
       } else {
         session = peerIdEnabledSessions.get(peerId);
       }
+      if (AVOSCloud.isDebugLogEnabled()) {
+        LogUtil.avlog.d("getOrCreateSession for peer:" + peerId + ", result:" + session + ", add=" + newAdded);
+      }
       return session;
     } catch (Exception e) {
+      LogUtil.avlog.e(e.getMessage());
       return null;
     }
   }
@@ -431,7 +436,6 @@ class AVPushConnectionManager implements AVPushWebSocketClient.AVSocketListener 
     lp.setAppId(AVOSCloud.applicationId);
     lp.setInstallationId(AVInstallation.getCurrentInstallation().getInstallationId());
     socketClient.send(lp);
-
     if (!AVUtils.isBlankString(liveQuerySubscribeId)) {
       sendLiveQueryLoginCmd(liveQuerySubscribeId, 0);
     }
@@ -439,6 +443,9 @@ class AVPushConnectionManager implements AVPushWebSocketClient.AVSocketListener 
 
   @Override
   public void processSessionsStatus(boolean closeEvent) {
+    if (AVOSCloud.isDebugLogEnabled()) {
+      LogUtil.avlog.d("process session status for enableSessions=" + peerIdEnabledSessions.size());
+    }
     for (AVSession session : peerIdEnabledSessions.values()) {
       if (session.getWebSocketListener() != null) {
         if (closeEvent) {
@@ -446,6 +453,19 @@ class AVPushConnectionManager implements AVPushWebSocketClient.AVSocketListener 
         } else {
           session.getWebSocketListener().onWebSocketOpen();
         }
+      } else {
+        LogUtil.avlog.d("skip session bcz webSocketListener is null.");
+      }
+    }
+    if (!closeEvent && peerIdEnabledSessions.size() < 1) {
+      AVSession session = AVSession.deserializeFromLocal(new AVDefaultSessionListener(this));
+      if (null != session) {
+        if (AVOSCloud.isDebugLogEnabled()) {
+          LogUtil.avlog.d("process session deserialized from persistent. clientId=" + session.getSelfPeerId());
+        }
+        peerIdEnabledSessions.put(session.getSelfPeerId(), session);
+        session.getWebSocketListener().onListenerAdded(
+            (this.socketClient != null && socketClient.isOpen()));
       }
     }
   }

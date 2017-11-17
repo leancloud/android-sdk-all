@@ -40,6 +40,9 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
 
   @Override
   public void onWebSocketOpen() {
+    if (AVOSCloud.showInternalDebugLog()) {
+      LogUtil.avlog.d("session status: open=" + session.sessionOpened.get() + ", resume=" + session.sessionResume.get());
+    }
     if (session.sessionOpened.get() || session.sessionResume.get()) {
       if (AVOSCloud.showInternalDebugLog()) {
         LogUtil.avlog.d("web socket opened, send session open.");
@@ -134,6 +137,9 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
         session.sessionOpened.set(true);
         session.sessionResume.set(false);
 
+        // persist session data to local file.
+        session.serializeToLocal();
+
         if (!session.sessionPaused.getAndSet(false)) {
           int requestId = (null != requestKey ? requestKey : CommandPacket.UNSUPPORTED_OPERATION);
           if (requestId != CommandPacket.UNSUPPORTED_OPERATION) {
@@ -160,6 +166,9 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
           requestId);
 
     } else if (op.equals(SessionControlPacket.SessionControlOp.CLOSED)) {
+      // cleanup persistent session data.
+      AVSession.cleanupAutoLoginInfo();
+
       int requestId = (null != requestKey ? requestKey : CommandPacket.UNSUPPORTED_OPERATION);
       if (command.hasCode()) {
         session.sessionListener.onSessionClosedFromServer(AVOSCloud.applicationContext, session,
