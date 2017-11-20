@@ -890,7 +890,7 @@ class AVIMMessageStorage {
       values.put(COLUMN_CONV_TEMP_TTL, conversation.getTemporaryExpiredat());
 
       if (AVOSCloud.isDebugLogEnabled()) {
-        LogUtil.avlog.d(String.format("insert or update conversation: ", values.toString()));
+        LogUtil.avlog.d(String.format("insert or update conversation: %s", values.toString()));
       }
 
       db.insertWithOnConflict(CONVERSATION_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
