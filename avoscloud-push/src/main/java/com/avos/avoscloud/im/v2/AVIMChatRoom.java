@@ -10,7 +10,7 @@ import java.util.Map;
 public class AVIMChatRoom extends AVIMConversation {
   protected AVIMChatRoom(AVIMClient client, String conversationId){
     super(client, conversationId);
-    isTransient = true;
+    setTransientForInit(true);
   }
 
   protected AVIMChatRoom(AVIMClient client, List<String> members,

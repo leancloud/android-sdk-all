@@ -18,6 +18,7 @@ import com.avos.avoscloud.im.v2.messages.AVIMVideoMessage;
 
 import java.lang.annotation.IncompleteAnnotationException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -123,7 +124,7 @@ public class AVIMMessageManager {
     return conversationEventHandler;
   }
 
-  protected static void processMessage(AVIMMessage message, AVIMClient client, boolean hasMore,
+  protected static void processMessage(AVIMMessage message, int convType, AVIMClient client, boolean hasMore,
       boolean isTransient) {
     // 如果已经通过拉获得了消息，则推的消息不回调
     if (client.storage.containMessage(message)) {
@@ -135,7 +136,7 @@ public class AVIMMessageManager {
       client.storage.insertMessage(message, hasMore);
     }
     message = parseTypedMessage(message);
-    final AVIMConversation conversation = client.getConversation(message.getConversationId());
+    final AVIMConversation conversation = client.getConversation(message.getConversationId(), convType);
     conversation.setLastMessage(message);
     if (!isTransient) {
       conversation.increaseUnreadCount(1, message.mentioned());
@@ -149,7 +150,12 @@ public class AVIMMessageManager {
         @Override
         public void done(AVIMException e) {
           if (null != e && e.getCode() > 0) {
+            if (AVOSCloud.isDebugLogEnabled()) {
+              LogUtil.avlog.d("failed to update conversation. cause:" + e.getMessage());
+            }
+          } else {
             conversation.latestConversationFetch = System.currentTimeMillis();
+            conversation.client.storage.insertConversations(Arrays.asList(conversation));
           }
           retrieveAllMessageHandlers(finalMessageObject, conversation, false);
         }

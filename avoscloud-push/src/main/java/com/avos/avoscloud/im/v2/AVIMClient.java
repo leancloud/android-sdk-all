@@ -21,6 +21,7 @@ import com.avos.avoscloud.AVSession;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.IntentUtil;
+import com.avos.avoscloud.LogUtil;
 import com.avos.avoscloud.PushService;
 import com.avos.avoscloud.SignatureFactory;
 import com.avos.avoscloud.im.v2.Conversation.AVIMOperation;
@@ -255,22 +256,57 @@ public class AVIMClient {
     this.createConversation(conversationMembers, null, attributes, false, callback);
   }
 
+  /**
+   * 创建一个聊天对话
+   *
+   * @param conversationMembers 对话参与者
+   * @param name       对话名字
+   * @param attributes 对话属性
+   * @param callback
+   * @since 3.0
+   */
   public void createConversation(final List<String> conversationMembers, String name,
       final Map<String, Object> attributes, final AVIMConversationCreatedCallback callback) {
     this.createConversation(conversationMembers, name, attributes, false, callback);
   }
 
   /**
-   * 创建一个开放聊天室
+   * 创建一个聊天对话
+   *
+   * @param members 对话参与者
+   * @param attributes 对话的额外属性
+   * @param isTransient 是否为暂态对话
+   * @param callback
    */
-  public void createChatRoom(final List<String> conversationMembers, String name,
-                             final Map<String, Object> attributes, final AVIMConversationCreatedCallback callback) {
-    this.createConversation(conversationMembers, name, attributes, true, callback);
+  public void createConversation(final List<String> members, final String name,
+                                 final Map<String, Object> attributes, final boolean isTransient,
+                                 final AVIMConversationCreatedCallback callback) {
+    this.createConversation(members, name, attributes, isTransient, false, callback);
   }
 
   /**
-  * 创建一个服务号
-  */
+   * 创建或查询一个已有的开放聊天室
+   *
+   * @param members 聊天室成员
+   * @param name 聊天室名字
+   * @param attributes 聊天室的额外属性
+   * @param isUnique 如果已经存在符合条件的会话，是否返回已有聊天室
+   *                 为 false 时，则一直为创建新的聊天室
+   *                 为 true 时，则先查询，如果已有符合条件的回话，则返回已有的，否则，创建新的并返回
+   *                 为 true 时，仅 conversationMembers 为有效查询条件
+   * @param callback
+   * @since 4.6
+   */
+  public void createChatRoom(final List<String> conversationMembers, String name,
+                             final Map<String, Object> attributes, final boolean isUnique, final AVIMConversationCreatedCallback callback) {
+    this.createConversation(conversationMembers, name, attributes, true, isUnique, callback);
+  }
+
+  /**
+   * 创建一个服务号（原系统对话）
+   * 注意：客户端不支持，所以这个方法总会抛出 RuntimeException
+   * @since 4.6
+   */
   private void createServiceConversation(String name, final Map<String, Object> attributes,
                                         final AVIMConversationCreatedCallback callback) {
     // Todo
@@ -279,23 +315,14 @@ public class AVIMClient {
 
   /**
    * 创建一个临时对话
+   * @param conversationMembers 对话成员
+   * @param name 对话名字
+   * @param callback
+   * @since 4.6
    */
   public void createTemporaryConversation(final List<String> conversationMembers, String name,
                                           final AVIMConversationCreatedCallback callback) {
     this.createConversation(conversationMembers, name, null, false, true, true, callback);
-  }
-  /**
-   * 创建一个聊天对话
-   * 
-   * @param members 对话参与者
-   * @param attributes 对话的额外属性
-   * @param isTransient 是否创建
-   * @param callback
-   */
-  public void createConversation(final List<String> members, final String name,
-                                 final Map<String, Object> attributes, final boolean isTransient,
-                                 final AVIMConversationCreatedCallback callback) {
-    this.createConversation(members, name, attributes, isTransient, false, callback);
   }
 
   /**
@@ -372,7 +399,8 @@ public class AVIMClient {
             conversation.setCreator(clientId);
             conversation.setCreatedAt(createdAt);
             conversation.setUpdatedAt(createdAt);
-            conversation.setTemporaryExpiredat(tempTTL);
+            conversation.setTemporary(isTemp);
+            conversation.setTemporaryExpiredat(System.currentTimeMillis()/1000 + tempTTL);
             storage.insertConversations(Arrays.asList(conversation));
           }
           callback.internalDone(conversation, AVIMException.wrapperAVException(error));
@@ -394,30 +422,112 @@ public class AVIMClient {
     return this.getConversation(conversationId, false, false);
   }
 
-  public AVIMConversation getConversation(String conversationId, boolean isTransient, boolean isTemporary) {
+  /**
+   * 获取某个特定的聊天对话
+   *
+   * @param conversationId 对话 id
+   * @param convType       对话类型，可以参考 Conversation 里面的宏定义
+   *                         普通对话：            CONV_TYPE_NORMAL = 1;
+   *                         开放聊天室（暂态对话）：CONV_TYPE_TRANSIENT = 2;
+   *                         服务号（原系统对话）：  CONV_TYPE_SYSTEM = 3;
+   *                         临时对话：            CONV_TYPE_TEMPORARY = 4;
+   * @return
+   * @since 4.6
+   */
+  public AVIMConversation getConversation(String conversationId, int convType) {
+    AVIMConversation result = null;
+    switch (convType) {
+      case Conversation.CONV_TYPE_SYSTEM:
+        result = getServiceConversation(conversationId);
+        break;
+      case Conversation.CONV_TYPE_TEMPORARY:
+        result = getTemporaryConversation(conversationId);
+        break;
+      case Conversation.CONV_TYPE_TRANSIENT:
+        result = getChatRoom(conversationId);
+        break;
+      default:
+        result = getConversation(conversationId);
+        break;
+    }
+    return result;
+  }
 
+  /**
+   * 获取一个开放聊天室
+   *
+   * @param conversationId 聊天室 id
+   * @return
+   * @since 4.6
+   */
+  public AVIMConversation getChatRoom(String conversationId) {
+    return this.getConversation(conversationId, true, false);
+  }
+
+  /**
+   * 获取一个服务号（系统对话）
+   *
+   * @param conversationId 对应的服务号 id
+   * @return
+   * @since 4.6
+   */
+  public AVIMConversation getServiceConversation(String conversationId) {
+    return this.getConversation(conversationId, false, false, true);
+  }
+
+  /**
+   * 获取一个临时对话
+   *
+   * @param conversationId 临时对话的 id
+   * @return
+   * @since 4.6
+   */
+  public AVIMConversation getTemporaryConversation(String conversationId) {
+    return this.getConversation(conversationId, false, true);
+  }
+
+  /**
+   * 获取某个特定的聊天对话
+   *
+   * @param conversationId 对话 id
+   * @param isTransient 是否为 chatroom（暂态聊天室）
+   * @param isTemporary 是否为 临时对话
+   * @return
+   * @since 4.6
+   */
+  public AVIMConversation getConversation(String conversationId, boolean isTransient, boolean isTemporary) {
+    return this.getConversation(conversationId, isTransient, isTemporary, false);
+  }
+
+  private AVIMConversation getConversation(String conversationId, boolean isTransient, boolean isTemporary, boolean isSystem) {
     if (!isConversationSync) {
       syncConversationCache();
     }
 
     AVIMConversation conversation = conversationCache.get(conversationId);
     if (conversation != null) {
+      LogUtil.avlog.d(String.format("hit conversation(id:%s, clazz:%s) from cache.", conversationId, conversation.getClass().getSimpleName()));
       return conversation;
+    } else if (AVUtils.isBlankString(conversationId)) {
+      LogUtil.log.w("conversationId is null");
+      return null;
     } else {
       conversation = null;
-      if (isTemporary) {
+      if (isSystem) {
+        conversation = new AVIMServiceConversation(this, conversationId);
+      } else if (isTemporary || conversationId.startsWith("_tmp:")) {
         conversation = new AVIMTemporaryConversation(this, conversationId);
       } else if (isTransient) {
         conversation = new AVIMChatRoom(this, conversationId);
       } else {
         conversation = new AVIMConversation(this, conversationId);
       }
+      LogUtil.avlog.d(String.format("create conversation object(clazz:%s) for id:%s", conversation.getClass().getSimpleName(), conversationId));
       AVIMConversation elderConversation =
           conversationCache.putIfAbsent(conversationId, conversation);
       return elderConversation == null ? conversation : elderConversation;
     }
   }
-
 
   /**
    * 获取AVIMConversationQuery对象，以此来查询conversation

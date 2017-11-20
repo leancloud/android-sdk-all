@@ -27,23 +27,27 @@ public class AVIMTemporaryConversation extends AVIMConversation {
   }
 
   /**
-   * 从服务器同步对话的属性
+   * 在聊天对话中间增加新的参与者（临时对话已经关闭这一操作）
+   *
+   * @param friendsList
+   * @param callback
+   */
+  @Override
+  public void addMembers(final List<String> friendsList, final AVIMConversationCallback callback) {
+    if (null != callback) {
+      callback.internalDone(null, new AVException(new UnsupportedOperationException("can't add members for temporary conversation.")));
+    }
+  }
+
+  /**
+   * 更新当前对话的属性至服务器端（临时对话已经关闭这一操作）
    *
    * @param callback
    */
-
-  public void fetchInfoInBackground(final AVIMConversationCallback callback) {
-    if (AVUtils.isBlankString(conversationId)) {
-      if (callback != null) {
-        callback.internalDone(null, new AVException(AVException.INVALID_QUERY, "ConversationId is empty"));
-      } else {
-        LogUtil.avlog.e("ConversationId is empty");
-      }
-      return;
+  @Override
+  public void updateInfoInBackground(AVIMConversationCallback callback) {
+    if (null != callback) {
+      callback.internalDone(null, new AVException(new UnsupportedOperationException("can't update anything for temporary conversation.")));
     }
-
-    Map<String, Object> params = new HashMap<String, Object>();
-    params.put(Conversation.QUERY_PARAM_TEMPCONV, conversationId);
-    sendCMDToPushService(JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_QUERY, callback);
   }
 }

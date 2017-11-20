@@ -574,8 +574,10 @@ class AVInternalConversation {
       AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
       boolean isTemp = convCommand.hasTempConv()? convCommand.getTempConv() : false;
       boolean isTransient = convCommand.hasTransient()? convCommand.getTransient() : false;
+      int tempTTL = convCommand.hasTempConvTTL()?convCommand.getTempConvTTL() : 0;
 
       AVIMConversation conversation = client.getConversation(this.conversationId, isTransient, isTemp);
+      conversation.setTemporaryExpiredat(System.currentTimeMillis()/1000 + tempTTL);
       handler.processEvent(Conversation.STATUS_ON_JOINED, invitedBy, null, conversation);
     }
   }
@@ -630,7 +632,7 @@ class AVInternalConversation {
     message.setMessageIOType(AVIMMessage.AVIMMessageIOType.AVIMMessageIOTypeIn);
     message.setMessageStatus(AVIMMessage.AVIMMessageStatus.AVIMMessageStatusSent);
 
-    AVIMMessageManagerHelper.processMessage(message,
+    AVIMMessageManagerHelper.processMessage(message, convType,
         AVIMClient.getInstance(session.getSelfPeerId()), hasMore, isTransient);
   }
 

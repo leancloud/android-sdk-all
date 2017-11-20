@@ -4,10 +4,10 @@ package com.avos.avoscloud.im.v2;
  * Created by lbt05 on 1/28/15.
  */
 public class AVIMMessageManagerHelper {
-  public static void processMessage(AVIMMessage message, AVIMClient client, boolean hasMore,
+  public static void processMessage(AVIMMessage message, int convType, AVIMClient client, boolean hasMore,
       boolean isTransient) {
     message.setCurrentClient(client.getClientId());
-    AVIMMessageManager.processMessage(message, client, hasMore, isTransient);
+    AVIMMessageManager.processMessage(message, convType, client, hasMore, isTransient);
   }
 
   public static void processMessageReceipt(AVIMMessage message, AVIMClient client) {

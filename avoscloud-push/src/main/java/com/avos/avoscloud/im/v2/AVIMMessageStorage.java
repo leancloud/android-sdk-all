@@ -978,7 +978,6 @@ class AVIMMessageStorage {
     AVIMConversation conversation = null;
     if (temporary > 0) {
       conversation = new AVIMTemporaryConversation(AVIMClient.getInstance(clientId), conversationId);
-
       long tempExpiredAt = cursor.getLong(cursor.getColumnIndex(COLUMN_CONV_TEMP_TTL));
       conversation.setTemporaryExpiredat(tempExpiredAt);
     } else if (system > 0) {
@@ -988,6 +987,12 @@ class AVIMMessageStorage {
     } else {
       conversation = new AVIMConversation(AVIMClient.getInstance(clientId), conversationId);
     }
+
+    if (AVOSCloud.isDebugLogEnabled()) {
+      LogUtil.avlog.d(String.format("parse conversation. id=%s, creator=%s, transient=%d, sys=%d, temp=%d, return=%s",
+          conversationId, creator, transientValue, system, temporary, conversation.getClass().getSimpleName()));
+    }
+
     conversation.createdAt = createdAt;
     conversation.updatedAt = updatedAt;
     try {

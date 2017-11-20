@@ -114,7 +114,7 @@ public class AVIMConversation {
     return isTemporary;
   }
 
-  public void setTemporary(boolean temporary) {
+  void setTemporary(boolean temporary) {
     isTemporary = temporary;
   }
 
@@ -123,12 +123,14 @@ public class AVIMConversation {
    */
   long temporaryExpiredat = 0l;
 
-  protected long getTemporaryExpiredat() {
+  public long getTemporaryExpiredat() {
     return temporaryExpiredat;
   }
 
-  protected void setTemporaryExpiredat(long temporaryExpiredat) {
-    this.temporaryExpiredat = temporaryExpiredat;
+  public void setTemporaryExpiredat(long temporaryExpiredat) {
+    if (this.isTemporary()) {
+      this.temporaryExpiredat = temporaryExpiredat;
+    }
   }
 
   protected int getType() {
@@ -1169,9 +1171,13 @@ public class AVIMConversation {
     }
 
     Map<String, Object> params = new HashMap<String, Object>();
-    Map<String, Object> whereMap = new HashMap<String, Object>();
-    whereMap.put("objectId", conversationId);
-    params.put("where", whereMap);
+    if (conversationId.startsWith("_tmp:")) {
+      params.put(Conversation.QUERY_PARAM_TEMPCONV, conversationId);
+    } else {
+      Map<String, Object> whereMap = new HashMap<String, Object>();
+      whereMap.put("objectId", conversationId);
+      params.put(Conversation.QUERY_PARAM_WHERE, whereMap);
+    }
     sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_QUERY, callback);
   }
 

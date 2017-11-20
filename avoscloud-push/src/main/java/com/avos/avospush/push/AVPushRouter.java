@@ -202,6 +202,9 @@ public class AVPushRouter {
     };
     Request.Builder builder = new Request.Builder();
     builder.url(routerUrlStr).get();
+    if (AVOSCloud.isDebugLogEnabled()) {
+      LogUtil.avlog.d("get router url: " + routerUrlStr);
+    }
     getRouterHttpClient().execute(builder.build(), false, new GetHttpResponseHandler(callback));
   }
 
