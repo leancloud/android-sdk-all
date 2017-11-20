@@ -511,7 +511,7 @@ public class AVIMClient {
 
     AVIMConversation conversation = conversationCache.get(conversationId);
     if (conversation != null) {
-      LogUtil.avlog.d(String.format("hit conversation(id:%s, clazz:%s) from cache.", conversationId, conversation.getClass().getSimpleName()));
+//      LogUtil.avlog.d(String.format("hit conversation(id:%s, clazz:%s) from cache.", conversationId, conversation.getClass().getSimpleName()));
       return conversation;
     } else if (AVUtils.isBlankString(conversationId)) {
       LogUtil.log.w("conversationId is null");
@@ -520,7 +520,7 @@ public class AVIMClient {
       conversation = null;
       if (isSystem) {
         conversation = new AVIMServiceConversation(this, conversationId);
-      } else if (isTemporary || conversationId.startsWith("_tmp:")) {
+      } else if (isTemporary || conversationId.startsWith(Conversation.TEMPCONV_ID_PREFIX)) {
         conversation = new AVIMTemporaryConversation(this, conversationId);
       } else if (isTransient) {
         conversation = new AVIMChatRoom(this, conversationId);

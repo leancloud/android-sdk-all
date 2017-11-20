@@ -185,6 +185,8 @@ public interface Conversation {
   String TEMPORARY = "temp";
   String TEMPORARYTTL = "ttl";
 
+  String TEMPCONV_ID_PREFIX = "_tmp:";
+
   String[] CONVERSATION_COLUMNS = {MEMBERS, NAME, CREATOR,
     LAST_MESSAGE_AT, AVObject.OBJECT_ID, MUTE, AVObject.UPDATED_AT,
     AVObject.CREATED_AT, ATTRIBUTE, TRANSIENT, SYSTEM, TEMPORARY, TEMPORARYTTL};

@@ -889,10 +889,10 @@ class AVIMMessageStorage {
       values.put(COLUMN_CONV_TEMP, conversation.isTemporary()? 1 : 0);
       values.put(COLUMN_CONV_TEMP_TTL, conversation.getTemporaryExpiredat());
 
-      if (AVOSCloud.isDebugLogEnabled()) {
-        LogUtil.avlog.d(String.format("insert or update conversation: %s", values.toString()));
-      }
-
+//      if (AVOSCloud.isDebugLogEnabled()) {
+//        LogUtil.avlog.d(String.format("insert or update conversation: %s", values.toString()));
+//      }
+//
       db.insertWithOnConflict(CONVERSATION_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
     }
     db.setTransactionSuccessful();
@@ -992,11 +992,11 @@ class AVIMMessageStorage {
       conversation = new AVIMConversation(AVIMClient.getInstance(clientId), conversationId);
     }
 
-    if (AVOSCloud.isDebugLogEnabled()) {
-      LogUtil.avlog.d(String.format("parse conversation: id=%s, creator=%s, transient=%d, sys=%d, temp=%d, return=%s",
-          conversationId, creator, transientValue, system, temporary, conversation.getClass().getSimpleName()));
-    }
-
+//    if (AVOSCloud.isDebugLogEnabled()) {
+//      LogUtil.avlog.d(String.format("parse conversation: id=%s, creator=%s, transient=%d, sys=%d, temp=%d, return=%s",
+//          conversationId, creator, transientValue, system, temporary, conversation.getClass().getSimpleName()));
+//    }
+//
     conversation.createdAt = createdAt;
     conversation.updatedAt = updatedAt;
     try {

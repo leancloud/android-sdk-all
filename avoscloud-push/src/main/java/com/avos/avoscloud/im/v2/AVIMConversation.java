@@ -1185,7 +1185,7 @@ public class AVIMConversation {
     }
 
     Map<String, Object> params = new HashMap<String, Object>();
-    if (conversationId.startsWith("_tmp:")) {
+    if (conversationId.startsWith(Conversation.TEMPCONV_ID_PREFIX)) {
       params.put(Conversation.QUERY_PARAM_TEMPCONV, conversationId);
     } else {
       Map<String, Object> whereMap = new HashMap<String, Object>();

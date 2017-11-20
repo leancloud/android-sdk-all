@@ -297,7 +297,7 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
         Bundle bundle = new Bundle();
         bundle.putString(Conversation.callbackData, result);
         BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), null, requestKey, bundle, AVIMOperation.CONVERSATION_QUERY);
-        // want to verify: it's not need to update local cache?
+        // verified: it's not need to update local cache?
       }
     } else {
       String conversationId = null;
