@@ -102,14 +102,21 @@ public class AVIMConversation {
    */
   boolean isSystem = false;
 
+  /**
+   * 是否是服务号
+   */
   public boolean isSystem() {
     return isSystem;
   }
+
   /**
    * 是否是临时对话
    */
   boolean isTemporary = false;
 
+  /**
+   * 是否是临时对话
+   */
   public boolean isTemporary() {
     return isTemporary;
   }
@@ -123,10 +130,17 @@ public class AVIMConversation {
    */
   long temporaryExpiredat = 0l;
 
+  /**
+   * 获取临时对话过期时间（以秒为单位）
+   */
   public long getTemporaryExpiredat() {
     return temporaryExpiredat;
   }
 
+  /**
+   * 设置临时对话过期时间（以秒为单位）
+   * 仅对 临时对话 有效
+   */
   public void setTemporaryExpiredat(long temporaryExpiredat) {
     if (this.isTemporary()) {
       this.temporaryExpiredat = temporaryExpiredat;

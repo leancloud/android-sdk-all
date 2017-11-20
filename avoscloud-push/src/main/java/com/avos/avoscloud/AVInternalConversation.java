@@ -376,8 +376,8 @@ class AVInternalConversation {
   }
 
   public void processConversationCommandFromServer(AVIMOperation imop, String operation, int requestId, Messages.ConvCommand convCommand) {
-    // FIXME
     if (ConversationControlOp.STARTED.equals(operation)) {
+      // need convCommand to instantiate conversation object.
       onConversationCreated(requestId, convCommand);
     } else if (ConversationControlOp.JOINED.equals(operation)) {
       String invitedBy = convCommand.getInitBy();
@@ -385,6 +385,7 @@ class AVInternalConversation {
       if (invitedBy.equals(session.getSelfPeerId())) {
         return;
       } else if (!invitedBy.equals(session.getSelfPeerId())) {
+        // need convCommand to instantiate conversation object.
         onInvitedToConversation(invitedBy, convCommand);
       }
     } else if (ConversationControlOp.REMOVED.equals(operation)) {
@@ -396,7 +397,7 @@ class AVInternalConversation {
         }
       }
     } else if (ConversationControlOp.ADDED.equals(operation)) {
-      // 这里我们回过头去看发送的命令是什么如果是join，则是自己把自己加入到某个conversation。否则是邀请成功
+      // 这里我们回过头去看发送的命令是什么，如果是join，则是自己把自己加入到某个conversation。否则是邀请成功
       if (requestId != CommandPacket.UNSUPPORTED_OPERATION) {
         if (imop.getCode() == AVIMOperation.CONVERSATION_JOIN.getCode()) {
           onJoined(requestId);
@@ -485,10 +486,9 @@ class AVInternalConversation {
   void onConversationCreated(int requestId, Messages.ConvCommand convCommand) {
     String createdAt = convCommand.getCdate();
     String cid = convCommand.getCid();
-    boolean isTemp = convCommand.hasTempConv()? convCommand.getTempConv() : false;
     int tempTTL = convCommand.hasTempConvTTL()? convCommand.getTempConvTTL(): 0;
-    boolean isTransient = convCommand.hasTransient()? convCommand.getTransient() : false;
 
+    // they are not necessary for create-callback(isTemp, isTransient), except for tempTTL.
     Bundle bundle = new Bundle();
     bundle.putString(Conversation.callbackCreatedAt, createdAt);
     bundle.putString(Conversation.callbackConversationKey, cid);

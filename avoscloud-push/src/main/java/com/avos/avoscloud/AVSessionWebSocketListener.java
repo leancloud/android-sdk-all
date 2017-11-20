@@ -58,7 +58,7 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
           while (!session.pendingMessages.isEmpty()) {
             Message m = session.pendingMessages.poll();
             if (!AVUtils.isBlankString(m.cid)) {
-              AVInternalConversation conversation = session.getConversation(m.cid, Conversation.CONV_TYPE_UNKNOWN);
+              AVInternalConversation conversation = session.getConversation(m.cid, Conversation.CONV_TYPE_NORMAL);
               BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(),
                   conversation.conversationId, Integer.parseInt(m.id), new RuntimeException(
                       "Connection Lost"),
@@ -90,7 +90,7 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
     final String conversationId = directCommand.getCid();
     final Long timestamp = directCommand.getTimestamp();
     final String messageId = directCommand.getId();
-    int convType = directCommand.hasConvType()? directCommand.getConvType() : Conversation.CONV_TYPE_UNKNOWN;
+    int convType = directCommand.hasConvType()? directCommand.getConvType() : Conversation.CONV_TYPE_NORMAL;
     final boolean isTransient = directCommand.hasTransient() && directCommand.getTransient();
     final boolean hasMore = directCommand.hasHasMore() && directCommand.getHasMore();
     final long patchTimestamp = directCommand.getPatchTimestamp();
@@ -199,8 +199,7 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
       this.onAckError(requestKey, ackCommand, m);
     } else {
       if (null != m && !AVUtils.isBlankString(m.cid)) {
-        // TODO: want to verify.
-        AVInternalConversation conversation = session.getConversation(m.cid, Conversation.CONV_TYPE_UNKNOWN);
+        AVInternalConversation conversation = session.getConversation(m.cid, Conversation.CONV_TYPE_NORMAL);
         session.conversationOperationCache.poll(requestKey);
         String msgId = ackCommand.getUid();
         conversation.onMessageSent(requestKey, msgId, timestamp);
@@ -234,7 +233,8 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
       if (rcpCommand.hasT()) {
         final Long timestamp = rcpCommand.getT();
         final String conversationId = rcpCommand.getCid();
-        int convType = Conversation.CONV_TYPE_UNKNOWN;
+        int convType = Conversation.CONV_TYPE_NORMAL; // RcpCommand doesn't include convType, so we use default value.
+        // Notice: it becomes a problem only when server send RcpCommand to a new device for the logined user.
 
         if (!AVUtils.isBlankString(conversationId)) {
           processConversationDeliveredAt(conversationId, convType, timestamp);
@@ -283,7 +283,7 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
     if (rcpCommand.hasRead() && rcpCommand.hasCid()) {
       final Long timestamp = rcpCommand.getT();
       String conversationId = rcpCommand.getCid();
-      AVInternalConversation conversation = session.getConversation(conversationId, Conversation.CONV_TYPE_UNKNOWN);
+      AVInternalConversation conversation = session.getConversation(conversationId, Conversation.CONV_TYPE_NORMAL);
       conversation.onConversationReadAtEvent(timestamp);
     }
   }
@@ -297,6 +297,7 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
         Bundle bundle = new Bundle();
         bundle.putString(Conversation.callbackData, result);
         BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), null, requestKey, bundle, AVIMOperation.CONVERSATION_QUERY);
+        // want to verify: it's not need to update local cache?
       }
     } else {
       String conversationId = null;
@@ -374,7 +375,7 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
   public void onHistoryMessageQuery(Integer requestKey, Messages.LogsCommand command) {
     if (null != requestKey && requestKey != CommandPacket.UNSUPPORTED_OPERATION) {
       Operation op = session.conversationOperationCache.poll(requestKey);
-      int convType = Conversation.CONV_TYPE_UNKNOWN;
+      int convType = Conversation.CONV_TYPE_NORMAL;
       if (command.getLogsCount() > 0) {
         Messages.LogItem item = command.getLogs(0);
         if (null != item && item.hasConvType()) {
@@ -402,7 +403,7 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
           boolean mentioned = unreadTuple.getMentioned();
           ByteString binaryMsg = unreadTuple.getBinaryMsg();
           String from = unreadTuple.getFrom();
-          int convType = unreadTuple.hasConvType()? unreadTuple.getConvType() : Conversation.CONV_TYPE_UNKNOWN;
+          int convType = unreadTuple.hasConvType()? unreadTuple.getConvType() : Conversation.CONV_TYPE_NORMAL;
 
           AVIMMessage message = null;
           if (AVUtils.isBlankString(msgContent) && null != binaryMsg) {
@@ -430,7 +431,7 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
         for (Messages.PatchItem patchItem : patchCommand.getPatchesList()) {
           AVIMMessage message = AVIMTypedMessage.getMessage(patchItem.getCid(), patchItem.getMid(), patchItem.getData(), patchItem.getFrom(), patchItem.getTimestamp(), 0, 0);
           message.setUpdateAt(patchItem.getPatchTimestamp());
-          AVInternalConversation conversation = session.getConversation(patchItem.getCid(), Conversation.CONV_TYPE_UNKNOWN);
+          AVInternalConversation conversation = session.getConversation(patchItem.getCid(), Conversation.CONV_TYPE_NORMAL);
           conversation.onMessageUpdateEvent(message, patchItem.getRecall());
         }
       }

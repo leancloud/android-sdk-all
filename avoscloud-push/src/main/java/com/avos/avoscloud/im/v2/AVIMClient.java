@@ -55,7 +55,7 @@ public class AVIMClient {
   }
 
   /**
-   * 设置AVIMClient通用的签名生成工厂
+   * 设置 AVIMClient 通用的签名生成工厂
    * 
    * @param factory
    * @since 3.0
@@ -169,7 +169,7 @@ public class AVIMClient {
   /**
    * 连接服务器
    * 
-   * @param callback
+   * @param callback 回调函数
    * @since 3.0
    */
   public void open(final AVIMClientCallback callback) {
@@ -179,7 +179,7 @@ public class AVIMClient {
   /**
    * 连接服务器
    * @param option 登陆选项
-   * @param callback
+   * @param callback 回调函数
    */
   public void open(AVIMClientOpenOption option, final AVIMClientCallback callback) {
 
@@ -208,7 +208,7 @@ public class AVIMClient {
    * 每次查询最多20个client对象，超出部分会被忽略
    * 
    * @param clients 需要检查的client列表
-   * @param callback
+   * @param callback 结果回调函数
    */
   public void getOnlineClients(List<String> clients, final AVIMOnlineClientsCallback callback) {
     Map<String, Object> params = new HashMap<String, Object>();
@@ -235,7 +235,7 @@ public class AVIMClient {
   }
 
   /**
-   * 
+   * 获取当前用户的 clientId
    * @return 返回clientId
    */
   public String getClientId() {
@@ -247,7 +247,7 @@ public class AVIMClient {
    * 
    * @param conversationMembers 对话参与者
    * @param attributes 对话属性
-   * @param callback
+   * @param callback   结果回调函数
    * @since 3.0
    */
 
@@ -262,7 +262,7 @@ public class AVIMClient {
    * @param conversationMembers 对话参与者
    * @param name       对话名字
    * @param attributes 对话属性
-   * @param callback
+   * @param callback   结果回调函数
    * @since 3.0
    */
   public void createConversation(final List<String> conversationMembers, String name,
@@ -276,7 +276,7 @@ public class AVIMClient {
    * @param members 对话参与者
    * @param attributes 对话的额外属性
    * @param isTransient 是否为暂态对话
-   * @param callback
+   * @param callback  结果回调函数
    */
   public void createConversation(final List<String> members, final String name,
                                  final Map<String, Object> attributes, final boolean isTransient,
@@ -287,14 +287,14 @@ public class AVIMClient {
   /**
    * 创建或查询一个已有的开放聊天室
    *
-   * @param members 聊天室成员
+   * @param conversationMembers 聊天室成员
    * @param name 聊天室名字
    * @param attributes 聊天室的额外属性
    * @param isUnique 如果已经存在符合条件的会话，是否返回已有聊天室
    *                 为 false 时，则一直为创建新的聊天室
    *                 为 true 时，则先查询，如果已有符合条件的回话，则返回已有的，否则，创建新的并返回
    *                 为 true 时，仅 conversationMembers 为有效查询条件
-   * @param callback
+   * @param callback  结果回调函数
    * @since 4.6
    */
   public void createChatRoom(final List<String> conversationMembers, String name,
@@ -305,6 +305,10 @@ public class AVIMClient {
   /**
    * 创建一个服务号（原系统对话）
    * 注意：客户端不支持，所以这个方法总会抛出 RuntimeException
+   * @param name 聊天室名字
+   * @param attributes 聊天室的额外属性
+   * @param callback  结果回调函数
+   *
    * @since 4.6
    */
   private void createServiceConversation(String name, final Map<String, Object> attributes,
@@ -315,9 +319,10 @@ public class AVIMClient {
 
   /**
    * 创建一个临时对话
+   *
    * @param conversationMembers 对话成员
    * @param name 对话名字
-   * @param callback
+   * @param callback  结果回调函数
    * @since 4.6
    */
   public void createTemporaryConversation(final List<String> conversationMembers, String name,
@@ -336,7 +341,7 @@ public class AVIMClient {
    *                 为 false 时，则一直为创建新的回话
    *                 为 true 时，则先查询，如果已有符合条件的回话，则返回已有的，否则，创建新的并返回
    *                 为 true 时，仅 members 为有效查询条件
-   * @param callback
+   * @param callback 结果回调函数
    */
   public void createConversation(final List<String> members, final String name,
       final Map<String, Object> attributes, final boolean isTransient, final boolean isUnique,
@@ -434,7 +439,7 @@ public class AVIMClient {
    * @return
    * @since 4.6
    */
-  public AVIMConversation getConversation(String conversationId, int convType) {
+  AVIMConversation getConversation(String conversationId, int convType) {
     AVIMConversation result = null;
     switch (convType) {
       case Conversation.CONV_TYPE_SYSTEM:
@@ -522,7 +527,6 @@ public class AVIMClient {
       } else {
         conversation = new AVIMConversation(this, conversationId);
       }
-      LogUtil.avlog.d(String.format("create conversation object(clazz:%s) for id:%s", conversation.getClass().getSimpleName(), conversationId));
       AVIMConversation elderConversation =
           conversationCache.putIfAbsent(conversationId, conversation);
       return elderConversation == null ? conversation : elderConversation;

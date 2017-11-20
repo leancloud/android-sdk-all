@@ -150,9 +150,7 @@ public class AVIMMessageManager {
         @Override
         public void done(AVIMException e) {
           if (null != e && e.getCode() > 0) {
-            if (AVOSCloud.isDebugLogEnabled()) {
-              LogUtil.avlog.d("failed to update conversation. cause:" + e.getMessage());
-            }
+            LogUtil.avlog.e("failed to update conversation. cause:" + e.getMessage());
           } else {
             conversation.latestConversationFetch = System.currentTimeMillis();
             conversation.client.storage.insertConversations(Arrays.asList(conversation));
