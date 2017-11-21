@@ -1,5 +1,6 @@
 package com.avos.avoscloud;
 
+import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -11,6 +12,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -331,6 +333,7 @@ class AVNotificationManager {
     return defaultPushCallback.size();
   }
 
+  @TargetApi(Build.VERSION_CODES.O)
   private void sendNotification(String from, String msg, Intent resultIntent) {
     String clsName = getDefaultPushCallback(from);
     if (AVUtils.isBlankString(clsName)) {
@@ -347,18 +350,31 @@ class AVNotificationManager {
       PendingIntent contentIntent =
         PendingIntent.getActivity(context, notificationId, resultIntent, 0);
       String sound = getSound(msg);
-      NotificationCompat.Builder mBuilder =
-        new NotificationCompat.Builder(context)
-          .setSmallIcon(getNotificationIcon())
-          .setContentTitle(getTitle(msg)).setAutoCancel(true).setContentIntent(contentIntent)
-          .setDefaults(Notification.DEFAULT_VIBRATE | Notification.DEFAULT_SOUND)
-          .setContentText(getText(msg));
-      NotificationManager manager =
-        (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-      Notification notification = mBuilder.build();
+      Notification notification = null;
+      if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
+        NotificationCompat.Builder mBuilder =
+            new NotificationCompat.Builder(context)
+                .setSmallIcon(getNotificationIcon())
+                .setContentTitle(getTitle(msg)).setAutoCancel(true).setContentIntent(contentIntent)
+                .setDefaults(Notification.DEFAULT_VIBRATE | Notification.DEFAULT_SOUND)
+                .setContentText(getText(msg));
+        notification = mBuilder.build();
+      } else {
+        Notification.Builder builder = new Notification.Builder(context)
+            .setSmallIcon(getNotificationIcon())
+            .setContentTitle(getTitle(msg))
+            .setAutoCancel(true).setContentIntent(contentIntent)
+            .setDefaults(Notification.DEFAULT_VIBRATE | Notification.DEFAULT_SOUND)
+            .setContentText(getText(msg))
+            .setChannelId(PushService.DefaultChannelId);
+
+        notification = builder.build();
+      }
       if (sound != null && sound.trim().length() > 0) {
         notification.sound = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + sound);
       }
+      NotificationManager manager =
+          (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
       manager.notify(notificationId, notification);
     } else {
       Log.e(LOGTAG, "Class name is invalid, which must contain '.': " + clsName);
