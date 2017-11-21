@@ -97,6 +97,68 @@ public class AVIMConversation {
    */
   long lastReadAt;
 
+  /**
+   * 是否是服务号
+   */
+  boolean isSystem = false;
+
+  /**
+   * 是否是服务号
+   */
+  public boolean isSystem() {
+    return isSystem;
+  }
+
+  /**
+   * 是否是临时对话
+   */
+  boolean isTemporary = false;
+
+  /**
+   * 是否是临时对话
+   */
+  public boolean isTemporary() {
+    return isTemporary;
+  }
+
+  void setTemporary(boolean temporary) {
+    isTemporary = temporary;
+  }
+
+  /**
+   * 临时对话过期时间
+   */
+  long temporaryExpiredat = 0l;
+
+  /**
+   * 获取临时对话过期时间（以秒为单位）
+   */
+  public long getTemporaryExpiredat() {
+    return temporaryExpiredat;
+  }
+
+  /**
+   * 设置临时对话过期时间（以秒为单位）
+   * 仅对 临时对话 有效
+   */
+  public void setTemporaryExpiredat(long temporaryExpiredat) {
+    if (this.isTemporary()) {
+      this.temporaryExpiredat = temporaryExpiredat;
+    }
+  }
+
+  protected int getType() {
+    if (isSystem()) {
+      return Conversation.CONV_TYPE_SYSTEM;
+    } else if (isTransient()) {
+      return Conversation.CONV_TYPE_TRANSIENT;
+    } else if (isTemporary()) {
+      return Conversation.CONV_TYPE_TEMPORARY;
+    } else {
+      return Conversation.CONV_TYPE_NORMAL;
+    }
+  }
+
   protected AVIMConversation(AVIMClient client, List<String> members,
       Map<String, Object> attributes, boolean isTransient) {
     this.members = new HashSet<String>();
@@ -1123,9 +1185,13 @@ public class AVIMConversation {
     }
 
     Map<String, Object> params = new HashMap<String, Object>();
-    Map<String, Object> whereMap = new HashMap<String, Object>();
-    whereMap.put("objectId", conversationId);
-    params.put("where", whereMap);
+    if (conversationId.startsWith(Conversation.TEMPCONV_ID_PREFIX)) {
+      params.put(Conversation.QUERY_PARAM_TEMPCONV, conversationId);
+    } else {
+      Map<String, Object> whereMap = new HashMap<String, Object>();
+      whereMap.put("objectId", conversationId);
+      params.put(Conversation.QUERY_PARAM_WHERE, whereMap);
+    }
     sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_QUERY, callback);
   }
 
@@ -1200,6 +1266,7 @@ public class AVIMConversation {
     i.putExtra(Conversation.INTENT_KEY_DATA, pushServiceParcel);
     i.putExtra(Conversation.INTENT_KEY_CLIENT, client.clientId);
     i.putExtra(Conversation.INTENT_KEY_CONVERSATION, this.conversationId);
+    i.putExtra(Conversation.INTENT_KEY_CONV_TYPE, this.getType());
     i.putExtra(Conversation.INTENT_KEY_REQUESTID, requestId);
     i.putExtra(Conversation.INTENT_KEY_OPERATION, operation.getCode());
     AVOSCloud.applicationContext.startService(IntentUtil.setupIntentFlags(i));
@@ -1259,7 +1326,7 @@ public class AVIMConversation {
     sendCMDToPushService(dataInString, null, null, operation, callback, occ);
   }
 
-  private void sendCMDToPushService(String dataInString, final AVIMOperation operation,
+  protected void sendCMDToPushService(String dataInString, final AVIMOperation operation,
                                     AVCallback callback) {
     sendCMDToPushService(dataInString, null, null, operation, callback, null);
   }
@@ -1285,6 +1352,7 @@ public class AVIMConversation {
     }
     i.putExtra(Conversation.INTENT_KEY_CLIENT, client.clientId);
     i.putExtra(Conversation.INTENT_KEY_CONVERSATION, this.conversationId);
+    i.putExtra(Conversation.INTENT_KEY_CONV_TYPE, this.getType());
     i.putExtra(Conversation.INTENT_KEY_OPERATION, operation.getCode());
     i.putExtra(Conversation.INTENT_KEY_REQUESTID, requestId);
 
@@ -1396,9 +1464,9 @@ public class AVIMConversation {
         String result = (String)serializable;
         JSONArray jsonArray = JSON.parseArray(String.valueOf(result));
         if (null != jsonArray && !jsonArray.isEmpty()) {
-          updateConversation(AVIMConversation.this, jsonArray.getJSONObject(0));
-          client.conversationCache.put(conversationId, AVIMConversation.this);
-          storage.insertConversations(Arrays.asList(AVIMConversation.this));
+          updateConversation(this, jsonArray.getJSONObject(0));
+          client.conversationCache.put(conversationId, this);
+          storage.insertConversations(Arrays.asList(this));
         }
       } catch (Exception e) {
         return e;
@@ -1422,7 +1490,30 @@ public class AVIMConversation {
     if (AVUtils.isBlankContent(conversationId)) {
       return null;
     }
-    return updateConversation(new AVIMConversation(client, conversationId), jsonObj);
+    boolean systemConv = false;
+    boolean transientConv = false;
+    boolean tempConv = false;
+    if (jsonObj.containsKey(Conversation.SYSTEM)) {
+      systemConv = jsonObj.getBoolean(Conversation.SYSTEM);
+    }
+    if (jsonObj.containsKey(Conversation.TRANSIENT)) {
+      transientConv = jsonObj.getBoolean(Conversation.TRANSIENT);
+    }
+    if (jsonObj.containsKey(Conversation.TEMPORARY)) {
+      tempConv = jsonObj.getBoolean(Conversation.TEMPORARY);
+    }
+    AVIMConversation originConv = null;
+    if (systemConv) {
+      originConv = new AVIMServiceConversation(client, conversationId);
+    } else if (tempConv) {
+      originConv = new AVIMTemporaryConversation(client, conversationId);
+    } else if (transientConv) {
+      originConv = new AVIMChatRoom(client, conversationId);
+    } else {
+      originConv = new AVIMConversation(client, conversationId);
+    }
+
+    return updateConversation(originConv, jsonObj);
   }
 
   private static AVIMConversation updateConversation(AVIMConversation conversation, JSONObject jsonObj) {

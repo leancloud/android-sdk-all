@@ -11,6 +11,8 @@ public interface Conversation {
   String PARAM_CONVERSATION_ATTRIBUTE = "conversation.attributes";
   String PARAM_CONVERSATION_ISTRANSIENT = "conversation.transient";
   String PARAM_CONVERSATION_ISUNIQUE = "conversation.unique";
+  String PARAM_CONVERSATION_ISTEMPORARY = "conversation.temp";
+  String PARAM_CONVERSATION_ISSYSTEM = "conversation.sys";
   String PARAM_ONLINE_CLIENTS = "client.oneline";
 
   String PARAM_MESSAGE_QUERY_LIMIT = "limit";
@@ -27,12 +29,13 @@ public interface Conversation {
   String INTENT_KEY_CLIENT_PARCEL = "conversation.client.parcel";
   String INTENT_KEY_CLIENT = "conversation.client";
   String INTENT_KEY_CONVERSATION = "convesration.id";
+  String INTENT_KEY_CONV_TYPE = "conversation.type";
   String INTENT_KEY_OPERATION = "conversation.operation";
   String INTENT_KEY_REQUESTID = "conversation.requestId";
 
   String PARAM_MESSAGE_PATCH_TIME = "message_patch_time";
 
-  int DEFAULT_CONVERSATION_EXPIRE_TIME_IN_MILLS = 3600000;
+  int DEFAULT_CONVERSATION_EXPIRE_TIME_IN_MILLS = 3600000;  // 1 hour
 
   enum AVIMOperation {
     CONVERSATION_CREATION(40000, "com.avoscloud.v2.im.conversation.creation."),
@@ -136,6 +139,12 @@ public interface Conversation {
   int STATUS_ON_MESSAGE_UPDATED = 50015;
   int STATUS_ON_MESSAGE_RECALLED = 50016;
 
+  int CONV_TYPE_UNKNOWN = 0;
+  int CONV_TYPE_NORMAL = 1;
+  int CONV_TYPE_TRANSIENT = 2;
+  int CONV_TYPE_SYSTEM = 3;
+  int CONV_TYPE_TEMPORARY = 4;
+
   String callbackExceptionKey = "callbackException";
   String callbackData = "callbackData";
   String callbackClientKey = "callbackclient";
@@ -151,12 +160,19 @@ public interface Conversation {
   String callbackDeliveredAt = "callbackDeliveredAt";
   String callbackReadAt = "callbackReadAt";
 
+//  String callbackTemporary = "callbackTemporary";
+  String callbackTemporaryTTL = "callbackTemporaryTTL";
+//  String callbackTransient = "callbackTransient";
+//  String callbackSystem = "callbackSystem";
+  String callbackConvType = "callbackConvType";
+
   String QUERY_PARAM_OFFSET = "skip";
   String QUERY_PARAM_LIMIT = "limit";
   String QUERY_PARAM_SORT = "sort";
   String QUERY_PARAM_WHERE = "where";
   String QUERY_PARAM_LAST_MESSAGE = "last_message";
   String QUERY_PARAM_COMPACT = "compact";
+  String QUERY_PARAM_TEMPCONV = "temp_id";
 
   String NAME = "name";
   String ATTRIBUTE = "attr";
@@ -166,8 +182,12 @@ public interface Conversation {
   String LAST_MESSAGE_AT = "lm";
   String SYSTEM = "sys";
   String CREATOR = "c";
+  String TEMPORARY = "temp";
+  String TEMPORARYTTL = "ttl";
+
+  String TEMPCONV_ID_PREFIX = "_tmp:";
 
   String[] CONVERSATION_COLUMNS = {MEMBERS, NAME, CREATOR,
     LAST_MESSAGE_AT, AVObject.OBJECT_ID, MUTE, AVObject.UPDATED_AT,
-    AVObject.CREATED_AT, ATTRIBUTE, TRANSIENT, SYSTEM};
+    AVObject.CREATED_AT, ATTRIBUTE, TRANSIENT, SYSTEM, TEMPORARY, TEMPORARYTTL};
 }

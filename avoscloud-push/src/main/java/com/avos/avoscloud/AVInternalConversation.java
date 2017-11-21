@@ -37,15 +37,17 @@ import com.avos.avospush.session.UnreadMessagesClearPacket;
 class AVInternalConversation {
   AVSession session;
   String conversationId;
+  int convType;
 
   // 服务器端为了兼容老版本，这里需要使用group的invite
   private static final String GROUP_INVITE = "invite";
   private static final String GROUP_KICK = "kick";
 
-  public AVInternalConversation(String conversationId, AVSession session) {
+  public AVInternalConversation(String conversationId, AVSession session, int convType) {
     this.session = session;
     this.conversationId = conversationId;
     this.conversationGene = getConversationGeneString();
+    this.convType = convType;
   }
 
   public void addMembers(final List<String> members, final int requestId) {
@@ -375,14 +377,16 @@ class AVInternalConversation {
 
   public void processConversationCommandFromServer(AVIMOperation imop, String operation, int requestId, Messages.ConvCommand convCommand) {
     if (ConversationControlOp.STARTED.equals(operation)) {
-      onConversationCreated(requestId, convCommand.getCdate());
+      // need convCommand to instantiate conversation object.
+      onConversationCreated(requestId, convCommand);
     } else if (ConversationControlOp.JOINED.equals(operation)) {
       String invitedBy = convCommand.getInitBy();
       // 这里是我自己邀请了我自己，这个事件会被忽略。因为伴随这个消息一起来的还有added消息
       if (invitedBy.equals(session.getSelfPeerId())) {
         return;
       } else if (!invitedBy.equals(session.getSelfPeerId())) {
-        onInvitedToConversation(invitedBy);
+        // need convCommand to instantiate conversation object.
+        onInvitedToConversation(invitedBy, convCommand);
       }
     } else if (ConversationControlOp.REMOVED.equals(operation)) {
       if (requestId != CommandPacket.UNSUPPORTED_OPERATION) {
@@ -393,7 +397,7 @@ class AVInternalConversation {
         }
       }
     } else if (ConversationControlOp.ADDED.equals(operation)) {
-      // 这里我们回过头去看发送的命令是什么如果是join，则是自己把自己加入到某个conversation。否则是邀请成功
+      // 这里我们回过头去看发送的命令是什么，如果是join，则是自己把自己加入到某个conversation。否则是邀请成功
       if (requestId != CommandPacket.UNSUPPORTED_OPERATION) {
         if (imop.getCode() == AVIMOperation.CONVERSATION_JOIN.getCode()) {
           onJoined(requestId);
@@ -440,48 +444,55 @@ class AVInternalConversation {
     //这里记录的是对方 ack 及 read 的时间，而非自己 
     long lastDeliveredAt = -1;
     long lastReadAt = -1;
-      for (Messages.LogItem item : logItems) {
-        long ackAt = item.hasAckAt() ? -1 : item.getAckAt();
-        long readAt = item.hasReadAt() ?-1 : item.getReadAt();
-        if (lastDeliveredAt < ackAt) {
-          lastDeliveredAt = ackAt;
-        }
-        if (lastReadAt < readAt) {
-          lastReadAt = readAt;
-        }
-
-        String from = item.getFrom();
-        Object data = item.getData();
-        long timestamp = item.getTimestamp();
-        String msgId = item.getMsgId();
-        boolean mentionAll = item.hasMentionAll()? item.getMentionAll():false;
-        List<String> mentionList = item.getMentionPidsList();
-        boolean isBinaryMsg = item.hasBin() && item.getBin();
-
-        AVIMMessage message = null;
-        if (isBinaryMsg && null != data) {
-          message = new AVIMBinaryMessage(this.conversationId, from, timestamp, ackAt, readAt);
-          ((AVIMBinaryMessage)message).setBytes(AVUtils.base64Decode(data.toString()));
-        } else if (data instanceof String || data instanceof JSON) {
-          message = new AVIMMessage(this.conversationId, from, timestamp, ackAt, readAt);
-          message.setContent(data.toString());
-        } else {
-          continue;
-        }
-        message.setMessageId(msgId);
-        message.setMentionAll(mentionAll);
-        message.setMentionList(mentionList);
-
-        message = AVIMMessageManagerHelper.parseTypedMessage(message);
-        messageList.add(message);
+    for (Messages.LogItem item : logItems) {
+      long ackAt = item.hasAckAt() ? -1 : item.getAckAt();
+      long readAt = item.hasReadAt() ?-1 : item.getReadAt();
+      if (lastDeliveredAt < ackAt) {
+        lastDeliveredAt = ackAt;
       }
-      onHistoryMessageQuery(messageList, requestKey, lastDeliveredAt, lastReadAt);
+      if (lastReadAt < readAt) {
+        lastReadAt = readAt;
+      }
+
+      String from = item.getFrom();
+      Object data = item.getData();
+      long timestamp = item.getTimestamp();
+      String msgId = item.getMsgId();
+      boolean mentionAll = item.hasMentionAll()? item.getMentionAll():false;
+      List<String> mentionList = item.getMentionPidsList();
+      boolean isBinaryMsg = item.hasBin() && item.getBin();
+
+      AVIMMessage message = null;
+      if (isBinaryMsg && null != data) {
+        message = new AVIMBinaryMessage(this.conversationId, from, timestamp, ackAt, readAt);
+        ((AVIMBinaryMessage)message).setBytes(AVUtils.base64Decode(data.toString()));
+      } else if (data instanceof String || data instanceof JSON) {
+        message = new AVIMMessage(this.conversationId, from, timestamp, ackAt, readAt);
+        message.setContent(data.toString());
+      } else {
+        continue;
+      }
+      message.setMessageId(msgId);
+      message.setMentionAll(mentionAll);
+      message.setMentionList(mentionList);
+
+      message = AVIMMessageManagerHelper.parseTypedMessage(message);
+      messageList.add(message);
+    }
+    onHistoryMessageQuery(messageList, requestKey, lastDeliveredAt, lastReadAt);
   }
 
   // 以下的方法都是主动方法，需要带着requestId当成面包屑来找到回家的路
-  void onConversationCreated(int requestId, String createdAt) {
+  void onConversationCreated(int requestId, Messages.ConvCommand convCommand) {
+    String createdAt = convCommand.getCdate();
+    String cid = convCommand.getCid();
+    int tempTTL = convCommand.hasTempConvTTL()? convCommand.getTempConvTTL(): 0;
+
+    // they are not necessary for create-callback(isTemp, isTransient), except for tempTTL.
     Bundle bundle = new Bundle();
     bundle.putString(Conversation.callbackCreatedAt, createdAt);
+    bundle.putString(Conversation.callbackConversationKey, cid);
+    bundle.putInt(Conversation.callbackTemporaryTTL, tempTTL);
     BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), conversationId, requestId, bundle,
         AVIMOperation.CONVERSATION_CREATION);
   }
@@ -557,11 +568,16 @@ class AVInternalConversation {
   }
 
   // 以下的所有内容都是从服务器端来得，客户端是被动接受的
-  void onInvitedToConversation(String invitedBy) {
+  void onInvitedToConversation(String invitedBy, Messages.ConvCommand convCommand) {
     AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
     if (handler != null) {
       AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
-      AVIMConversation conversation = client.getConversation(this.conversationId);
+      boolean isTemp = convCommand.hasTempConv()? convCommand.getTempConv() : false;
+      boolean isTransient = convCommand.hasTransient()? convCommand.getTransient() : false;
+      int tempTTL = convCommand.hasTempConvTTL()?convCommand.getTempConvTTL() : 0;
+
+      AVIMConversation conversation = client.getConversation(this.conversationId, isTransient, isTemp);
+      conversation.setTemporaryExpiredat(System.currentTimeMillis()/1000 + tempTTL);
       handler.processEvent(Conversation.STATUS_ON_JOINED, invitedBy, null, conversation);
     }
   }
@@ -616,7 +632,7 @@ class AVInternalConversation {
     message.setMessageIOType(AVIMMessage.AVIMMessageIOType.AVIMMessageIOTypeIn);
     message.setMessageStatus(AVIMMessage.AVIMMessageStatus.AVIMMessageStatusSent);
 
-    AVIMMessageManagerHelper.processMessage(message,
+    AVIMMessageManagerHelper.processMessage(message, convType,
         AVIMClient.getInstance(session.getSelfPeerId()), hasMore, isTransient);
   }
 

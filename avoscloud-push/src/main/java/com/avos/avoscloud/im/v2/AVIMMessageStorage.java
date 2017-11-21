@@ -36,7 +36,7 @@ class AVIMMessageStorage {
   static final String DB_NAME_PREFIX = "com.avos.avoscloud.im.v2.";
   static final String MESSAGE_TABLE = "messages";
   static final String MESSAGE_INDEX = "message_index";
-  static final int DB_VERSION = 9;
+  static final int DB_VERSION = 10;
   static final String COLUMN_MESSAGE_ID = "message_id";
   static final String COLUMN_TIMESTAMP = "timestamp";
   static final String COLUMN_CONVERSATION_ID = "conversation_id";
@@ -68,6 +68,9 @@ class AVIMMessageStorage {
   static final String COLUMN_CONVERSATION_READAT = "readAt";
   static final String COLUMN_CONVRESATION_DELIVEREDAT = "deliveredAt";
   static final String COLUMN_CONV_LASTMESSAGE_INNERTYPE = "last_msg_iType";
+  static final String COLUMN_CONV_TEMP = "temp";
+  static final String COLUMN_CONV_TEMP_TTL = "temp_ttl";
+  static final String COLUMN_CONV_SYSTEM = "sys";
 
   static final String NUMBERIC = "NUMBERIC";
   static final String INTEGER = "INTEGER";
@@ -87,9 +90,9 @@ class AVIMMessageStorage {
    *
    * table: conversations
    * schema:
-   * |---------------------------------------------------------------------------------------------------------------------------------------|
-   * |expireAt |attr |instanceData |updatedAt |createdAt |creator |members |lm |last_message |isTransient |unread_count |readAt |deliveredAt |
-   * |---------------------------------------------------------------------------------------------------------------------------------------|
+   * |---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+   * |expireAt |attr |instanceData |updatedAt |createdAt |creator |members |lm |last_message |isTransient |unread_count |readAt |deliveredAt | sys | temp | temp_ttl |
+   * |---------------------------------------------------------------------------------------------------------------------------------------------------------------|
    *
    */
   static class SQL {
@@ -118,6 +121,8 @@ class AVIMMessageStorage {
 
     static final String DELETE_LOCAL_MESSAGE = COLUMN_CONVERSATION_ID + " = ? and " + COLUMN_MESSAGE_ID + " = ? and "
         + COLUMN_STATUS + " = ? and " + COLUMN_DEDUPLICATED_TOKEN + " = ? ";
+
+    static final String SELECT_VALID_CONVS = "("+ COLUMN_CONV_TEMP + " < 1 and " + COLUMN_EXPIREAT + " > ?) or (" + COLUMN_CONV_TEMP + "> 0 and " + COLUMN_CONV_TEMP_TTL + " > ?)";
   }
 
   private DBHelper dbHelper;
@@ -165,6 +170,9 @@ class AVIMMessageStorage {
         + COLUMN_LASTMESSAGE + " TEXT,"
         + COLUMN_CONV_MENTIONED + " INTEGER default 0,"
         + COLUMN_CONV_LASTMESSAGE_INNERTYPE + " INTEGER default 0, "
+        + COLUMN_CONV_SYSTEM + " INTEGER default 0, "
+        + COLUMN_CONV_TEMP + " INTEGER default 0, "
+        + COLUMN_CONV_TEMP_TTL + " NUMBERIC, "
         + "PRIMARY KEY(" + COLUMN_CONVERSATION_ID + "))";
 
     public DBHelper(Context context, String clientId) {
@@ -223,6 +231,10 @@ class AVIMMessageStorage {
       }
       if (oldVersion == 8) {
         upgradeToVersion9(sqLiteDatabase);
+        oldVersion += 1;
+      }
+      if (oldVersion == 9) {
+        upgradeToVersion10(sqLiteDatabase);
         oldVersion += 1;
       }
     }
@@ -303,6 +315,22 @@ class AVIMMessageStorage {
           db.execSQL(getAddColumnSql(CONVERSATION_TABLE, COLUMN_CONV_LASTMESSAGE_INNERTYPE, INTEGER, "0"));
         }
       } catch (Exception e) {
+      }
+    }
+
+    private void upgradeToVersion10(SQLiteDatabase db) {
+      try {
+        if (!columnExists(db, CONVERSATION_TABLE, COLUMN_CONV_SYSTEM)) {
+          db.execSQL(getAddColumnSql(CONVERSATION_TABLE, COLUMN_CONV_SYSTEM, INTEGER, "0"));
+        }
+        if (!columnExists(db, CONVERSATION_TABLE, COLUMN_CONV_TEMP)) {
+          db.execSQL(getAddColumnSql(CONVERSATION_TABLE, COLUMN_CONV_TEMP, INTEGER, "0"));
+        }
+        if (!columnExists(db, CONVERSATION_TABLE, COLUMN_CONV_TEMP_TTL)) {
+          db.execSQL(getAddColumnSql(CONVERSATION_TABLE, COLUMN_CONV_TEMP_TTL, NUMBERIC));
+        }
+      } catch (Exception ex) {
+        ;
       }
     }
 
@@ -855,6 +883,16 @@ class AVIMMessageStorage {
       values.put(COLUMN_CONVERSATION_READAT, conversation.getLastReadAt());
       values.put(COLUMN_CONVRESATION_DELIVEREDAT, conversation.getLastDeliveredAt());
       values.put(COLUMN_CONVERSATION_ID, conversation.getConversationId());
+
+      // add temporary conversation data.
+      values.put(COLUMN_CONV_SYSTEM, conversation.isSystem()? 1 : 0);
+      values.put(COLUMN_CONV_TEMP, conversation.isTemporary()? 1 : 0);
+      values.put(COLUMN_CONV_TEMP_TTL, conversation.getTemporaryExpiredat());
+
+//      if (AVOSCloud.isDebugLogEnabled()) {
+//        LogUtil.avlog.d(String.format("insert or update conversation: %s", values.toString()));
+//      }
+//
       db.insertWithOnConflict(CONVERSATION_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
     }
     db.setTransactionSuccessful();
@@ -903,10 +941,11 @@ class AVIMMessageStorage {
   }
 
   public List<AVIMConversation> getAllCachedConversations() {
+    long currentTs = System.currentTimeMillis();
     SQLiteDatabase db = dbHelper.getReadableDatabase();
     Cursor cursor =
-        db.query(CONVERSATION_TABLE, null, COLUMN_EXPIREAT + " > ?",
-            new String[] {String.valueOf(System.currentTimeMillis())}, null, null, null,
+        db.query(CONVERSATION_TABLE, null, SQL.SELECT_VALID_CONVS,
+            new String[] {String.valueOf(currentTs), String.valueOf(currentTs/1000)}, null, null, null,
             null);
     cursor.moveToFirst();
     List<AVIMConversation> conversations = new LinkedList<AVIMConversation>();
@@ -937,8 +976,27 @@ class AVIMMessageStorage {
     String lastMessage = cursor.getString(cursor.getColumnIndex(COLUMN_LASTMESSAGE));
     int lastMessageInnerType = cursor.getInt(cursor.getColumnIndex(COLUMN_CONV_LASTMESSAGE_INNERTYPE));
 
-    AVIMConversation conversation =
-        new AVIMConversation(AVIMClient.getInstance(clientId), conversationId);
+    int system = cursor.getInt(cursor.getColumnIndex(COLUMN_CONV_SYSTEM));
+    int temporary = cursor.getInt(cursor.getColumnIndex(COLUMN_CONV_TEMP));
+
+    AVIMConversation conversation = null;
+    if (temporary > 0) {
+      conversation = new AVIMTemporaryConversation(AVIMClient.getInstance(clientId), conversationId);
+      long tempExpiredAt = cursor.getLong(cursor.getColumnIndex(COLUMN_CONV_TEMP_TTL));
+      conversation.setTemporaryExpiredat(tempExpiredAt);
+    } else if (system > 0) {
+      conversation = new AVIMServiceConversation(AVIMClient.getInstance(clientId), conversationId);
+    } else if (transientValue > 0) {
+      conversation = new AVIMChatRoom(AVIMClient.getInstance(clientId), conversationId);
+    } else {
+      conversation = new AVIMConversation(AVIMClient.getInstance(clientId), conversationId);
+    }
+
+//    if (AVOSCloud.isDebugLogEnabled()) {
+//      LogUtil.avlog.d(String.format("parse conversation: id=%s, creator=%s, transient=%d, sys=%d, temp=%d, return=%s",
+//          conversationId, creator, transientValue, system, temporary, conversation.getClass().getSimpleName()));
+//    }
+//
     conversation.createdAt = createdAt;
     conversation.updatedAt = updatedAt;
     try {
@@ -971,7 +1029,6 @@ class AVIMMessageStorage {
     }
     conversation.creator = creator;
     conversation.lastMessageAt = new Date(lastMessageTS);
-    conversation.isTransient = transientValue == 1;
     conversation.unreadMessagesCount = unreadCount;
     conversation.unreadMessagesMentioned = mentioned == 1;
     conversation.lastReadAt = readAt;

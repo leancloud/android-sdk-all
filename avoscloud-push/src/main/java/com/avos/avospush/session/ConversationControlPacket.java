@@ -57,6 +57,8 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
    */
   boolean isUnique;
 
+  boolean isTemporary = false;
+
   public ConversationControlPacket() {
     this.setCmd(CONVERSATION_CMD);
   }
@@ -133,6 +135,12 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
     this.isUnique = isUnique;
   }
 
+  public boolean isTemporary() {return isTemporary;}
+
+  public void setTemporary(boolean val) {
+    this.isTemporary = val;
+  }
+
   @Override
   protected Messages.GenericCommand.Builder getGenericCommandBuilder() {
     Messages.GenericCommand.Builder builder = super.getGenericCommandBuilder();
@@ -170,18 +178,24 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
     if (isUnique) {
       builder.setUnique(isUnique);
     }
+    if (isTemporary) {
+      builder.setTempConv(isTemporary);
+    }
+
     return builder.build();
   }
 
   public static ConversationControlPacket genConversationCommand(String selfId,
       String conversationId, List<String> peers, String op, Map<String, Object> attributes,
-      Signature signature, boolean isTransient, boolean isUnique, int requestId) {
+      Signature signature, boolean isTransient, boolean isUnique, boolean isTemporary, boolean isSystem,
+      int requestId) {
     ConversationControlPacket ccp = new ConversationControlPacket();
     ccp.setPeerId(selfId);
     ccp.setConversationId(conversationId);
     ccp.setRequestId(requestId);
     ccp.setTransient(isTransient);
     ccp.setUnique(isUnique);
+    ccp.setTemporary(isTemporary);
 
     if (!AVUtils.isEmptyList(peers)) {
       ccp.setMembers(peers);
@@ -205,8 +219,8 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
   public static ConversationControlPacket genConversationCommand(String selfId,
       String conversationId, List<String> peers, String op, Map<String, Object> attributes,
       Signature signature, boolean isTransient, int requestId) {
-    return genConversationCommand(selfId, conversationId, peers, op, attributes, signature, isTransient, false,
-      requestId);
+    return genConversationCommand(selfId, conversationId, peers, op, attributes, signature, isTransient,
+        false, false, false, requestId);
   }
 
   public static ConversationControlPacket genConversationCommand(String selfId,
