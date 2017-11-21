@@ -104,7 +104,6 @@ public class AVIMClient {
    * @return
    * @since 3.0
    */
-
   public static AVIMClient getInstance(String clientId) {
     if (AVUtils.isBlankString(clientId)) {
       throw new IllegalArgumentException("clientId cannot be null.");
@@ -118,6 +117,28 @@ public class AVIMClient {
       AVIMClient elderClient = clients.putIfAbsent(clientId, client);
       return elderClient == null ? client : elderClient;
     }
+  }
+
+  /**
+   * 返回同时使用的聊天实例数量
+   *
+   * @return
+   * @since 4.6
+   */
+  public static int getClientsCount() {
+    return clients.size();
+  }
+
+  /**
+   * 返回默认使用的 clientId（仅在只有一个 clientId 的时候有效）
+   *
+   * @return
+   * @since 4.6
+   */  public static String getDefaultClient() {
+    if (getClientsCount() == 1) {
+      return clients.keys().nextElement();
+    }
+    return "";
   }
 
   /**

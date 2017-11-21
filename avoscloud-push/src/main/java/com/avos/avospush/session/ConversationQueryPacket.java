@@ -2,6 +2,7 @@ package com.avos.avospush.session;
 
 import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.Messages;
+import com.avos.avoscloud.im.v2.AVIMClient;
 import com.avos.avoscloud.im.v2.Conversation;
 
 import java.util.Map;
@@ -78,7 +79,10 @@ public class ConversationQueryPacket extends PeerBasedCommandPacket {
 
   public static ConversationQueryPacket getConversationQueryPacket(String peerId, Map<String, Object> queryParams, int requestId) {
     ConversationQueryPacket cqp = new ConversationQueryPacket();
-    cqp.setPeerId(peerId);
+    if (AVIMClient.getClientsCount() > 1) {
+      // peerId is necessary only when more than 1 client logined.
+      cqp.setPeerId(peerId);
+    }
     cqp.queryParams = queryParams;
     cqp.setRequestId(requestId);
     return cqp;

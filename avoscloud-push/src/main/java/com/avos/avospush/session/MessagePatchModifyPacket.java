@@ -3,6 +3,7 @@ package com.avos.avospush.session;
 import java.util.List;
 import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.Messages;
+import com.avos.avoscloud.im.v2.AVIMClient;
 import com.google.protobuf.ByteString;
 
 /**
@@ -75,7 +76,10 @@ public class MessagePatchModifyPacket extends PeerBasedCommandPacket {
     packet.mentionAll = mentionAll;
     packet.mentionList = mentionList;
     packet.setRequestId(requestId);
-    packet.setPeerId(peerId);
+    if (AVIMClient.getClientsCount() > 1) {
+      // peerId is necessary only when more than 1 client logined.
+      packet.setPeerId(peerId);
+    }
     return packet;
   }
 
@@ -86,7 +90,10 @@ public class MessagePatchModifyPacket extends PeerBasedCommandPacket {
     packet.timestamp = timestamp;
     packet.isRecall = true;
     packet.setRequestId(requestId);
-    packet.setPeerId(peerId);
+    if (AVIMClient.getClientsCount() > 1) {
+      // peerId is necessary only when more than 1 client logined.
+      packet.setPeerId(peerId);
+    }
     return packet;
   }
 }

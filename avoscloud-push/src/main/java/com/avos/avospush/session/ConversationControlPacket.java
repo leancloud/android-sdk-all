@@ -7,6 +7,7 @@ import com.avos.avoscloud.AVOSCloud;
 import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.Messages;
 import com.avos.avoscloud.Signature;
+import com.avos.avoscloud.im.v2.AVIMClient;
 
 public class ConversationControlPacket extends PeerBasedCommandPacket {
   public static final String CONVERSATION_CMD = "conv";
@@ -190,7 +191,10 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
       Signature signature, boolean isTransient, boolean isUnique, boolean isTemporary, boolean isSystem,
       int requestId) {
     ConversationControlPacket ccp = new ConversationControlPacket();
-    ccp.setPeerId(selfId);
+    if (AVIMClient.getClientsCount() > 1) {
+      // selfId is necessary only when more than 1 clients logined.
+      ccp.setPeerId(selfId);
+    }
     ccp.setConversationId(conversationId);
     ccp.setRequestId(requestId);
     ccp.setTransient(isTransient);

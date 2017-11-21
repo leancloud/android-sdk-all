@@ -3,6 +3,7 @@ package com.avos.avospush.session;
 import com.avos.avoscloud.LogUtil;
 import com.avos.avoscloud.Messages;
 import com.avos.avoscloud.AVUtils;
+import com.avos.avoscloud.im.v2.AVIMClient;
 import com.avos.avoscloud.im.v2.AVIMMessageOption;
 import com.google.protobuf.ByteString;
 
@@ -124,7 +125,10 @@ public class ConversationDirectMessagePacket extends PeerBasedCommandPacket {
                                                                              String msg, byte[] binaryMsg, boolean mentionAll, List<String> mentionList,
                                                                              AVIMMessageOption messageOption, int requestId) {
     ConversationDirectMessagePacket cdmp = new ConversationDirectMessagePacket();
-    cdmp.setPeerId(peerId);
+    if (AVIMClient.getClientsCount() > 1) {
+      // peerId is necessary only when more than 1 client logined.
+      cdmp.setPeerId(peerId);
+    }
     cdmp.setConversationId(conversationId);
     cdmp.setRequestId(requestId);
     cdmp.setMessageOption(messageOption);

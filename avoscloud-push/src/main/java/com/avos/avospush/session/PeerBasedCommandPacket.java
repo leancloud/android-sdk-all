@@ -1,6 +1,7 @@
 package com.avos.avospush.session;
 
 import com.avos.avoscloud.Messages;
+import com.avos.avoscloud.im.v2.AVIMClient;
 
 /**
  * Created by nsun on 4/24/14.
