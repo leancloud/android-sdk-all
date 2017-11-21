@@ -189,7 +189,7 @@ public class AVPersistenceUtils {
     };
     if (!fileForRead.exists() || !fileForRead.isFile()) {
       if (AVOSCloud.isDebugLogEnabled()) {
-        LogUtil.log.d("not file object", new FileNotFoundException());
+        LogUtil.log.d("not found file: " + fileForRead.getPath() + "/" + fileForRead.getName());
       }
       return null;
     }
