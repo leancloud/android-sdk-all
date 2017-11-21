@@ -2,6 +2,7 @@ package com.avos.avospush.session;
 
 import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.Messages;
+import com.avos.avoscloud.im.v2.AVIMClient;
 
 /**
  * Created by wli on 15/10/15.
@@ -56,7 +57,10 @@ public class UnreadMessagesClearPacket extends PeerBasedCommandPacket {
   public static UnreadMessagesClearPacket getUnreadClearPacket(String peerId,
       String conversationId, String messageId, long timeStamp, int requestId) {
     UnreadMessagesClearPacket packet = new UnreadMessagesClearPacket();
-    packet.setPeerId(peerId);
+    if (AVIMClient.getClientsCount() > 1) {
+      // peerId is necessary only for more than 1 clients loggined.
+      packet.setPeerId(peerId);
+    }
     packet.setConversationId(conversationId);
     packet.setRequestId(requestId);
     packet.setMessageId(messageId);

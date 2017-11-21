@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 
+import com.avos.avoscloud.im.v2.AVIMClient;
 import com.avos.avoscloud.java_websocket.framing.CloseFrame;
 import com.avos.avospush.session.LiveQueryLoginPacket;
 import com.avos.avospush.push.AVPushRouter;
@@ -238,6 +239,10 @@ class AVPushConnectionManager implements AVPushWebSocketClient.AVSocketListener 
 
       String peerId = command.getPeerId();
       Integer requestKey = command.hasI() ? command.getI() : null;
+      if (AVUtils.isBlankString(peerId)) {
+        // in case that only 1 client loggined, downlink doesn't contains peerId.
+        peerId = AVIMClient.getDefaultClient();
+      }
 
       if (command.getCmd().getNumber() == Messages.CommandType.loggedin_VALUE) {
         if (LiveQueryLoginPacket.SERVICE_LIVE_QUERY == command.getService()) {

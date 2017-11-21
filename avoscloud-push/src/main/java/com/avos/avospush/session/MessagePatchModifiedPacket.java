@@ -1,6 +1,7 @@
 package com.avos.avospush.session;
 
 import com.avos.avoscloud.Messages;
+import com.avos.avoscloud.im.v2.AVIMClient;
 
 /**
  * Created by wli on 2017/6/30.
@@ -29,7 +30,10 @@ public class MessagePatchModifiedPacket extends PeerBasedCommandPacket {
 
   public static MessagePatchModifiedPacket getPatchMessagePacket(String peerId, long lastPatchTime) {
     MessagePatchModifiedPacket messagePatchModifiedPacket = new MessagePatchModifiedPacket();
-    messagePatchModifiedPacket.setPeerId(peerId);
+    if (AVIMClient.getClientsCount() > 1) {
+      // peerId is necessary only when more than 1 client logined.
+      messagePatchModifiedPacket.setPeerId(peerId);
+    }
     messagePatchModifiedPacket.lastPatchTime = lastPatchTime;
     return messagePatchModifiedPacket;
   }

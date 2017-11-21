@@ -2,6 +2,7 @@ package com.avos.avospush.session;
 
 import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.Messages;
+import com.avos.avoscloud.im.v2.AVIMClient;
 
 /**
  * Created by lbt05 on 2/3/15.
@@ -151,7 +152,10 @@ public class ConversationMessageQueryPacket extends PeerBasedCommandPacket {
                                                                                  String toMsgId, long toTimestamp, boolean tclosed,
                                                                                  int direct, int limit, int requestId) {
     ConversationMessageQueryPacket cqp = new ConversationMessageQueryPacket();
-    cqp.setPeerId(peerId);
+    if (AVIMClient.getClientsCount() > 1) {
+      // peerId is necessary only when more than 1 client logined.
+      cqp.setPeerId(peerId);
+    }
 
     cqp.setConversationId(conversationId);
     cqp.setMsgId(msgId);

@@ -8,6 +8,7 @@ import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.Messages;
 import com.avos.avoscloud.PaasClient;
 import com.avos.avoscloud.Signature;
+import com.avos.avoscloud.im.v2.AVIMClient;
 
 /**
  * Created by nsun on 4/24/14.
@@ -165,10 +166,13 @@ public class SessionControlPacket extends PeerBasedCommandPacket {
     scp.lastPatchTime = lastPatchTime;
     scp.sessionConfig |= PATCH_FLAG;
     if (op.equals(SessionControlOp.OPEN)) {
+      // selfId is mandotary for session/open
       scp.sessionConfig |= PATCH_FLAG_BIND_INSTALLATION_TO_SESSION;
+      scp.setPeerId(selfId);
+    } else if (AVIMClient.getClientsCount() > 1) {
+      // selfId is necessary only when more than one client logins.
+      scp.setPeerId(selfId);
     }
-
-    scp.setPeerId(selfId);
 
     if (null == requestId) {
       scp.setRequestId(SessionControlPacket.UNSUPPORTED_OPERATION);
