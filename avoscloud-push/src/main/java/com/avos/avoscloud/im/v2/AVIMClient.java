@@ -134,7 +134,8 @@ public class AVIMClient {
    *
    * @return
    * @since 4.6
-   */  public static String getDefaultClient() {
+   */
+  public static String getDefaultClient() {
     if (getClientsCount() == 1) {
       return clients.keys().nextElement();
     }
