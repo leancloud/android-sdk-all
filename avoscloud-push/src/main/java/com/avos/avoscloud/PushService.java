@@ -2,6 +2,7 @@ package com.avos.avoscloud;
 
 import android.annotation.TargetApi;
 import android.app.AlarmManager;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ComponentName;
@@ -18,6 +19,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
+import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
 import com.avos.avoscloud.im.v2.AVIMClient;
@@ -86,6 +88,7 @@ public class PushService extends Service {
    * 是否自动唤醒 PushService
    */
   private static boolean isAutoWakeUp = true;
+  static String DefaultChannelId = "";
   
   AVConnectivityReceiver connectivityReceiver;
   AVShutdownReceiver shutdownReceiver;
@@ -218,7 +221,7 @@ public class PushService extends Service {
     unregisterReceiver(shutdownReceiver);
     isStarted = false;
 
-    if (isAutoWakeUp) {
+    if (isAutoWakeUp && Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
       // Let's try to wake PushService again
       Intent i = new Intent(AVOSCloud.applicationContext, PushService.class);
       i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -586,6 +589,27 @@ public class PushService extends Service {
    */
   public static void setAutoWakeUp(boolean isAutoWakeUp) {
     PushService.isAutoWakeUp = isAutoWakeUp;
+  }
+
+  @TargetApi(Build.VERSION_CODES.O)
+  public static void setDefaultChannelId(Context context, String channelId) {
+    DefaultChannelId = channelId;
+    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
+      // do nothing for Android versions before Ore
+      return;
+    }
+
+    try {
+      NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+      CharSequence name = context.getPackageName();
+      String description = "PushNotification";
+      int importance = NotificationManager.IMPORTANCE_DEFAULT;
+      android.app.NotificationChannel channel = new android.app.NotificationChannel(channelId, name, importance);
+      channel.setDescription(description);
+      notificationManager.createNotificationChannel(channel);
+    } catch (Exception ex) {
+      LogUtil.log.w("failed to create NotificationChannel, then perhaps PushNotification doesn't work well on Android O and newer version.");
+    }
   }
 
   private static Handler _installationSaveHandler = new Handler(Looper.getMainLooper()) {
