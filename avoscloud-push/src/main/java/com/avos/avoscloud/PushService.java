@@ -19,6 +19,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
+import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
 import com.avos.avoscloud.im.v2.AVIMClient;
@@ -598,13 +599,17 @@ public class PushService extends Service {
       return;
     }
 
-    NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-    CharSequence name = context.getPackageName();
-    String description = "PushNotification";
-    int importance = NotificationManager.IMPORTANCE_DEFAULT;
-    android.app.NotificationChannel channel = new android.app.NotificationChannel(channelId, name, importance);
-    channel.setDescription(description);
-    notificationManager.createNotificationChannel(channel);
+    try {
+      NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+      CharSequence name = context.getPackageName();
+      String description = "PushNotification";
+      int importance = NotificationManager.IMPORTANCE_DEFAULT;
+      android.app.NotificationChannel channel = new android.app.NotificationChannel(channelId, name, importance);
+      channel.setDescription(description);
+      notificationManager.createNotificationChannel(channel);
+    } catch (Exception ex) {
+      LogUtil.log.w("failed to create NotificationChannel, then perhaps PushNotification doesn't work well on Android O and newer version.");
+    }
   }
 
   private static Handler _installationSaveHandler = new Handler(Looper.getMainLooper()) {
