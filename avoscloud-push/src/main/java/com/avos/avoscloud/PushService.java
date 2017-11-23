@@ -223,9 +223,14 @@ public class PushService extends Service {
 
     if (isAutoWakeUp && Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
       // Let's try to wake PushService again
-      Intent i = new Intent(AVOSCloud.applicationContext, PushService.class);
-      i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      startService(i);
+      try {
+        Intent i = new Intent(AVOSCloud.applicationContext, PushService.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startService(i);
+      } catch (Exception ex) {
+        // i have tried my best.
+        LogUtil.log.e("failed to start PushService. cause: " + ex.getMessage());
+      }
     }
     super.onDestroy();
   }
@@ -278,12 +283,17 @@ public class PushService extends Service {
       @Override
       public void run() {
         LogUtil.log.d(LOGTAG, "Start service");
-        Intent intent = new Intent(finalContext, PushService.class);
-        intent.putExtra(AVConstants.AV_PUSH_SERVICE_APPLICATION_ID, AVOSCloud.applicationId);
-        if (cls != null) {
-          intent.putExtra(AVConstants.AV_PUSH_SERVICE_DEFAULT_CALLBACK, cls.getName());
+        try {
+          Intent intent = new Intent(finalContext, PushService.class);
+          intent.putExtra(AVConstants.AV_PUSH_SERVICE_APPLICATION_ID, AVOSCloud.applicationId);
+          if (cls != null) {
+            intent.putExtra(AVConstants.AV_PUSH_SERVICE_DEFAULT_CALLBACK, cls.getName());
+          }
+          finalContext.startService(intent);
+        } catch (Exception ex) {
+          // i have tried my best.
+          LogUtil.log.e("failed to start PushService. cause: " + ex.getMessage());
         }
-        finalContext.startService(intent);
       }
     }).start();
   }
