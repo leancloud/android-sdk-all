@@ -601,6 +601,13 @@ public class PushService extends Service {
     PushService.isAutoWakeUp = isAutoWakeUp;
   }
 
+  /**
+   * Set default channel for Android Oreo or newer version
+   * Notice: it isn"t necessary to invoke this method for any Android version before Oreo.
+   *
+   * @param context   context
+   * @param channelId default channel id.
+   */
   @TargetApi(Build.VERSION_CODES.O)
   public static void setDefaultChannelId(Context context, String channelId) {
     DefaultChannelId = channelId;
