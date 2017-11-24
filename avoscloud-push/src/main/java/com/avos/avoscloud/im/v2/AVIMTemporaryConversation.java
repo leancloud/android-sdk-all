@@ -26,4 +26,12 @@ public class AVIMTemporaryConversation extends AVIMReadonlyConversation {
     super(client, conversationId);
     isTemporary = true;
   }
+
+  /*
+   * 判断当前临时对话是否已经过期
+   */
+  public boolean isExpired() {
+    long now = System.currentTimeMillis() / 1000;
+    return now > this.temporaryExpiredat;
+  }
 }
