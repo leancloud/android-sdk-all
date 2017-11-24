@@ -340,16 +340,28 @@ public class AVIMClient {
   }
 
   /**
-   * 创建一个临时对话
+   * 创建一个临时对话（默认有效期：3 天）
    *
    * @param conversationMembers 对话成员
-   * @param name 对话名字
    * @param callback  结果回调函数
    * @since 4.6
    */
-  public void createTemporaryConversation(final List<String> conversationMembers, String name,
+  public void createTemporaryConversation(final List<String> conversationMembers,
                                           final AVIMConversationCreatedCallback callback) {
-    this.createConversation(conversationMembers, name, null, false, true, true, callback);
+    this.createTemporaryConversation(conversationMembers, 86400*3, callback);
+  }
+
+  /**
+   * 创建一个临时对话（默认有效期：3 天）
+   *
+   * @param conversationMembers 对话成员
+   * @param ttl 有效期间，以秒为单位。例如一天有效期，那么 ttl = 86400
+   * @param callback  结果回调函数
+   * @since 4.6
+   */
+  public void createTemporaryConversation(final List<String> conversationMembers, int ttl,
+                                          final AVIMConversationCreatedCallback callback) {
+    this.createConversation(conversationMembers, null, null, false, true, true, ttl, callback);
   }
 
   /**
@@ -368,12 +380,12 @@ public class AVIMClient {
   public void createConversation(final List<String> members, final String name,
       final Map<String, Object> attributes, final boolean isTransient, final boolean isUnique,
       final AVIMConversationCreatedCallback callback) {
-    this.createConversation(members, name, attributes, isTransient, isUnique, false, callback);
+    this.createConversation(members, name, attributes, isTransient, isUnique, false, 0, callback);
   }
 
   private void createConversation(final List<String> members, final String name,
                                   final Map<String, Object> attributes, final boolean isTransient, final boolean isUnique,
-                                  final boolean isTemp, final AVIMConversationCreatedCallback callback) {
+                                  final boolean isTemp, int tempTTL, final AVIMConversationCreatedCallback callback) {
     try {
       AVUtils.ensureElementsNotNull(members, AVSession.ERROR_INVALID_SESSION_ID);
     } catch (Exception e) {
@@ -400,6 +412,9 @@ public class AVIMClient {
     params.put(Conversation.PARAM_CONVERSATION_ISUNIQUE, isUnique);
     params.put(Conversation.PARAM_CONVERSATION_ISTRANSIENT, isTransient);
     params.put(Conversation.PARAM_CONVERSATION_ISTEMPORARY, isTemp);
+    if (isTemp) {
+      params.put(Conversation.PARAM_CONVERSATION_TEMPORARY_TTL, tempTTL);
+    }
     if (conversationAttributes.size() > 0) {
       Map<String, Object> assembledAttributes = AVIMConversation.processAttributes(conversationAttributes, true);
       if (assembledAttributes != null) {
@@ -415,7 +430,7 @@ public class AVIMClient {
           String conversationId =
               intent.getExtras().getString(Conversation.callbackConversationKey);
           String createdAt = intent.getExtras().getString(Conversation.callbackCreatedAt);
-          int tempTTL = intent.getExtras().getInt(Conversation.callbackTemporaryTTL, 0);
+          int tempTTLFromServer = intent.getExtras().getInt(Conversation.callbackTemporaryTTL, 0);
           AVIMConversation conversation = null;
           if (error == null) {
             conversation = getConversation(conversationId, isTransient, isTemp);
@@ -427,7 +442,7 @@ public class AVIMClient {
             conversation.setCreatedAt(createdAt);
             conversation.setUpdatedAt(createdAt);
             conversation.setTemporary(isTemp);
-            conversation.setTemporaryExpiredat(System.currentTimeMillis()/1000 + tempTTL);
+            conversation.setTemporaryExpiredat(System.currentTimeMillis()/1000 + tempTTLFromServer);
             storage.insertConversations(Arrays.asList(conversation));
           }
           callback.internalDone(conversation, AVIMException.wrapperAVException(error));
@@ -533,7 +548,6 @@ public class AVIMClient {
 
     AVIMConversation conversation = conversationCache.get(conversationId);
     if (conversation != null) {
-//      LogUtil.avlog.d(String.format("hit conversation(id:%s, clazz:%s) from cache.", conversationId, conversation.getClass().getSimpleName()));
       return conversation;
     } else if (AVUtils.isBlankString(conversationId)) {
       LogUtil.log.w("conversationId is null");

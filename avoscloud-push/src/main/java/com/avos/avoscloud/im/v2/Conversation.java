@@ -12,6 +12,7 @@ public interface Conversation {
   String PARAM_CONVERSATION_ISTRANSIENT = "conversation.transient";
   String PARAM_CONVERSATION_ISUNIQUE = "conversation.unique";
   String PARAM_CONVERSATION_ISTEMPORARY = "conversation.temp";
+  String PARAM_CONVERSATION_TEMPORARY_TTL = "conversation.tempTTL";
   String PARAM_CONVERSATION_ISSYSTEM = "conversation.sys";
   String PARAM_ONLINE_CLIENTS = "client.oneline";
 
