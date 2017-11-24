@@ -523,8 +523,12 @@ public class PushService extends Service {
         if (params.containsKey(Conversation.PARAM_CONVERSATION_ISTEMPORARY)) {
           isTemp = (Boolean) params.get(Conversation.PARAM_CONVERSATION_ISTEMPORARY);
         }
+        int tempTTL = 86400*3;
+        if (params.containsKey(Conversation.PARAM_CONVERSATION_TEMPORARY_TTL)) {
+          tempTTL = (Integer) params.get(Conversation.PARAM_CONVERSATION_TEMPORARY_TTL);
+        }
 
-        session.createConversation(memberList, attribute, isTransient, isUnique, isTemp, isSystem, requestId);
+        session.createConversation(memberList, attribute, isTransient, isUnique, isTemp, tempTTL, isSystem, requestId);
         break;
       case CONVERSATION_QUERY:
         session.conversationQuery(params, requestId);

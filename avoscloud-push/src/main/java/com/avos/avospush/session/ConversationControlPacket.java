@@ -50,15 +50,17 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
 
   private Map<String, Object> attributes;
 
-  boolean isTransient;
+  private boolean isTransient;
 
   /**
    * 原子创建单聊会话，如果为 true，则先查询是否有符合条件的 conversation，有则返回已存在的，否则创建新的
    * 详见 https://github.com/leancloud/avoscloud-push/issues/293
    */
-  boolean isUnique;
+  private boolean isUnique;
 
-  boolean isTemporary = false;
+  private boolean isTemporary = false;
+
+  private int tempTTL = 0;
 
   public ConversationControlPacket() {
     this.setCmd(CONVERSATION_CMD);
@@ -142,6 +144,15 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
     this.isTemporary = val;
   }
 
+  public int getTempTTL() {
+    return tempTTL;
+  }
+
+  public void setTempTTL(int tempTTL) {
+    this.tempTTL = tempTTL;
+  }
+
+
   @Override
   protected Messages.GenericCommand.Builder getGenericCommandBuilder() {
     Messages.GenericCommand.Builder builder = super.getGenericCommandBuilder();
@@ -181,6 +192,7 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
     }
     if (isTemporary) {
       builder.setTempConv(isTemporary);
+      builder.setTempConvTTL(tempTTL);
     }
 
     return builder.build();
@@ -188,8 +200,8 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
 
   public static ConversationControlPacket genConversationCommand(String selfId,
       String conversationId, List<String> peers, String op, Map<String, Object> attributes,
-      Signature signature, boolean isTransient, boolean isUnique, boolean isTemporary, boolean isSystem,
-      int requestId) {
+      Signature signature, boolean isTransient, boolean isUnique, boolean isTemporary, int tempTTL,
+      boolean isSystem, int requestId) {
     ConversationControlPacket ccp = new ConversationControlPacket();
     if (AVIMClient.getClientsCount() > 1) {
       // selfId is necessary only when more than 1 clients logined.
@@ -200,6 +212,9 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
     ccp.setTransient(isTransient);
     ccp.setUnique(isUnique);
     ccp.setTemporary(isTemporary);
+    if (isTemporary) {
+      ccp.setTempTTL(tempTTL);
+    }
 
     if (!AVUtils.isEmptyList(peers)) {
       ccp.setMembers(peers);
@@ -224,7 +239,7 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
       String conversationId, List<String> peers, String op, Map<String, Object> attributes,
       Signature signature, boolean isTransient, int requestId) {
     return genConversationCommand(selfId, conversationId, peers, op, attributes, signature, isTransient,
-        false, false, false, requestId);
+        false, false, 0, false, requestId);
   }
 
   public static ConversationControlPacket genConversationCommand(String selfId,
