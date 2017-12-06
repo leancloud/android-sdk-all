@@ -390,7 +390,9 @@ class AVInternalConversation {
       }
     } else if (ConversationControlOp.REMOVED.equals(operation)) {
       if (requestId != CommandPacket.UNSUPPORTED_OPERATION) {
-        if (imop.getCode() == AVIMOperation.CONVERSATION_QUIT.getCode()) {
+        if (null == imop) {
+          LogUtil.log.e("IllegalState. operation is null, excepted is QUIT / KICK, originalOp=" + operation);
+        } else if (imop.getCode() == AVIMOperation.CONVERSATION_QUIT.getCode()) {
           onQuit(requestId);
         } else if (imop.getCode() == AVIMOperation.CONVERSATION_RM_MEMBER.getCode()) {
           onKicked(requestId);
@@ -399,7 +401,9 @@ class AVInternalConversation {
     } else if (ConversationControlOp.ADDED.equals(operation)) {
       // 这里我们回过头去看发送的命令是什么，如果是join，则是自己把自己加入到某个conversation。否则是邀请成功
       if (requestId != CommandPacket.UNSUPPORTED_OPERATION) {
-        if (imop.getCode() == AVIMOperation.CONVERSATION_JOIN.getCode()) {
+        if (null == imop) {
+          LogUtil.log.e("IllegalState. operation is null, excepted is JOIN / INVITE, originalOp=" + operation);
+        } else if (imop.getCode() == AVIMOperation.CONVERSATION_JOIN.getCode()) {
           onJoined(requestId);
         } else if (imop.getCode() == AVIMOperation.CONVERSATION_ADD_MEMBER.getCode()) {
           onInvited(requestId);
@@ -411,7 +415,9 @@ class AVInternalConversation {
         this.onKickedFromConversation(invitedBy);
       }
     } else if (ConversationControlOp.UPDATED.equals(operation)) {
-      if (AVIMOperation.CONVERSATION_MUTE.getCode() == imop.getCode()) {
+      if (null == imop) {
+        LogUtil.log.e("IllegalState. operation is null, excepted is MUTE / UNMUTE / UPDATE, originalOp=" + operation);
+      } else if (AVIMOperation.CONVERSATION_MUTE.getCode() == imop.getCode()) {
         onMuted(requestId);
       } else if (AVIMOperation.CONVERSATION_UNMUTE.getCode() == imop.getCode()) {
         onUnmuted(requestId);

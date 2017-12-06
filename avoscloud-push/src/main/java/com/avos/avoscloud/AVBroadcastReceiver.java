@@ -15,7 +15,11 @@ public class AVBroadcastReceiver extends BroadcastReceiver {
     // intent完全有可能是null的情况，就太糟糕了
     // 难道刚刚开机的时候移动ISP还没有识别出来的时候就不去尝试连接了么？
     // if (AVUtils.isConnected(context)) {
-    context.startService(new Intent(context, com.avos.avoscloud.PushService.class));
+    try {
+      context.startService(new Intent(context, com.avos.avoscloud.PushService.class));
+    } catch (Exception ex) {
+      LogUtil.log.e("failed to start PushService. cause: " + ex.getMessage());
+    }
     // }
   }
 }
