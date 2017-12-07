@@ -41,7 +41,7 @@ public class AVIMClient {
   String clientId;
   AVIMMessageStorage storage;
   private String tag;
-  private String sessionToken;
+  private String userSessionToken;
   static ConcurrentHashMap<String, AVIMClient> clients =
       new ConcurrentHashMap<String, AVIMClient>();
   ConcurrentHashMap<String, AVIMConversation> conversationCache =
@@ -172,7 +172,7 @@ public class AVIMClient {
     }
 
     AVIMClient client = getInstance(clientId);
-    client.sessionToken = sessionToken;
+    client.userSessionToken = sessionToken;
     return client;
   }
 
@@ -207,7 +207,7 @@ public class AVIMClient {
 
     AVIMClientParcel parcel = new AVIMClientParcel();
     parcel.setClientTag(tag);
-    parcel.setSessionToken(sessionToken);
+    parcel.setSessionToken(userSessionToken);
     if (null != option) {
       parcel.setForceSingleLogin(option.isForceSingleLogin());
     }

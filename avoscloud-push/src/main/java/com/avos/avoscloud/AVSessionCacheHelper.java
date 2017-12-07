@@ -150,18 +150,18 @@ class AVSessionCacheHelper {
      * 如果自动登录为 true，则写入本地缓存，否则只写入内存，默认写入内存的有效期为当前 app 的生命周期内
      *
      * @param clientId
-     * @param sessionToken
+     * @param realtimeSessionToken
      * @param expireInSec
      */
-    static void addIMSessionToken(String clientId, String sessionToken, int expireInSec) {
+    static void addIMSessionToken(String clientId, String realtimeSessionToken, int expireInSec) {
       if (AVIMClient.isAutoOpen()) {
         AVPersistenceUtils.sharedInstance().savePersistentSettingString(SESSION_TOKEN_KEY, clientId,
-          sessionToken);
+            realtimeSessionToken);
         AVPersistenceUtils.sharedInstance().savePersistentSettingString(SESSION_TOKEN_KEY,
           getSessionTokenExpiredAtKey(clientId),
           String.valueOf(System.currentTimeMillis() + expireInSec * 1000));
       } else {
-        imSessionTokenMap.put(clientId, sessionToken);
+        imSessionTokenMap.put(clientId, realtimeSessionToken);
       }
     }
 
