@@ -54,7 +54,8 @@ public class AVSession {
   private final Context context;
   private final String selfId;
   String tag;
-  private String sessionToken = null;
+  private String userSessionToken = null;
+  private String realtimeSessionToken = null;
   private long lastNotifyTime = 0;
   private long lastPatchTime = 0;
 
@@ -102,7 +103,7 @@ public class AVSession {
    */
   public void open(final AVIMClientParcel parcel, final int requestId) {
     this.tag = parcel.getClientTag();
-    updateSessionToken(parcel.getSessionToken());
+    updateUserSessionToken(parcel.getSessionToken());
     try {
       if (PushService.isPushConnectionBroken()) {
         sessionListener
@@ -124,8 +125,9 @@ public class AVSession {
   }
 
   void reopen() {
-    if (!AVUtils.isBlankString(sessionToken)) {
-      openWithSessionToken();
+    String rtmSessionToken = AVSessionCacheHelper.IMSessionTokenCache.getIMSessionToken(getSelfPeerId());
+    if (!AVUtils.isBlankString(rtmSessionToken)) {
+      openWithSessionToken(rtmSessionToken);
     } else {
       int requestId = AVUtils.getNextIMRequestId();
       openWithSignature(requestId, true, false);
@@ -133,12 +135,12 @@ public class AVSession {
   }
 
   /**
-   * 使用im-sessionToken来登录
+   * 使用 im-sessionToken 来登录
    */
-  private void openWithSessionToken() {
+  private void openWithSessionToken(String rtmSessionToken) {
     SessionControlPacket scp = SessionControlPacket.genSessionCommand(
         this.getSelfPeerId(), null, SessionControlPacket.SessionControlOp.OPEN, null, this.getLastNotifyTime(), this.getLastPatchTime(), null);
-    scp.setSessionToken(sessionToken);
+    scp.setSessionToken(rtmSessionToken);
     scp.setReconnectionRequest(true);
     PushService.sendData(scp);
   }
@@ -171,8 +173,8 @@ public class AVSession {
       @Override
       public Signature computeSignature() throws SignatureException {
         SignatureFactory signatureFactory = AVIMOptions.getGlobalOptions().getSignatureFactory();
-        if (null == signatureFactory && !AVUtils.isBlankString(getSessionToken())) {
-          signatureFactory = new AVUserSignatureFactory(getSessionToken());
+        if (null == signatureFactory && !AVUtils.isBlankString(getUserSessionToken())) {
+          signatureFactory = new AVUserSignatureFactory(getUserSessionToken());
         }
         if (null != signatureFactory) {
           return signatureFactory.createSignature(getSelfPeerId(), new ArrayList<String>());
@@ -261,6 +263,7 @@ public class AVSession {
     PushService.sendData(scp);
   }
 
+  // TODO： need change to use REST API
   protected void conversationQuery(Map<String, Object> params, int requestId) {
     if (sessionPaused.get()) {
       RuntimeException se = new RuntimeException("Connection Lost");
@@ -402,17 +405,17 @@ public class AVSession {
     }
   }
 
-  String getSessionToken() {
-    if (AVUtils.isBlankString(sessionToken)) {
-      sessionToken = AVPersistenceUtils.sharedInstance().getPersistentSettingString(selfId, AVUSER_SESSION_TOKEN, "");
+  String getUserSessionToken() {
+    if (AVUtils.isBlankString(userSessionToken)) {
+      userSessionToken = AVPersistenceUtils.sharedInstance().getPersistentSettingString(selfId, AVUSER_SESSION_TOKEN, "");
     }
-    return sessionToken;
+    return userSessionToken;
   }
 
-  void updateSessionToken(String token) {
-    sessionToken = token;
-    if (!AVUtils.isBlankString(sessionToken)) {
-      AVPersistenceUtils.sharedInstance().savePersistentSettingString(selfId, AVUSER_SESSION_TOKEN, sessionToken);
+  void updateUserSessionToken(String token) {
+    userSessionToken = token;
+    if (!AVUtils.isBlankString(userSessionToken)) {
+      AVPersistenceUtils.sharedInstance().savePersistentSettingString(selfId, AVUSER_SESSION_TOKEN, userSessionToken);
     }
   }
 
