@@ -56,6 +56,7 @@ public class AVSession {
   String tag;
   private String userSessionToken = null;
   private String realtimeSessionToken = null;
+  private long realtimeSessionTokenExpired = 0l;
   private long lastNotifyTime = 0;
   private long lastPatchTime = 0;
 
@@ -103,7 +104,7 @@ public class AVSession {
    */
   public void open(final AVIMClientParcel parcel, final int requestId) {
     this.tag = parcel.getClientTag();
-    updateUserSessionToken(parcel.getSessionToken());
+    updateUserSessionToken(parcel.getUserSessionToken());
     try {
       if (PushService.isPushConnectionBroken()) {
         sessionListener
@@ -132,6 +133,11 @@ public class AVSession {
       int requestId = AVUtils.getNextIMRequestId();
       openWithSignature(requestId, true, false);
     }
+  }
+
+  void updateRealtimeSessionToken(String sessionToken, int expireInSec) {
+    this.realtimeSessionToken = sessionToken;
+    this.realtimeSessionTokenExpired = System.currentTimeMillis() + expireInSec * 1000;
   }
 
   /**
@@ -200,6 +206,7 @@ public class AVSession {
   }
 
   public void cleanUp() {
+    updateRealtimeSessionToken("", 0);
     if (pendingMessages != null) {
       pendingMessages.clear();
     }
@@ -215,8 +222,10 @@ public class AVSession {
 
     try {
       // 都关掉了，我们需要去除Session记录
+
       AVSessionCacheHelper.getTagCacheInstance().removeSession(getSelfPeerId());
       AVSessionCacheHelper.IMSessionTokenCache.removeIMSessionToken(getSelfPeerId());
+
       // 如果session都已不在，缓存消息静静地等到桑田沧海
       this.cleanUp();
 
@@ -258,8 +267,8 @@ public class AVSession {
 
   protected void queryOnlinePeers(List<String> peerIds, int requestId) {
     SessionControlPacket scp =
-      SessionControlPacket.genSessionCommand(this.selfId, peerIds,
-        SessionControlPacket.SessionControlOp.QUERY, null, requestId);
+        SessionControlPacket.genSessionCommand(this.selfId, peerIds,
+            SessionControlPacket.SessionControlOp.QUERY, null, requestId);
     PushService.sendData(scp);
   }
 

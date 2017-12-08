@@ -59,6 +59,7 @@ public interface Conversation {
     CONVERSATION_FETCH_RECEIPT_TIME(40017, "com.avoscloud.v2.im.conversation.fetchReceiptTimestamps."),
     CONVERSATION_UPDATE_MESSAGE(40018, "com.avoscloud.v2.im.conversation.updateMessage."),
     CONVERSATION_RECALL_MESSAGE(40019, "com.avoscloud.v2.im.conversation.recallMessage."),
+    CLIENT_REFRESH_TOKEN(40020, "com.avoscloud.v2.im.client.refreshToken"),
     CONVERSATION_UNKNOWN(49999, "com.avoscloud.v2.im.conversation.unknown");
 
     private final String header;

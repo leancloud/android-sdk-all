@@ -10,9 +10,13 @@ import com.avos.avoscloud.AVCallback;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVOSCloud;
 import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.AVPowerfulUtils;
+import com.avos.avoscloud.AVRequestParams;
 import com.avos.avoscloud.AVUtils;
+import com.avos.avoscloud.GenericObjectCallback;
 import com.avos.avoscloud.IntentUtil;
 import com.avos.avoscloud.LogUtil;
+import com.avos.avoscloud.PaasClient;
 import com.avos.avoscloud.PushService;
 import com.avos.avoscloud.PushServiceParcel;
 import com.avos.avoscloud.SaveCallback;
@@ -1183,6 +1187,19 @@ public class AVIMConversation {
       }
       return;
     }
+
+    // TODO： need to switch to REST API
+//    Map<String, String> header = new HashMap<>();
+//    header.put("x-lc-session-token", "");
+//    PaasClient.storageInstance().getObject(AVPowerfulUtils.getEndpoint("_Conversation") + this.conversationId,
+//        null, false, header, new GenericObjectCallback() {
+//      public void onSuccess(String content, AVException e) {
+//        ;
+//      }
+//      public void onFailure(Throwable error, String content) {
+//        ;
+//      }
+//    });
 
     Map<String, Object> params = new HashMap<String, Object>();
     if (conversationId.startsWith(Conversation.TEMPCONV_ID_PREFIX)) {

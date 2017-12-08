@@ -142,6 +142,7 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
           }
           session.sessionListener.onSessionOpen(AVOSCloud.applicationContext, session, requestId);
           if (command.hasSt() && command.hasStTtl()) {
+            session.updateRealtimeSessionToken(command.getSt(), Integer.valueOf(command.getStTtl()));
             AVSessionCacheHelper.IMSessionTokenCache.addIMSessionToken(session.getSelfPeerId(),
               command.getSt(), Integer.valueOf(command.getStTtl()));
           }
@@ -365,6 +366,7 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
         AVSessionCacheHelper.getTagCacheInstance().removeSession(session.getSelfPeerId());
       } else if (CODE_SESSION_TOKEN_FAILURE == code) {
         // 如果遇到session token 失效或者过期的情况，先是清理缓存，然后再重新触发一次自动登录
+        session.updateRealtimeSessionToken("", 0);
         AVSessionCacheHelper.IMSessionTokenCache.removeIMSessionToken(session.getSelfPeerId());
         this.onWebSocketOpen();
       }
