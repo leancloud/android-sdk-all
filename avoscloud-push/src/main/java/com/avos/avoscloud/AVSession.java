@@ -106,7 +106,7 @@ public class AVSession {
    */
   public void open(final AVIMClientParcel parcel, final int requestId) {
     this.tag = parcel.getClientTag();
-    updateUserSessionToken(parcel.getUserSessionToken());
+    updateUserSessionToken(parcel.getSessionToken());
     try {
       if (PushService.isPushConnectionBroken()) {
         sessionListener

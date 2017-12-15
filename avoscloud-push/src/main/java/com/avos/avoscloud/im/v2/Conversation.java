@@ -15,6 +15,7 @@ public interface Conversation {
   String PARAM_CONVERSATION_TEMPORARY_TTL = "conversation.tempTTL";
   String PARAM_CONVERSATION_ISSYSTEM = "conversation.sys";
   String PARAM_ONLINE_CLIENTS = "client.oneline";
+  String PARAM_CONVERSATION_MEMBER_DETAILS = "conversation.memberDetails";
 
   String PARAM_MESSAGE_QUERY_LIMIT = "limit";
   String PARAM_MESSAGE_QUERY_DIRECT = "direct";
@@ -60,6 +61,7 @@ public interface Conversation {
     CONVERSATION_UPDATE_MESSAGE(40018, "com.avoscloud.v2.im.conversation.updateMessage."),
     CONVERSATION_RECALL_MESSAGE(40019, "com.avoscloud.v2.im.conversation.recallMessage."),
     CLIENT_REFRESH_TOKEN(40020, "com.avoscloud.v2.im.client.refreshToken"),
+    CONVERSATION_PROMOTE_MEMBER(40021, "com.avoscloud.v2.im.conversation.promoteMember"),
     CONVERSATION_UNKNOWN(49999, "com.avoscloud.v2.im.conversation.unknown");
 
     private final String header;
@@ -120,6 +122,10 @@ public interface Conversation {
           return CONVERSATION_UPDATE_MESSAGE;
         case 40019:
           return CONVERSATION_RECALL_MESSAGE;
+        case 40020:
+          return CLIENT_REFRESH_TOKEN;
+        case 40021:
+          return CONVERSATION_PROMOTE_MEMBER;
         default:
           return CONVERSATION_UNKNOWN;
       }

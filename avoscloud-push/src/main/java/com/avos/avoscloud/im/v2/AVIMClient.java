@@ -218,7 +218,7 @@ public class AVIMClient {
 
     AVIMClientParcel parcel = new AVIMClientParcel();
     parcel.setClientTag(tag);
-    parcel.setUserSessionToken(userSessionToken);
+    parcel.setSessionToken(userSessionToken);
     if (null != option) {
       parcel.setForceSingleLogin(option.isForceSingleLogin());
     }

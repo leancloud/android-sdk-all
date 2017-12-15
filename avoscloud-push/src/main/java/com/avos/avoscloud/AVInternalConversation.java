@@ -329,49 +329,65 @@ class AVInternalConversation {
 
   public void processConversationCommandFromClient(int operationCode, Map<String, Object> params,
       int requestId) {
-    if (operationCode == AVIMOperation.CONVERSATION_JOIN.getCode()) {
-      this.join(requestId);
-    } else if (operationCode == AVIMOperation.CONVERSATION_ADD_MEMBER.getCode()) {
-      List<String> members = (List<String>) params.get(Conversation.PARAM_CONVERSATION_MEMBER);
-      this.addMembers(members, requestId);
-    } else if (operationCode == AVIMOperation.CONVERSATION_RM_MEMBER.getCode()) {
-      List<String> members = (List<String>) params.get(Conversation.PARAM_CONVERSATION_MEMBER);
-      this.kickMembers(members, requestId);
-    } else if (operationCode == AVIMOperation.CONVERSATION_QUIT.getCode()) {
-      this.quit(requestId);
-    } else if (operationCode == AVIMOperation.CONVERSATION_UPDATE.getCode()) {
-      Map<String, Object> attr =
-          (Map<String, Object>) params.get(Conversation.PARAM_CONVERSATION_ATTRIBUTE);
-      this.updateInfo(attr, requestId);
-    } else if (operationCode == AVIMOperation.CONVERSATION_MESSAGE_QUERY.getCode()) {
-      // timestamp = 0时，原来的 (Long) 会发生强制转型错误(Integer cannot cast to Long)
-      String msgId = (String) params.get(Conversation.PARAM_MESSAGE_QUERY_MSGID);
-      long ts = ((Number) params.get(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP)).longValue();
-      boolean sclosed = (Boolean) params.get(Conversation.PARAM_MESSAGE_QUERY_STARTCLOSED);
-      String toMsgId = (String) params.get(Conversation.PARAM_MESSAGE_QUERY_TO_MSGID);
-      long tts = ((Number) params.get(Conversation.PARAM_MESSAGE_QUERY_TO_TIMESTAMP)).longValue();
-      boolean tclosed = (Boolean) params.get(Conversation.PARAM_MESSAGE_QUERY_TOCLOSED);
-      int direct = (Integer) params.get(Conversation.PARAM_MESSAGE_QUERY_DIRECT);
-      int limit = (Integer) params.get(Conversation.PARAM_MESSAGE_QUERY_LIMIT);
-      this.queryHistoryMessages(msgId, ts, sclosed, toMsgId, tts, tclosed, direct, limit, requestId);
-    } else if (operationCode == AVIMOperation.CONVERSATION_MUTE.getCode()) {
-      mute(requestId);
-    } else if (operationCode == AVIMOperation.CONVERSATION_UNMUTE.getCode()) {
-      unmute(requestId);
-    } else if (operationCode == AVIMOperation.CONVERSATION_MEMBER_COUNT_QUERY.getCode()) {
-      getMemberCount(requestId);
-    } else if (operationCode == AVIMOperation.CONVERSATION_READ.getCode()) {
-      String messageId = "";
-      if (null != params && params.containsKey(Conversation.PARAM_MESSAGE_QUERY_MSGID)) {
-        messageId = (String)params.get(Conversation.PARAM_MESSAGE_QUERY_MSGID);
-      }
-      long messageTS = 0;
-      if (null != params && params.containsKey(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP)) {
-        messageTS = ((Number) params.get(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP)).longValue();
-      }
-      read(messageId, messageTS, requestId);
-    } else if (operationCode == AVIMOperation.CONVERSATION_FETCH_RECEIPT_TIME.getCode()) {
-      getReceiptTime(requestId);
+    AVIMOperation imop = AVIMOperation.getAVIMOperation(operationCode);
+    List<String> members = null != params ? ((List<String>) params.get(Conversation.PARAM_CONVERSATION_MEMBER)) : null;
+    switch (imop) {
+      case CONVERSATION_JOIN:
+        join(requestId);
+        break;
+      case CONVERSATION_ADD_MEMBER:
+        addMembers(members, requestId);
+        break;
+      case CONVERSATION_RM_MEMBER:
+        kickMembers(members, requestId);
+        break;
+      case CONVERSATION_QUIT:
+        quit(requestId);
+        break;
+      case CONVERSATION_UPDATE:
+        Map<String, Object> attr =
+            (Map<String, Object>) params.get(Conversation.PARAM_CONVERSATION_ATTRIBUTE);
+        this.updateInfo(attr, requestId);
+        break;
+      case CONVERSATION_MUTE:
+        mute(requestId);
+        break;
+      case CONVERSATION_UNMUTE:
+        unmute(requestId);
+        break;
+      case CONVERSATION_MEMBER_COUNT_QUERY:
+        getMemberCount(requestId);
+        break;
+      case CONVERSATION_FETCH_RECEIPT_TIME:
+        getReceiptTime(requestId);
+        break;
+      case CONVERSATION_READ:
+        String messageId = "";
+        if (null != params && params.containsKey(Conversation.PARAM_MESSAGE_QUERY_MSGID)) {
+          messageId = (String)params.get(Conversation.PARAM_MESSAGE_QUERY_MSGID);
+        }
+        long messageTS = 0;
+        if (null != params && params.containsKey(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP)) {
+          messageTS = ((Number) params.get(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP)).longValue();
+        }
+        read(messageId, messageTS, requestId);
+        break;
+      case CONVERSATION_PROMOTE_MEMBER:
+        break;
+      case CONVERSATION_MESSAGE_QUERY:
+        // timestamp = 0时，原来的 (Long) 会发生强制转型错误(Integer cannot cast to Long)
+        String msgId = (String) params.get(Conversation.PARAM_MESSAGE_QUERY_MSGID);
+        long ts = ((Number) params.get(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP)).longValue();
+        boolean sclosed = (Boolean) params.get(Conversation.PARAM_MESSAGE_QUERY_STARTCLOSED);
+        String toMsgId = (String) params.get(Conversation.PARAM_MESSAGE_QUERY_TO_MSGID);
+        long tts = ((Number) params.get(Conversation.PARAM_MESSAGE_QUERY_TO_TIMESTAMP)).longValue();
+        boolean tclosed = (Boolean) params.get(Conversation.PARAM_MESSAGE_QUERY_TOCLOSED);
+        int direct = (Integer) params.get(Conversation.PARAM_MESSAGE_QUERY_DIRECT);
+        int limit = (Integer) params.get(Conversation.PARAM_MESSAGE_QUERY_LIMIT);
+        queryHistoryMessages(msgId, ts, sclosed, toMsgId, tts, tclosed, direct, limit, requestId);
+        break;
+      default:
+          break;
     }
   }
 

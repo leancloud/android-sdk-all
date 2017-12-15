@@ -27,6 +27,7 @@ import com.avos.avoscloud.im.v2.callback.AVIMMessageRecalledCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMMessageUpdatedCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMMessagesQueryCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMSingleMessageQueryCallback;
+import com.avos.avoscloud.im.v2.conversation.AVIMConversationMember;
 import com.avos.avoscloud.im.v2.messages.AVIMFileMessage;
 import com.avos.avoscloud.im.v2.messages.AVIMFileMessageAccessor;
 import com.avos.avoscloud.im.v2.messages.AVIMRecalledMessage;
@@ -714,6 +715,17 @@ public class AVIMConversation {
     }
   }
 
+  public void promoteMember(final AVIMConversationMember member, final AVIMConversationCallback callback) {
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.PARAM_CONVERSATION_MEMBER_DETAILS, member);
+    sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_PROMOTE_MEMBER,
+        callback, null);
+  }
+
+  /**
+   * 查询成员数量
+   * @param callback
+   */
   public void getMemberCount(AVIMConversationMemberCountCallback callback) {
     sendCMDToPushService(null, AVIMOperation.CONVERSATION_MEMBER_COUNT_QUERY, callback);
   }
