@@ -173,7 +173,6 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
 
     if (attributes != null && !attributes.isEmpty()) {
       Messages.JsonObjectMessage.Builder attrBuilder = Messages.JsonObjectMessage.newBuilder();
-
       attrBuilder.setData(attributes.toString());
       builder.setAttr(attrBuilder);
     }
@@ -203,8 +202,11 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
     }
 
     if (null != memberInfo) {
-      Messages.ConvMemberInfo convMemberInfo = null;
-      builder.setInfo(convMemberInfo);
+      Messages.ConvMemberInfo.Builder cmiBuilder = Messages.ConvMemberInfo.newBuilder();
+      cmiBuilder.setPid("");
+      cmiBuilder.setRole("");
+      cmiBuilder.setInfoId("");
+      builder.setInfo(cmiBuilder.build());
     }
     return builder.build();
   }
