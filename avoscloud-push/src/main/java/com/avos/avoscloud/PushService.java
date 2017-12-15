@@ -561,7 +561,7 @@ public class PushService extends Service {
           if (null == internalConversation) {
             LogUtil.log.w("not found target conversation with id=" + conversationId);
           } else {
-            internalConversation.processConversationCommandFromClient(operationCode, params, requestId);
+            internalConversation.processConversationCommandFromClient(operation, params, requestId);
           }
         }
         break;
@@ -569,7 +569,7 @@ public class PushService extends Service {
         if (!AVUtils.isBlankString(conversationId)) {
           AVInternalConversation conversation = session.getConversation(conversationId, convType);
           if (null != conversation) {
-            conversation.processConversationCommandFromClient(operationCode, params, requestId);
+            conversation.processConversationCommandFromClient(operation, params, requestId);
           }
         }
     }

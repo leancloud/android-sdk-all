@@ -33,6 +33,8 @@ import com.avos.avospush.session.ConversationMessageQueryPacket;
 import com.avos.avospush.session.MessagePatchModifyPacket;
 import com.avos.avospush.session.UnreadMessagesClearPacket;
 
+import org.json.JSONObject;
+
 @TargetApi(11)
 class AVInternalConversation {
   AVSession session;
@@ -155,7 +157,7 @@ class AVInternalConversation {
   }
 
   public void updateInfo(Map<String, Object> attr, int requestId) {
-    if (!checkSessionStatus(AVIMOperation.CONVERSATION_SEND_MESSAGE, requestId)) {
+    if (!checkSessionStatus(AVIMOperation.CONVERSATION_UPDATE, requestId)) {
       return;
     }
     session.conversationOperationCache.offer(Operation.getOperation(
@@ -163,6 +165,15 @@ class AVInternalConversation {
         requestId));
     PushService.sendData(ConversationControlPacket.genConversationCommand(session.getSelfPeerId(),
         conversationId, null, ConversationControlOp.UPDATE, attr, null, requestId));
+  }
+
+  public void promoteMember(Map<String, Object> member, int requestId) {
+    if (!checkSessionStatus(AVIMOperation.CONVERSATION_PROMOTE_MEMBER, requestId)) {
+      return;
+    }
+    ConversationControlPacket ccp = ConversationControlPacket.genConversationMemberCommand(session.getSelfPeerId(),
+        conversationId, ConversationControlOp.MEMBER_UPDATE, member, null, requestId);
+    PushService.sendData(ccp);
   }
 
   public void sendMessage(AVIMMessage message, int requestId, AVIMMessageOption messageOption) {
@@ -195,7 +206,7 @@ class AVInternalConversation {
 
 
   public void patchMessage(PushServiceParcel pushServiceParcel, AVIMOperation operation, int requestId) {
-    if (!checkSessionStatus(AVIMOperation.CONVERSATION_SEND_MESSAGE, requestId)) {
+    if (!checkSessionStatus(AVIMOperation.CONVERSATION_RECALL_MESSAGE, requestId)) {
       return;
     }
 
@@ -245,7 +256,7 @@ class AVInternalConversation {
   public void queryHistoryMessages(String msgId, long timestamp, boolean sclosed,
                                    String toMsgId, long toTimestamp, boolean toclosed,
                                    int direct, int limit, int requestId) {
-    if (!checkSessionStatus(AVIMOperation.CONVERSATION_QUIT, requestId)) {
+    if (!checkSessionStatus(AVIMOperation.CONVERSATION_MESSAGE_QUERY, requestId)) {
       return;
     }
     session.conversationOperationCache.offer(Operation.getOperation(
@@ -279,7 +290,7 @@ class AVInternalConversation {
   }
 
   public void getMemberCount(int requestId) {
-    if (!checkSessionStatus(AVIMOperation.CONVERSATION_UNMUTE, requestId)) {
+    if (!checkSessionStatus(AVIMOperation.CONVERSATION_MEMBER_COUNT_QUERY, requestId)) {
       return;
     }
     session.conversationOperationCache.offer(Operation.getOperation(
@@ -302,7 +313,7 @@ class AVInternalConversation {
   }
 
   private void read(String msgId, long timestamp, int requestId) {
-    if (!checkSessionStatus(AVIMOperation.CONVERSATION_UNMUTE, requestId)) {
+    if (!checkSessionStatus(AVIMOperation.CONVERSATION_READ, requestId)) {
       return;
     }
     session.conversationOperationCache.offer(Operation.getOperation(
@@ -327,9 +338,8 @@ class AVInternalConversation {
     }
   }
 
-  public void processConversationCommandFromClient(int operationCode, Map<String, Object> params,
+  public void processConversationCommandFromClient(AVIMOperation imop, Map<String, Object> params,
       int requestId) {
-    AVIMOperation imop = AVIMOperation.getAVIMOperation(operationCode);
     List<String> members = null != params ? ((List<String>) params.get(Conversation.PARAM_CONVERSATION_MEMBER)) : null;
     switch (imop) {
       case CONVERSATION_JOIN:
@@ -373,6 +383,10 @@ class AVInternalConversation {
         read(messageId, messageTS, requestId);
         break;
       case CONVERSATION_PROMOTE_MEMBER:
+        Map<String, Object> memberInfo = null != params? (Map<String, Object>) params.get(Conversation.PARAM_CONVERSATION_MEMBER_DETAILS) : null;
+        if (null != memberInfo) {
+          promoteMember(memberInfo, requestId);
+        }
         break;
       case CONVERSATION_MESSAGE_QUERY:
         // timestamp = 0时，原来的 (Long) 会发生强制转型错误(Integer cannot cast to Long)
@@ -447,6 +461,8 @@ class AVInternalConversation {
       long receiptTime = convCommand.getMaxAckTimestamp();
       long readTime = convCommand.getMaxReadTimestamp();
       onTimesReceipt(requestId,  receiptTime, readTime);
+    } else if (ConversationControlOp.MEMBER_UPDATED.equals(operation)) {
+      onMemberUpdated(requestId);
     }
     // 下面都是被动
     else if (ConversationControlOp.MEMBER_JOINED.equals(operation)) {
@@ -544,6 +560,11 @@ class AVInternalConversation {
     bundle.putString(Conversation.callbackUpdatedAt, updatedAt);
     BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), conversationId, requestId, bundle,
         AVIMOperation.CONVERSATION_UPDATE);
+  }
+
+  private void onMemberUpdated(int requestId) {
+    BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), conversationId, requestId,
+        AVIMOperation.CONVERSATION_PROMOTE_MEMBER);
   }
 
   void onMuted(int requestId) {
