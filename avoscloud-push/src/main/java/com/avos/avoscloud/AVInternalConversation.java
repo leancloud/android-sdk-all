@@ -173,6 +173,9 @@ class AVInternalConversation {
     if (!checkSessionStatus(AVIMOperation.CONVERSATION_PROMOTE_MEMBER, requestId)) {
       return;
     }
+    session.conversationOperationCache.offer(Operation.getOperation(
+        AVIMOperation.CONVERSATION_PROMOTE_MEMBER.getCode(), session.getSelfPeerId(), conversationId,
+        requestId));
     ConversationControlPacket ccp = ConversationControlPacket.genConversationMemberCommand(session.getSelfPeerId(),
         conversationId, ConversationControlOp.MEMBER_UPDATE, member, null, requestId);
     PushService.sendData(ccp);
