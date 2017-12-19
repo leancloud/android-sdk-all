@@ -25,6 +25,8 @@ import com.avos.avoscloud.im.v2.AVIMMessageQueryDirection;
 import com.avos.avoscloud.im.v2.AVIMOptions;
 import com.avos.avoscloud.im.v2.Conversation;
 import com.avos.avoscloud.im.v2.Conversation.AVIMOperation;
+import com.avos.avoscloud.im.v2.conversation.AVIMConversationMemberInfo;
+import com.avos.avoscloud.im.v2.conversation.MemberRole;
 import com.avos.avospush.session.CommandPacket;
 import com.avos.avospush.session.ConversationControlPacket;
 import com.avos.avospush.session.ConversationControlPacket.ConversationControlOp;
@@ -473,6 +475,10 @@ class AVInternalConversation {
       String removedBy = convCommand.getInitBy();
       List<String> leftMembers = convCommand.getMList();
       onMembersLeft(leftMembers, removedBy);
+    } else if (ConversationControlOp.MEMBER_INFO_CHANGED.equals(operation)) {
+      String changedBy = convCommand.getInitBy();
+      Messages.ConvMemberInfo member = convCommand.getInfo();
+      onMemberChanged(changedBy, member);
     }
   }
 
@@ -565,6 +571,20 @@ class AVInternalConversation {
   private void onMemberUpdated(int requestId) {
     BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), conversationId, requestId,
         AVIMOperation.CONVERSATION_PROMOTE_MEMBER);
+  }
+
+  private void onMemberChanged(String operator, Messages.ConvMemberInfo member) {
+    AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
+    if (handler != null) {
+      AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
+      AVIMConversation conversation = client.getConversation(this.conversationId);
+      String objectId = member.getInfoId();
+      String roleStr = member.getRole();
+      String peerId = member.getPid();
+      AVIMConversationMemberInfo memberInfo = new AVIMConversationMemberInfo(objectId, this.conversationId,
+          peerId, MemberRole.fromString(roleStr));
+      handler.processEvent(Conversation.STATUS_ON_MEMBER_INFO_CHANGED, operator, memberInfo, conversation);
+    }
   }
 
   void onMuted(int requestId) {

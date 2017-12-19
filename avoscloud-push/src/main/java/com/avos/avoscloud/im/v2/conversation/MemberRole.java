@@ -18,4 +18,13 @@ public enum MemberRole {
   public String getName() {
     return this.role;
   }
+
+  public static MemberRole fromString(String role) {
+    for(MemberRole mr: MemberRole.values()) {
+      if (mr.role.equalsIgnoreCase(role)) {
+        return mr;
+      }
+    }
+    return null;
+  }
 }

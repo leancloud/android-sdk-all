@@ -22,8 +22,8 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
     public static final String MUTE = "mute";
     public static final String UNMUTE = "unmute";
     public static final String COUNT = "count";
-    public static final String MAX_READ = "max-read";
-    public static final String MEMBER_UPDATE = "member-info-update";
+    public static final String MAX_READ = "max_read";
+    public static final String MEMBER_UPDATE = "member_info_update";
 
     // 服务器端会响应的op
     public static final String STARTED = "started";
@@ -36,7 +36,8 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
     public static final String QUERY_RESULT = "results";
     public static final String MEMBER_COUNT_QUERY_RESULT = "result";
     public static final String UPDATED = "updated";
-    public static final String MEMBER_UPDATED = "member-info-updated";
+    public static final String MEMBER_UPDATED = "member_info_updated";
+    public static final String MEMBER_INFO_CHANGED = "member_info_changed";
   }
 
   private List<String> members;
@@ -203,9 +204,16 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
 
     if (null != memberInfo) {
       Messages.ConvMemberInfo.Builder cmiBuilder = Messages.ConvMemberInfo.newBuilder();
-      cmiBuilder.setPid("");
-      cmiBuilder.setRole("");
-      cmiBuilder.setInfoId("");
+      if (memberInfo.containsKey("peerId")) {
+        cmiBuilder.setPid((String) memberInfo.get("peerId"));
+        builder.setTargetClientId((String) memberInfo.get("peerId"));
+      }
+      if (memberInfo.containsKey("role")) {
+        cmiBuilder.setRole((String) memberInfo.get("role"));
+      }
+      if (memberInfo.containsKey("infoId")) {
+        cmiBuilder.setInfoId((String) memberInfo.get("infoId"));
+      }
       builder.setInfo(cmiBuilder.build());
     }
     return builder.build();

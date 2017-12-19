@@ -199,6 +199,10 @@ public class AVIMClient {
     this.realtimeSessionTokenExpired = expireInSec;
   }
 
+  public String getRealtimeSessionToken() {
+    return this.realtimeSessionToken;
+  }
+
   /**
    * 连接服务器
    * 

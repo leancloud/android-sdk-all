@@ -7,11 +7,14 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.avos.avoscloud.AVCallback;
+import com.avos.avoscloud.AVErrorUtils;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVOSCloud;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVPowerfulUtils;
+import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.AVRequestParams;
+import com.avos.avoscloud.AVResponse;
 import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.GenericObjectCallback;
 import com.avos.avoscloud.IntentUtil;
@@ -19,15 +22,19 @@ import com.avos.avoscloud.LogUtil;
 import com.avos.avoscloud.PaasClient;
 import com.avos.avoscloud.PushService;
 import com.avos.avoscloud.PushServiceParcel;
+import com.avos.avoscloud.QueryOperation;
 import com.avos.avoscloud.SaveCallback;
+import com.avos.avoscloud.QueryConditions;
 import com.avos.avoscloud.im.v2.Conversation.AVIMOperation;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationMemberCountCallback;
+import com.avos.avoscloud.im.v2.callback.AVIMConversationMemberQueryCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMMessageRecalledCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMMessageUpdatedCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMMessagesQueryCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMSingleMessageQueryCallback;
-import com.avos.avoscloud.im.v2.conversation.AVIMConversationMember;
+import com.avos.avoscloud.im.v2.conversation.AVIMConversationMemberInfo;
+import com.avos.avoscloud.im.v2.conversation.MemberRole;
 import com.avos.avoscloud.im.v2.messages.AVIMFileMessage;
 import com.avos.avoscloud.im.v2.messages.AVIMFileMessageAccessor;
 import com.avos.avoscloud.im.v2.messages.AVIMRecalledMessage;
@@ -715,11 +722,85 @@ public class AVIMConversation {
     }
   }
 
-  public void promoteMember(final AVIMConversationMember member, final AVIMConversationCallback callback) {
+  public void getAllMemberInfo(final AVIMConversationMemberQueryCallback callback) {
+    QueryConditions conditions = new QueryConditions();
+    conditions.addWhereItem("client_id", QueryOperation.EQUAL_OP, this.client.clientId);
+    conditions.addWhereItem("conversationId", QueryOperation.EQUAL_OP, this.conversationId);
+    queryMemberInfo(conditions, callback);
+  }
+
+  public void getMemberInfo(final String memberId, final AVIMConversationMemberQueryCallback callback) {
+    QueryConditions conditions = new QueryConditions();
+    conditions.addWhereItem("conversationId", QueryOperation.EQUAL_OP, this.conversationId);
+    conditions.addWhereItem("peerId", QueryOperation.EQUAL_OP, memberId);
+    queryMemberInfo(conditions, callback);
+  }
+
+  public void updateMemberRole(final String memberId, final MemberRole role, final AVIMConversationCallback callback) {
+    AVIMConversationMemberInfo info = new AVIMConversationMemberInfo(this.conversationId, memberId, role);
     Map<String, Object> params = new HashMap<String, Object>();
-    params.put(Conversation.PARAM_CONVERSATION_MEMBER_DETAILS, member);
+    params.put(Conversation.PARAM_CONVERSATION_MEMBER_DETAILS, info.getUpdateAttrs());
     sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_PROMOTE_MEMBER,
         callback, null);
+  }
+
+  private void updateNickName(final String nickname, final AVIMConversationCallback callback) {
+    ;
+  }
+
+  private void updateMemberComment(final String memberComment, final AVIMConversationCallback callback) {
+    ;
+  }
+
+  private void queryMemberInfo(final QueryConditions queryConditions, final AVIMConversationMemberQueryCallback callback) {
+    String queryPath = AVPowerfulUtils.getEndpoint("_ConversationMemberInfo");
+
+    queryConditions.addWhereItem("client_id", QueryOperation.EQUAL_OP, this.client.clientId);
+    queryConditions.assembleParameters();
+    AVRequestParams params = new AVRequestParams(queryConditions.getParameters());
+
+    Map<String, String> additionalHeader = new HashMap<>();
+    additionalHeader.put("X-LC-IM-Session-Token", this.client.getRealtimeSessionToken());
+
+    PaasClient.storageInstance().getObject(queryPath, params, false, additionalHeader, new GenericObjectCallback() {
+          @Override
+          public void onSuccess(String content, AVException e) {
+            try {
+              List<AVIMConversationMemberInfo> result = processResults(content);
+              if (callback != null) {
+                callback.internalDone(result, null);
+              }
+            } catch (Exception ex) {
+              if (callback != null) {
+                callback.internalDone(null, AVErrorUtils.createException(ex, null));
+              }
+            }
+          }
+
+          @Override
+          public void onFailure(Throwable error, String content) {
+            if (callback != null) {
+              callback.internalDone(null, AVErrorUtils.createException(error, content));
+            }
+          }
+        }, AVQuery.CachePolicy.NETWORK_ONLY, 86400000);
+  }
+
+  protected List<AVIMConversationMemberInfo> processResults(String content) throws Exception {
+    if (AVUtils.isBlankContent(content)) {
+      return Collections.emptyList();
+    }
+    AVResponse resp = new AVResponse();
+    resp = JSON.parseObject(content, resp.getClass());
+
+    List<AVIMConversationMemberInfo> result = new LinkedList<AVIMConversationMemberInfo>();
+    for (Map item : resp.results) {
+      if (item != null && !item.isEmpty()) {
+        AVIMConversationMemberInfo object = AVIMConversationMemberInfo.createInstance(item);
+        result.add(object);
+      }
+    }
+    return result;
   }
 
   /**

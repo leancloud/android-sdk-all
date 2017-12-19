@@ -344,14 +344,14 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
   public void onError(Integer requestKey, Messages.ErrorCommand errorCommand) {
     if (null != requestKey && requestKey != CommandPacket.UNSUPPORTED_OPERATION) {
       Operation op = session.conversationOperationCache.poll(requestKey);
-      if (op.operation == AVIMOperation.CLIENT_OPEN.getCode()) {
+      if (null != op && op.operation == AVIMOperation.CLIENT_OPEN.getCode()) {
         session.sessionOpened.set(false);
         session.sessionResume.set(false);
       }
       int code = errorCommand.getCode();
       int appCode = (errorCommand.hasAppCode() ? errorCommand.getAppCode() : 0);
       String reason = errorCommand.getReason();
-      AVIMOperation operation = AVIMOperation.getAVIMOperation(op.operation);
+      AVIMOperation operation = (null != op)? AVIMOperation.getAVIMOperation(op.operation): null;
       BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), null, requestKey,
           new AVIMException(code, appCode, reason), operation);
     }
