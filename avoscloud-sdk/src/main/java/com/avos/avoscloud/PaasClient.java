@@ -34,7 +34,7 @@ public class PaasClient {
   static final String DEFAULT_CONTENT_TYPE = "application/json";
   public static final String DEFAULT_FAIL_STRING = "request failed!!!";
 
-  public static final String sdkVersion = "v3.13-SNAPSHOT";
+  public static final String sdkVersion = "v4.6.2";
 
   private static final String userAgent = "AVOS Cloud android-" + sdkVersion + " SDK";
   private AVUser currentUser = null;
@@ -226,6 +226,7 @@ public class PaasClient {
 
     final String absolutURLString = generateQueryPath(relativePath, parameters);
     final String lastModifyTime = getLastModify(absolutURLString);
+
     switch (policy) {
       default:
       case IGNORE_CACHE:
@@ -239,7 +240,6 @@ public class PaasClient {
         getObject(relativePath, parameters, sync, header, callback, policy);
         break;
       case CACHE_ELSE_NETWORK:
-
         AVCacheManager.sharedInstance().get(absolutURLString, maxAgeInMilliseconds, lastModifyTime,
             new GenericObjectCallback() {
               @Override
@@ -310,7 +310,7 @@ public class PaasClient {
         createGetHandler(callback, policy, url);
     if (AVOSCloud.isDebugLogEnabled()) {
       dumpHttpGetRequest(buildUrl(relativePath),
-          parameters == null ? null : parameters.getDumpQueryString());
+          parameters == null ? null : parameters.getDumpQueryString(), myHeader);
     }
     AVHttpClient client = AVHttpClient.clientInstance();
     Request.Builder builder = new Request.Builder();
@@ -632,19 +632,25 @@ public class PaasClient {
   // For Debug
   // ================================================================================
 
-  public void dumpHttpGetRequest(String path, String parameters) {
-    String string = "";
-    if (parameters != null) {
-      string =
-          String.format("curl -X GET -H \"%s: %s\" -H \"%s: %s\" -G --data-urlencode \'%s\' %s",
-              applicationIdField, AVOSCloud.applicationId, apiKeyField, getDebugClientKey(),
-              parameters, path);
-    } else {
-      string =
-          String.format("curl -X GET -H \"%s: %s\" -H \"%s: %s\"  %s", applicationIdField,
-              AVOSCloud.applicationId, apiKeyField, getDebugClientKey(), path);
+  public void dumpHttpGetRequest(String path, String parameters, Map<String, String> header) {
+    String dumpString = "";
+    StringBuilder additionalHeader = new StringBuilder();
+    if (null != header) {
+      for (Map.Entry<String, String> entry : header.entrySet()) {
+        additionalHeader.append(entry.getKey() + ": " + entry.getValue());
+      }
     }
-    LogUtil.avlog.d(string);
+    if (parameters != null) {
+      dumpString =
+          String.format("curl -X GET -H \"%s: %s\" -H \"%s: %s\" -H \"%s\" -G --data-urlencode \'%s\' %s",
+              applicationIdField, AVOSCloud.applicationId, apiKeyField, getDebugClientKey(),
+              additionalHeader.toString(), parameters, path);
+    } else {
+      dumpString =
+          String.format("curl -X GET -H \"%s: %s\" -H \"%s: %s\" -H \"%s\" %s", applicationIdField,
+              AVOSCloud.applicationId, apiKeyField, getDebugClientKey(),additionalHeader.toString(), path);
+    }
+    LogUtil.avlog.d(dumpString);
   }
 
   private String getDebugClientKey() {
