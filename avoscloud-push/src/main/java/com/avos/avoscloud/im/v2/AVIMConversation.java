@@ -7,22 +7,35 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.avos.avoscloud.AVCallback;
+import com.avos.avoscloud.AVErrorUtils;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVOSCloud;
 import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.AVPowerfulUtils;
+import com.avos.avoscloud.AVQuery;
+import com.avos.avoscloud.AVRequestParams;
+import com.avos.avoscloud.AVResponse;
 import com.avos.avoscloud.AVUtils;
+import com.avos.avoscloud.GenericObjectCallback;
 import com.avos.avoscloud.IntentUtil;
 import com.avos.avoscloud.LogUtil;
+import com.avos.avoscloud.PaasClient;
 import com.avos.avoscloud.PushService;
 import com.avos.avoscloud.PushServiceParcel;
+import com.avos.avoscloud.QueryOperation;
 import com.avos.avoscloud.SaveCallback;
+import com.avos.avoscloud.QueryConditions;
 import com.avos.avoscloud.im.v2.Conversation.AVIMOperation;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationMemberCountCallback;
+import com.avos.avoscloud.im.v2.callback.AVIMConversationMemberQueryCallback;
+import com.avos.avoscloud.im.v2.callback.AVIMConversationSimpleResultCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMMessageRecalledCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMMessageUpdatedCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMMessagesQueryCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMSingleMessageQueryCallback;
+import com.avos.avoscloud.im.v2.conversation.AVIMConversationMemberInfo;
+import com.avos.avoscloud.im.v2.conversation.MemberRole;
 import com.avos.avoscloud.im.v2.messages.AVIMFileMessage;
 import com.avos.avoscloud.im.v2.messages.AVIMFileMessageAccessor;
 import com.avos.avoscloud.im.v2.messages.AVIMRecalledMessage;
@@ -710,6 +723,150 @@ public class AVIMConversation {
     }
   }
 
+  /**
+   * 获取当前对话的所有角色信息
+   * @param callback  结果回调函数
+   */
+  public void getAllMemberInfo(final AVIMConversationMemberQueryCallback callback) {
+    QueryConditions conditions = new QueryConditions();
+    conditions.addWhereItem("conversationId", QueryOperation.EQUAL_OP, this.conversationId);
+    queryMemberInfo(conditions, callback);
+  }
+
+  /**
+   * 获取对话内指定成员的角色信息
+   * @param memberId  成员的 clientid
+   * @param callback  结果回调函数
+   */
+  public void getMemberInfo(final String memberId, final AVIMConversationMemberQueryCallback callback) {
+    QueryConditions conditions = new QueryConditions();
+    conditions.addWhereItem("conversationId", QueryOperation.EQUAL_OP, this.conversationId);
+    conditions.addWhereItem("peerId", QueryOperation.EQUAL_OP, memberId);
+    queryMemberInfo(conditions, callback);
+  }
+
+  /**
+   * 更新成员的角色信息
+   * @param memberId  成员的 client id
+   * @param role      角色
+   * @param callback  结果回调函数
+   */
+  public void updateMemberRole(final String memberId, final MemberRole role, final AVIMConversationCallback callback) {
+    AVIMConversationMemberInfo info = new AVIMConversationMemberInfo(this.conversationId, memberId, role);
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.PARAM_CONVERSATION_MEMBER_DETAILS, info.getUpdateAttrs());
+    sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_PROMOTE_MEMBER,
+        callback, null);
+  }
+
+  private void updateNickName(final String nickname, final AVIMConversationCallback callback) {
+    ;
+  }
+
+  private void updateMemberComment(final String memberComment, final AVIMConversationCallback callback) {
+    ;
+  }
+
+  private void queryMemberInfo(final QueryConditions queryConditions, final AVIMConversationMemberQueryCallback callback) {
+    String queryPath = AVPowerfulUtils.getEndpoint("_ConversationMemberInfo");
+
+    queryConditions.assembleParameters();
+    Map<String, String> queryParams = queryConditions.getParameters();
+    queryParams.put("client_id", this.client.clientId);
+    AVRequestParams params = new AVRequestParams(queryParams);
+
+    Map<String, String> additionalHeader = new HashMap<>();
+    additionalHeader.put("X-LC-IM-Session-Token", this.client.getRealtimeSessionToken());
+
+    PaasClient.storageInstance().getObject(queryPath, params, false, additionalHeader, new GenericObjectCallback() {
+          @Override
+          public void onSuccess(String content, AVException e) {
+            try {
+              List<AVIMConversationMemberInfo> result = processResults(content);
+              if (callback != null) {
+                callback.internalDone(result, null);
+              }
+            } catch (Exception ex) {
+              if (callback != null) {
+                callback.internalDone(null, AVErrorUtils.createException(ex, null));
+              }
+            }
+          }
+
+          @Override
+          public void onFailure(Throwable error, String content) {
+            if (callback != null) {
+              callback.internalDone(null, AVErrorUtils.createException(error, content));
+            }
+          }
+        }, AVQuery.CachePolicy.NETWORK_ONLY, 86400000);
+  }
+
+  /**
+   * 将部分成员禁言
+   * @param memberIds  成员列表
+   * @param callback   结果回调函数
+   */
+  public void muteMembers(final List<String> memberIds, final AVIMConversationCallback callback) {
+    if (null == memberIds || memberIds.size() < 1) {
+      if (null != callback) {
+        callback.done(new AVIMException(new IllegalArgumentException("memberIds is null")));
+      }
+      return;
+    }
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
+    sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_MUTE_MEMBER,
+        callback, null);
+  }
+
+  /**
+   * 将部分成员解除禁言
+   * @param memberIds  成员列表
+   * @param callback   结果回调函数
+   */
+  public void unmuteMembers(final List<String> memberIds, final AVIMConversationCallback callback) {
+    if (null == memberIds || memberIds.size() < 1) {
+      if (null != callback) {
+        callback.done(new AVIMException(new IllegalArgumentException("memberIds is null")));
+      }
+      return;
+    }
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
+    sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_UNMUTE_MEMBER,
+        callback, null);
+  }
+
+  /**
+   * 查询所有被禁言的成员列表
+   * @param callback  结果回调函数
+   */
+  public void queryMutedMembers(final AVIMConversationSimpleResultCallback callback) {
+    ;
+  }
+
+  protected List<AVIMConversationMemberInfo> processResults(String content) throws Exception {
+    if (AVUtils.isBlankContent(content)) {
+      return Collections.emptyList();
+    }
+    AVResponse resp = new AVResponse();
+    resp = JSON.parseObject(content, resp.getClass());
+
+    List<AVIMConversationMemberInfo> result = new LinkedList<AVIMConversationMemberInfo>();
+    for (Map item : resp.results) {
+      if (item != null && !item.isEmpty()) {
+        AVIMConversationMemberInfo object = AVIMConversationMemberInfo.createInstance(item);
+        result.add(object);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * 查询成员数量
+   * @param callback
+   */
   public void getMemberCount(AVIMConversationMemberCountCallback callback) {
     sendCMDToPushService(null, AVIMOperation.CONVERSATION_MEMBER_COUNT_QUERY, callback);
   }
@@ -1183,6 +1340,19 @@ public class AVIMConversation {
       }
       return;
     }
+
+    // TODO： need to switch to REST API
+//    Map<String, String> header = new HashMap<>();
+//    header.put("x-lc-session-token", "");
+//    PaasClient.storageInstance().getObject(AVPowerfulUtils.getEndpoint("_Conversation") + this.conversationId,
+//        null, false, header, new GenericObjectCallback() {
+//      public void onSuccess(String content, AVException e) {
+//        ;
+//      }
+//      public void onFailure(Throwable error, String content) {
+//        ;
+//      }
+//    });
 
     Map<String, Object> params = new HashMap<String, Object>();
     if (conversationId.startsWith(Conversation.TEMPCONV_ID_PREFIX)) {

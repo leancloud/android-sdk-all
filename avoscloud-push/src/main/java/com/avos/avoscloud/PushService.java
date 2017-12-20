@@ -478,6 +478,7 @@ public class PushService extends Service {
         params = JSON.parseObject(intentData, Map.class);
       }
     }
+
     // 先检查一下session的状态，但是消息记录查询和conversation查询由于支持缓存则跳过
     if (operation != AVIMOperation.CLIENT_OPEN
         && operation != AVIMOperation.CONVERSATION_MESSAGE_QUERY
@@ -552,11 +553,27 @@ public class PushService extends Service {
       case CLIENT_STATUS:
         processSessionConnectionStatus(session, requestId);
         break;
+      case CONVERSATION_PROMOTE_MEMBER:
+      case CONVERSATION_MUTE_MEMBER:
+      case CONVERSATION_UNMUTE_MEMBER:
+      case CONVERSATION_BLOCK_MEMBER:
+      case CONVERSATION_UNBLOCK_MEMBER:
+        if (AVUtils.isBlankString(conversationId)) {
+          LogUtil.log.e("conversation id is null during promoting MemberInfo");
+        } else {
+          AVInternalConversation internalConversation = session.getConversation(conversationId, convType);
+          if (null == internalConversation) {
+            LogUtil.log.w("not found target conversation with id=" + conversationId);
+          } else {
+            internalConversation.processConversationCommandFromClient(operation, params, requestId);
+          }
+        }
+        break;
       default:
         if (!AVUtils.isBlankString(conversationId)) {
           AVInternalConversation conversation = session.getConversation(conversationId, convType);
           if (null != conversation) {
-            conversation.processConversationCommandFromClient(operationCode, params, requestId);
+            conversation.processConversationCommandFromClient(operation, params, requestId);
           }
         }
     }

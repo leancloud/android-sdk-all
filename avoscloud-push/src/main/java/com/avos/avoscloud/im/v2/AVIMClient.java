@@ -92,6 +92,12 @@ public class AVIMClient {
     return isAutoOpen;
   }
 
+  /**
+   * 实时通信的 sessiontoken 信息
+   */
+  private String realtimeSessionToken = null;
+  private long realtimeSessionTokenExpired = 0l;
+
   private AVIMClient(String clientId) {
     this.clientId = clientId;
     storage = AVIMMessageStorage.getInstance(clientId);
@@ -186,6 +192,15 @@ public class AVIMClient {
     AVIMClient client = getInstance(user);
     client.tag = tag;
     return client;
+  }
+
+  public void updateRealtimeSessionToken(String sessionToken, long expireInSec) {
+    this.realtimeSessionToken = sessionToken;
+    this.realtimeSessionTokenExpired = expireInSec;
+  }
+
+  public String getRealtimeSessionToken() {
+    return this.realtimeSessionToken;
   }
 
   /**

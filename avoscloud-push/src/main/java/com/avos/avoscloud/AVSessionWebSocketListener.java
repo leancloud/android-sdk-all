@@ -141,15 +141,14 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
             session.conversationOperationCache.poll(requestId);
           }
           session.sessionListener.onSessionOpen(AVOSCloud.applicationContext, session, requestId);
-          if (command.hasSt() && command.hasStTtl()) {
-            AVSessionCacheHelper.IMSessionTokenCache.addIMSessionToken(session.getSelfPeerId(),
-              command.getSt(), Integer.valueOf(command.getStTtl()));
-          }
         } else {
           if (AVOSCloud.showInternalDebugLog()) {
             LogUtil.avlog.d("session resumed");
           }
           session.sessionListener.onSessionResumed(AVOSCloud.applicationContext, session);
+        }
+        if (command.hasSt() && command.hasStTtl()) {
+          session.updateRealtimeSessionToken(command.getSt(), Integer.valueOf(command.getStTtl()));
         }
       } catch (Exception e) {
         session.sessionListener.onError(AVOSCloud.applicationContext, session, e);
@@ -345,14 +344,14 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
   public void onError(Integer requestKey, Messages.ErrorCommand errorCommand) {
     if (null != requestKey && requestKey != CommandPacket.UNSUPPORTED_OPERATION) {
       Operation op = session.conversationOperationCache.poll(requestKey);
-      if (op.operation == AVIMOperation.CLIENT_OPEN.getCode()) {
+      if (null != op && op.operation == AVIMOperation.CLIENT_OPEN.getCode()) {
         session.sessionOpened.set(false);
         session.sessionResume.set(false);
       }
       int code = errorCommand.getCode();
       int appCode = (errorCommand.hasAppCode() ? errorCommand.getAppCode() : 0);
       String reason = errorCommand.getReason();
-      AVIMOperation operation = AVIMOperation.getAVIMOperation(op.operation);
+      AVIMOperation operation = (null != op)? AVIMOperation.getAVIMOperation(op.operation): null;
       BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), null, requestKey,
           new AVIMException(code, appCode, reason), operation);
     }
@@ -365,7 +364,7 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
         AVSessionCacheHelper.getTagCacheInstance().removeSession(session.getSelfPeerId());
       } else if (CODE_SESSION_TOKEN_FAILURE == code) {
         // 如果遇到session token 失效或者过期的情况，先是清理缓存，然后再重新触发一次自动登录
-        AVSessionCacheHelper.IMSessionTokenCache.removeIMSessionToken(session.getSelfPeerId());
+        session.updateRealtimeSessionToken("", 0);
         this.onWebSocketOpen();
       }
     }

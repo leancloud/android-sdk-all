@@ -6,6 +6,8 @@ import android.content.Context;
 import com.avos.avoscloud.AVIMOperationQueue.Operation;
 import com.avos.avoscloud.PendingMessageCache.Message;
 import com.avos.avoscloud.SignatureFactory.SignatureException;
+import com.avos.avoscloud.im.v2.AVIMClient;
+import com.avos.avoscloud.im.v2.AVIMConversation;
 import com.avos.avoscloud.im.v2.AVIMMessage;
 import com.avos.avoscloud.im.v2.AVIMOptions;
 import com.avos.avoscloud.im.v2.Conversation.AVIMOperation;
@@ -56,6 +58,7 @@ public class AVSession {
   String tag;
   private String userSessionToken = null;
   private String realtimeSessionToken = null;
+  private long realtimeSessionTokenExpired = 0l;
   private long lastNotifyTime = 0;
   private long lastPatchTime = 0;
 
@@ -134,12 +137,28 @@ public class AVSession {
     }
   }
 
+  void updateRealtimeSessionToken(String sessionToken, int expireInSec) {
+    this.realtimeSessionToken = sessionToken;
+    this.realtimeSessionTokenExpired = System.currentTimeMillis() + expireInSec * 1000;
+    AVIMClient client = AVIMClient.getInstance(this.selfId);
+    if (null != client) {
+      client.updateRealtimeSessionToken(sessionToken, realtimeSessionTokenExpired);
+    }
+    if (AVUtils.isBlankString(sessionToken)) {
+      AVSessionCacheHelper.IMSessionTokenCache.removeIMSessionToken(getSelfPeerId());
+    } else {
+      AVSessionCacheHelper.IMSessionTokenCache.addIMSessionToken(getSelfPeerId(), sessionToken,
+          realtimeSessionTokenExpired);
+    }
+  }
+
   /**
    * 使用 im-sessionToken 来登录
    */
   private void openWithSessionToken(String rtmSessionToken) {
     SessionControlPacket scp = SessionControlPacket.genSessionCommand(
-        this.getSelfPeerId(), null, SessionControlPacket.SessionControlOp.OPEN, null, this.getLastNotifyTime(), this.getLastPatchTime(), null);
+        this.getSelfPeerId(), null, SessionControlPacket.SessionControlOp.OPEN,
+        null, this.getLastNotifyTime(), this.getLastPatchTime(), null);
     scp.setSessionToken(rtmSessionToken);
     scp.setReconnectionRequest(true);
     PushService.sendData(scp);
@@ -148,7 +167,8 @@ public class AVSession {
   /**
    * 使用签名登陆
    */
-  private void openWithSignature(final int requestId, final boolean reconnectionFlag, final boolean notifyListener) {
+  private void openWithSignature(final int requestId, final boolean reconnectionFlag,
+                                 final boolean notifyListener) {
     final SignatureCallback callback = new SignatureCallback() {
       @Override
       public void onSignatureReady(Signature sig, AVException exception) {
@@ -163,7 +183,8 @@ public class AVSession {
               AVIMOperation.CLIENT_OPEN.getCode(), getSelfPeerId(), null, requestId));
           SessionControlPacket scp = SessionControlPacket.genSessionCommand(
               getSelfPeerId(), null,
-              SessionControlPacket.SessionControlOp.OPEN, sig, getLastNotifyTime(), getLastPatchTime(), requestId);
+              SessionControlPacket.SessionControlOp.OPEN, sig,
+              getLastNotifyTime(), getLastPatchTime(), requestId);
           scp.setTag(tag);
           scp.setReconnectionRequest(reconnectionFlag);
           PushService.sendData(scp);
@@ -200,6 +221,7 @@ public class AVSession {
   }
 
   public void cleanUp() {
+    updateRealtimeSessionToken("", 0);
     if (pendingMessages != null) {
       pendingMessages.clear();
     }
@@ -217,9 +239,9 @@ public class AVSession {
       // 都关掉了，我们需要去除Session记录
       AVSessionCacheHelper.getTagCacheInstance().removeSession(getSelfPeerId());
       AVSessionCacheHelper.IMSessionTokenCache.removeIMSessionToken(getSelfPeerId());
+
       // 如果session都已不在，缓存消息静静地等到桑田沧海
       this.cleanUp();
-
 
       if (!sessionOpened.compareAndSet(true, false)) {
         this.sessionListener.onSessionClose(context, this, requestId);
@@ -258,8 +280,8 @@ public class AVSession {
 
   protected void queryOnlinePeers(List<String> peerIds, int requestId) {
     SessionControlPacket scp =
-      SessionControlPacket.genSessionCommand(this.selfId, peerIds,
-        SessionControlPacket.SessionControlOp.QUERY, null, requestId);
+        SessionControlPacket.genSessionCommand(this.selfId, peerIds,
+            SessionControlPacket.SessionControlOp.QUERY, null, requestId);
     PushService.sendData(scp);
   }
 
@@ -367,7 +389,8 @@ public class AVSession {
 
   long getLastNotifyTime() {
     if (lastNotifyTime <= 0) {
-      lastNotifyTime = AVPersistenceUtils.sharedInstance().getPersistentSettingLong(selfId, LAST_NOTIFY_TIME, 0L);
+      lastNotifyTime = AVPersistenceUtils.sharedInstance().getPersistentSettingLong(selfId,
+          LAST_NOTIFY_TIME, 0L);
     }
     return lastNotifyTime;
   }
@@ -387,7 +410,8 @@ public class AVSession {
    */
   long getLastPatchTime() {
     if (lastPatchTime <= 0) {
-      lastPatchTime = AVPersistenceUtils.sharedInstance().getPersistentSettingLong(selfId, LAST_PATCH_TIME, 0L);
+      lastPatchTime = AVPersistenceUtils.sharedInstance().getPersistentSettingLong(selfId,
+          LAST_PATCH_TIME, 0L);
     }
 
     if (lastPatchTime <= 0) {
@@ -407,7 +431,8 @@ public class AVSession {
 
   String getUserSessionToken() {
     if (AVUtils.isBlankString(userSessionToken)) {
-      userSessionToken = AVPersistenceUtils.sharedInstance().getPersistentSettingString(selfId, AVUSER_SESSION_TOKEN, "");
+      userSessionToken = AVPersistenceUtils.sharedInstance().getPersistentSettingString(selfId,
+          AVUSER_SESSION_TOKEN, "");
     }
     return userSessionToken;
   }
@@ -415,7 +440,8 @@ public class AVSession {
   void updateUserSessionToken(String token) {
     userSessionToken = token;
     if (!AVUtils.isBlankString(userSessionToken)) {
-      AVPersistenceUtils.sharedInstance().savePersistentSettingString(selfId, AVUSER_SESSION_TOKEN, userSessionToken);
+      AVPersistenceUtils.sharedInstance().savePersistentSettingString(selfId, AVUSER_SESSION_TOKEN,
+          userSessionToken);
     }
   }
 

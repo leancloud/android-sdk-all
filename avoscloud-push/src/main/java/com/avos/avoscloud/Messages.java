@@ -420,17 +420,17 @@ public final class Messages {
      */
     is_member(52),
     /**
-     * <code>property_update = 53;</code>
+     * <code>member_info_update = 53;</code>
      */
-    property_update(53),
+    member_info_update(53),
     /**
-     * <code>property_updated = 54;</code>
+     * <code>member_info_updated = 54;</code>
      */
-    property_updated(54),
+    member_info_updated(54),
     /**
-     * <code>property_changed = 55;</code>
+     * <code>member_info_changed = 55;</code>
      */
-    property_changed(55),
+    member_info_changed(55),
     /**
      * <pre>
      * room
@@ -529,6 +529,22 @@ public final class Messages {
      */
     unblock(171),
     /**
+     * <code>blocked = 172;</code>
+     */
+    blocked(172),
+    /**
+     * <code>unblocked = 173;</code>
+     */
+    unblocked(173),
+    /**
+     * <code>members_blocked = 174;</code>
+     */
+    members_blocked(174),
+    /**
+     * <code>members_unblocked = 175;</code>
+     */
+    members_unblocked(175),
+    /**
      * <code>add_shutup = 180;</code>
      */
     add_shutup(180),
@@ -537,10 +553,6 @@ public final class Messages {
      */
     remove_shutup(181),
     /**
-     * <pre>
-     * return query-result
-     * </pre>
-     *
      * <code>query_shutup = 182;</code>
      */
     query_shutup(182),
@@ -557,13 +569,21 @@ public final class Messages {
      */
     shutup_result(185),
     /**
-     * <code>members_shutuped = 186;</code>
+     * <code>shutuped = 186;</code>
      */
-    members_shutuped(186),
+    shutuped(186),
     /**
-     * <code>members_unshutuped = 187;</code>
+     * <code>unshutuped = 187;</code>
      */
-    members_unshutuped(187),
+    unshutuped(187),
+    /**
+     * <code>members_shutuped = 188;</code>
+     */
+    members_shutuped(188),
+    /**
+     * <code>members_unshutuped = 189;</code>
+     */
+    members_unshutuped(189),
     ;
 
     /**
@@ -706,17 +726,17 @@ public final class Messages {
      */
     public static final int is_member_VALUE = 52;
     /**
-     * <code>property_update = 53;</code>
+     * <code>member_info_update = 53;</code>
      */
-    public static final int property_update_VALUE = 53;
+    public static final int member_info_update_VALUE = 53;
     /**
-     * <code>property_updated = 54;</code>
+     * <code>member_info_updated = 54;</code>
      */
-    public static final int property_updated_VALUE = 54;
+    public static final int member_info_updated_VALUE = 54;
     /**
-     * <code>property_changed = 55;</code>
+     * <code>member_info_changed = 55;</code>
      */
-    public static final int property_changed_VALUE = 55;
+    public static final int member_info_changed_VALUE = 55;
     /**
      * <pre>
      * room
@@ -815,6 +835,22 @@ public final class Messages {
      */
     public static final int unblock_VALUE = 171;
     /**
+     * <code>blocked = 172;</code>
+     */
+    public static final int blocked_VALUE = 172;
+    /**
+     * <code>unblocked = 173;</code>
+     */
+    public static final int unblocked_VALUE = 173;
+    /**
+     * <code>members_blocked = 174;</code>
+     */
+    public static final int members_blocked_VALUE = 174;
+    /**
+     * <code>members_unblocked = 175;</code>
+     */
+    public static final int members_unblocked_VALUE = 175;
+    /**
      * <code>add_shutup = 180;</code>
      */
     public static final int add_shutup_VALUE = 180;
@@ -823,10 +859,6 @@ public final class Messages {
      */
     public static final int remove_shutup_VALUE = 181;
     /**
-     * <pre>
-     * return query-result
-     * </pre>
-     *
      * <code>query_shutup = 182;</code>
      */
     public static final int query_shutup_VALUE = 182;
@@ -843,13 +875,21 @@ public final class Messages {
      */
     public static final int shutup_result_VALUE = 185;
     /**
-     * <code>members_shutuped = 186;</code>
+     * <code>shutuped = 186;</code>
      */
-    public static final int members_shutuped_VALUE = 186;
+    public static final int shutuped_VALUE = 186;
     /**
-     * <code>members_unshutuped = 187;</code>
+     * <code>unshutuped = 187;</code>
      */
-    public static final int members_unshutuped_VALUE = 187;
+    public static final int unshutuped_VALUE = 187;
+    /**
+     * <code>members_shutuped = 188;</code>
+     */
+    public static final int members_shutuped_VALUE = 188;
+    /**
+     * <code>members_unshutuped = 189;</code>
+     */
+    public static final int members_unshutuped_VALUE = 189;
 
 
     public final int getNumber() {
@@ -896,9 +936,9 @@ public final class Messages {
         case 50: return members;
         case 51: return max_read;
         case 52: return is_member;
-        case 53: return property_update;
-        case 54: return property_updated;
-        case 55: return property_changed;
+        case 53: return member_info_update;
+        case 54: return member_info_updated;
+        case 55: return member_info_changed;
         case 80: return join;
         case 81: return invite;
         case 82: return leave;
@@ -917,14 +957,20 @@ public final class Messages {
         case 151: return modified;
         case 170: return block;
         case 171: return unblock;
+        case 172: return blocked;
+        case 173: return unblocked;
+        case 174: return members_blocked;
+        case 175: return members_unblocked;
         case 180: return add_shutup;
         case 181: return remove_shutup;
         case 182: return query_shutup;
         case 183: return shutup_added;
         case 184: return shutup_removed;
         case 185: return shutup_result;
-        case 186: return members_shutuped;
-        case 187: return members_unshutuped;
+        case 186: return shutuped;
+        case 187: return unshutuped;
+        case 188: return members_shutuped;
+        case 189: return members_unshutuped;
         default: return null;
       }
     }
@@ -4906,8 +4952,8 @@ public final class Messages {
 
   }
 
-  public interface ConvPropertyOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:com.avos.avoscloud.ConvProperty)
+  public interface ConvMemberInfoOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:com.avos.avoscloud.ConvMemberInfo)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -4939,35 +4985,35 @@ public final class Messages {
         getRoleBytes();
 
     /**
-     * <code>optional string propertyId = 3;</code>
+     * <code>optional string infoId = 3;</code>
      */
-    boolean hasPropertyId();
+    boolean hasInfoId();
     /**
-     * <code>optional string propertyId = 3;</code>
+     * <code>optional string infoId = 3;</code>
      */
-    java.lang.String getPropertyId();
+    java.lang.String getInfoId();
     /**
-     * <code>optional string propertyId = 3;</code>
+     * <code>optional string infoId = 3;</code>
      */
     com.google.protobuf.ByteString
-        getPropertyIdBytes();
+        getInfoIdBytes();
   }
   /**
-   * Protobuf type {@code com.avos.avoscloud.ConvProperty}
+   * Protobuf type {@code com.avos.avoscloud.ConvMemberInfo}
    */
-  public  static final class ConvProperty extends
+  public  static final class ConvMemberInfo extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:com.avos.avoscloud.ConvProperty)
-      ConvPropertyOrBuilder {
+      // @@protoc_insertion_point(message_implements:com.avos.avoscloud.ConvMemberInfo)
+      ConvMemberInfoOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use ConvProperty.newBuilder() to construct.
-    private ConvProperty(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use ConvMemberInfo.newBuilder() to construct.
+    private ConvMemberInfo(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private ConvProperty() {
+    private ConvMemberInfo() {
       pid_ = "";
       role_ = "";
-      propertyId_ = "";
+      infoId_ = "";
     }
 
     @java.lang.Override
@@ -4975,7 +5021,7 @@ public final class Messages {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private ConvProperty(
+    private ConvMemberInfo(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -5013,7 +5059,7 @@ public final class Messages {
             case 26: {
               com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000004;
-              propertyId_ = bs;
+              infoId_ = bs;
               break;
             }
           }
@@ -5030,14 +5076,14 @@ public final class Messages {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.avos.avoscloud.Messages.internal_static_com_avos_avoscloud_ConvProperty_descriptor;
+      return com.avos.avoscloud.Messages.internal_static_com_avos_avoscloud_ConvMemberInfo_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.avos.avoscloud.Messages.internal_static_com_avos_avoscloud_ConvProperty_fieldAccessorTable
+      return com.avos.avoscloud.Messages.internal_static_com_avos_avoscloud_ConvMemberInfo_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              com.avos.avoscloud.Messages.ConvProperty.class, com.avos.avoscloud.Messages.ConvProperty.Builder.class);
+              com.avos.avoscloud.Messages.ConvMemberInfo.class, com.avos.avoscloud.Messages.ConvMemberInfo.Builder.class);
     }
 
     private int bitField0_;
@@ -5125,19 +5171,19 @@ public final class Messages {
       }
     }
 
-    public static final int PROPERTYID_FIELD_NUMBER = 3;
-    private volatile java.lang.Object propertyId_;
+    public static final int INFOID_FIELD_NUMBER = 3;
+    private volatile java.lang.Object infoId_;
     /**
-     * <code>optional string propertyId = 3;</code>
+     * <code>optional string infoId = 3;</code>
      */
-    public boolean hasPropertyId() {
+    public boolean hasInfoId() {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     /**
-     * <code>optional string propertyId = 3;</code>
+     * <code>optional string infoId = 3;</code>
      */
-    public java.lang.String getPropertyId() {
-      java.lang.Object ref = propertyId_;
+    public java.lang.String getInfoId() {
+      java.lang.Object ref = infoId_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
@@ -5145,22 +5191,22 @@ public final class Messages {
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          propertyId_ = s;
+          infoId_ = s;
         }
         return s;
       }
     }
     /**
-     * <code>optional string propertyId = 3;</code>
+     * <code>optional string infoId = 3;</code>
      */
     public com.google.protobuf.ByteString
-        getPropertyIdBytes() {
-      java.lang.Object ref = propertyId_;
+        getInfoIdBytes() {
+      java.lang.Object ref = infoId_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        propertyId_ = b;
+        infoId_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -5186,7 +5232,7 @@ public final class Messages {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, role_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, propertyId_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, infoId_);
       }
       unknownFields.writeTo(output);
     }
@@ -5203,7 +5249,7 @@ public final class Messages {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, role_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, propertyId_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, infoId_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -5215,10 +5261,10 @@ public final class Messages {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof com.avos.avoscloud.Messages.ConvProperty)) {
+      if (!(obj instanceof com.avos.avoscloud.Messages.ConvMemberInfo)) {
         return super.equals(obj);
       }
-      com.avos.avoscloud.Messages.ConvProperty other = (com.avos.avoscloud.Messages.ConvProperty) obj;
+      com.avos.avoscloud.Messages.ConvMemberInfo other = (com.avos.avoscloud.Messages.ConvMemberInfo) obj;
 
       boolean result = true;
       result = result && (hasPid() == other.hasPid());
@@ -5231,10 +5277,10 @@ public final class Messages {
         result = result && getRole()
             .equals(other.getRole());
       }
-      result = result && (hasPropertyId() == other.hasPropertyId());
-      if (hasPropertyId()) {
-        result = result && getPropertyId()
-            .equals(other.getPropertyId());
+      result = result && (hasInfoId() == other.hasInfoId());
+      if (hasInfoId()) {
+        result = result && getInfoId()
+            .equals(other.getInfoId());
       }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
@@ -5255,78 +5301,78 @@ public final class Messages {
         hash = (37 * hash) + ROLE_FIELD_NUMBER;
         hash = (53 * hash) + getRole().hashCode();
       }
-      if (hasPropertyId()) {
-        hash = (37 * hash) + PROPERTYID_FIELD_NUMBER;
-        hash = (53 * hash) + getPropertyId().hashCode();
+      if (hasInfoId()) {
+        hash = (37 * hash) + INFOID_FIELD_NUMBER;
+        hash = (53 * hash) + getInfoId().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
     }
 
-    public static com.avos.avoscloud.Messages.ConvProperty parseFrom(
+    public static com.avos.avoscloud.Messages.ConvMemberInfo parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.avos.avoscloud.Messages.ConvProperty parseFrom(
+    public static com.avos.avoscloud.Messages.ConvMemberInfo parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.avos.avoscloud.Messages.ConvProperty parseFrom(
+    public static com.avos.avoscloud.Messages.ConvMemberInfo parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.avos.avoscloud.Messages.ConvProperty parseFrom(
+    public static com.avos.avoscloud.Messages.ConvMemberInfo parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.avos.avoscloud.Messages.ConvProperty parseFrom(byte[] data)
+    public static com.avos.avoscloud.Messages.ConvMemberInfo parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.avos.avoscloud.Messages.ConvProperty parseFrom(
+    public static com.avos.avoscloud.Messages.ConvMemberInfo parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.avos.avoscloud.Messages.ConvProperty parseFrom(java.io.InputStream input)
+    public static com.avos.avoscloud.Messages.ConvMemberInfo parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.avos.avoscloud.Messages.ConvProperty parseFrom(
+    public static com.avos.avoscloud.Messages.ConvMemberInfo parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.avos.avoscloud.Messages.ConvProperty parseDelimitedFrom(java.io.InputStream input)
+    public static com.avos.avoscloud.Messages.ConvMemberInfo parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static com.avos.avoscloud.Messages.ConvProperty parseDelimitedFrom(
+    public static com.avos.avoscloud.Messages.ConvMemberInfo parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.avos.avoscloud.Messages.ConvProperty parseFrom(
+    public static com.avos.avoscloud.Messages.ConvMemberInfo parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.avos.avoscloud.Messages.ConvProperty parseFrom(
+    public static com.avos.avoscloud.Messages.ConvMemberInfo parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -5338,7 +5384,7 @@ public final class Messages {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(com.avos.avoscloud.Messages.ConvProperty prototype) {
+    public static Builder newBuilder(com.avos.avoscloud.Messages.ConvMemberInfo prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() {
@@ -5353,25 +5399,25 @@ public final class Messages {
       return builder;
     }
     /**
-     * Protobuf type {@code com.avos.avoscloud.ConvProperty}
+     * Protobuf type {@code com.avos.avoscloud.ConvMemberInfo}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:com.avos.avoscloud.ConvProperty)
-        com.avos.avoscloud.Messages.ConvPropertyOrBuilder {
+        // @@protoc_insertion_point(builder_implements:com.avos.avoscloud.ConvMemberInfo)
+        com.avos.avoscloud.Messages.ConvMemberInfoOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return com.avos.avoscloud.Messages.internal_static_com_avos_avoscloud_ConvProperty_descriptor;
+        return com.avos.avoscloud.Messages.internal_static_com_avos_avoscloud_ConvMemberInfo_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return com.avos.avoscloud.Messages.internal_static_com_avos_avoscloud_ConvProperty_fieldAccessorTable
+        return com.avos.avoscloud.Messages.internal_static_com_avos_avoscloud_ConvMemberInfo_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                com.avos.avoscloud.Messages.ConvProperty.class, com.avos.avoscloud.Messages.ConvProperty.Builder.class);
+                com.avos.avoscloud.Messages.ConvMemberInfo.class, com.avos.avoscloud.Messages.ConvMemberInfo.Builder.class);
       }
 
-      // Construct using com.avos.avoscloud.Messages.ConvProperty.newBuilder()
+      // Construct using com.avos.avoscloud.Messages.ConvMemberInfo.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -5392,30 +5438,30 @@ public final class Messages {
         bitField0_ = (bitField0_ & ~0x00000001);
         role_ = "";
         bitField0_ = (bitField0_ & ~0x00000002);
-        propertyId_ = "";
+        infoId_ = "";
         bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return com.avos.avoscloud.Messages.internal_static_com_avos_avoscloud_ConvProperty_descriptor;
+        return com.avos.avoscloud.Messages.internal_static_com_avos_avoscloud_ConvMemberInfo_descriptor;
       }
 
-      public com.avos.avoscloud.Messages.ConvProperty getDefaultInstanceForType() {
-        return com.avos.avoscloud.Messages.ConvProperty.getDefaultInstance();
+      public com.avos.avoscloud.Messages.ConvMemberInfo getDefaultInstanceForType() {
+        return com.avos.avoscloud.Messages.ConvMemberInfo.getDefaultInstance();
       }
 
-      public com.avos.avoscloud.Messages.ConvProperty build() {
-        com.avos.avoscloud.Messages.ConvProperty result = buildPartial();
+      public com.avos.avoscloud.Messages.ConvMemberInfo build() {
+        com.avos.avoscloud.Messages.ConvMemberInfo result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public com.avos.avoscloud.Messages.ConvProperty buildPartial() {
-        com.avos.avoscloud.Messages.ConvProperty result = new com.avos.avoscloud.Messages.ConvProperty(this);
+      public com.avos.avoscloud.Messages.ConvMemberInfo buildPartial() {
+        com.avos.avoscloud.Messages.ConvMemberInfo result = new com.avos.avoscloud.Messages.ConvMemberInfo(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -5429,7 +5475,7 @@ public final class Messages {
         if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
           to_bitField0_ |= 0x00000004;
         }
-        result.propertyId_ = propertyId_;
+        result.infoId_ = infoId_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -5462,16 +5508,16 @@ public final class Messages {
         return (Builder) super.addRepeatedField(field, value);
       }
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof com.avos.avoscloud.Messages.ConvProperty) {
-          return mergeFrom((com.avos.avoscloud.Messages.ConvProperty)other);
+        if (other instanceof com.avos.avoscloud.Messages.ConvMemberInfo) {
+          return mergeFrom((com.avos.avoscloud.Messages.ConvMemberInfo)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(com.avos.avoscloud.Messages.ConvProperty other) {
-        if (other == com.avos.avoscloud.Messages.ConvProperty.getDefaultInstance()) return this;
+      public Builder mergeFrom(com.avos.avoscloud.Messages.ConvMemberInfo other) {
+        if (other == com.avos.avoscloud.Messages.ConvMemberInfo.getDefaultInstance()) return this;
         if (other.hasPid()) {
           bitField0_ |= 0x00000001;
           pid_ = other.pid_;
@@ -5482,9 +5528,9 @@ public final class Messages {
           role_ = other.role_;
           onChanged();
         }
-        if (other.hasPropertyId()) {
+        if (other.hasInfoId()) {
           bitField0_ |= 0x00000004;
-          propertyId_ = other.propertyId_;
+          infoId_ = other.infoId_;
           onChanged();
         }
         this.mergeUnknownFields(other.unknownFields);
@@ -5500,11 +5546,11 @@ public final class Messages {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.avos.avoscloud.Messages.ConvProperty parsedMessage = null;
+        com.avos.avoscloud.Messages.ConvMemberInfo parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (com.avos.avoscloud.Messages.ConvProperty) e.getUnfinishedMessage();
+          parsedMessage = (com.avos.avoscloud.Messages.ConvMemberInfo) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -5667,24 +5713,24 @@ public final class Messages {
         return this;
       }
 
-      private java.lang.Object propertyId_ = "";
+      private java.lang.Object infoId_ = "";
       /**
-       * <code>optional string propertyId = 3;</code>
+       * <code>optional string infoId = 3;</code>
        */
-      public boolean hasPropertyId() {
+      public boolean hasInfoId() {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       /**
-       * <code>optional string propertyId = 3;</code>
+       * <code>optional string infoId = 3;</code>
        */
-      public java.lang.String getPropertyId() {
-        java.lang.Object ref = propertyId_;
+      public java.lang.String getInfoId() {
+        java.lang.Object ref = infoId_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           if (bs.isValidUtf8()) {
-            propertyId_ = s;
+            infoId_ = s;
           }
           return s;
         } else {
@@ -5692,53 +5738,53 @@ public final class Messages {
         }
       }
       /**
-       * <code>optional string propertyId = 3;</code>
+       * <code>optional string infoId = 3;</code>
        */
       public com.google.protobuf.ByteString
-          getPropertyIdBytes() {
-        java.lang.Object ref = propertyId_;
+          getInfoIdBytes() {
+        java.lang.Object ref = infoId_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          propertyId_ = b;
+          infoId_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>optional string propertyId = 3;</code>
+       * <code>optional string infoId = 3;</code>
        */
-      public Builder setPropertyId(
+      public Builder setInfoId(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000004;
-        propertyId_ = value;
+        infoId_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string propertyId = 3;</code>
+       * <code>optional string infoId = 3;</code>
        */
-      public Builder clearPropertyId() {
+      public Builder clearInfoId() {
         bitField0_ = (bitField0_ & ~0x00000004);
-        propertyId_ = getDefaultInstance().getPropertyId();
+        infoId_ = getDefaultInstance().getInfoId();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string propertyId = 3;</code>
+       * <code>optional string infoId = 3;</code>
        */
-      public Builder setPropertyIdBytes(
+      public Builder setInfoIdBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000004;
-        propertyId_ = value;
+        infoId_ = value;
         onChanged();
         return this;
       }
@@ -5753,39 +5799,39 @@ public final class Messages {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:com.avos.avoscloud.ConvProperty)
+      // @@protoc_insertion_point(builder_scope:com.avos.avoscloud.ConvMemberInfo)
     }
 
-    // @@protoc_insertion_point(class_scope:com.avos.avoscloud.ConvProperty)
-    private static final com.avos.avoscloud.Messages.ConvProperty DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:com.avos.avoscloud.ConvMemberInfo)
+    private static final com.avos.avoscloud.Messages.ConvMemberInfo DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new com.avos.avoscloud.Messages.ConvProperty();
+      DEFAULT_INSTANCE = new com.avos.avoscloud.Messages.ConvMemberInfo();
     }
 
-    public static com.avos.avoscloud.Messages.ConvProperty getDefaultInstance() {
+    public static com.avos.avoscloud.Messages.ConvMemberInfo getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    @java.lang.Deprecated public static final com.google.protobuf.Parser<ConvProperty>
-        PARSER = new com.google.protobuf.AbstractParser<ConvProperty>() {
-      public ConvProperty parsePartialFrom(
+    @java.lang.Deprecated public static final com.google.protobuf.Parser<ConvMemberInfo>
+        PARSER = new com.google.protobuf.AbstractParser<ConvMemberInfo>() {
+      public ConvMemberInfo parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-          return new ConvProperty(input, extensionRegistry);
+          return new ConvMemberInfo(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<ConvProperty> parser() {
+    public static com.google.protobuf.Parser<ConvMemberInfo> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<ConvProperty> getParserForType() {
+    public com.google.protobuf.Parser<ConvMemberInfo> getParserForType() {
       return PARSER;
     }
 
-    public com.avos.avoscloud.Messages.ConvProperty getDefaultInstanceForType() {
+    public com.avos.avoscloud.Messages.ConvMemberInfo getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -16670,17 +16716,17 @@ public final class Messages {
         getCidsBytes(int index);
 
     /**
-     * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+     * <code>optional .com.avos.avoscloud.ConvMemberInfo info = 26;</code>
      */
-    boolean hasProperty();
+    boolean hasInfo();
     /**
-     * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+     * <code>optional .com.avos.avoscloud.ConvMemberInfo info = 26;</code>
      */
-    com.avos.avoscloud.Messages.ConvProperty getProperty();
+    com.avos.avoscloud.Messages.ConvMemberInfo getInfo();
     /**
-     * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+     * <code>optional .com.avos.avoscloud.ConvMemberInfo info = 26;</code>
      */
-    com.avos.avoscloud.Messages.ConvPropertyOrBuilder getPropertyOrBuilder();
+    com.avos.avoscloud.Messages.ConvMemberInfoOrBuilder getInfoOrBuilder();
 
     /**
      * <code>optional bool tempConv = 27;</code>
@@ -16777,6 +16823,32 @@ public final class Messages {
         getAllowedPidsBytes(int index);
 
     /**
+     * <pre>
+     * used in blacklist/shutup query
+     * </pre>
+     *
+     * <code>optional string offset = 40;</code>
+     */
+    boolean hasOffset();
+    /**
+     * <pre>
+     * used in blacklist/shutup query
+     * </pre>
+     *
+     * <code>optional string offset = 40;</code>
+     */
+    java.lang.String getOffset();
+    /**
+     * <pre>
+     * used in blacklist/shutup query
+     * </pre>
+     *
+     * <code>optional string offset = 40;</code>
+     */
+    com.google.protobuf.ByteString
+        getOffsetBytes();
+
+    /**
      * <code>optional .com.avos.avoscloud.JsonObjectMessage results = 100;</code>
      */
     boolean hasResults();
@@ -16859,6 +16931,7 @@ public final class Messages {
       convBlockedPids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       clientBlockedPids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       allowedPids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      offset_ = "";
     }
 
     @java.lang.Override
@@ -17037,14 +17110,14 @@ public final class Messages {
               break;
             }
             case 210: {
-              com.avos.avoscloud.Messages.ConvProperty.Builder subBuilder = null;
+              com.avos.avoscloud.Messages.ConvMemberInfo.Builder subBuilder = null;
               if (((bitField0_ & 0x00400000) == 0x00400000)) {
-                subBuilder = property_.toBuilder();
+                subBuilder = info_.toBuilder();
               }
-              property_ = input.readMessage(com.avos.avoscloud.Messages.ConvProperty.PARSER, extensionRegistry);
+              info_ = input.readMessage(com.avos.avoscloud.Messages.ConvMemberInfo.PARSER, extensionRegistry);
               if (subBuilder != null) {
-                subBuilder.mergeFrom(property_);
-                property_ = subBuilder.buildPartial();
+                subBuilder.mergeFrom(info_);
+                info_ = subBuilder.buildPartial();
               }
               bitField0_ |= 0x00400000;
               break;
@@ -17095,9 +17168,15 @@ public final class Messages {
               allowedPids_.add(bs);
               break;
             }
+            case 322: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x02000000;
+              offset_ = bs;
+              break;
+            }
             case 802: {
               com.avos.avoscloud.Messages.JsonObjectMessage.Builder subBuilder = null;
-              if (((bitField0_ & 0x02000000) == 0x02000000)) {
+              if (((bitField0_ & 0x04000000) == 0x04000000)) {
                 subBuilder = results_.toBuilder();
               }
               results_ = input.readMessage(com.avos.avoscloud.Messages.JsonObjectMessage.PARSER, extensionRegistry);
@@ -17105,12 +17184,12 @@ public final class Messages {
                 subBuilder.mergeFrom(results_);
                 results_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x02000000;
+              bitField0_ |= 0x04000000;
               break;
             }
             case 810: {
               com.avos.avoscloud.Messages.JsonObjectMessage.Builder subBuilder = null;
-              if (((bitField0_ & 0x04000000) == 0x04000000)) {
+              if (((bitField0_ & 0x08000000) == 0x08000000)) {
                 subBuilder = where_.toBuilder();
               }
               where_ = input.readMessage(com.avos.avoscloud.Messages.JsonObjectMessage.PARSER, extensionRegistry);
@@ -17118,12 +17197,12 @@ public final class Messages {
                 subBuilder.mergeFrom(where_);
                 where_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x04000000;
+              bitField0_ |= 0x08000000;
               break;
             }
             case 826: {
               com.avos.avoscloud.Messages.JsonObjectMessage.Builder subBuilder = null;
-              if (((bitField0_ & 0x08000000) == 0x08000000)) {
+              if (((bitField0_ & 0x10000000) == 0x10000000)) {
                 subBuilder = attr_.toBuilder();
               }
               attr_ = input.readMessage(com.avos.avoscloud.Messages.JsonObjectMessage.PARSER, extensionRegistry);
@@ -17131,7 +17210,7 @@ public final class Messages {
                 subBuilder.mergeFrom(attr_);
                 attr_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x08000000;
+              bitField0_ |= 0x10000000;
               break;
             }
           }
@@ -17846,25 +17925,25 @@ public final class Messages {
       return cids_.getByteString(index);
     }
 
-    public static final int PROPERTY_FIELD_NUMBER = 26;
-    private com.avos.avoscloud.Messages.ConvProperty property_;
+    public static final int INFO_FIELD_NUMBER = 26;
+    private com.avos.avoscloud.Messages.ConvMemberInfo info_;
     /**
-     * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+     * <code>optional .com.avos.avoscloud.ConvMemberInfo info = 26;</code>
      */
-    public boolean hasProperty() {
+    public boolean hasInfo() {
       return ((bitField0_ & 0x00400000) == 0x00400000);
     }
     /**
-     * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+     * <code>optional .com.avos.avoscloud.ConvMemberInfo info = 26;</code>
      */
-    public com.avos.avoscloud.Messages.ConvProperty getProperty() {
-      return property_ == null ? com.avos.avoscloud.Messages.ConvProperty.getDefaultInstance() : property_;
+    public com.avos.avoscloud.Messages.ConvMemberInfo getInfo() {
+      return info_ == null ? com.avos.avoscloud.Messages.ConvMemberInfo.getDefaultInstance() : info_;
     }
     /**
-     * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+     * <code>optional .com.avos.avoscloud.ConvMemberInfo info = 26;</code>
      */
-    public com.avos.avoscloud.Messages.ConvPropertyOrBuilder getPropertyOrBuilder() {
-      return property_ == null ? com.avos.avoscloud.Messages.ConvProperty.getDefaultInstance() : property_;
+    public com.avos.avoscloud.Messages.ConvMemberInfoOrBuilder getInfoOrBuilder() {
+      return info_ == null ? com.avos.avoscloud.Messages.ConvMemberInfo.getDefaultInstance() : info_;
     }
 
     public static final int TEMPCONV_FIELD_NUMBER = 27;
@@ -18013,13 +18092,67 @@ public final class Messages {
       return allowedPids_.getByteString(index);
     }
 
+    public static final int OFFSET_FIELD_NUMBER = 40;
+    private volatile java.lang.Object offset_;
+    /**
+     * <pre>
+     * used in blacklist/shutup query
+     * </pre>
+     *
+     * <code>optional string offset = 40;</code>
+     */
+    public boolean hasOffset() {
+      return ((bitField0_ & 0x02000000) == 0x02000000);
+    }
+    /**
+     * <pre>
+     * used in blacklist/shutup query
+     * </pre>
+     *
+     * <code>optional string offset = 40;</code>
+     */
+    public java.lang.String getOffset() {
+      java.lang.Object ref = offset_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          offset_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <pre>
+     * used in blacklist/shutup query
+     * </pre>
+     *
+     * <code>optional string offset = 40;</code>
+     */
+    public com.google.protobuf.ByteString
+        getOffsetBytes() {
+      java.lang.Object ref = offset_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        offset_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     public static final int RESULTS_FIELD_NUMBER = 100;
     private com.avos.avoscloud.Messages.JsonObjectMessage results_;
     /**
      * <code>optional .com.avos.avoscloud.JsonObjectMessage results = 100;</code>
      */
     public boolean hasResults() {
-      return ((bitField0_ & 0x02000000) == 0x02000000);
+      return ((bitField0_ & 0x04000000) == 0x04000000);
     }
     /**
      * <code>optional .com.avos.avoscloud.JsonObjectMessage results = 100;</code>
@@ -18040,7 +18173,7 @@ public final class Messages {
      * <code>optional .com.avos.avoscloud.JsonObjectMessage where = 101;</code>
      */
     public boolean hasWhere() {
-      return ((bitField0_ & 0x04000000) == 0x04000000);
+      return ((bitField0_ & 0x08000000) == 0x08000000);
     }
     /**
      * <code>optional .com.avos.avoscloud.JsonObjectMessage where = 101;</code>
@@ -18061,7 +18194,7 @@ public final class Messages {
      * <code>optional .com.avos.avoscloud.JsonObjectMessage attr = 103;</code>
      */
     public boolean hasAttr() {
-      return ((bitField0_ & 0x08000000) == 0x08000000);
+      return ((bitField0_ & 0x10000000) == 0x10000000);
     }
     /**
      * <code>optional .com.avos.avoscloud.JsonObjectMessage attr = 103;</code>
@@ -18182,7 +18315,7 @@ public final class Messages {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 25, cids_.getRaw(i));
       }
       if (((bitField0_ & 0x00400000) == 0x00400000)) {
-        output.writeMessage(26, getProperty());
+        output.writeMessage(26, getInfo());
       }
       if (((bitField0_ & 0x00800000) == 0x00800000)) {
         output.writeBool(27, tempConv_);
@@ -18203,12 +18336,15 @@ public final class Messages {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 32, allowedPids_.getRaw(i));
       }
       if (((bitField0_ & 0x02000000) == 0x02000000)) {
-        output.writeMessage(100, getResults());
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 40, offset_);
       }
       if (((bitField0_ & 0x04000000) == 0x04000000)) {
-        output.writeMessage(101, getWhere());
+        output.writeMessage(100, getResults());
       }
       if (((bitField0_ & 0x08000000) == 0x08000000)) {
+        output.writeMessage(101, getWhere());
+      }
+      if (((bitField0_ & 0x10000000) == 0x10000000)) {
         output.writeMessage(103, getAttr());
       }
       unknownFields.writeTo(output);
@@ -18320,7 +18456,7 @@ public final class Messages {
       }
       if (((bitField0_ & 0x00400000) == 0x00400000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(26, getProperty());
+          .computeMessageSize(26, getInfo());
       }
       if (((bitField0_ & 0x00800000) == 0x00800000)) {
         size += com.google.protobuf.CodedOutputStream
@@ -18363,14 +18499,17 @@ public final class Messages {
         size += 2 * getAllowedPidsList().size();
       }
       if (((bitField0_ & 0x02000000) == 0x02000000)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(100, getResults());
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(40, offset_);
       }
       if (((bitField0_ & 0x04000000) == 0x04000000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(101, getWhere());
+          .computeMessageSize(100, getResults());
       }
       if (((bitField0_ & 0x08000000) == 0x08000000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(101, getWhere());
+      }
+      if (((bitField0_ & 0x10000000) == 0x10000000)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(103, getAttr());
       }
@@ -18506,10 +18645,10 @@ public final class Messages {
           .equals(other.getMaxReadTuplesList());
       result = result && getCidsList()
           .equals(other.getCidsList());
-      result = result && (hasProperty() == other.hasProperty());
-      if (hasProperty()) {
-        result = result && getProperty()
-            .equals(other.getProperty());
+      result = result && (hasInfo() == other.hasInfo());
+      if (hasInfo()) {
+        result = result && getInfo()
+            .equals(other.getInfo());
       }
       result = result && (hasTempConv() == other.hasTempConv());
       if (hasTempConv()) {
@@ -18529,6 +18668,11 @@ public final class Messages {
           .equals(other.getClientBlockedPidsList());
       result = result && getAllowedPidsList()
           .equals(other.getAllowedPidsList());
+      result = result && (hasOffset() == other.hasOffset());
+      if (hasOffset()) {
+        result = result && getOffset()
+            .equals(other.getOffset());
+      }
       result = result && (hasResults() == other.hasResults());
       if (hasResults()) {
         result = result && getResults()
@@ -18663,9 +18807,9 @@ public final class Messages {
         hash = (37 * hash) + CIDS_FIELD_NUMBER;
         hash = (53 * hash) + getCidsList().hashCode();
       }
-      if (hasProperty()) {
-        hash = (37 * hash) + PROPERTY_FIELD_NUMBER;
-        hash = (53 * hash) + getProperty().hashCode();
+      if (hasInfo()) {
+        hash = (37 * hash) + INFO_FIELD_NUMBER;
+        hash = (53 * hash) + getInfo().hashCode();
       }
       if (hasTempConv()) {
         hash = (37 * hash) + TEMPCONV_FIELD_NUMBER;
@@ -18691,6 +18835,10 @@ public final class Messages {
       if (getAllowedPidsCount() > 0) {
         hash = (37 * hash) + ALLOWEDPIDS_FIELD_NUMBER;
         hash = (53 * hash) + getAllowedPidsList().hashCode();
+      }
+      if (hasOffset()) {
+        hash = (37 * hash) + OFFSET_FIELD_NUMBER;
+        hash = (53 * hash) + getOffset().hashCode();
       }
       if (hasResults()) {
         hash = (37 * hash) + RESULTS_FIELD_NUMBER;
@@ -18830,7 +18978,7 @@ public final class Messages {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
           getMaxReadTuplesFieldBuilder();
-          getPropertyFieldBuilder();
+          getInfoFieldBuilder();
           getResultsFieldBuilder();
           getWhereFieldBuilder();
           getAttrFieldBuilder();
@@ -18892,10 +19040,10 @@ public final class Messages {
         }
         cids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x01000000);
-        if (propertyBuilder_ == null) {
-          property_ = null;
+        if (infoBuilder_ == null) {
+          info_ = null;
         } else {
-          propertyBuilder_.clear();
+          infoBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x02000000);
         tempConv_ = false;
@@ -18910,24 +19058,26 @@ public final class Messages {
         bitField0_ = (bitField0_ & ~0x40000000);
         allowedPids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x80000000);
+        offset_ = "";
+        bitField1_ = (bitField1_ & ~0x00000001);
         if (resultsBuilder_ == null) {
           results_ = null;
         } else {
           resultsBuilder_.clear();
         }
-        bitField1_ = (bitField1_ & ~0x00000001);
+        bitField1_ = (bitField1_ & ~0x00000002);
         if (whereBuilder_ == null) {
           where_ = null;
         } else {
           whereBuilder_.clear();
         }
-        bitField1_ = (bitField1_ & ~0x00000002);
+        bitField1_ = (bitField1_ & ~0x00000004);
         if (attrBuilder_ == null) {
           attr_ = null;
         } else {
           attrBuilder_.clear();
         }
-        bitField1_ = (bitField1_ & ~0x00000004);
+        bitField1_ = (bitField1_ & ~0x00000008);
         return this;
       }
 
@@ -19063,10 +19213,10 @@ public final class Messages {
         if (((from_bitField0_ & 0x02000000) == 0x02000000)) {
           to_bitField0_ |= 0x00400000;
         }
-        if (propertyBuilder_ == null) {
-          result.property_ = property_;
+        if (infoBuilder_ == null) {
+          result.info_ = info_;
         } else {
-          result.property_ = propertyBuilder_.build();
+          result.info_ = infoBuilder_.build();
         }
         if (((from_bitField0_ & 0x04000000) == 0x04000000)) {
           to_bitField0_ |= 0x00800000;
@@ -19099,21 +19249,25 @@ public final class Messages {
         if (((from_bitField1_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x02000000;
         }
+        result.offset_ = offset_;
+        if (((from_bitField1_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x04000000;
+        }
         if (resultsBuilder_ == null) {
           result.results_ = results_;
         } else {
           result.results_ = resultsBuilder_.build();
         }
-        if (((from_bitField1_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x04000000;
+        if (((from_bitField1_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x08000000;
         }
         if (whereBuilder_ == null) {
           result.where_ = where_;
         } else {
           result.where_ = whereBuilder_.build();
         }
-        if (((from_bitField1_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x08000000;
+        if (((from_bitField1_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x10000000;
         }
         if (attrBuilder_ == null) {
           result.attr_ = attr_;
@@ -19292,8 +19446,8 @@ public final class Messages {
           }
           onChanged();
         }
-        if (other.hasProperty()) {
-          mergeProperty(other.getProperty());
+        if (other.hasInfo()) {
+          mergeInfo(other.getInfo());
         }
         if (other.hasTempConv()) {
           setTempConv(other.getTempConv());
@@ -19339,6 +19493,11 @@ public final class Messages {
             ensureAllowedPidsIsMutable();
             allowedPids_.addAll(other.allowedPids_);
           }
+          onChanged();
+        }
+        if (other.hasOffset()) {
+          bitField1_ |= 0x00000001;
+          offset_ = other.offset_;
           onChanged();
         }
         if (other.hasResults()) {
@@ -20920,122 +21079,122 @@ public final class Messages {
         return this;
       }
 
-      private com.avos.avoscloud.Messages.ConvProperty property_ = null;
+      private com.avos.avoscloud.Messages.ConvMemberInfo info_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.avos.avoscloud.Messages.ConvProperty, com.avos.avoscloud.Messages.ConvProperty.Builder, com.avos.avoscloud.Messages.ConvPropertyOrBuilder> propertyBuilder_;
+          com.avos.avoscloud.Messages.ConvMemberInfo, com.avos.avoscloud.Messages.ConvMemberInfo.Builder, com.avos.avoscloud.Messages.ConvMemberInfoOrBuilder> infoBuilder_;
       /**
-       * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+       * <code>optional .com.avos.avoscloud.ConvMemberInfo info = 26;</code>
        */
-      public boolean hasProperty() {
+      public boolean hasInfo() {
         return ((bitField0_ & 0x02000000) == 0x02000000);
       }
       /**
-       * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+       * <code>optional .com.avos.avoscloud.ConvMemberInfo info = 26;</code>
        */
-      public com.avos.avoscloud.Messages.ConvProperty getProperty() {
-        if (propertyBuilder_ == null) {
-          return property_ == null ? com.avos.avoscloud.Messages.ConvProperty.getDefaultInstance() : property_;
+      public com.avos.avoscloud.Messages.ConvMemberInfo getInfo() {
+        if (infoBuilder_ == null) {
+          return info_ == null ? com.avos.avoscloud.Messages.ConvMemberInfo.getDefaultInstance() : info_;
         } else {
-          return propertyBuilder_.getMessage();
+          return infoBuilder_.getMessage();
         }
       }
       /**
-       * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+       * <code>optional .com.avos.avoscloud.ConvMemberInfo info = 26;</code>
        */
-      public Builder setProperty(com.avos.avoscloud.Messages.ConvProperty value) {
-        if (propertyBuilder_ == null) {
+      public Builder setInfo(com.avos.avoscloud.Messages.ConvMemberInfo value) {
+        if (infoBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          property_ = value;
+          info_ = value;
           onChanged();
         } else {
-          propertyBuilder_.setMessage(value);
+          infoBuilder_.setMessage(value);
         }
         bitField0_ |= 0x02000000;
         return this;
       }
       /**
-       * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+       * <code>optional .com.avos.avoscloud.ConvMemberInfo info = 26;</code>
        */
-      public Builder setProperty(
-          com.avos.avoscloud.Messages.ConvProperty.Builder builderForValue) {
-        if (propertyBuilder_ == null) {
-          property_ = builderForValue.build();
+      public Builder setInfo(
+          com.avos.avoscloud.Messages.ConvMemberInfo.Builder builderForValue) {
+        if (infoBuilder_ == null) {
+          info_ = builderForValue.build();
           onChanged();
         } else {
-          propertyBuilder_.setMessage(builderForValue.build());
+          infoBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x02000000;
         return this;
       }
       /**
-       * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+       * <code>optional .com.avos.avoscloud.ConvMemberInfo info = 26;</code>
        */
-      public Builder mergeProperty(com.avos.avoscloud.Messages.ConvProperty value) {
-        if (propertyBuilder_ == null) {
+      public Builder mergeInfo(com.avos.avoscloud.Messages.ConvMemberInfo value) {
+        if (infoBuilder_ == null) {
           if (((bitField0_ & 0x02000000) == 0x02000000) &&
-              property_ != null &&
-              property_ != com.avos.avoscloud.Messages.ConvProperty.getDefaultInstance()) {
-            property_ =
-              com.avos.avoscloud.Messages.ConvProperty.newBuilder(property_).mergeFrom(value).buildPartial();
+              info_ != null &&
+              info_ != com.avos.avoscloud.Messages.ConvMemberInfo.getDefaultInstance()) {
+            info_ =
+              com.avos.avoscloud.Messages.ConvMemberInfo.newBuilder(info_).mergeFrom(value).buildPartial();
           } else {
-            property_ = value;
+            info_ = value;
           }
           onChanged();
         } else {
-          propertyBuilder_.mergeFrom(value);
+          infoBuilder_.mergeFrom(value);
         }
         bitField0_ |= 0x02000000;
         return this;
       }
       /**
-       * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+       * <code>optional .com.avos.avoscloud.ConvMemberInfo info = 26;</code>
        */
-      public Builder clearProperty() {
-        if (propertyBuilder_ == null) {
-          property_ = null;
+      public Builder clearInfo() {
+        if (infoBuilder_ == null) {
+          info_ = null;
           onChanged();
         } else {
-          propertyBuilder_.clear();
+          infoBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x02000000);
         return this;
       }
       /**
-       * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+       * <code>optional .com.avos.avoscloud.ConvMemberInfo info = 26;</code>
        */
-      public com.avos.avoscloud.Messages.ConvProperty.Builder getPropertyBuilder() {
+      public com.avos.avoscloud.Messages.ConvMemberInfo.Builder getInfoBuilder() {
         bitField0_ |= 0x02000000;
         onChanged();
-        return getPropertyFieldBuilder().getBuilder();
+        return getInfoFieldBuilder().getBuilder();
       }
       /**
-       * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+       * <code>optional .com.avos.avoscloud.ConvMemberInfo info = 26;</code>
        */
-      public com.avos.avoscloud.Messages.ConvPropertyOrBuilder getPropertyOrBuilder() {
-        if (propertyBuilder_ != null) {
-          return propertyBuilder_.getMessageOrBuilder();
+      public com.avos.avoscloud.Messages.ConvMemberInfoOrBuilder getInfoOrBuilder() {
+        if (infoBuilder_ != null) {
+          return infoBuilder_.getMessageOrBuilder();
         } else {
-          return property_ == null ?
-              com.avos.avoscloud.Messages.ConvProperty.getDefaultInstance() : property_;
+          return info_ == null ?
+              com.avos.avoscloud.Messages.ConvMemberInfo.getDefaultInstance() : info_;
         }
       }
       /**
-       * <code>optional .com.avos.avoscloud.ConvProperty property = 26;</code>
+       * <code>optional .com.avos.avoscloud.ConvMemberInfo info = 26;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.avos.avoscloud.Messages.ConvProperty, com.avos.avoscloud.Messages.ConvProperty.Builder, com.avos.avoscloud.Messages.ConvPropertyOrBuilder> 
-          getPropertyFieldBuilder() {
-        if (propertyBuilder_ == null) {
-          propertyBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              com.avos.avoscloud.Messages.ConvProperty, com.avos.avoscloud.Messages.ConvProperty.Builder, com.avos.avoscloud.Messages.ConvPropertyOrBuilder>(
-                  getProperty(),
+          com.avos.avoscloud.Messages.ConvMemberInfo, com.avos.avoscloud.Messages.ConvMemberInfo.Builder, com.avos.avoscloud.Messages.ConvMemberInfoOrBuilder> 
+          getInfoFieldBuilder() {
+        if (infoBuilder_ == null) {
+          infoBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              com.avos.avoscloud.Messages.ConvMemberInfo, com.avos.avoscloud.Messages.ConvMemberInfo.Builder, com.avos.avoscloud.Messages.ConvMemberInfoOrBuilder>(
+                  getInfo(),
                   getParentForChildren(),
                   isClean());
-          property_ = null;
+          info_ = null;
         }
-        return propertyBuilder_;
+        return infoBuilder_;
       }
 
       private boolean tempConv_ ;
@@ -21474,6 +21633,106 @@ public final class Messages {
         return this;
       }
 
+      private java.lang.Object offset_ = "";
+      /**
+       * <pre>
+       * used in blacklist/shutup query
+       * </pre>
+       *
+       * <code>optional string offset = 40;</code>
+       */
+      public boolean hasOffset() {
+        return ((bitField1_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <pre>
+       * used in blacklist/shutup query
+       * </pre>
+       *
+       * <code>optional string offset = 40;</code>
+       */
+      public java.lang.String getOffset() {
+        java.lang.Object ref = offset_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            offset_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <pre>
+       * used in blacklist/shutup query
+       * </pre>
+       *
+       * <code>optional string offset = 40;</code>
+       */
+      public com.google.protobuf.ByteString
+          getOffsetBytes() {
+        java.lang.Object ref = offset_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          offset_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <pre>
+       * used in blacklist/shutup query
+       * </pre>
+       *
+       * <code>optional string offset = 40;</code>
+       */
+      public Builder setOffset(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField1_ |= 0x00000001;
+        offset_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * used in blacklist/shutup query
+       * </pre>
+       *
+       * <code>optional string offset = 40;</code>
+       */
+      public Builder clearOffset() {
+        bitField1_ = (bitField1_ & ~0x00000001);
+        offset_ = getDefaultInstance().getOffset();
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * used in blacklist/shutup query
+       * </pre>
+       *
+       * <code>optional string offset = 40;</code>
+       */
+      public Builder setOffsetBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField1_ |= 0x00000001;
+        offset_ = value;
+        onChanged();
+        return this;
+      }
+
       private com.avos.avoscloud.Messages.JsonObjectMessage results_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
           com.avos.avoscloud.Messages.JsonObjectMessage, com.avos.avoscloud.Messages.JsonObjectMessage.Builder, com.avos.avoscloud.Messages.JsonObjectMessageOrBuilder> resultsBuilder_;
@@ -21481,7 +21740,7 @@ public final class Messages {
        * <code>optional .com.avos.avoscloud.JsonObjectMessage results = 100;</code>
        */
       public boolean hasResults() {
-        return ((bitField1_ & 0x00000001) == 0x00000001);
+        return ((bitField1_ & 0x00000002) == 0x00000002);
       }
       /**
        * <code>optional .com.avos.avoscloud.JsonObjectMessage results = 100;</code>
@@ -21506,7 +21765,7 @@ public final class Messages {
         } else {
           resultsBuilder_.setMessage(value);
         }
-        bitField1_ |= 0x00000001;
+        bitField1_ |= 0x00000002;
         return this;
       }
       /**
@@ -21520,7 +21779,7 @@ public final class Messages {
         } else {
           resultsBuilder_.setMessage(builderForValue.build());
         }
-        bitField1_ |= 0x00000001;
+        bitField1_ |= 0x00000002;
         return this;
       }
       /**
@@ -21528,7 +21787,7 @@ public final class Messages {
        */
       public Builder mergeResults(com.avos.avoscloud.Messages.JsonObjectMessage value) {
         if (resultsBuilder_ == null) {
-          if (((bitField1_ & 0x00000001) == 0x00000001) &&
+          if (((bitField1_ & 0x00000002) == 0x00000002) &&
               results_ != null &&
               results_ != com.avos.avoscloud.Messages.JsonObjectMessage.getDefaultInstance()) {
             results_ =
@@ -21540,7 +21799,7 @@ public final class Messages {
         } else {
           resultsBuilder_.mergeFrom(value);
         }
-        bitField1_ |= 0x00000001;
+        bitField1_ |= 0x00000002;
         return this;
       }
       /**
@@ -21553,14 +21812,14 @@ public final class Messages {
         } else {
           resultsBuilder_.clear();
         }
-        bitField1_ = (bitField1_ & ~0x00000001);
+        bitField1_ = (bitField1_ & ~0x00000002);
         return this;
       }
       /**
        * <code>optional .com.avos.avoscloud.JsonObjectMessage results = 100;</code>
        */
       public com.avos.avoscloud.Messages.JsonObjectMessage.Builder getResultsBuilder() {
-        bitField1_ |= 0x00000001;
+        bitField1_ |= 0x00000002;
         onChanged();
         return getResultsFieldBuilder().getBuilder();
       }
@@ -21599,7 +21858,7 @@ public final class Messages {
        * <code>optional .com.avos.avoscloud.JsonObjectMessage where = 101;</code>
        */
       public boolean hasWhere() {
-        return ((bitField1_ & 0x00000002) == 0x00000002);
+        return ((bitField1_ & 0x00000004) == 0x00000004);
       }
       /**
        * <code>optional .com.avos.avoscloud.JsonObjectMessage where = 101;</code>
@@ -21624,7 +21883,7 @@ public final class Messages {
         } else {
           whereBuilder_.setMessage(value);
         }
-        bitField1_ |= 0x00000002;
+        bitField1_ |= 0x00000004;
         return this;
       }
       /**
@@ -21638,7 +21897,7 @@ public final class Messages {
         } else {
           whereBuilder_.setMessage(builderForValue.build());
         }
-        bitField1_ |= 0x00000002;
+        bitField1_ |= 0x00000004;
         return this;
       }
       /**
@@ -21646,7 +21905,7 @@ public final class Messages {
        */
       public Builder mergeWhere(com.avos.avoscloud.Messages.JsonObjectMessage value) {
         if (whereBuilder_ == null) {
-          if (((bitField1_ & 0x00000002) == 0x00000002) &&
+          if (((bitField1_ & 0x00000004) == 0x00000004) &&
               where_ != null &&
               where_ != com.avos.avoscloud.Messages.JsonObjectMessage.getDefaultInstance()) {
             where_ =
@@ -21658,7 +21917,7 @@ public final class Messages {
         } else {
           whereBuilder_.mergeFrom(value);
         }
-        bitField1_ |= 0x00000002;
+        bitField1_ |= 0x00000004;
         return this;
       }
       /**
@@ -21671,14 +21930,14 @@ public final class Messages {
         } else {
           whereBuilder_.clear();
         }
-        bitField1_ = (bitField1_ & ~0x00000002);
+        bitField1_ = (bitField1_ & ~0x00000004);
         return this;
       }
       /**
        * <code>optional .com.avos.avoscloud.JsonObjectMessage where = 101;</code>
        */
       public com.avos.avoscloud.Messages.JsonObjectMessage.Builder getWhereBuilder() {
-        bitField1_ |= 0x00000002;
+        bitField1_ |= 0x00000004;
         onChanged();
         return getWhereFieldBuilder().getBuilder();
       }
@@ -21717,7 +21976,7 @@ public final class Messages {
        * <code>optional .com.avos.avoscloud.JsonObjectMessage attr = 103;</code>
        */
       public boolean hasAttr() {
-        return ((bitField1_ & 0x00000004) == 0x00000004);
+        return ((bitField1_ & 0x00000008) == 0x00000008);
       }
       /**
        * <code>optional .com.avos.avoscloud.JsonObjectMessage attr = 103;</code>
@@ -21742,7 +22001,7 @@ public final class Messages {
         } else {
           attrBuilder_.setMessage(value);
         }
-        bitField1_ |= 0x00000004;
+        bitField1_ |= 0x00000008;
         return this;
       }
       /**
@@ -21756,7 +22015,7 @@ public final class Messages {
         } else {
           attrBuilder_.setMessage(builderForValue.build());
         }
-        bitField1_ |= 0x00000004;
+        bitField1_ |= 0x00000008;
         return this;
       }
       /**
@@ -21764,7 +22023,7 @@ public final class Messages {
        */
       public Builder mergeAttr(com.avos.avoscloud.Messages.JsonObjectMessage value) {
         if (attrBuilder_ == null) {
-          if (((bitField1_ & 0x00000004) == 0x00000004) &&
+          if (((bitField1_ & 0x00000008) == 0x00000008) &&
               attr_ != null &&
               attr_ != com.avos.avoscloud.Messages.JsonObjectMessage.getDefaultInstance()) {
             attr_ =
@@ -21776,7 +22035,7 @@ public final class Messages {
         } else {
           attrBuilder_.mergeFrom(value);
         }
-        bitField1_ |= 0x00000004;
+        bitField1_ |= 0x00000008;
         return this;
       }
       /**
@@ -21789,14 +22048,14 @@ public final class Messages {
         } else {
           attrBuilder_.clear();
         }
-        bitField1_ = (bitField1_ & ~0x00000004);
+        bitField1_ = (bitField1_ & ~0x00000008);
         return this;
       }
       /**
        * <code>optional .com.avos.avoscloud.JsonObjectMessage attr = 103;</code>
        */
       public com.avos.avoscloud.Messages.JsonObjectMessage.Builder getAttrBuilder() {
-        bitField1_ |= 0x00000004;
+        bitField1_ |= 0x00000008;
         onChanged();
         return getAttrFieldBuilder().getBuilder();
       }
@@ -23423,6 +23682,15 @@ public final class Messages {
     boolean getTtIncluded();
 
     /**
+     * <code>optional int32 lctype = 13;</code>
+     */
+    boolean hasLctype();
+    /**
+     * <code>optional int32 lctype = 13;</code>
+     */
+    int getLctype();
+
+    /**
      * <code>repeated .com.avos.avoscloud.LogItem logs = 105;</code>
      */
     java.util.List<com.avos.avoscloud.Messages.LogItem> 
@@ -23471,6 +23739,7 @@ public final class Messages {
       direction_ = 1;
       tIncluded_ = false;
       ttIncluded_ = false;
+      lctype_ = 0;
       logs_ = java.util.Collections.emptyList();
     }
 
@@ -23572,10 +23841,15 @@ public final class Messages {
               ttIncluded_ = input.readBool();
               break;
             }
+            case 104: {
+              bitField0_ |= 0x00001000;
+              lctype_ = input.readInt32();
+              break;
+            }
             case 842: {
-              if (!((mutable_bitField0_ & 0x00001000) == 0x00001000)) {
+              if (!((mutable_bitField0_ & 0x00002000) == 0x00002000)) {
                 logs_ = new java.util.ArrayList<com.avos.avoscloud.Messages.LogItem>();
-                mutable_bitField0_ |= 0x00001000;
+                mutable_bitField0_ |= 0x00002000;
               }
               logs_.add(
                   input.readMessage(com.avos.avoscloud.Messages.LogItem.PARSER, extensionRegistry));
@@ -23589,7 +23863,7 @@ public final class Messages {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00001000) == 0x00001000)) {
+        if (((mutable_bitField0_ & 0x00002000) == 0x00002000)) {
           logs_ = java.util.Collections.unmodifiableList(logs_);
         }
         this.unknownFields = unknownFields.build();
@@ -23988,6 +24262,21 @@ public final class Messages {
       return ttIncluded_;
     }
 
+    public static final int LCTYPE_FIELD_NUMBER = 13;
+    private int lctype_;
+    /**
+     * <code>optional int32 lctype = 13;</code>
+     */
+    public boolean hasLctype() {
+      return ((bitField0_ & 0x00001000) == 0x00001000);
+    }
+    /**
+     * <code>optional int32 lctype = 13;</code>
+     */
+    public int getLctype() {
+      return lctype_;
+    }
+
     public static final int LOGS_FIELD_NUMBER = 105;
     private java.util.List<com.avos.avoscloud.Messages.LogItem> logs_;
     /**
@@ -24071,6 +24360,9 @@ public final class Messages {
       if (((bitField0_ & 0x00000800) == 0x00000800)) {
         output.writeBool(12, ttIncluded_);
       }
+      if (((bitField0_ & 0x00001000) == 0x00001000)) {
+        output.writeInt32(13, lctype_);
+      }
       for (int i = 0; i < logs_.size(); i++) {
         output.writeMessage(105, logs_.get(i));
       }
@@ -24125,6 +24417,10 @@ public final class Messages {
       if (((bitField0_ & 0x00000800) == 0x00000800)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(12, ttIncluded_);
+      }
+      if (((bitField0_ & 0x00001000) == 0x00001000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(13, lctype_);
       }
       for (int i = 0; i < logs_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
@@ -24205,6 +24501,11 @@ public final class Messages {
         result = result && (getTtIncluded()
             == other.getTtIncluded());
       }
+      result = result && (hasLctype() == other.hasLctype());
+      if (hasLctype()) {
+        result = result && (getLctype()
+            == other.getLctype());
+      }
       result = result && getLogsList()
           .equals(other.getLogsList());
       result = result && unknownFields.equals(other.unknownFields);
@@ -24270,6 +24571,10 @@ public final class Messages {
         hash = (37 * hash) + TTINCLUDED_FIELD_NUMBER;
         hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
             getTtIncluded());
+      }
+      if (hasLctype()) {
+        hash = (37 * hash) + LCTYPE_FIELD_NUMBER;
+        hash = (53 * hash) + getLctype();
       }
       if (getLogsCount() > 0) {
         hash = (37 * hash) + LOGS_FIELD_NUMBER;
@@ -24429,9 +24734,11 @@ public final class Messages {
         bitField0_ = (bitField0_ & ~0x00000400);
         ttIncluded_ = false;
         bitField0_ = (bitField0_ & ~0x00000800);
+        lctype_ = 0;
+        bitField0_ = (bitField0_ & ~0x00001000);
         if (logsBuilder_ == null) {
           logs_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00001000);
+          bitField0_ = (bitField0_ & ~0x00002000);
         } else {
           logsBuilder_.clear();
         }
@@ -24507,10 +24814,14 @@ public final class Messages {
           to_bitField0_ |= 0x00000800;
         }
         result.ttIncluded_ = ttIncluded_;
+        if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
+          to_bitField0_ |= 0x00001000;
+        }
+        result.lctype_ = lctype_;
         if (logsBuilder_ == null) {
-          if (((bitField0_ & 0x00001000) == 0x00001000)) {
+          if (((bitField0_ & 0x00002000) == 0x00002000)) {
             logs_ = java.util.Collections.unmodifiableList(logs_);
-            bitField0_ = (bitField0_ & ~0x00001000);
+            bitField0_ = (bitField0_ & ~0x00002000);
           }
           result.logs_ = logs_;
         } else {
@@ -24602,11 +24913,14 @@ public final class Messages {
         if (other.hasTtIncluded()) {
           setTtIncluded(other.getTtIncluded());
         }
+        if (other.hasLctype()) {
+          setLctype(other.getLctype());
+        }
         if (logsBuilder_ == null) {
           if (!other.logs_.isEmpty()) {
             if (logs_.isEmpty()) {
               logs_ = other.logs_;
-              bitField0_ = (bitField0_ & ~0x00001000);
+              bitField0_ = (bitField0_ & ~0x00002000);
             } else {
               ensureLogsIsMutable();
               logs_.addAll(other.logs_);
@@ -24619,7 +24933,7 @@ public final class Messages {
               logsBuilder_.dispose();
               logsBuilder_ = null;
               logs_ = other.logs_;
-              bitField0_ = (bitField0_ & ~0x00001000);
+              bitField0_ = (bitField0_ & ~0x00002000);
               logsBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getLogsFieldBuilder() : null;
@@ -25220,12 +25534,44 @@ public final class Messages {
         return this;
       }
 
+      private int lctype_ ;
+      /**
+       * <code>optional int32 lctype = 13;</code>
+       */
+      public boolean hasLctype() {
+        return ((bitField0_ & 0x00001000) == 0x00001000);
+      }
+      /**
+       * <code>optional int32 lctype = 13;</code>
+       */
+      public int getLctype() {
+        return lctype_;
+      }
+      /**
+       * <code>optional int32 lctype = 13;</code>
+       */
+      public Builder setLctype(int value) {
+        bitField0_ |= 0x00001000;
+        lctype_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int32 lctype = 13;</code>
+       */
+      public Builder clearLctype() {
+        bitField0_ = (bitField0_ & ~0x00001000);
+        lctype_ = 0;
+        onChanged();
+        return this;
+      }
+
       private java.util.List<com.avos.avoscloud.Messages.LogItem> logs_ =
         java.util.Collections.emptyList();
       private void ensureLogsIsMutable() {
-        if (!((bitField0_ & 0x00001000) == 0x00001000)) {
+        if (!((bitField0_ & 0x00002000) == 0x00002000)) {
           logs_ = new java.util.ArrayList<com.avos.avoscloud.Messages.LogItem>(logs_);
-          bitField0_ |= 0x00001000;
+          bitField0_ |= 0x00002000;
          }
       }
 
@@ -25375,7 +25721,7 @@ public final class Messages {
       public Builder clearLogs() {
         if (logsBuilder_ == null) {
           logs_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00001000);
+          bitField0_ = (bitField0_ & ~0x00002000);
           onChanged();
         } else {
           logsBuilder_.clear();
@@ -25452,7 +25798,7 @@ public final class Messages {
           logsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               com.avos.avoscloud.Messages.LogItem, com.avos.avoscloud.Messages.LogItem.Builder, com.avos.avoscloud.Messages.LogItemOrBuilder>(
                   logs_,
-                  ((bitField0_ & 0x00001000) == 0x00001000),
+                  ((bitField0_ & 0x00002000) == 0x00002000),
                   getParentForChildren(),
                   isClean());
           logs_ = null;
@@ -35139,36 +35485,27 @@ public final class Messages {
         getToCidsBytes(int index);
 
     /**
-     * <code>optional int32 limit = 5 [default = 10];</code>
+     * <code>optional int32 limit = 5;</code>
      */
     boolean hasLimit();
     /**
-     * <code>optional int32 limit = 5 [default = 10];</code>
+     * <code>optional int32 limit = 5;</code>
      */
     int getLimit();
 
     /**
-     * <code>optional int32 skip = 6 [default = 0];</code>
+     * <code>optional string offset = 6;</code>
      */
-    boolean hasSkip();
+    boolean hasOffset();
     /**
-     * <code>optional int32 skip = 6 [default = 0];</code>
+     * <code>optional string offset = 6;</code>
      */
-    int getSkip();
-
+    java.lang.String getOffset();
     /**
-     * <code>optional string lastRk = 7;</code>
-     */
-    boolean hasLastRk();
-    /**
-     * <code>optional string lastRk = 7;</code>
-     */
-    java.lang.String getLastRk();
-    /**
-     * <code>optional string lastRk = 7;</code>
+     * <code>optional string offset = 6;</code>
      */
     com.google.protobuf.ByteString
-        getLastRkBytes();
+        getOffsetBytes();
 
     /**
      * <code>repeated string blockedPids = 8;</code>
@@ -35225,9 +35562,8 @@ public final class Messages {
       toPids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       srcPid_ = "";
       toCids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      limit_ = 10;
-      skip_ = 0;
-      lastRk_ = "";
+      limit_ = 0;
+      offset_ = "";
       blockedPids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       blockedCids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
     }
@@ -35295,31 +35631,26 @@ public final class Messages {
               limit_ = input.readInt32();
               break;
             }
-            case 48: {
-              bitField0_ |= 0x00000008;
-              skip_ = input.readInt32();
-              break;
-            }
-            case 58: {
+            case 50: {
               com.google.protobuf.ByteString bs = input.readBytes();
-              bitField0_ |= 0x00000010;
-              lastRk_ = bs;
+              bitField0_ |= 0x00000008;
+              offset_ = bs;
               break;
             }
             case 66: {
               com.google.protobuf.ByteString bs = input.readBytes();
-              if (!((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
+              if (!((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
                 blockedPids_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000080;
+                mutable_bitField0_ |= 0x00000040;
               }
               blockedPids_.add(bs);
               break;
             }
             case 74: {
               com.google.protobuf.ByteString bs = input.readBytes();
-              if (!((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
+              if (!((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
                 blockedCids_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000100;
+                mutable_bitField0_ |= 0x00000080;
               }
               blockedCids_.add(bs);
               break;
@@ -35338,10 +35669,10 @@ public final class Messages {
         if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
           toCids_ = toCids_.getUnmodifiableView();
         }
-        if (((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
+        if (((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
           blockedPids_ = blockedPids_.getUnmodifiableView();
         }
-        if (((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
+        if (((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
           blockedCids_ = blockedCids_.getUnmodifiableView();
         }
         this.unknownFields = unknownFields.build();
@@ -35506,46 +35837,31 @@ public final class Messages {
     public static final int LIMIT_FIELD_NUMBER = 5;
     private int limit_;
     /**
-     * <code>optional int32 limit = 5 [default = 10];</code>
+     * <code>optional int32 limit = 5;</code>
      */
     public boolean hasLimit() {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     /**
-     * <code>optional int32 limit = 5 [default = 10];</code>
+     * <code>optional int32 limit = 5;</code>
      */
     public int getLimit() {
       return limit_;
     }
 
-    public static final int SKIP_FIELD_NUMBER = 6;
-    private int skip_;
+    public static final int OFFSET_FIELD_NUMBER = 6;
+    private volatile java.lang.Object offset_;
     /**
-     * <code>optional int32 skip = 6 [default = 0];</code>
+     * <code>optional string offset = 6;</code>
      */
-    public boolean hasSkip() {
+    public boolean hasOffset() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     /**
-     * <code>optional int32 skip = 6 [default = 0];</code>
+     * <code>optional string offset = 6;</code>
      */
-    public int getSkip() {
-      return skip_;
-    }
-
-    public static final int LASTRK_FIELD_NUMBER = 7;
-    private volatile java.lang.Object lastRk_;
-    /**
-     * <code>optional string lastRk = 7;</code>
-     */
-    public boolean hasLastRk() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
-    }
-    /**
-     * <code>optional string lastRk = 7;</code>
-     */
-    public java.lang.String getLastRk() {
-      java.lang.Object ref = lastRk_;
+    public java.lang.String getOffset() {
+      java.lang.Object ref = offset_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
@@ -35553,22 +35869,22 @@ public final class Messages {
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          lastRk_ = s;
+          offset_ = s;
         }
         return s;
       }
     }
     /**
-     * <code>optional string lastRk = 7;</code>
+     * <code>optional string offset = 6;</code>
      */
     public com.google.protobuf.ByteString
-        getLastRkBytes() {
-      java.lang.Object ref = lastRk_;
+        getOffsetBytes() {
+      java.lang.Object ref = offset_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        lastRk_ = b;
+        offset_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -35661,10 +35977,7 @@ public final class Messages {
         output.writeInt32(5, limit_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeInt32(6, skip_);
-      }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 7, lastRk_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 6, offset_);
       }
       for (int i = 0; i < blockedPids_.size(); i++) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 8, blockedPids_.getRaw(i));
@@ -35707,11 +36020,7 @@ public final class Messages {
           .computeInt32Size(5, limit_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(6, skip_);
-      }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(7, lastRk_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, offset_);
       }
       {
         int dataSize = 0;
@@ -35764,15 +36073,10 @@ public final class Messages {
         result = result && (getLimit()
             == other.getLimit());
       }
-      result = result && (hasSkip() == other.hasSkip());
-      if (hasSkip()) {
-        result = result && (getSkip()
-            == other.getSkip());
-      }
-      result = result && (hasLastRk() == other.hasLastRk());
-      if (hasLastRk()) {
-        result = result && getLastRk()
-            .equals(other.getLastRk());
+      result = result && (hasOffset() == other.hasOffset());
+      if (hasOffset()) {
+        result = result && getOffset()
+            .equals(other.getOffset());
       }
       result = result && getBlockedPidsList()
           .equals(other.getBlockedPidsList());
@@ -35809,13 +36113,9 @@ public final class Messages {
         hash = (37 * hash) + LIMIT_FIELD_NUMBER;
         hash = (53 * hash) + getLimit();
       }
-      if (hasSkip()) {
-        hash = (37 * hash) + SKIP_FIELD_NUMBER;
-        hash = (53 * hash) + getSkip();
-      }
-      if (hasLastRk()) {
-        hash = (37 * hash) + LASTRK_FIELD_NUMBER;
-        hash = (53 * hash) + getLastRk().hashCode();
+      if (hasOffset()) {
+        hash = (37 * hash) + OFFSET_FIELD_NUMBER;
+        hash = (53 * hash) + getOffset().hashCode();
       }
       if (getBlockedPidsCount() > 0) {
         hash = (37 * hash) + BLOCKEDPIDS_FIELD_NUMBER;
@@ -35962,16 +36262,14 @@ public final class Messages {
         bitField0_ = (bitField0_ & ~0x00000004);
         toCids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000008);
-        limit_ = 10;
+        limit_ = 0;
         bitField0_ = (bitField0_ & ~0x00000010);
-        skip_ = 0;
+        offset_ = "";
         bitField0_ = (bitField0_ & ~0x00000020);
-        lastRk_ = "";
-        bitField0_ = (bitField0_ & ~0x00000040);
         blockedPids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000080);
+        bitField0_ = (bitField0_ & ~0x00000040);
         blockedCids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000100);
+        bitField0_ = (bitField0_ & ~0x00000080);
         return this;
       }
 
@@ -36021,19 +36319,15 @@ public final class Messages {
         if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
           to_bitField0_ |= 0x00000008;
         }
-        result.skip_ = skip_;
-        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
-          to_bitField0_ |= 0x00000010;
-        }
-        result.lastRk_ = lastRk_;
-        if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        result.offset_ = offset_;
+        if (((bitField0_ & 0x00000040) == 0x00000040)) {
           blockedPids_ = blockedPids_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000080);
+          bitField0_ = (bitField0_ & ~0x00000040);
         }
         result.blockedPids_ = blockedPids_;
-        if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        if (((bitField0_ & 0x00000080) == 0x00000080)) {
           blockedCids_ = blockedCids_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000100);
+          bitField0_ = (bitField0_ & ~0x00000080);
         }
         result.blockedCids_ = blockedCids_;
         result.bitField0_ = to_bitField0_;
@@ -36111,18 +36405,15 @@ public final class Messages {
         if (other.hasLimit()) {
           setLimit(other.getLimit());
         }
-        if (other.hasSkip()) {
-          setSkip(other.getSkip());
-        }
-        if (other.hasLastRk()) {
-          bitField0_ |= 0x00000040;
-          lastRk_ = other.lastRk_;
+        if (other.hasOffset()) {
+          bitField0_ |= 0x00000020;
+          offset_ = other.offset_;
           onChanged();
         }
         if (!other.blockedPids_.isEmpty()) {
           if (blockedPids_.isEmpty()) {
             blockedPids_ = other.blockedPids_;
-            bitField0_ = (bitField0_ & ~0x00000080);
+            bitField0_ = (bitField0_ & ~0x00000040);
           } else {
             ensureBlockedPidsIsMutable();
             blockedPids_.addAll(other.blockedPids_);
@@ -36132,7 +36423,7 @@ public final class Messages {
         if (!other.blockedCids_.isEmpty()) {
           if (blockedCids_.isEmpty()) {
             blockedCids_ = other.blockedCids_;
-            bitField0_ = (bitField0_ & ~0x00000100);
+            bitField0_ = (bitField0_ & ~0x00000080);
           } else {
             ensureBlockedCidsIsMutable();
             blockedCids_.addAll(other.blockedCids_);
@@ -36505,21 +36796,21 @@ public final class Messages {
         return this;
       }
 
-      private int limit_ = 10;
+      private int limit_ ;
       /**
-       * <code>optional int32 limit = 5 [default = 10];</code>
+       * <code>optional int32 limit = 5;</code>
        */
       public boolean hasLimit() {
         return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       /**
-       * <code>optional int32 limit = 5 [default = 10];</code>
+       * <code>optional int32 limit = 5;</code>
        */
       public int getLimit() {
         return limit_;
       }
       /**
-       * <code>optional int32 limit = 5 [default = 10];</code>
+       * <code>optional int32 limit = 5;</code>
        */
       public Builder setLimit(int value) {
         bitField0_ |= 0x00000010;
@@ -36528,65 +36819,33 @@ public final class Messages {
         return this;
       }
       /**
-       * <code>optional int32 limit = 5 [default = 10];</code>
+       * <code>optional int32 limit = 5;</code>
        */
       public Builder clearLimit() {
         bitField0_ = (bitField0_ & ~0x00000010);
-        limit_ = 10;
+        limit_ = 0;
         onChanged();
         return this;
       }
 
-      private int skip_ ;
+      private java.lang.Object offset_ = "";
       /**
-       * <code>optional int32 skip = 6 [default = 0];</code>
+       * <code>optional string offset = 6;</code>
        */
-      public boolean hasSkip() {
+      public boolean hasOffset() {
         return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       /**
-       * <code>optional int32 skip = 6 [default = 0];</code>
+       * <code>optional string offset = 6;</code>
        */
-      public int getSkip() {
-        return skip_;
-      }
-      /**
-       * <code>optional int32 skip = 6 [default = 0];</code>
-       */
-      public Builder setSkip(int value) {
-        bitField0_ |= 0x00000020;
-        skip_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional int32 skip = 6 [default = 0];</code>
-       */
-      public Builder clearSkip() {
-        bitField0_ = (bitField0_ & ~0x00000020);
-        skip_ = 0;
-        onChanged();
-        return this;
-      }
-
-      private java.lang.Object lastRk_ = "";
-      /**
-       * <code>optional string lastRk = 7;</code>
-       */
-      public boolean hasLastRk() {
-        return ((bitField0_ & 0x00000040) == 0x00000040);
-      }
-      /**
-       * <code>optional string lastRk = 7;</code>
-       */
-      public java.lang.String getLastRk() {
-        java.lang.Object ref = lastRk_;
+      public java.lang.String getOffset() {
+        java.lang.Object ref = offset_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           if (bs.isValidUtf8()) {
-            lastRk_ = s;
+            offset_ = s;
           }
           return s;
         } else {
@@ -36594,62 +36853,62 @@ public final class Messages {
         }
       }
       /**
-       * <code>optional string lastRk = 7;</code>
+       * <code>optional string offset = 6;</code>
        */
       public com.google.protobuf.ByteString
-          getLastRkBytes() {
-        java.lang.Object ref = lastRk_;
+          getOffsetBytes() {
+        java.lang.Object ref = offset_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          lastRk_ = b;
+          offset_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>optional string lastRk = 7;</code>
+       * <code>optional string offset = 6;</code>
        */
-      public Builder setLastRk(
+      public Builder setOffset(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000040;
-        lastRk_ = value;
+  bitField0_ |= 0x00000020;
+        offset_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string lastRk = 7;</code>
+       * <code>optional string offset = 6;</code>
        */
-      public Builder clearLastRk() {
-        bitField0_ = (bitField0_ & ~0x00000040);
-        lastRk_ = getDefaultInstance().getLastRk();
+      public Builder clearOffset() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        offset_ = getDefaultInstance().getOffset();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string lastRk = 7;</code>
+       * <code>optional string offset = 6;</code>
        */
-      public Builder setLastRkBytes(
+      public Builder setOffsetBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000040;
-        lastRk_ = value;
+  bitField0_ |= 0x00000020;
+        offset_ = value;
         onChanged();
         return this;
       }
 
       private com.google.protobuf.LazyStringList blockedPids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       private void ensureBlockedPidsIsMutable() {
-        if (!((bitField0_ & 0x00000080) == 0x00000080)) {
+        if (!((bitField0_ & 0x00000040) == 0x00000040)) {
           blockedPids_ = new com.google.protobuf.LazyStringArrayList(blockedPids_);
-          bitField0_ |= 0x00000080;
+          bitField0_ |= 0x00000040;
          }
       }
       /**
@@ -36720,7 +36979,7 @@ public final class Messages {
        */
       public Builder clearBlockedPids() {
         blockedPids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000080);
+        bitField0_ = (bitField0_ & ~0x00000040);
         onChanged();
         return this;
       }
@@ -36740,9 +36999,9 @@ public final class Messages {
 
       private com.google.protobuf.LazyStringList blockedCids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       private void ensureBlockedCidsIsMutable() {
-        if (!((bitField0_ & 0x00000100) == 0x00000100)) {
+        if (!((bitField0_ & 0x00000080) == 0x00000080)) {
           blockedCids_ = new com.google.protobuf.LazyStringArrayList(blockedCids_);
-          bitField0_ |= 0x00000100;
+          bitField0_ |= 0x00000080;
          }
       }
       /**
@@ -36813,7 +37072,7 @@ public final class Messages {
        */
       public Builder clearBlockedCids() {
         blockedCids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000100);
+        bitField0_ = (bitField0_ & ~0x00000080);
         onChanged();
         return this;
       }
@@ -36969,6 +37228,15 @@ public final class Messages {
      * <code>optional int32 service = 8;</code>
      */
     int getService();
+
+    /**
+     * <code>optional int64 serverTs = 9;</code>
+     */
+    boolean hasServerTs();
+    /**
+     * <code>optional int64 serverTs = 9;</code>
+     */
+    long getServerTs();
 
     /**
      * <code>optional .com.avos.avoscloud.DataCommand dataMessage = 101;</code>
@@ -37199,6 +37467,7 @@ public final class Messages {
       installationId_ = "";
       priority_ = 0;
       service_ = 0;
+      serverTs_ = 0L;
     }
 
     @java.lang.Override
@@ -37284,9 +37553,14 @@ public final class Messages {
               service_ = input.readInt32();
               break;
             }
+            case 72: {
+              bitField0_ |= 0x00000100;
+              serverTs_ = input.readInt64();
+              break;
+            }
             case 810: {
               com.avos.avoscloud.Messages.DataCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00000100) == 0x00000100)) {
+              if (((bitField0_ & 0x00000200) == 0x00000200)) {
                 subBuilder = dataMessage_.toBuilder();
               }
               dataMessage_ = input.readMessage(com.avos.avoscloud.Messages.DataCommand.PARSER, extensionRegistry);
@@ -37294,12 +37568,12 @@ public final class Messages {
                 subBuilder.mergeFrom(dataMessage_);
                 dataMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00000100;
+              bitField0_ |= 0x00000200;
               break;
             }
             case 818: {
               com.avos.avoscloud.Messages.SessionCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00000200) == 0x00000200)) {
+              if (((bitField0_ & 0x00000400) == 0x00000400)) {
                 subBuilder = sessionMessage_.toBuilder();
               }
               sessionMessage_ = input.readMessage(com.avos.avoscloud.Messages.SessionCommand.PARSER, extensionRegistry);
@@ -37307,12 +37581,12 @@ public final class Messages {
                 subBuilder.mergeFrom(sessionMessage_);
                 sessionMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00000200;
+              bitField0_ |= 0x00000400;
               break;
             }
             case 826: {
               com.avos.avoscloud.Messages.ErrorCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00000400) == 0x00000400)) {
+              if (((bitField0_ & 0x00000800) == 0x00000800)) {
                 subBuilder = errorMessage_.toBuilder();
               }
               errorMessage_ = input.readMessage(com.avos.avoscloud.Messages.ErrorCommand.PARSER, extensionRegistry);
@@ -37320,12 +37594,12 @@ public final class Messages {
                 subBuilder.mergeFrom(errorMessage_);
                 errorMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00000400;
+              bitField0_ |= 0x00000800;
               break;
             }
             case 834: {
               com.avos.avoscloud.Messages.DirectCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00000800) == 0x00000800)) {
+              if (((bitField0_ & 0x00001000) == 0x00001000)) {
                 subBuilder = directMessage_.toBuilder();
               }
               directMessage_ = input.readMessage(com.avos.avoscloud.Messages.DirectCommand.PARSER, extensionRegistry);
@@ -37333,12 +37607,12 @@ public final class Messages {
                 subBuilder.mergeFrom(directMessage_);
                 directMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00000800;
+              bitField0_ |= 0x00001000;
               break;
             }
             case 842: {
               com.avos.avoscloud.Messages.AckCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00001000) == 0x00001000)) {
+              if (((bitField0_ & 0x00002000) == 0x00002000)) {
                 subBuilder = ackMessage_.toBuilder();
               }
               ackMessage_ = input.readMessage(com.avos.avoscloud.Messages.AckCommand.PARSER, extensionRegistry);
@@ -37346,12 +37620,12 @@ public final class Messages {
                 subBuilder.mergeFrom(ackMessage_);
                 ackMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00001000;
+              bitField0_ |= 0x00002000;
               break;
             }
             case 850: {
               com.avos.avoscloud.Messages.UnreadCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00002000) == 0x00002000)) {
+              if (((bitField0_ & 0x00004000) == 0x00004000)) {
                 subBuilder = unreadMessage_.toBuilder();
               }
               unreadMessage_ = input.readMessage(com.avos.avoscloud.Messages.UnreadCommand.PARSER, extensionRegistry);
@@ -37359,12 +37633,12 @@ public final class Messages {
                 subBuilder.mergeFrom(unreadMessage_);
                 unreadMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00002000;
+              bitField0_ |= 0x00004000;
               break;
             }
             case 858: {
               com.avos.avoscloud.Messages.ReadCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00004000) == 0x00004000)) {
+              if (((bitField0_ & 0x00008000) == 0x00008000)) {
                 subBuilder = readMessage_.toBuilder();
               }
               readMessage_ = input.readMessage(com.avos.avoscloud.Messages.ReadCommand.PARSER, extensionRegistry);
@@ -37372,12 +37646,12 @@ public final class Messages {
                 subBuilder.mergeFrom(readMessage_);
                 readMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00004000;
+              bitField0_ |= 0x00008000;
               break;
             }
             case 866: {
               com.avos.avoscloud.Messages.RcpCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00008000) == 0x00008000)) {
+              if (((bitField0_ & 0x00010000) == 0x00010000)) {
                 subBuilder = rcpMessage_.toBuilder();
               }
               rcpMessage_ = input.readMessage(com.avos.avoscloud.Messages.RcpCommand.PARSER, extensionRegistry);
@@ -37385,12 +37659,12 @@ public final class Messages {
                 subBuilder.mergeFrom(rcpMessage_);
                 rcpMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00008000;
+              bitField0_ |= 0x00010000;
               break;
             }
             case 874: {
               com.avos.avoscloud.Messages.LogsCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00010000) == 0x00010000)) {
+              if (((bitField0_ & 0x00020000) == 0x00020000)) {
                 subBuilder = logsMessage_.toBuilder();
               }
               logsMessage_ = input.readMessage(com.avos.avoscloud.Messages.LogsCommand.PARSER, extensionRegistry);
@@ -37398,12 +37672,12 @@ public final class Messages {
                 subBuilder.mergeFrom(logsMessage_);
                 logsMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00010000;
+              bitField0_ |= 0x00020000;
               break;
             }
             case 882: {
               com.avos.avoscloud.Messages.ConvCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00020000) == 0x00020000)) {
+              if (((bitField0_ & 0x00040000) == 0x00040000)) {
                 subBuilder = convMessage_.toBuilder();
               }
               convMessage_ = input.readMessage(com.avos.avoscloud.Messages.ConvCommand.PARSER, extensionRegistry);
@@ -37411,12 +37685,12 @@ public final class Messages {
                 subBuilder.mergeFrom(convMessage_);
                 convMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00020000;
+              bitField0_ |= 0x00040000;
               break;
             }
             case 890: {
               com.avos.avoscloud.Messages.RoomCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00040000) == 0x00040000)) {
+              if (((bitField0_ & 0x00080000) == 0x00080000)) {
                 subBuilder = roomMessage_.toBuilder();
               }
               roomMessage_ = input.readMessage(com.avos.avoscloud.Messages.RoomCommand.PARSER, extensionRegistry);
@@ -37424,12 +37698,12 @@ public final class Messages {
                 subBuilder.mergeFrom(roomMessage_);
                 roomMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00040000;
+              bitField0_ |= 0x00080000;
               break;
             }
             case 898: {
               com.avos.avoscloud.Messages.PresenceCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00080000) == 0x00080000)) {
+              if (((bitField0_ & 0x00100000) == 0x00100000)) {
                 subBuilder = presenceMessage_.toBuilder();
               }
               presenceMessage_ = input.readMessage(com.avos.avoscloud.Messages.PresenceCommand.PARSER, extensionRegistry);
@@ -37437,12 +37711,12 @@ public final class Messages {
                 subBuilder.mergeFrom(presenceMessage_);
                 presenceMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00080000;
+              bitField0_ |= 0x00100000;
               break;
             }
             case 906: {
               com.avos.avoscloud.Messages.ReportCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00100000) == 0x00100000)) {
+              if (((bitField0_ & 0x00200000) == 0x00200000)) {
                 subBuilder = reportMessage_.toBuilder();
               }
               reportMessage_ = input.readMessage(com.avos.avoscloud.Messages.ReportCommand.PARSER, extensionRegistry);
@@ -37450,12 +37724,12 @@ public final class Messages {
                 subBuilder.mergeFrom(reportMessage_);
                 reportMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00100000;
+              bitField0_ |= 0x00200000;
               break;
             }
             case 914: {
               com.avos.avoscloud.Messages.PatchCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00200000) == 0x00200000)) {
+              if (((bitField0_ & 0x00400000) == 0x00400000)) {
                 subBuilder = patchMessage_.toBuilder();
               }
               patchMessage_ = input.readMessage(com.avos.avoscloud.Messages.PatchCommand.PARSER, extensionRegistry);
@@ -37463,12 +37737,12 @@ public final class Messages {
                 subBuilder.mergeFrom(patchMessage_);
                 patchMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00200000;
+              bitField0_ |= 0x00400000;
               break;
             }
             case 922: {
               com.avos.avoscloud.Messages.PubsubCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00400000) == 0x00400000)) {
+              if (((bitField0_ & 0x00800000) == 0x00800000)) {
                 subBuilder = pubsubMessage_.toBuilder();
               }
               pubsubMessage_ = input.readMessage(com.avos.avoscloud.Messages.PubsubCommand.PARSER, extensionRegistry);
@@ -37476,12 +37750,12 @@ public final class Messages {
                 subBuilder.mergeFrom(pubsubMessage_);
                 pubsubMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00400000;
+              bitField0_ |= 0x00800000;
               break;
             }
             case 930: {
               com.avos.avoscloud.Messages.BlacklistCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00800000) == 0x00800000)) {
+              if (((bitField0_ & 0x01000000) == 0x01000000)) {
                 subBuilder = blacklistMessage_.toBuilder();
               }
               blacklistMessage_ = input.readMessage(com.avos.avoscloud.Messages.BlacklistCommand.PARSER, extensionRegistry);
@@ -37489,7 +37763,7 @@ public final class Messages {
                 subBuilder.mergeFrom(blacklistMessage_);
                 blacklistMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00800000;
+              bitField0_ |= 0x01000000;
               break;
             }
           }
@@ -37720,13 +37994,28 @@ public final class Messages {
       return service_;
     }
 
+    public static final int SERVERTS_FIELD_NUMBER = 9;
+    private long serverTs_;
+    /**
+     * <code>optional int64 serverTs = 9;</code>
+     */
+    public boolean hasServerTs() {
+      return ((bitField0_ & 0x00000100) == 0x00000100);
+    }
+    /**
+     * <code>optional int64 serverTs = 9;</code>
+     */
+    public long getServerTs() {
+      return serverTs_;
+    }
+
     public static final int DATAMESSAGE_FIELD_NUMBER = 101;
     private com.avos.avoscloud.Messages.DataCommand dataMessage_;
     /**
      * <code>optional .com.avos.avoscloud.DataCommand dataMessage = 101;</code>
      */
     public boolean hasDataMessage() {
-      return ((bitField0_ & 0x00000100) == 0x00000100);
+      return ((bitField0_ & 0x00000200) == 0x00000200);
     }
     /**
      * <code>optional .com.avos.avoscloud.DataCommand dataMessage = 101;</code>
@@ -37747,7 +38036,7 @@ public final class Messages {
      * <code>optional .com.avos.avoscloud.SessionCommand sessionMessage = 102;</code>
      */
     public boolean hasSessionMessage() {
-      return ((bitField0_ & 0x00000200) == 0x00000200);
+      return ((bitField0_ & 0x00000400) == 0x00000400);
     }
     /**
      * <code>optional .com.avos.avoscloud.SessionCommand sessionMessage = 102;</code>
@@ -37768,7 +38057,7 @@ public final class Messages {
      * <code>optional .com.avos.avoscloud.ErrorCommand errorMessage = 103;</code>
      */
     public boolean hasErrorMessage() {
-      return ((bitField0_ & 0x00000400) == 0x00000400);
+      return ((bitField0_ & 0x00000800) == 0x00000800);
     }
     /**
      * <code>optional .com.avos.avoscloud.ErrorCommand errorMessage = 103;</code>
@@ -37789,7 +38078,7 @@ public final class Messages {
      * <code>optional .com.avos.avoscloud.DirectCommand directMessage = 104;</code>
      */
     public boolean hasDirectMessage() {
-      return ((bitField0_ & 0x00000800) == 0x00000800);
+      return ((bitField0_ & 0x00001000) == 0x00001000);
     }
     /**
      * <code>optional .com.avos.avoscloud.DirectCommand directMessage = 104;</code>
@@ -37810,7 +38099,7 @@ public final class Messages {
      * <code>optional .com.avos.avoscloud.AckCommand ackMessage = 105;</code>
      */
     public boolean hasAckMessage() {
-      return ((bitField0_ & 0x00001000) == 0x00001000);
+      return ((bitField0_ & 0x00002000) == 0x00002000);
     }
     /**
      * <code>optional .com.avos.avoscloud.AckCommand ackMessage = 105;</code>
@@ -37831,7 +38120,7 @@ public final class Messages {
      * <code>optional .com.avos.avoscloud.UnreadCommand unreadMessage = 106;</code>
      */
     public boolean hasUnreadMessage() {
-      return ((bitField0_ & 0x00002000) == 0x00002000);
+      return ((bitField0_ & 0x00004000) == 0x00004000);
     }
     /**
      * <code>optional .com.avos.avoscloud.UnreadCommand unreadMessage = 106;</code>
@@ -37852,7 +38141,7 @@ public final class Messages {
      * <code>optional .com.avos.avoscloud.ReadCommand readMessage = 107;</code>
      */
     public boolean hasReadMessage() {
-      return ((bitField0_ & 0x00004000) == 0x00004000);
+      return ((bitField0_ & 0x00008000) == 0x00008000);
     }
     /**
      * <code>optional .com.avos.avoscloud.ReadCommand readMessage = 107;</code>
@@ -37873,7 +38162,7 @@ public final class Messages {
      * <code>optional .com.avos.avoscloud.RcpCommand rcpMessage = 108;</code>
      */
     public boolean hasRcpMessage() {
-      return ((bitField0_ & 0x00008000) == 0x00008000);
+      return ((bitField0_ & 0x00010000) == 0x00010000);
     }
     /**
      * <code>optional .com.avos.avoscloud.RcpCommand rcpMessage = 108;</code>
@@ -37894,7 +38183,7 @@ public final class Messages {
      * <code>optional .com.avos.avoscloud.LogsCommand logsMessage = 109;</code>
      */
     public boolean hasLogsMessage() {
-      return ((bitField0_ & 0x00010000) == 0x00010000);
+      return ((bitField0_ & 0x00020000) == 0x00020000);
     }
     /**
      * <code>optional .com.avos.avoscloud.LogsCommand logsMessage = 109;</code>
@@ -37915,7 +38204,7 @@ public final class Messages {
      * <code>optional .com.avos.avoscloud.ConvCommand convMessage = 110;</code>
      */
     public boolean hasConvMessage() {
-      return ((bitField0_ & 0x00020000) == 0x00020000);
+      return ((bitField0_ & 0x00040000) == 0x00040000);
     }
     /**
      * <code>optional .com.avos.avoscloud.ConvCommand convMessage = 110;</code>
@@ -37936,7 +38225,7 @@ public final class Messages {
      * <code>optional .com.avos.avoscloud.RoomCommand roomMessage = 111;</code>
      */
     public boolean hasRoomMessage() {
-      return ((bitField0_ & 0x00040000) == 0x00040000);
+      return ((bitField0_ & 0x00080000) == 0x00080000);
     }
     /**
      * <code>optional .com.avos.avoscloud.RoomCommand roomMessage = 111;</code>
@@ -37957,7 +38246,7 @@ public final class Messages {
      * <code>optional .com.avos.avoscloud.PresenceCommand presenceMessage = 112;</code>
      */
     public boolean hasPresenceMessage() {
-      return ((bitField0_ & 0x00080000) == 0x00080000);
+      return ((bitField0_ & 0x00100000) == 0x00100000);
     }
     /**
      * <code>optional .com.avos.avoscloud.PresenceCommand presenceMessage = 112;</code>
@@ -37978,7 +38267,7 @@ public final class Messages {
      * <code>optional .com.avos.avoscloud.ReportCommand reportMessage = 113;</code>
      */
     public boolean hasReportMessage() {
-      return ((bitField0_ & 0x00100000) == 0x00100000);
+      return ((bitField0_ & 0x00200000) == 0x00200000);
     }
     /**
      * <code>optional .com.avos.avoscloud.ReportCommand reportMessage = 113;</code>
@@ -37999,7 +38288,7 @@ public final class Messages {
      * <code>optional .com.avos.avoscloud.PatchCommand patchMessage = 114;</code>
      */
     public boolean hasPatchMessage() {
-      return ((bitField0_ & 0x00200000) == 0x00200000);
+      return ((bitField0_ & 0x00400000) == 0x00400000);
     }
     /**
      * <code>optional .com.avos.avoscloud.PatchCommand patchMessage = 114;</code>
@@ -38020,7 +38309,7 @@ public final class Messages {
      * <code>optional .com.avos.avoscloud.PubsubCommand pubsubMessage = 115;</code>
      */
     public boolean hasPubsubMessage() {
-      return ((bitField0_ & 0x00400000) == 0x00400000);
+      return ((bitField0_ & 0x00800000) == 0x00800000);
     }
     /**
      * <code>optional .com.avos.avoscloud.PubsubCommand pubsubMessage = 115;</code>
@@ -38041,7 +38330,7 @@ public final class Messages {
      * <code>optional .com.avos.avoscloud.BlacklistCommand blacklistMessage = 116;</code>
      */
     public boolean hasBlacklistMessage() {
-      return ((bitField0_ & 0x00800000) == 0x00800000);
+      return ((bitField0_ & 0x01000000) == 0x01000000);
     }
     /**
      * <code>optional .com.avos.avoscloud.BlacklistCommand blacklistMessage = 116;</code>
@@ -38129,51 +38418,54 @@ public final class Messages {
         output.writeInt32(8, service_);
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
-        output.writeMessage(101, getDataMessage());
+        output.writeInt64(9, serverTs_);
       }
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
-        output.writeMessage(102, getSessionMessage());
+        output.writeMessage(101, getDataMessage());
       }
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
-        output.writeMessage(103, getErrorMessage());
+        output.writeMessage(102, getSessionMessage());
       }
       if (((bitField0_ & 0x00000800) == 0x00000800)) {
-        output.writeMessage(104, getDirectMessage());
+        output.writeMessage(103, getErrorMessage());
       }
       if (((bitField0_ & 0x00001000) == 0x00001000)) {
-        output.writeMessage(105, getAckMessage());
+        output.writeMessage(104, getDirectMessage());
       }
       if (((bitField0_ & 0x00002000) == 0x00002000)) {
-        output.writeMessage(106, getUnreadMessage());
+        output.writeMessage(105, getAckMessage());
       }
       if (((bitField0_ & 0x00004000) == 0x00004000)) {
-        output.writeMessage(107, getReadMessage());
+        output.writeMessage(106, getUnreadMessage());
       }
       if (((bitField0_ & 0x00008000) == 0x00008000)) {
-        output.writeMessage(108, getRcpMessage());
+        output.writeMessage(107, getReadMessage());
       }
       if (((bitField0_ & 0x00010000) == 0x00010000)) {
-        output.writeMessage(109, getLogsMessage());
+        output.writeMessage(108, getRcpMessage());
       }
       if (((bitField0_ & 0x00020000) == 0x00020000)) {
-        output.writeMessage(110, getConvMessage());
+        output.writeMessage(109, getLogsMessage());
       }
       if (((bitField0_ & 0x00040000) == 0x00040000)) {
-        output.writeMessage(111, getRoomMessage());
+        output.writeMessage(110, getConvMessage());
       }
       if (((bitField0_ & 0x00080000) == 0x00080000)) {
-        output.writeMessage(112, getPresenceMessage());
+        output.writeMessage(111, getRoomMessage());
       }
       if (((bitField0_ & 0x00100000) == 0x00100000)) {
-        output.writeMessage(113, getReportMessage());
+        output.writeMessage(112, getPresenceMessage());
       }
       if (((bitField0_ & 0x00200000) == 0x00200000)) {
-        output.writeMessage(114, getPatchMessage());
+        output.writeMessage(113, getReportMessage());
       }
       if (((bitField0_ & 0x00400000) == 0x00400000)) {
-        output.writeMessage(115, getPubsubMessage());
+        output.writeMessage(114, getPatchMessage());
       }
       if (((bitField0_ & 0x00800000) == 0x00800000)) {
+        output.writeMessage(115, getPubsubMessage());
+      }
+      if (((bitField0_ & 0x01000000) == 0x01000000)) {
         output.writeMessage(116, getBlacklistMessage());
       }
       unknownFields.writeTo(output);
@@ -38215,65 +38507,69 @@ public final class Messages {
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(101, getDataMessage());
+          .computeInt64Size(9, serverTs_);
       }
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(102, getSessionMessage());
+          .computeMessageSize(101, getDataMessage());
       }
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(103, getErrorMessage());
+          .computeMessageSize(102, getSessionMessage());
       }
       if (((bitField0_ & 0x00000800) == 0x00000800)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(104, getDirectMessage());
+          .computeMessageSize(103, getErrorMessage());
       }
       if (((bitField0_ & 0x00001000) == 0x00001000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(105, getAckMessage());
+          .computeMessageSize(104, getDirectMessage());
       }
       if (((bitField0_ & 0x00002000) == 0x00002000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(106, getUnreadMessage());
+          .computeMessageSize(105, getAckMessage());
       }
       if (((bitField0_ & 0x00004000) == 0x00004000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(107, getReadMessage());
+          .computeMessageSize(106, getUnreadMessage());
       }
       if (((bitField0_ & 0x00008000) == 0x00008000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(108, getRcpMessage());
+          .computeMessageSize(107, getReadMessage());
       }
       if (((bitField0_ & 0x00010000) == 0x00010000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(109, getLogsMessage());
+          .computeMessageSize(108, getRcpMessage());
       }
       if (((bitField0_ & 0x00020000) == 0x00020000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(110, getConvMessage());
+          .computeMessageSize(109, getLogsMessage());
       }
       if (((bitField0_ & 0x00040000) == 0x00040000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(111, getRoomMessage());
+          .computeMessageSize(110, getConvMessage());
       }
       if (((bitField0_ & 0x00080000) == 0x00080000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(112, getPresenceMessage());
+          .computeMessageSize(111, getRoomMessage());
       }
       if (((bitField0_ & 0x00100000) == 0x00100000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(113, getReportMessage());
+          .computeMessageSize(112, getPresenceMessage());
       }
       if (((bitField0_ & 0x00200000) == 0x00200000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(114, getPatchMessage());
+          .computeMessageSize(113, getReportMessage());
       }
       if (((bitField0_ & 0x00400000) == 0x00400000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(115, getPubsubMessage());
+          .computeMessageSize(114, getPatchMessage());
       }
       if (((bitField0_ & 0x00800000) == 0x00800000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(115, getPubsubMessage());
+      }
+      if (((bitField0_ & 0x01000000) == 0x01000000)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(116, getBlacklistMessage());
       }
@@ -38330,6 +38626,11 @@ public final class Messages {
       if (hasService()) {
         result = result && (getService()
             == other.getService());
+      }
+      result = result && (hasServerTs() == other.hasServerTs());
+      if (hasServerTs()) {
+        result = result && (getServerTs()
+            == other.getServerTs());
       }
       result = result && (hasDataMessage() == other.hasDataMessage());
       if (hasDataMessage()) {
@@ -38453,6 +38754,11 @@ public final class Messages {
       if (hasService()) {
         hash = (37 * hash) + SERVICE_FIELD_NUMBER;
         hash = (53 * hash) + getService();
+      }
+      if (hasServerTs()) {
+        hash = (37 * hash) + SERVERTS_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+            getServerTs());
       }
       if (hasDataMessage()) {
         hash = (37 * hash) + DATAMESSAGE_FIELD_NUMBER;
@@ -38679,102 +38985,104 @@ public final class Messages {
         bitField0_ = (bitField0_ & ~0x00000040);
         service_ = 0;
         bitField0_ = (bitField0_ & ~0x00000080);
+        serverTs_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000100);
         if (dataMessageBuilder_ == null) {
           dataMessage_ = null;
         } else {
           dataMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000100);
+        bitField0_ = (bitField0_ & ~0x00000200);
         if (sessionMessageBuilder_ == null) {
           sessionMessage_ = null;
         } else {
           sessionMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000200);
+        bitField0_ = (bitField0_ & ~0x00000400);
         if (errorMessageBuilder_ == null) {
           errorMessage_ = null;
         } else {
           errorMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000400);
+        bitField0_ = (bitField0_ & ~0x00000800);
         if (directMessageBuilder_ == null) {
           directMessage_ = null;
         } else {
           directMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000800);
+        bitField0_ = (bitField0_ & ~0x00001000);
         if (ackMessageBuilder_ == null) {
           ackMessage_ = null;
         } else {
           ackMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00001000);
+        bitField0_ = (bitField0_ & ~0x00002000);
         if (unreadMessageBuilder_ == null) {
           unreadMessage_ = null;
         } else {
           unreadMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00002000);
+        bitField0_ = (bitField0_ & ~0x00004000);
         if (readMessageBuilder_ == null) {
           readMessage_ = null;
         } else {
           readMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00004000);
+        bitField0_ = (bitField0_ & ~0x00008000);
         if (rcpMessageBuilder_ == null) {
           rcpMessage_ = null;
         } else {
           rcpMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00008000);
+        bitField0_ = (bitField0_ & ~0x00010000);
         if (logsMessageBuilder_ == null) {
           logsMessage_ = null;
         } else {
           logsMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00010000);
+        bitField0_ = (bitField0_ & ~0x00020000);
         if (convMessageBuilder_ == null) {
           convMessage_ = null;
         } else {
           convMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00020000);
+        bitField0_ = (bitField0_ & ~0x00040000);
         if (roomMessageBuilder_ == null) {
           roomMessage_ = null;
         } else {
           roomMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00040000);
+        bitField0_ = (bitField0_ & ~0x00080000);
         if (presenceMessageBuilder_ == null) {
           presenceMessage_ = null;
         } else {
           presenceMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00080000);
+        bitField0_ = (bitField0_ & ~0x00100000);
         if (reportMessageBuilder_ == null) {
           reportMessage_ = null;
         } else {
           reportMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00100000);
+        bitField0_ = (bitField0_ & ~0x00200000);
         if (patchMessageBuilder_ == null) {
           patchMessage_ = null;
         } else {
           patchMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00200000);
+        bitField0_ = (bitField0_ & ~0x00400000);
         if (pubsubMessageBuilder_ == null) {
           pubsubMessage_ = null;
         } else {
           pubsubMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00400000);
+        bitField0_ = (bitField0_ & ~0x00800000);
         if (blacklistMessageBuilder_ == null) {
           blacklistMessage_ = null;
         } else {
           blacklistMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00800000);
+        bitField0_ = (bitField0_ & ~0x01000000);
         return this;
       }
 
@@ -38834,125 +39142,129 @@ public final class Messages {
         if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
           to_bitField0_ |= 0x00000100;
         }
+        result.serverTs_ = serverTs_;
+        if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
+          to_bitField0_ |= 0x00000200;
+        }
         if (dataMessageBuilder_ == null) {
           result.dataMessage_ = dataMessage_;
         } else {
           result.dataMessage_ = dataMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
-          to_bitField0_ |= 0x00000200;
+        if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
+          to_bitField0_ |= 0x00000400;
         }
         if (sessionMessageBuilder_ == null) {
           result.sessionMessage_ = sessionMessage_;
         } else {
           result.sessionMessage_ = sessionMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
-          to_bitField0_ |= 0x00000400;
+        if (((from_bitField0_ & 0x00000800) == 0x00000800)) {
+          to_bitField0_ |= 0x00000800;
         }
         if (errorMessageBuilder_ == null) {
           result.errorMessage_ = errorMessage_;
         } else {
           result.errorMessage_ = errorMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00000800) == 0x00000800)) {
-          to_bitField0_ |= 0x00000800;
+        if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
+          to_bitField0_ |= 0x00001000;
         }
         if (directMessageBuilder_ == null) {
           result.directMessage_ = directMessage_;
         } else {
           result.directMessage_ = directMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
-          to_bitField0_ |= 0x00001000;
+        if (((from_bitField0_ & 0x00002000) == 0x00002000)) {
+          to_bitField0_ |= 0x00002000;
         }
         if (ackMessageBuilder_ == null) {
           result.ackMessage_ = ackMessage_;
         } else {
           result.ackMessage_ = ackMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00002000) == 0x00002000)) {
-          to_bitField0_ |= 0x00002000;
+        if (((from_bitField0_ & 0x00004000) == 0x00004000)) {
+          to_bitField0_ |= 0x00004000;
         }
         if (unreadMessageBuilder_ == null) {
           result.unreadMessage_ = unreadMessage_;
         } else {
           result.unreadMessage_ = unreadMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00004000) == 0x00004000)) {
-          to_bitField0_ |= 0x00004000;
+        if (((from_bitField0_ & 0x00008000) == 0x00008000)) {
+          to_bitField0_ |= 0x00008000;
         }
         if (readMessageBuilder_ == null) {
           result.readMessage_ = readMessage_;
         } else {
           result.readMessage_ = readMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00008000) == 0x00008000)) {
-          to_bitField0_ |= 0x00008000;
+        if (((from_bitField0_ & 0x00010000) == 0x00010000)) {
+          to_bitField0_ |= 0x00010000;
         }
         if (rcpMessageBuilder_ == null) {
           result.rcpMessage_ = rcpMessage_;
         } else {
           result.rcpMessage_ = rcpMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00010000) == 0x00010000)) {
-          to_bitField0_ |= 0x00010000;
+        if (((from_bitField0_ & 0x00020000) == 0x00020000)) {
+          to_bitField0_ |= 0x00020000;
         }
         if (logsMessageBuilder_ == null) {
           result.logsMessage_ = logsMessage_;
         } else {
           result.logsMessage_ = logsMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00020000) == 0x00020000)) {
-          to_bitField0_ |= 0x00020000;
+        if (((from_bitField0_ & 0x00040000) == 0x00040000)) {
+          to_bitField0_ |= 0x00040000;
         }
         if (convMessageBuilder_ == null) {
           result.convMessage_ = convMessage_;
         } else {
           result.convMessage_ = convMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00040000) == 0x00040000)) {
-          to_bitField0_ |= 0x00040000;
+        if (((from_bitField0_ & 0x00080000) == 0x00080000)) {
+          to_bitField0_ |= 0x00080000;
         }
         if (roomMessageBuilder_ == null) {
           result.roomMessage_ = roomMessage_;
         } else {
           result.roomMessage_ = roomMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00080000) == 0x00080000)) {
-          to_bitField0_ |= 0x00080000;
+        if (((from_bitField0_ & 0x00100000) == 0x00100000)) {
+          to_bitField0_ |= 0x00100000;
         }
         if (presenceMessageBuilder_ == null) {
           result.presenceMessage_ = presenceMessage_;
         } else {
           result.presenceMessage_ = presenceMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00100000) == 0x00100000)) {
-          to_bitField0_ |= 0x00100000;
+        if (((from_bitField0_ & 0x00200000) == 0x00200000)) {
+          to_bitField0_ |= 0x00200000;
         }
         if (reportMessageBuilder_ == null) {
           result.reportMessage_ = reportMessage_;
         } else {
           result.reportMessage_ = reportMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00200000) == 0x00200000)) {
-          to_bitField0_ |= 0x00200000;
+        if (((from_bitField0_ & 0x00400000) == 0x00400000)) {
+          to_bitField0_ |= 0x00400000;
         }
         if (patchMessageBuilder_ == null) {
           result.patchMessage_ = patchMessage_;
         } else {
           result.patchMessage_ = patchMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00400000) == 0x00400000)) {
-          to_bitField0_ |= 0x00400000;
+        if (((from_bitField0_ & 0x00800000) == 0x00800000)) {
+          to_bitField0_ |= 0x00800000;
         }
         if (pubsubMessageBuilder_ == null) {
           result.pubsubMessage_ = pubsubMessage_;
         } else {
           result.pubsubMessage_ = pubsubMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00800000) == 0x00800000)) {
-          to_bitField0_ |= 0x00800000;
+        if (((from_bitField0_ & 0x01000000) == 0x01000000)) {
+          to_bitField0_ |= 0x01000000;
         }
         if (blacklistMessageBuilder_ == null) {
           result.blacklistMessage_ = blacklistMessage_;
@@ -39030,6 +39342,9 @@ public final class Messages {
         }
         if (other.hasService()) {
           setService(other.getService());
+        }
+        if (other.hasServerTs()) {
+          setServerTs(other.getServerTs());
         }
         if (other.hasDataMessage()) {
           mergeDataMessage(other.getDataMessage());
@@ -39533,6 +39848,38 @@ public final class Messages {
         return this;
       }
 
+      private long serverTs_ ;
+      /**
+       * <code>optional int64 serverTs = 9;</code>
+       */
+      public boolean hasServerTs() {
+        return ((bitField0_ & 0x00000100) == 0x00000100);
+      }
+      /**
+       * <code>optional int64 serverTs = 9;</code>
+       */
+      public long getServerTs() {
+        return serverTs_;
+      }
+      /**
+       * <code>optional int64 serverTs = 9;</code>
+       */
+      public Builder setServerTs(long value) {
+        bitField0_ |= 0x00000100;
+        serverTs_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int64 serverTs = 9;</code>
+       */
+      public Builder clearServerTs() {
+        bitField0_ = (bitField0_ & ~0x00000100);
+        serverTs_ = 0L;
+        onChanged();
+        return this;
+      }
+
       private com.avos.avoscloud.Messages.DataCommand dataMessage_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
           com.avos.avoscloud.Messages.DataCommand, com.avos.avoscloud.Messages.DataCommand.Builder, com.avos.avoscloud.Messages.DataCommandOrBuilder> dataMessageBuilder_;
@@ -39540,7 +39887,7 @@ public final class Messages {
        * <code>optional .com.avos.avoscloud.DataCommand dataMessage = 101;</code>
        */
       public boolean hasDataMessage() {
-        return ((bitField0_ & 0x00000100) == 0x00000100);
+        return ((bitField0_ & 0x00000200) == 0x00000200);
       }
       /**
        * <code>optional .com.avos.avoscloud.DataCommand dataMessage = 101;</code>
@@ -39565,7 +39912,7 @@ public final class Messages {
         } else {
           dataMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000100;
+        bitField0_ |= 0x00000200;
         return this;
       }
       /**
@@ -39579,7 +39926,7 @@ public final class Messages {
         } else {
           dataMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000100;
+        bitField0_ |= 0x00000200;
         return this;
       }
       /**
@@ -39587,7 +39934,7 @@ public final class Messages {
        */
       public Builder mergeDataMessage(com.avos.avoscloud.Messages.DataCommand value) {
         if (dataMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00000100) == 0x00000100) &&
+          if (((bitField0_ & 0x00000200) == 0x00000200) &&
               dataMessage_ != null &&
               dataMessage_ != com.avos.avoscloud.Messages.DataCommand.getDefaultInstance()) {
             dataMessage_ =
@@ -39599,7 +39946,7 @@ public final class Messages {
         } else {
           dataMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000100;
+        bitField0_ |= 0x00000200;
         return this;
       }
       /**
@@ -39612,14 +39959,14 @@ public final class Messages {
         } else {
           dataMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000100);
+        bitField0_ = (bitField0_ & ~0x00000200);
         return this;
       }
       /**
        * <code>optional .com.avos.avoscloud.DataCommand dataMessage = 101;</code>
        */
       public com.avos.avoscloud.Messages.DataCommand.Builder getDataMessageBuilder() {
-        bitField0_ |= 0x00000100;
+        bitField0_ |= 0x00000200;
         onChanged();
         return getDataMessageFieldBuilder().getBuilder();
       }
@@ -39658,7 +40005,7 @@ public final class Messages {
        * <code>optional .com.avos.avoscloud.SessionCommand sessionMessage = 102;</code>
        */
       public boolean hasSessionMessage() {
-        return ((bitField0_ & 0x00000200) == 0x00000200);
+        return ((bitField0_ & 0x00000400) == 0x00000400);
       }
       /**
        * <code>optional .com.avos.avoscloud.SessionCommand sessionMessage = 102;</code>
@@ -39683,7 +40030,7 @@ public final class Messages {
         } else {
           sessionMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000200;
+        bitField0_ |= 0x00000400;
         return this;
       }
       /**
@@ -39697,7 +40044,7 @@ public final class Messages {
         } else {
           sessionMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000200;
+        bitField0_ |= 0x00000400;
         return this;
       }
       /**
@@ -39705,7 +40052,7 @@ public final class Messages {
        */
       public Builder mergeSessionMessage(com.avos.avoscloud.Messages.SessionCommand value) {
         if (sessionMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00000200) == 0x00000200) &&
+          if (((bitField0_ & 0x00000400) == 0x00000400) &&
               sessionMessage_ != null &&
               sessionMessage_ != com.avos.avoscloud.Messages.SessionCommand.getDefaultInstance()) {
             sessionMessage_ =
@@ -39717,7 +40064,7 @@ public final class Messages {
         } else {
           sessionMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000200;
+        bitField0_ |= 0x00000400;
         return this;
       }
       /**
@@ -39730,14 +40077,14 @@ public final class Messages {
         } else {
           sessionMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000200);
+        bitField0_ = (bitField0_ & ~0x00000400);
         return this;
       }
       /**
        * <code>optional .com.avos.avoscloud.SessionCommand sessionMessage = 102;</code>
        */
       public com.avos.avoscloud.Messages.SessionCommand.Builder getSessionMessageBuilder() {
-        bitField0_ |= 0x00000200;
+        bitField0_ |= 0x00000400;
         onChanged();
         return getSessionMessageFieldBuilder().getBuilder();
       }
@@ -39776,7 +40123,7 @@ public final class Messages {
        * <code>optional .com.avos.avoscloud.ErrorCommand errorMessage = 103;</code>
        */
       public boolean hasErrorMessage() {
-        return ((bitField0_ & 0x00000400) == 0x00000400);
+        return ((bitField0_ & 0x00000800) == 0x00000800);
       }
       /**
        * <code>optional .com.avos.avoscloud.ErrorCommand errorMessage = 103;</code>
@@ -39801,7 +40148,7 @@ public final class Messages {
         } else {
           errorMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000400;
+        bitField0_ |= 0x00000800;
         return this;
       }
       /**
@@ -39815,7 +40162,7 @@ public final class Messages {
         } else {
           errorMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000400;
+        bitField0_ |= 0x00000800;
         return this;
       }
       /**
@@ -39823,7 +40170,7 @@ public final class Messages {
        */
       public Builder mergeErrorMessage(com.avos.avoscloud.Messages.ErrorCommand value) {
         if (errorMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00000400) == 0x00000400) &&
+          if (((bitField0_ & 0x00000800) == 0x00000800) &&
               errorMessage_ != null &&
               errorMessage_ != com.avos.avoscloud.Messages.ErrorCommand.getDefaultInstance()) {
             errorMessage_ =
@@ -39835,7 +40182,7 @@ public final class Messages {
         } else {
           errorMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000400;
+        bitField0_ |= 0x00000800;
         return this;
       }
       /**
@@ -39848,14 +40195,14 @@ public final class Messages {
         } else {
           errorMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000400);
+        bitField0_ = (bitField0_ & ~0x00000800);
         return this;
       }
       /**
        * <code>optional .com.avos.avoscloud.ErrorCommand errorMessage = 103;</code>
        */
       public com.avos.avoscloud.Messages.ErrorCommand.Builder getErrorMessageBuilder() {
-        bitField0_ |= 0x00000400;
+        bitField0_ |= 0x00000800;
         onChanged();
         return getErrorMessageFieldBuilder().getBuilder();
       }
@@ -39894,7 +40241,7 @@ public final class Messages {
        * <code>optional .com.avos.avoscloud.DirectCommand directMessage = 104;</code>
        */
       public boolean hasDirectMessage() {
-        return ((bitField0_ & 0x00000800) == 0x00000800);
+        return ((bitField0_ & 0x00001000) == 0x00001000);
       }
       /**
        * <code>optional .com.avos.avoscloud.DirectCommand directMessage = 104;</code>
@@ -39919,7 +40266,7 @@ public final class Messages {
         } else {
           directMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000800;
+        bitField0_ |= 0x00001000;
         return this;
       }
       /**
@@ -39933,7 +40280,7 @@ public final class Messages {
         } else {
           directMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000800;
+        bitField0_ |= 0x00001000;
         return this;
       }
       /**
@@ -39941,7 +40288,7 @@ public final class Messages {
        */
       public Builder mergeDirectMessage(com.avos.avoscloud.Messages.DirectCommand value) {
         if (directMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00000800) == 0x00000800) &&
+          if (((bitField0_ & 0x00001000) == 0x00001000) &&
               directMessage_ != null &&
               directMessage_ != com.avos.avoscloud.Messages.DirectCommand.getDefaultInstance()) {
             directMessage_ =
@@ -39953,7 +40300,7 @@ public final class Messages {
         } else {
           directMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000800;
+        bitField0_ |= 0x00001000;
         return this;
       }
       /**
@@ -39966,14 +40313,14 @@ public final class Messages {
         } else {
           directMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000800);
+        bitField0_ = (bitField0_ & ~0x00001000);
         return this;
       }
       /**
        * <code>optional .com.avos.avoscloud.DirectCommand directMessage = 104;</code>
        */
       public com.avos.avoscloud.Messages.DirectCommand.Builder getDirectMessageBuilder() {
-        bitField0_ |= 0x00000800;
+        bitField0_ |= 0x00001000;
         onChanged();
         return getDirectMessageFieldBuilder().getBuilder();
       }
@@ -40012,7 +40359,7 @@ public final class Messages {
        * <code>optional .com.avos.avoscloud.AckCommand ackMessage = 105;</code>
        */
       public boolean hasAckMessage() {
-        return ((bitField0_ & 0x00001000) == 0x00001000);
+        return ((bitField0_ & 0x00002000) == 0x00002000);
       }
       /**
        * <code>optional .com.avos.avoscloud.AckCommand ackMessage = 105;</code>
@@ -40037,7 +40384,7 @@ public final class Messages {
         } else {
           ackMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00001000;
+        bitField0_ |= 0x00002000;
         return this;
       }
       /**
@@ -40051,7 +40398,7 @@ public final class Messages {
         } else {
           ackMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00001000;
+        bitField0_ |= 0x00002000;
         return this;
       }
       /**
@@ -40059,7 +40406,7 @@ public final class Messages {
        */
       public Builder mergeAckMessage(com.avos.avoscloud.Messages.AckCommand value) {
         if (ackMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00001000) == 0x00001000) &&
+          if (((bitField0_ & 0x00002000) == 0x00002000) &&
               ackMessage_ != null &&
               ackMessage_ != com.avos.avoscloud.Messages.AckCommand.getDefaultInstance()) {
             ackMessage_ =
@@ -40071,7 +40418,7 @@ public final class Messages {
         } else {
           ackMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00001000;
+        bitField0_ |= 0x00002000;
         return this;
       }
       /**
@@ -40084,14 +40431,14 @@ public final class Messages {
         } else {
           ackMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00001000);
+        bitField0_ = (bitField0_ & ~0x00002000);
         return this;
       }
       /**
        * <code>optional .com.avos.avoscloud.AckCommand ackMessage = 105;</code>
        */
       public com.avos.avoscloud.Messages.AckCommand.Builder getAckMessageBuilder() {
-        bitField0_ |= 0x00001000;
+        bitField0_ |= 0x00002000;
         onChanged();
         return getAckMessageFieldBuilder().getBuilder();
       }
@@ -40130,7 +40477,7 @@ public final class Messages {
        * <code>optional .com.avos.avoscloud.UnreadCommand unreadMessage = 106;</code>
        */
       public boolean hasUnreadMessage() {
-        return ((bitField0_ & 0x00002000) == 0x00002000);
+        return ((bitField0_ & 0x00004000) == 0x00004000);
       }
       /**
        * <code>optional .com.avos.avoscloud.UnreadCommand unreadMessage = 106;</code>
@@ -40155,7 +40502,7 @@ public final class Messages {
         } else {
           unreadMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00002000;
+        bitField0_ |= 0x00004000;
         return this;
       }
       /**
@@ -40169,7 +40516,7 @@ public final class Messages {
         } else {
           unreadMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00002000;
+        bitField0_ |= 0x00004000;
         return this;
       }
       /**
@@ -40177,7 +40524,7 @@ public final class Messages {
        */
       public Builder mergeUnreadMessage(com.avos.avoscloud.Messages.UnreadCommand value) {
         if (unreadMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00002000) == 0x00002000) &&
+          if (((bitField0_ & 0x00004000) == 0x00004000) &&
               unreadMessage_ != null &&
               unreadMessage_ != com.avos.avoscloud.Messages.UnreadCommand.getDefaultInstance()) {
             unreadMessage_ =
@@ -40189,7 +40536,7 @@ public final class Messages {
         } else {
           unreadMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00002000;
+        bitField0_ |= 0x00004000;
         return this;
       }
       /**
@@ -40202,14 +40549,14 @@ public final class Messages {
         } else {
           unreadMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00002000);
+        bitField0_ = (bitField0_ & ~0x00004000);
         return this;
       }
       /**
        * <code>optional .com.avos.avoscloud.UnreadCommand unreadMessage = 106;</code>
        */
       public com.avos.avoscloud.Messages.UnreadCommand.Builder getUnreadMessageBuilder() {
-        bitField0_ |= 0x00002000;
+        bitField0_ |= 0x00004000;
         onChanged();
         return getUnreadMessageFieldBuilder().getBuilder();
       }
@@ -40248,7 +40595,7 @@ public final class Messages {
        * <code>optional .com.avos.avoscloud.ReadCommand readMessage = 107;</code>
        */
       public boolean hasReadMessage() {
-        return ((bitField0_ & 0x00004000) == 0x00004000);
+        return ((bitField0_ & 0x00008000) == 0x00008000);
       }
       /**
        * <code>optional .com.avos.avoscloud.ReadCommand readMessage = 107;</code>
@@ -40273,7 +40620,7 @@ public final class Messages {
         } else {
           readMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00004000;
+        bitField0_ |= 0x00008000;
         return this;
       }
       /**
@@ -40287,7 +40634,7 @@ public final class Messages {
         } else {
           readMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00004000;
+        bitField0_ |= 0x00008000;
         return this;
       }
       /**
@@ -40295,7 +40642,7 @@ public final class Messages {
        */
       public Builder mergeReadMessage(com.avos.avoscloud.Messages.ReadCommand value) {
         if (readMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00004000) == 0x00004000) &&
+          if (((bitField0_ & 0x00008000) == 0x00008000) &&
               readMessage_ != null &&
               readMessage_ != com.avos.avoscloud.Messages.ReadCommand.getDefaultInstance()) {
             readMessage_ =
@@ -40307,7 +40654,7 @@ public final class Messages {
         } else {
           readMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00004000;
+        bitField0_ |= 0x00008000;
         return this;
       }
       /**
@@ -40320,14 +40667,14 @@ public final class Messages {
         } else {
           readMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00004000);
+        bitField0_ = (bitField0_ & ~0x00008000);
         return this;
       }
       /**
        * <code>optional .com.avos.avoscloud.ReadCommand readMessage = 107;</code>
        */
       public com.avos.avoscloud.Messages.ReadCommand.Builder getReadMessageBuilder() {
-        bitField0_ |= 0x00004000;
+        bitField0_ |= 0x00008000;
         onChanged();
         return getReadMessageFieldBuilder().getBuilder();
       }
@@ -40366,7 +40713,7 @@ public final class Messages {
        * <code>optional .com.avos.avoscloud.RcpCommand rcpMessage = 108;</code>
        */
       public boolean hasRcpMessage() {
-        return ((bitField0_ & 0x00008000) == 0x00008000);
+        return ((bitField0_ & 0x00010000) == 0x00010000);
       }
       /**
        * <code>optional .com.avos.avoscloud.RcpCommand rcpMessage = 108;</code>
@@ -40391,7 +40738,7 @@ public final class Messages {
         } else {
           rcpMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00008000;
+        bitField0_ |= 0x00010000;
         return this;
       }
       /**
@@ -40405,7 +40752,7 @@ public final class Messages {
         } else {
           rcpMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00008000;
+        bitField0_ |= 0x00010000;
         return this;
       }
       /**
@@ -40413,7 +40760,7 @@ public final class Messages {
        */
       public Builder mergeRcpMessage(com.avos.avoscloud.Messages.RcpCommand value) {
         if (rcpMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00008000) == 0x00008000) &&
+          if (((bitField0_ & 0x00010000) == 0x00010000) &&
               rcpMessage_ != null &&
               rcpMessage_ != com.avos.avoscloud.Messages.RcpCommand.getDefaultInstance()) {
             rcpMessage_ =
@@ -40425,7 +40772,7 @@ public final class Messages {
         } else {
           rcpMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00008000;
+        bitField0_ |= 0x00010000;
         return this;
       }
       /**
@@ -40438,14 +40785,14 @@ public final class Messages {
         } else {
           rcpMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00008000);
+        bitField0_ = (bitField0_ & ~0x00010000);
         return this;
       }
       /**
        * <code>optional .com.avos.avoscloud.RcpCommand rcpMessage = 108;</code>
        */
       public com.avos.avoscloud.Messages.RcpCommand.Builder getRcpMessageBuilder() {
-        bitField0_ |= 0x00008000;
+        bitField0_ |= 0x00010000;
         onChanged();
         return getRcpMessageFieldBuilder().getBuilder();
       }
@@ -40484,7 +40831,7 @@ public final class Messages {
        * <code>optional .com.avos.avoscloud.LogsCommand logsMessage = 109;</code>
        */
       public boolean hasLogsMessage() {
-        return ((bitField0_ & 0x00010000) == 0x00010000);
+        return ((bitField0_ & 0x00020000) == 0x00020000);
       }
       /**
        * <code>optional .com.avos.avoscloud.LogsCommand logsMessage = 109;</code>
@@ -40509,7 +40856,7 @@ public final class Messages {
         } else {
           logsMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00010000;
+        bitField0_ |= 0x00020000;
         return this;
       }
       /**
@@ -40523,7 +40870,7 @@ public final class Messages {
         } else {
           logsMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00010000;
+        bitField0_ |= 0x00020000;
         return this;
       }
       /**
@@ -40531,7 +40878,7 @@ public final class Messages {
        */
       public Builder mergeLogsMessage(com.avos.avoscloud.Messages.LogsCommand value) {
         if (logsMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00010000) == 0x00010000) &&
+          if (((bitField0_ & 0x00020000) == 0x00020000) &&
               logsMessage_ != null &&
               logsMessage_ != com.avos.avoscloud.Messages.LogsCommand.getDefaultInstance()) {
             logsMessage_ =
@@ -40543,7 +40890,7 @@ public final class Messages {
         } else {
           logsMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00010000;
+        bitField0_ |= 0x00020000;
         return this;
       }
       /**
@@ -40556,14 +40903,14 @@ public final class Messages {
         } else {
           logsMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00010000);
+        bitField0_ = (bitField0_ & ~0x00020000);
         return this;
       }
       /**
        * <code>optional .com.avos.avoscloud.LogsCommand logsMessage = 109;</code>
        */
       public com.avos.avoscloud.Messages.LogsCommand.Builder getLogsMessageBuilder() {
-        bitField0_ |= 0x00010000;
+        bitField0_ |= 0x00020000;
         onChanged();
         return getLogsMessageFieldBuilder().getBuilder();
       }
@@ -40602,7 +40949,7 @@ public final class Messages {
        * <code>optional .com.avos.avoscloud.ConvCommand convMessage = 110;</code>
        */
       public boolean hasConvMessage() {
-        return ((bitField0_ & 0x00020000) == 0x00020000);
+        return ((bitField0_ & 0x00040000) == 0x00040000);
       }
       /**
        * <code>optional .com.avos.avoscloud.ConvCommand convMessage = 110;</code>
@@ -40627,7 +40974,7 @@ public final class Messages {
         } else {
           convMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00020000;
+        bitField0_ |= 0x00040000;
         return this;
       }
       /**
@@ -40641,7 +40988,7 @@ public final class Messages {
         } else {
           convMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00020000;
+        bitField0_ |= 0x00040000;
         return this;
       }
       /**
@@ -40649,7 +40996,7 @@ public final class Messages {
        */
       public Builder mergeConvMessage(com.avos.avoscloud.Messages.ConvCommand value) {
         if (convMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00020000) == 0x00020000) &&
+          if (((bitField0_ & 0x00040000) == 0x00040000) &&
               convMessage_ != null &&
               convMessage_ != com.avos.avoscloud.Messages.ConvCommand.getDefaultInstance()) {
             convMessage_ =
@@ -40661,7 +41008,7 @@ public final class Messages {
         } else {
           convMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00020000;
+        bitField0_ |= 0x00040000;
         return this;
       }
       /**
@@ -40674,14 +41021,14 @@ public final class Messages {
         } else {
           convMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00020000);
+        bitField0_ = (bitField0_ & ~0x00040000);
         return this;
       }
       /**
        * <code>optional .com.avos.avoscloud.ConvCommand convMessage = 110;</code>
        */
       public com.avos.avoscloud.Messages.ConvCommand.Builder getConvMessageBuilder() {
-        bitField0_ |= 0x00020000;
+        bitField0_ |= 0x00040000;
         onChanged();
         return getConvMessageFieldBuilder().getBuilder();
       }
@@ -40720,7 +41067,7 @@ public final class Messages {
        * <code>optional .com.avos.avoscloud.RoomCommand roomMessage = 111;</code>
        */
       public boolean hasRoomMessage() {
-        return ((bitField0_ & 0x00040000) == 0x00040000);
+        return ((bitField0_ & 0x00080000) == 0x00080000);
       }
       /**
        * <code>optional .com.avos.avoscloud.RoomCommand roomMessage = 111;</code>
@@ -40745,7 +41092,7 @@ public final class Messages {
         } else {
           roomMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00040000;
+        bitField0_ |= 0x00080000;
         return this;
       }
       /**
@@ -40759,7 +41106,7 @@ public final class Messages {
         } else {
           roomMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00040000;
+        bitField0_ |= 0x00080000;
         return this;
       }
       /**
@@ -40767,7 +41114,7 @@ public final class Messages {
        */
       public Builder mergeRoomMessage(com.avos.avoscloud.Messages.RoomCommand value) {
         if (roomMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00040000) == 0x00040000) &&
+          if (((bitField0_ & 0x00080000) == 0x00080000) &&
               roomMessage_ != null &&
               roomMessage_ != com.avos.avoscloud.Messages.RoomCommand.getDefaultInstance()) {
             roomMessage_ =
@@ -40779,7 +41126,7 @@ public final class Messages {
         } else {
           roomMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00040000;
+        bitField0_ |= 0x00080000;
         return this;
       }
       /**
@@ -40792,14 +41139,14 @@ public final class Messages {
         } else {
           roomMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00040000);
+        bitField0_ = (bitField0_ & ~0x00080000);
         return this;
       }
       /**
        * <code>optional .com.avos.avoscloud.RoomCommand roomMessage = 111;</code>
        */
       public com.avos.avoscloud.Messages.RoomCommand.Builder getRoomMessageBuilder() {
-        bitField0_ |= 0x00040000;
+        bitField0_ |= 0x00080000;
         onChanged();
         return getRoomMessageFieldBuilder().getBuilder();
       }
@@ -40838,7 +41185,7 @@ public final class Messages {
        * <code>optional .com.avos.avoscloud.PresenceCommand presenceMessage = 112;</code>
        */
       public boolean hasPresenceMessage() {
-        return ((bitField0_ & 0x00080000) == 0x00080000);
+        return ((bitField0_ & 0x00100000) == 0x00100000);
       }
       /**
        * <code>optional .com.avos.avoscloud.PresenceCommand presenceMessage = 112;</code>
@@ -40863,7 +41210,7 @@ public final class Messages {
         } else {
           presenceMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00080000;
+        bitField0_ |= 0x00100000;
         return this;
       }
       /**
@@ -40877,7 +41224,7 @@ public final class Messages {
         } else {
           presenceMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00080000;
+        bitField0_ |= 0x00100000;
         return this;
       }
       /**
@@ -40885,7 +41232,7 @@ public final class Messages {
        */
       public Builder mergePresenceMessage(com.avos.avoscloud.Messages.PresenceCommand value) {
         if (presenceMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00080000) == 0x00080000) &&
+          if (((bitField0_ & 0x00100000) == 0x00100000) &&
               presenceMessage_ != null &&
               presenceMessage_ != com.avos.avoscloud.Messages.PresenceCommand.getDefaultInstance()) {
             presenceMessage_ =
@@ -40897,7 +41244,7 @@ public final class Messages {
         } else {
           presenceMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00080000;
+        bitField0_ |= 0x00100000;
         return this;
       }
       /**
@@ -40910,14 +41257,14 @@ public final class Messages {
         } else {
           presenceMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00080000);
+        bitField0_ = (bitField0_ & ~0x00100000);
         return this;
       }
       /**
        * <code>optional .com.avos.avoscloud.PresenceCommand presenceMessage = 112;</code>
        */
       public com.avos.avoscloud.Messages.PresenceCommand.Builder getPresenceMessageBuilder() {
-        bitField0_ |= 0x00080000;
+        bitField0_ |= 0x00100000;
         onChanged();
         return getPresenceMessageFieldBuilder().getBuilder();
       }
@@ -40956,7 +41303,7 @@ public final class Messages {
        * <code>optional .com.avos.avoscloud.ReportCommand reportMessage = 113;</code>
        */
       public boolean hasReportMessage() {
-        return ((bitField0_ & 0x00100000) == 0x00100000);
+        return ((bitField0_ & 0x00200000) == 0x00200000);
       }
       /**
        * <code>optional .com.avos.avoscloud.ReportCommand reportMessage = 113;</code>
@@ -40981,7 +41328,7 @@ public final class Messages {
         } else {
           reportMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00100000;
+        bitField0_ |= 0x00200000;
         return this;
       }
       /**
@@ -40995,7 +41342,7 @@ public final class Messages {
         } else {
           reportMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00100000;
+        bitField0_ |= 0x00200000;
         return this;
       }
       /**
@@ -41003,7 +41350,7 @@ public final class Messages {
        */
       public Builder mergeReportMessage(com.avos.avoscloud.Messages.ReportCommand value) {
         if (reportMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00100000) == 0x00100000) &&
+          if (((bitField0_ & 0x00200000) == 0x00200000) &&
               reportMessage_ != null &&
               reportMessage_ != com.avos.avoscloud.Messages.ReportCommand.getDefaultInstance()) {
             reportMessage_ =
@@ -41015,7 +41362,7 @@ public final class Messages {
         } else {
           reportMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00100000;
+        bitField0_ |= 0x00200000;
         return this;
       }
       /**
@@ -41028,14 +41375,14 @@ public final class Messages {
         } else {
           reportMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00100000);
+        bitField0_ = (bitField0_ & ~0x00200000);
         return this;
       }
       /**
        * <code>optional .com.avos.avoscloud.ReportCommand reportMessage = 113;</code>
        */
       public com.avos.avoscloud.Messages.ReportCommand.Builder getReportMessageBuilder() {
-        bitField0_ |= 0x00100000;
+        bitField0_ |= 0x00200000;
         onChanged();
         return getReportMessageFieldBuilder().getBuilder();
       }
@@ -41074,7 +41421,7 @@ public final class Messages {
        * <code>optional .com.avos.avoscloud.PatchCommand patchMessage = 114;</code>
        */
       public boolean hasPatchMessage() {
-        return ((bitField0_ & 0x00200000) == 0x00200000);
+        return ((bitField0_ & 0x00400000) == 0x00400000);
       }
       /**
        * <code>optional .com.avos.avoscloud.PatchCommand patchMessage = 114;</code>
@@ -41099,7 +41446,7 @@ public final class Messages {
         } else {
           patchMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00200000;
+        bitField0_ |= 0x00400000;
         return this;
       }
       /**
@@ -41113,7 +41460,7 @@ public final class Messages {
         } else {
           patchMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00200000;
+        bitField0_ |= 0x00400000;
         return this;
       }
       /**
@@ -41121,7 +41468,7 @@ public final class Messages {
        */
       public Builder mergePatchMessage(com.avos.avoscloud.Messages.PatchCommand value) {
         if (patchMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00200000) == 0x00200000) &&
+          if (((bitField0_ & 0x00400000) == 0x00400000) &&
               patchMessage_ != null &&
               patchMessage_ != com.avos.avoscloud.Messages.PatchCommand.getDefaultInstance()) {
             patchMessage_ =
@@ -41133,7 +41480,7 @@ public final class Messages {
         } else {
           patchMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00200000;
+        bitField0_ |= 0x00400000;
         return this;
       }
       /**
@@ -41146,14 +41493,14 @@ public final class Messages {
         } else {
           patchMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00200000);
+        bitField0_ = (bitField0_ & ~0x00400000);
         return this;
       }
       /**
        * <code>optional .com.avos.avoscloud.PatchCommand patchMessage = 114;</code>
        */
       public com.avos.avoscloud.Messages.PatchCommand.Builder getPatchMessageBuilder() {
-        bitField0_ |= 0x00200000;
+        bitField0_ |= 0x00400000;
         onChanged();
         return getPatchMessageFieldBuilder().getBuilder();
       }
@@ -41192,7 +41539,7 @@ public final class Messages {
        * <code>optional .com.avos.avoscloud.PubsubCommand pubsubMessage = 115;</code>
        */
       public boolean hasPubsubMessage() {
-        return ((bitField0_ & 0x00400000) == 0x00400000);
+        return ((bitField0_ & 0x00800000) == 0x00800000);
       }
       /**
        * <code>optional .com.avos.avoscloud.PubsubCommand pubsubMessage = 115;</code>
@@ -41217,7 +41564,7 @@ public final class Messages {
         } else {
           pubsubMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00400000;
+        bitField0_ |= 0x00800000;
         return this;
       }
       /**
@@ -41231,7 +41578,7 @@ public final class Messages {
         } else {
           pubsubMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00400000;
+        bitField0_ |= 0x00800000;
         return this;
       }
       /**
@@ -41239,7 +41586,7 @@ public final class Messages {
        */
       public Builder mergePubsubMessage(com.avos.avoscloud.Messages.PubsubCommand value) {
         if (pubsubMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00400000) == 0x00400000) &&
+          if (((bitField0_ & 0x00800000) == 0x00800000) &&
               pubsubMessage_ != null &&
               pubsubMessage_ != com.avos.avoscloud.Messages.PubsubCommand.getDefaultInstance()) {
             pubsubMessage_ =
@@ -41251,7 +41598,7 @@ public final class Messages {
         } else {
           pubsubMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00400000;
+        bitField0_ |= 0x00800000;
         return this;
       }
       /**
@@ -41264,14 +41611,14 @@ public final class Messages {
         } else {
           pubsubMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00400000);
+        bitField0_ = (bitField0_ & ~0x00800000);
         return this;
       }
       /**
        * <code>optional .com.avos.avoscloud.PubsubCommand pubsubMessage = 115;</code>
        */
       public com.avos.avoscloud.Messages.PubsubCommand.Builder getPubsubMessageBuilder() {
-        bitField0_ |= 0x00400000;
+        bitField0_ |= 0x00800000;
         onChanged();
         return getPubsubMessageFieldBuilder().getBuilder();
       }
@@ -41310,7 +41657,7 @@ public final class Messages {
        * <code>optional .com.avos.avoscloud.BlacklistCommand blacklistMessage = 116;</code>
        */
       public boolean hasBlacklistMessage() {
-        return ((bitField0_ & 0x00800000) == 0x00800000);
+        return ((bitField0_ & 0x01000000) == 0x01000000);
       }
       /**
        * <code>optional .com.avos.avoscloud.BlacklistCommand blacklistMessage = 116;</code>
@@ -41335,7 +41682,7 @@ public final class Messages {
         } else {
           blacklistMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00800000;
+        bitField0_ |= 0x01000000;
         return this;
       }
       /**
@@ -41349,7 +41696,7 @@ public final class Messages {
         } else {
           blacklistMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00800000;
+        bitField0_ |= 0x01000000;
         return this;
       }
       /**
@@ -41357,7 +41704,7 @@ public final class Messages {
        */
       public Builder mergeBlacklistMessage(com.avos.avoscloud.Messages.BlacklistCommand value) {
         if (blacklistMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00800000) == 0x00800000) &&
+          if (((bitField0_ & 0x01000000) == 0x01000000) &&
               blacklistMessage_ != null &&
               blacklistMessage_ != com.avos.avoscloud.Messages.BlacklistCommand.getDefaultInstance()) {
             blacklistMessage_ =
@@ -41369,7 +41716,7 @@ public final class Messages {
         } else {
           blacklistMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00800000;
+        bitField0_ |= 0x01000000;
         return this;
       }
       /**
@@ -41382,14 +41729,14 @@ public final class Messages {
         } else {
           blacklistMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00800000);
+        bitField0_ = (bitField0_ & ~0x01000000);
         return this;
       }
       /**
        * <code>optional .com.avos.avoscloud.BlacklistCommand blacklistMessage = 116;</code>
        */
       public com.avos.avoscloud.Messages.BlacklistCommand.Builder getBlacklistMessageBuilder() {
-        bitField0_ |= 0x00800000;
+        bitField0_ |= 0x01000000;
         onChanged();
         return getBlacklistMessageFieldBuilder().getBuilder();
       }
@@ -41485,10 +41832,10 @@ public final class Messages {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_avos_avoscloud_LogItem_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_com_avos_avoscloud_ConvProperty_descriptor;
+    internal_static_com_avos_avoscloud_ConvMemberInfo_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_com_avos_avoscloud_ConvProperty_fieldAccessorTable;
+      internal_static_com_avos_avoscloud_ConvMemberInfo_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_com_avos_avoscloud_DataCommand_descriptor;
   private static final 
@@ -41609,153 +41956,157 @@ public final class Messages {
       "\003\022\r\n\005msgId\030\004 \001(\t\022\r\n\005ackAt\030\005 \001(\003\022\016\n\006readA" +
       "t\030\006 \001(\003\022\026\n\016patchTimestamp\030\007 \001(\003\022\022\n\nmenti",
       "onAll\030\010 \001(\010\022\023\n\013mentionPids\030\t \003(\t\022\013\n\003bin\030" +
-      "\n \001(\010\022\020\n\010convType\030\013 \001(\005\"=\n\014ConvProperty\022" +
-      "\013\n\003pid\030\001 \001(\t\022\014\n\004role\030\002 \001(\t\022\022\n\npropertyId" +
-      "\030\003 \001(\t\"_\n\013DataCommand\022\013\n\003ids\030\001 \003(\t\0222\n\003ms" +
-      "g\030\002 \003(\0132%.com.avos.avoscloud.JsonObjectM" +
-      "essage\022\017\n\007offline\030\003 \001(\010\"\321\002\n\016SessionComma" +
-      "nd\022\t\n\001t\030\001 \001(\003\022\t\n\001n\030\002 \001(\t\022\t\n\001s\030\003 \001(\t\022\n\n\002u" +
-      "a\030\004 \001(\t\022\t\n\001r\030\005 \001(\010\022\013\n\003tag\030\006 \001(\t\022\020\n\010devic" +
-      "eId\030\007 \001(\t\022\026\n\016sessionPeerIds\030\010 \003(\t\022\034\n\024onl" +
-      "ineSessionPeerIds\030\t \003(\t\022\n\n\002st\030\n \001(\t\022\r\n\005s",
-      "tTtl\030\013 \001(\005\022\014\n\004code\030\014 \001(\005\022\016\n\006reason\030\r \001(\t" +
-      "\022\023\n\013deviceToken\030\016 \001(\t\022\n\n\002sp\030\017 \001(\010\022\016\n\006det" +
-      "ail\030\020 \001(\t\022\033\n\023lastUnreadNotifTime\030\021 \001(\003\022\025" +
-      "\n\rlastPatchTime\030\022 \001(\003\022\024\n\014configBitmap\030\023 " +
-      "\001(\003\"M\n\014ErrorCommand\022\014\n\004code\030\001 \002(\005\022\016\n\006rea" +
-      "son\030\002 \002(\t\022\017\n\007appCode\030\003 \001(\005\022\016\n\006detail\030\004 \001" +
-      "(\t\"\336\002\n\rDirectCommand\022\013\n\003msg\030\001 \001(\t\022\013\n\003uid" +
-      "\030\002 \001(\t\022\022\n\nfromPeerId\030\003 \001(\t\022\021\n\ttimestamp\030" +
-      "\004 \001(\003\022\017\n\007offline\030\005 \001(\010\022\017\n\007hasMore\030\006 \001(\010\022" +
-      "\021\n\ttoPeerIds\030\007 \003(\t\022\t\n\001r\030\n \001(\010\022\013\n\003cid\030\013 \001",
-      "(\t\022\n\n\002id\030\014 \001(\t\022\021\n\ttransient\030\r \001(\010\022\n\n\002dt\030" +
-      "\016 \001(\t\022\016\n\006roomId\030\017 \001(\t\022\020\n\010pushData\030\020 \001(\t\022" +
-      "\014\n\004will\030\021 \001(\010\022\026\n\016patchTimestamp\030\022 \001(\003\022\021\n" +
-      "\tbinaryMsg\030\023 \001(\014\022\023\n\013mentionPids\030\024 \003(\t\022\022\n" +
-      "\nmentionAll\030\025 \001(\010\022\020\n\010convType\030\026 \001(\005\"\246\001\n\n" +
-      "AckCommand\022\014\n\004code\030\001 \001(\005\022\016\n\006reason\030\002 \001(\t" +
-      "\022\013\n\003mid\030\003 \001(\t\022\013\n\003cid\030\004 \001(\t\022\t\n\001t\030\005 \001(\003\022\013\n" +
-      "\003uid\030\006 \001(\t\022\016\n\006fromts\030\007 \001(\003\022\014\n\004tots\030\010 \001(\003" +
-      "\022\014\n\004type\030\t \001(\t\022\013\n\003ids\030\n \003(\t\022\017\n\007appCode\030\013" +
-      " \001(\005\"R\n\rUnreadCommand\022.\n\005convs\030\001 \003(\0132\037.c",
-      "om.avos.avoscloud.UnreadTuple\022\021\n\tnotifTi" +
-      "me\030\002 \001(\003\"\261\006\n\013ConvCommand\022\t\n\001m\030\001 \003(\t\022\021\n\tt" +
-      "ransient\030\002 \001(\010\022\016\n\006unique\030\003 \001(\010\022\013\n\003cid\030\004 " +
-      "\001(\t\022\r\n\005cdate\030\005 \001(\t\022\016\n\006initBy\030\006 \001(\t\022\014\n\004so" +
-      "rt\030\007 \001(\t\022\r\n\005limit\030\010 \001(\005\022\014\n\004skip\030\t \001(\005\022\014\n" +
-      "\004flag\030\n \001(\005\022\r\n\005count\030\013 \001(\005\022\r\n\005udate\030\014 \001(" +
-      "\t\022\t\n\001t\030\r \001(\003\022\t\n\001n\030\016 \001(\t\022\t\n\001s\030\017 \001(\t\022\021\n\tst" +
-      "atusSub\030\020 \001(\010\022\021\n\tstatusPub\030\021 \001(\010\022\021\n\tstat" +
-      "usTTL\030\022 \001(\005\022\020\n\010uniqueId\030\023 \001(\t\022\026\n\016targetC" +
-      "lientId\030\024 \001(\t\022\030\n\020maxReadTimestamp\030\025 \001(\003\022",
-      "\027\n\017maxAckTimestamp\030\026 \001(\003\022\027\n\017queryAllMemb" +
-      "ers\030\027 \001(\010\0227\n\rmaxReadTuples\030\030 \003(\0132 .com.a" +
-      "vos.avoscloud.MaxReadTuple\022\014\n\004cids\030\031 \003(\t" +
-      "\0222\n\010property\030\032 \001(\0132 .com.avos.avoscloud." +
-      "ConvProperty\022\020\n\010tempConv\030\033 \001(\010\022\023\n\013tempCo" +
-      "nvTTL\030\034 \001(\005\022\023\n\013tempConvIds\030\035 \003(\t\022\027\n\017conv" +
-      "BlockedPids\030\036 \003(\t\022\031\n\021clientBlockedPids\030\037" +
-      " \003(\t\022\023\n\013allowedPids\030  \003(\t\0226\n\007results\030d \001" +
-      "(\0132%.com.avos.avoscloud.JsonObjectMessag" +
-      "e\0224\n\005where\030e \001(\0132%.com.avos.avoscloud.Js",
-      "onObjectMessage\0223\n\004attr\030g \001(\0132%.com.avos" +
-      ".avoscloud.JsonObjectMessage\"x\n\013RoomComm" +
-      "and\022\016\n\006roomId\030\001 \001(\t\022\t\n\001s\030\002 \001(\t\022\t\n\001t\030\003 \001(" +
-      "\003\022\t\n\001n\030\004 \001(\t\022\021\n\ttransient\030\005 \001(\010\022\023\n\013roomP" +
-      "eerIds\030\006 \003(\t\022\020\n\010byPeerId\030\007 \001(\t\"\306\002\n\013LogsC" +
-      "ommand\022\013\n\003cid\030\001 \001(\t\022\t\n\001l\030\002 \001(\005\022\r\n\005limit\030" +
-      "\003 \001(\005\022\t\n\001t\030\004 \001(\003\022\n\n\002tt\030\005 \001(\003\022\014\n\004tmid\030\006 \001" +
-      "(\t\022\013\n\003mid\030\007 \001(\t\022\020\n\010checksum\030\010 \001(\t\022\016\n\006sto" +
-      "red\030\t \001(\010\022F\n\tdirection\030\n \001(\0162..com.avos." +
-      "avoscloud.LogsCommand.QueryDirection:\003OL",
-      "D\022\021\n\ttIncluded\030\013 \001(\010\022\022\n\nttIncluded\030\014 \001(\010" +
-      "\022)\n\004logs\030i \003(\0132\033.com.avos.avoscloud.LogI" +
-      "tem\"\"\n\016QueryDirection\022\007\n\003OLD\020\001\022\007\n\003NEW\020\002\"" +
-      "L\n\nRcpCommand\022\n\n\002id\030\001 \001(\t\022\013\n\003cid\030\002 \001(\t\022\t" +
-      "\n\001t\030\003 \001(\003\022\014\n\004read\030\004 \001(\010\022\014\n\004from\030\005 \001(\t\"8\n" +
-      "\tReadTuple\022\013\n\003cid\030\001 \002(\t\022\021\n\ttimestamp\030\002 \001" +
-      "(\003\022\013\n\003mid\030\003 \001(\t\"N\n\014MaxReadTuple\022\013\n\003pid\030\001" +
-      " \001(\t\022\027\n\017maxAckTimestamp\030\002 \001(\003\022\030\n\020maxRead" +
-      "Timestamp\030\003 \001(\003\"V\n\013ReadCommand\022\013\n\003cid\030\001 " +
-      "\001(\t\022\014\n\004cids\030\002 \003(\t\022,\n\005convs\030\003 \003(\0132\035.com.a",
-      "vos.avoscloud.ReadTuple\"f\n\017PresenceComma" +
-      "nd\022.\n\006status\030\001 \001(\0162\036.com.avos.avoscloud." +
-      "StatusType\022\026\n\016sessionPeerIds\030\002 \003(\t\022\013\n\003ci" +
-      "d\030\003 \001(\t\"?\n\rReportCommand\022\022\n\ninitiative\030\001" +
-      " \001(\010\022\014\n\004type\030\002 \001(\t\022\014\n\004data\030\003 \001(\t\"\270\001\n\tPat" +
-      "chItem\022\013\n\003cid\030\001 \001(\t\022\013\n\003mid\030\002 \001(\t\022\021\n\ttime" +
-      "stamp\030\003 \001(\003\022\016\n\006recall\030\004 \001(\010\022\014\n\004data\030\005 \001(" +
-      "\t\022\026\n\016patchTimestamp\030\006 \001(\003\022\014\n\004from\030\007 \001(\t\022" +
-      "\021\n\tbinaryMsg\030\010 \001(\014\022\022\n\nmentionAll\030\t \001(\010\022\023" +
-      "\n\013mentionPids\030\n \003(\t\"U\n\014PatchCommand\022.\n\007p",
-      "atches\030\001 \003(\0132\035.com.avos.avoscloud.PatchI" +
-      "tem\022\025\n\rlastPatchTime\030\002 \001(\003\"\246\001\n\rPubsubCom" +
-      "mand\022\013\n\003cid\030\001 \001(\t\022\014\n\004cids\030\002 \003(\t\022\r\n\005topic" +
-      "\030\003 \001(\t\022\020\n\010subtopic\030\004 \001(\t\022\016\n\006topics\030\005 \003(\t" +
-      "\022\021\n\tsubtopics\030\006 \003(\t\0226\n\007results\030\007 \001(\0132%.c" +
-      "om.avos.avoscloud.JsonObjectMessage\"\260\001\n\020" +
-      "BlacklistCommand\022\016\n\006srcCid\030\001 \001(\t\022\016\n\006toPi" +
-      "ds\030\002 \003(\t\022\016\n\006srcPid\030\003 \001(\t\022\016\n\006toCids\030\004 \003(\t" +
-      "\022\021\n\005limit\030\005 \001(\005:\00210\022\017\n\004skip\030\006 \001(\005:\0010\022\016\n\006" +
-      "lastRk\030\007 \001(\t\022\023\n\013blockedPids\030\010 \003(\t\022\023\n\013blo",
-      "ckedCids\030\t \003(\t\"\323\010\n\016GenericCommand\022,\n\003cmd" +
-      "\030\001 \001(\0162\037.com.avos.avoscloud.CommandType\022" +
-      "&\n\002op\030\002 \001(\0162\032.com.avos.avoscloud.OpType\022" +
-      "\r\n\005appId\030\003 \001(\t\022\016\n\006peerId\030\004 \001(\t\022\t\n\001i\030\005 \001(" +
-      "\005\022\026\n\016installationId\030\006 \001(\t\022\020\n\010priority\030\007 " +
-      "\001(\005\022\017\n\007service\030\010 \001(\005\0224\n\013dataMessage\030e \001(" +
-      "\0132\037.com.avos.avoscloud.DataCommand\022:\n\016se" +
-      "ssionMessage\030f \001(\0132\".com.avos.avoscloud." +
-      "SessionCommand\0226\n\014errorMessage\030g \001(\0132 .c" +
-      "om.avos.avoscloud.ErrorCommand\0228\n\rdirect",
-      "Message\030h \001(\0132!.com.avos.avoscloud.Direc" +
-      "tCommand\0222\n\nackMessage\030i \001(\0132\036.com.avos." +
-      "avoscloud.AckCommand\0228\n\runreadMessage\030j " +
-      "\001(\0132!.com.avos.avoscloud.UnreadCommand\0224" +
-      "\n\013readMessage\030k \001(\0132\037.com.avos.avoscloud" +
-      ".ReadCommand\0222\n\nrcpMessage\030l \001(\0132\036.com.a" +
-      "vos.avoscloud.RcpCommand\0224\n\013logsMessage\030" +
-      "m \001(\0132\037.com.avos.avoscloud.LogsCommand\0224" +
-      "\n\013convMessage\030n \001(\0132\037.com.avos.avoscloud" +
-      ".ConvCommand\0224\n\013roomMessage\030o \001(\0132\037.com.",
-      "avos.avoscloud.RoomCommand\022<\n\017presenceMe" +
-      "ssage\030p \001(\0132#.com.avos.avoscloud.Presenc" +
-      "eCommand\0228\n\rreportMessage\030q \001(\0132!.com.av" +
-      "os.avoscloud.ReportCommand\0226\n\014patchMessa" +
-      "ge\030r \001(\0132 .com.avos.avoscloud.PatchComma" +
-      "nd\0228\n\rpubsubMessage\030s \001(\0132!.com.avos.avo" +
-      "scloud.PubsubCommand\022>\n\020blacklistMessage" +
-      "\030t \001(\0132$.com.avos.avoscloud.BlacklistCom" +
-      "mand*\377\001\n\013CommandType\022\013\n\007session\020\000\022\010\n\004con" +
-      "v\020\001\022\n\n\006direct\020\002\022\007\n\003ack\020\003\022\007\n\003rcp\020\004\022\n\n\006unr",
-      "ead\020\005\022\010\n\004logs\020\006\022\t\n\005error\020\007\022\t\n\005login\020\010\022\010\n" +
-      "\004data\020\t\022\010\n\004room\020\n\022\010\n\004read\020\013\022\014\n\010presence\020" +
-      "\014\022\n\n\006report\020\r\022\010\n\004echo\020\016\022\014\n\010loggedin\020\017\022\n\n" +
-      "\006logout\020\020\022\r\n\tloggedout\020\021\022\t\n\005patch\020\022\022\n\n\006p" +
-      "ubsub\020\023\022\r\n\tblacklist\020\024*\340\006\n\006OpType\022\010\n\004ope" +
-      "n\020\001\022\007\n\003add\020\002\022\n\n\006remove\020\003\022\t\n\005close\020\004\022\n\n\006o" +
-      "pened\020\005\022\n\n\006closed\020\006\022\t\n\005query\020\007\022\020\n\014query_" +
-      "result\020\010\022\014\n\010conflict\020\t\022\t\n\005added\020\n\022\013\n\007rem" +
-      "oved\020\013\022\013\n\007refresh\020\014\022\r\n\trefreshed\020\r\022\t\n\005st" +
-      "art\020\036\022\013\n\007started\020\037\022\n\n\006joined\020 \022\022\n\016member",
-      "s_joined\020!\022\010\n\004left\020\'\022\020\n\014members_left\020(\022\013" +
-      "\n\007results\020*\022\t\n\005count\020+\022\n\n\006result\020,\022\n\n\006up" +
-      "date\020-\022\013\n\007updated\020.\022\010\n\004mute\020/\022\n\n\006unmute\020" +
-      "0\022\n\n\006status\0201\022\013\n\007members\0202\022\014\n\010max_read\0203" +
-      "\022\r\n\tis_member\0204\022\023\n\017property_update\0205\022\024\n\020" +
-      "property_updated\0206\022\024\n\020property_changed\0207" +
-      "\022\010\n\004join\020P\022\n\n\006invite\020Q\022\t\n\005leave\020R\022\010\n\004kic" +
-      "k\020S\022\n\n\006reject\020T\022\013\n\007invited\020U\022\n\n\006kicked\020V" +
-      "\022\n\n\006upload\020d\022\014\n\010uploaded\020e\022\r\n\tsubscribe\020" +
-      "x\022\016\n\nsubscribed\020y\022\017\n\013unsubscribe\020z\022\020\n\014un",
-      "subscribed\020{\022\021\n\ris_subscribed\020|\022\013\n\006modif" +
-      "y\020\226\001\022\r\n\010modified\020\227\001\022\n\n\005block\020\252\001\022\014\n\007unblo" +
-      "ck\020\253\001\022\017\n\nadd_shutup\020\264\001\022\022\n\rremove_shutup\020" +
-      "\265\001\022\021\n\014query_shutup\020\266\001\022\021\n\014shutup_added\020\267\001" +
-      "\022\023\n\016shutup_removed\020\270\001\022\022\n\rshutup_result\020\271" +
-      "\001\022\025\n\020members_shutuped\020\272\001\022\027\n\022members_unsh" +
-      "utuped\020\273\001*\035\n\nStatusType\022\006\n\002on\020\001\022\007\n\003off\020\002" +
-      "B%\n\022com.avos.avoscloudB\010Messages\242\002\004AVIM"
+      "\n \001(\010\022\020\n\010convType\030\013 \001(\005\";\n\016ConvMemberInf" +
+      "o\022\013\n\003pid\030\001 \001(\t\022\014\n\004role\030\002 \001(\t\022\016\n\006infoId\030\003" +
+      " \001(\t\"_\n\013DataCommand\022\013\n\003ids\030\001 \003(\t\0222\n\003msg\030" +
+      "\002 \003(\0132%.com.avos.avoscloud.JsonObjectMes" +
+      "sage\022\017\n\007offline\030\003 \001(\010\"\321\002\n\016SessionCommand" +
+      "\022\t\n\001t\030\001 \001(\003\022\t\n\001n\030\002 \001(\t\022\t\n\001s\030\003 \001(\t\022\n\n\002ua\030" +
+      "\004 \001(\t\022\t\n\001r\030\005 \001(\010\022\013\n\003tag\030\006 \001(\t\022\020\n\010deviceI" +
+      "d\030\007 \001(\t\022\026\n\016sessionPeerIds\030\010 \003(\t\022\034\n\024onlin" +
+      "eSessionPeerIds\030\t \003(\t\022\n\n\002st\030\n \001(\t\022\r\n\005stT",
+      "tl\030\013 \001(\005\022\014\n\004code\030\014 \001(\005\022\016\n\006reason\030\r \001(\t\022\023" +
+      "\n\013deviceToken\030\016 \001(\t\022\n\n\002sp\030\017 \001(\010\022\016\n\006detai" +
+      "l\030\020 \001(\t\022\033\n\023lastUnreadNotifTime\030\021 \001(\003\022\025\n\r" +
+      "lastPatchTime\030\022 \001(\003\022\024\n\014configBitmap\030\023 \001(" +
+      "\003\"M\n\014ErrorCommand\022\014\n\004code\030\001 \002(\005\022\016\n\006reaso" +
+      "n\030\002 \002(\t\022\017\n\007appCode\030\003 \001(\005\022\016\n\006detail\030\004 \001(\t" +
+      "\"\336\002\n\rDirectCommand\022\013\n\003msg\030\001 \001(\t\022\013\n\003uid\030\002" +
+      " \001(\t\022\022\n\nfromPeerId\030\003 \001(\t\022\021\n\ttimestamp\030\004 " +
+      "\001(\003\022\017\n\007offline\030\005 \001(\010\022\017\n\007hasMore\030\006 \001(\010\022\021\n" +
+      "\ttoPeerIds\030\007 \003(\t\022\t\n\001r\030\n \001(\010\022\013\n\003cid\030\013 \001(\t",
+      "\022\n\n\002id\030\014 \001(\t\022\021\n\ttransient\030\r \001(\010\022\n\n\002dt\030\016 " +
+      "\001(\t\022\016\n\006roomId\030\017 \001(\t\022\020\n\010pushData\030\020 \001(\t\022\014\n" +
+      "\004will\030\021 \001(\010\022\026\n\016patchTimestamp\030\022 \001(\003\022\021\n\tb" +
+      "inaryMsg\030\023 \001(\014\022\023\n\013mentionPids\030\024 \003(\t\022\022\n\nm" +
+      "entionAll\030\025 \001(\010\022\020\n\010convType\030\026 \001(\005\"\246\001\n\nAc" +
+      "kCommand\022\014\n\004code\030\001 \001(\005\022\016\n\006reason\030\002 \001(\t\022\013" +
+      "\n\003mid\030\003 \001(\t\022\013\n\003cid\030\004 \001(\t\022\t\n\001t\030\005 \001(\003\022\013\n\003u" +
+      "id\030\006 \001(\t\022\016\n\006fromts\030\007 \001(\003\022\014\n\004tots\030\010 \001(\003\022\014" +
+      "\n\004type\030\t \001(\t\022\013\n\003ids\030\n \003(\t\022\017\n\007appCode\030\013 \001" +
+      "(\005\"R\n\rUnreadCommand\022.\n\005convs\030\001 \003(\0132\037.com",
+      ".avos.avoscloud.UnreadTuple\022\021\n\tnotifTime" +
+      "\030\002 \001(\003\"\277\006\n\013ConvCommand\022\t\n\001m\030\001 \003(\t\022\021\n\ttra" +
+      "nsient\030\002 \001(\010\022\016\n\006unique\030\003 \001(\010\022\013\n\003cid\030\004 \001(" +
+      "\t\022\r\n\005cdate\030\005 \001(\t\022\016\n\006initBy\030\006 \001(\t\022\014\n\004sort" +
+      "\030\007 \001(\t\022\r\n\005limit\030\010 \001(\005\022\014\n\004skip\030\t \001(\005\022\014\n\004f" +
+      "lag\030\n \001(\005\022\r\n\005count\030\013 \001(\005\022\r\n\005udate\030\014 \001(\t\022" +
+      "\t\n\001t\030\r \001(\003\022\t\n\001n\030\016 \001(\t\022\t\n\001s\030\017 \001(\t\022\021\n\tstat" +
+      "usSub\030\020 \001(\010\022\021\n\tstatusPub\030\021 \001(\010\022\021\n\tstatus" +
+      "TTL\030\022 \001(\005\022\020\n\010uniqueId\030\023 \001(\t\022\026\n\016targetCli" +
+      "entId\030\024 \001(\t\022\030\n\020maxReadTimestamp\030\025 \001(\003\022\027\n",
+      "\017maxAckTimestamp\030\026 \001(\003\022\027\n\017queryAllMember" +
+      "s\030\027 \001(\010\0227\n\rmaxReadTuples\030\030 \003(\0132 .com.avo" +
+      "s.avoscloud.MaxReadTuple\022\014\n\004cids\030\031 \003(\t\0220" +
+      "\n\004info\030\032 \001(\0132\".com.avos.avoscloud.ConvMe" +
+      "mberInfo\022\020\n\010tempConv\030\033 \001(\010\022\023\n\013tempConvTT" +
+      "L\030\034 \001(\005\022\023\n\013tempConvIds\030\035 \003(\t\022\027\n\017convBloc" +
+      "kedPids\030\036 \003(\t\022\031\n\021clientBlockedPids\030\037 \003(\t" +
+      "\022\023\n\013allowedPids\030  \003(\t\022\016\n\006offset\030( \001(\t\0226\n" +
+      "\007results\030d \001(\0132%.com.avos.avoscloud.Json" +
+      "ObjectMessage\0224\n\005where\030e \001(\0132%.com.avos.",
+      "avoscloud.JsonObjectMessage\0223\n\004attr\030g \001(" +
+      "\0132%.com.avos.avoscloud.JsonObjectMessage" +
+      "\"x\n\013RoomCommand\022\016\n\006roomId\030\001 \001(\t\022\t\n\001s\030\002 \001" +
+      "(\t\022\t\n\001t\030\003 \001(\003\022\t\n\001n\030\004 \001(\t\022\021\n\ttransient\030\005 " +
+      "\001(\010\022\023\n\013roomPeerIds\030\006 \003(\t\022\020\n\010byPeerId\030\007 \001" +
+      "(\t\"\326\002\n\013LogsCommand\022\013\n\003cid\030\001 \001(\t\022\t\n\001l\030\002 \001" +
+      "(\005\022\r\n\005limit\030\003 \001(\005\022\t\n\001t\030\004 \001(\003\022\n\n\002tt\030\005 \001(\003" +
+      "\022\014\n\004tmid\030\006 \001(\t\022\013\n\003mid\030\007 \001(\t\022\020\n\010checksum\030" +
+      "\010 \001(\t\022\016\n\006stored\030\t \001(\010\022F\n\tdirection\030\n \001(\016" +
+      "2..com.avos.avoscloud.LogsCommand.QueryD",
+      "irection:\003OLD\022\021\n\ttIncluded\030\013 \001(\010\022\022\n\nttIn" +
+      "cluded\030\014 \001(\010\022\016\n\006lctype\030\r \001(\005\022)\n\004logs\030i \003" +
+      "(\0132\033.com.avos.avoscloud.LogItem\"\"\n\016Query" +
+      "Direction\022\007\n\003OLD\020\001\022\007\n\003NEW\020\002\"L\n\nRcpComman" +
+      "d\022\n\n\002id\030\001 \001(\t\022\013\n\003cid\030\002 \001(\t\022\t\n\001t\030\003 \001(\003\022\014\n" +
+      "\004read\030\004 \001(\010\022\014\n\004from\030\005 \001(\t\"8\n\tReadTuple\022\013" +
+      "\n\003cid\030\001 \002(\t\022\021\n\ttimestamp\030\002 \001(\003\022\013\n\003mid\030\003 " +
+      "\001(\t\"N\n\014MaxReadTuple\022\013\n\003pid\030\001 \001(\t\022\027\n\017maxA" +
+      "ckTimestamp\030\002 \001(\003\022\030\n\020maxReadTimestamp\030\003 " +
+      "\001(\003\"V\n\013ReadCommand\022\013\n\003cid\030\001 \001(\t\022\014\n\004cids\030",
+      "\002 \003(\t\022,\n\005convs\030\003 \003(\0132\035.com.avos.avosclou" +
+      "d.ReadTuple\"f\n\017PresenceCommand\022.\n\006status" +
+      "\030\001 \001(\0162\036.com.avos.avoscloud.StatusType\022\026" +
+      "\n\016sessionPeerIds\030\002 \003(\t\022\013\n\003cid\030\003 \001(\t\"?\n\rR" +
+      "eportCommand\022\022\n\ninitiative\030\001 \001(\010\022\014\n\004type" +
+      "\030\002 \001(\t\022\014\n\004data\030\003 \001(\t\"\270\001\n\tPatchItem\022\013\n\003ci" +
+      "d\030\001 \001(\t\022\013\n\003mid\030\002 \001(\t\022\021\n\ttimestamp\030\003 \001(\003\022" +
+      "\016\n\006recall\030\004 \001(\010\022\014\n\004data\030\005 \001(\t\022\026\n\016patchTi" +
+      "mestamp\030\006 \001(\003\022\014\n\004from\030\007 \001(\t\022\021\n\tbinaryMsg" +
+      "\030\010 \001(\014\022\022\n\nmentionAll\030\t \001(\010\022\023\n\013mentionPid",
+      "s\030\n \003(\t\"U\n\014PatchCommand\022.\n\007patches\030\001 \003(\013" +
+      "2\035.com.avos.avoscloud.PatchItem\022\025\n\rlastP" +
+      "atchTime\030\002 \001(\003\"\246\001\n\rPubsubCommand\022\013\n\003cid\030" +
+      "\001 \001(\t\022\014\n\004cids\030\002 \003(\t\022\r\n\005topic\030\003 \001(\t\022\020\n\010su" +
+      "btopic\030\004 \001(\t\022\016\n\006topics\030\005 \003(\t\022\021\n\tsubtopic" +
+      "s\030\006 \003(\t\0226\n\007results\030\007 \001(\0132%.com.avos.avos" +
+      "cloud.JsonObjectMessage\"\233\001\n\020BlacklistCom" +
+      "mand\022\016\n\006srcCid\030\001 \001(\t\022\016\n\006toPids\030\002 \003(\t\022\016\n\006" +
+      "srcPid\030\003 \001(\t\022\016\n\006toCids\030\004 \003(\t\022\r\n\005limit\030\005 " +
+      "\001(\005\022\016\n\006offset\030\006 \001(\t\022\023\n\013blockedPids\030\010 \003(\t",
+      "\022\023\n\013blockedCids\030\t \003(\t\"\345\010\n\016GenericCommand" +
+      "\022,\n\003cmd\030\001 \001(\0162\037.com.avos.avoscloud.Comma" +
+      "ndType\022&\n\002op\030\002 \001(\0162\032.com.avos.avoscloud." +
+      "OpType\022\r\n\005appId\030\003 \001(\t\022\016\n\006peerId\030\004 \001(\t\022\t\n" +
+      "\001i\030\005 \001(\005\022\026\n\016installationId\030\006 \001(\t\022\020\n\010prio" +
+      "rity\030\007 \001(\005\022\017\n\007service\030\010 \001(\005\022\020\n\010serverTs\030" +
+      "\t \001(\003\0224\n\013dataMessage\030e \001(\0132\037.com.avos.av" +
+      "oscloud.DataCommand\022:\n\016sessionMessage\030f " +
+      "\001(\0132\".com.avos.avoscloud.SessionCommand\022" +
+      "6\n\014errorMessage\030g \001(\0132 .com.avos.avosclo",
+      "ud.ErrorCommand\0228\n\rdirectMessage\030h \001(\0132!" +
+      ".com.avos.avoscloud.DirectCommand\0222\n\nack" +
+      "Message\030i \001(\0132\036.com.avos.avoscloud.AckCo" +
+      "mmand\0228\n\runreadMessage\030j \001(\0132!.com.avos." +
+      "avoscloud.UnreadCommand\0224\n\013readMessage\030k" +
+      " \001(\0132\037.com.avos.avoscloud.ReadCommand\0222\n" +
+      "\nrcpMessage\030l \001(\0132\036.com.avos.avoscloud.R" +
+      "cpCommand\0224\n\013logsMessage\030m \001(\0132\037.com.avo" +
+      "s.avoscloud.LogsCommand\0224\n\013convMessage\030n" +
+      " \001(\0132\037.com.avos.avoscloud.ConvCommand\0224\n",
+      "\013roomMessage\030o \001(\0132\037.com.avos.avoscloud." +
+      "RoomCommand\022<\n\017presenceMessage\030p \001(\0132#.c" +
+      "om.avos.avoscloud.PresenceCommand\0228\n\rrep" +
+      "ortMessage\030q \001(\0132!.com.avos.avoscloud.Re" +
+      "portCommand\0226\n\014patchMessage\030r \001(\0132 .com." +
+      "avos.avoscloud.PatchCommand\0228\n\rpubsubMes" +
+      "sage\030s \001(\0132!.com.avos.avoscloud.PubsubCo" +
+      "mmand\022>\n\020blacklistMessage\030t \001(\0132$.com.av" +
+      "os.avoscloud.BlacklistCommand*\377\001\n\013Comman" +
+      "dType\022\013\n\007session\020\000\022\010\n\004conv\020\001\022\n\n\006direct\020\002",
+      "\022\007\n\003ack\020\003\022\007\n\003rcp\020\004\022\n\n\006unread\020\005\022\010\n\004logs\020\006" +
+      "\022\t\n\005error\020\007\022\t\n\005login\020\010\022\010\n\004data\020\t\022\010\n\004room" +
+      "\020\n\022\010\n\004read\020\013\022\014\n\010presence\020\014\022\n\n\006report\020\r\022\010" +
+      "\n\004echo\020\016\022\014\n\010loggedin\020\017\022\n\n\006logout\020\020\022\r\n\tlo" +
+      "ggedout\020\021\022\t\n\005patch\020\022\022\n\n\006pubsub\020\023\022\r\n\tblac" +
+      "klist\020\024*\325\007\n\006OpType\022\010\n\004open\020\001\022\007\n\003add\020\002\022\n\n" +
+      "\006remove\020\003\022\t\n\005close\020\004\022\n\n\006opened\020\005\022\n\n\006clos" +
+      "ed\020\006\022\t\n\005query\020\007\022\020\n\014query_result\020\010\022\014\n\010con" +
+      "flict\020\t\022\t\n\005added\020\n\022\013\n\007removed\020\013\022\013\n\007refre" +
+      "sh\020\014\022\r\n\trefreshed\020\r\022\t\n\005start\020\036\022\013\n\007starte",
+      "d\020\037\022\n\n\006joined\020 \022\022\n\016members_joined\020!\022\010\n\004l" +
+      "eft\020\'\022\020\n\014members_left\020(\022\013\n\007results\020*\022\t\n\005" +
+      "count\020+\022\n\n\006result\020,\022\n\n\006update\020-\022\013\n\007updat" +
+      "ed\020.\022\010\n\004mute\020/\022\n\n\006unmute\0200\022\n\n\006status\0201\022\013" +
+      "\n\007members\0202\022\014\n\010max_read\0203\022\r\n\tis_member\0204" +
+      "\022\026\n\022member_info_update\0205\022\027\n\023member_info_" +
+      "updated\0206\022\027\n\023member_info_changed\0207\022\010\n\004jo" +
+      "in\020P\022\n\n\006invite\020Q\022\t\n\005leave\020R\022\010\n\004kick\020S\022\n\n" +
+      "\006reject\020T\022\013\n\007invited\020U\022\n\n\006kicked\020V\022\n\n\006up" +
+      "load\020d\022\014\n\010uploaded\020e\022\r\n\tsubscribe\020x\022\016\n\ns",
+      "ubscribed\020y\022\017\n\013unsubscribe\020z\022\020\n\014unsubscr" +
+      "ibed\020{\022\021\n\ris_subscribed\020|\022\013\n\006modify\020\226\001\022\r" +
+      "\n\010modified\020\227\001\022\n\n\005block\020\252\001\022\014\n\007unblock\020\253\001\022" +
+      "\014\n\007blocked\020\254\001\022\016\n\tunblocked\020\255\001\022\024\n\017members" +
+      "_blocked\020\256\001\022\026\n\021members_unblocked\020\257\001\022\017\n\na" +
+      "dd_shutup\020\264\001\022\022\n\rremove_shutup\020\265\001\022\021\n\014quer" +
+      "y_shutup\020\266\001\022\021\n\014shutup_added\020\267\001\022\023\n\016shutup" +
+      "_removed\020\270\001\022\022\n\rshutup_result\020\271\001\022\r\n\010shutu" +
+      "ped\020\272\001\022\017\n\nunshutuped\020\273\001\022\025\n\020members_shutu" +
+      "ped\020\274\001\022\027\n\022members_unshutuped\020\275\001*\035\n\nStatu",
+      "sType\022\006\n\002on\020\001\022\007\n\003off\020\002B%\n\022com.avos.avosc" +
+      "loudB\010Messages\242\002\004AVIM"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -41787,12 +42138,12 @@ public final class Messages {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_avos_avoscloud_LogItem_descriptor,
         new java.lang.String[] { "From", "Data", "Timestamp", "MsgId", "AckAt", "ReadAt", "PatchTimestamp", "MentionAll", "MentionPids", "Bin", "ConvType", });
-    internal_static_com_avos_avoscloud_ConvProperty_descriptor =
+    internal_static_com_avos_avoscloud_ConvMemberInfo_descriptor =
       getDescriptor().getMessageTypes().get(3);
-    internal_static_com_avos_avoscloud_ConvProperty_fieldAccessorTable = new
+    internal_static_com_avos_avoscloud_ConvMemberInfo_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_com_avos_avoscloud_ConvProperty_descriptor,
-        new java.lang.String[] { "Pid", "Role", "PropertyId", });
+        internal_static_com_avos_avoscloud_ConvMemberInfo_descriptor,
+        new java.lang.String[] { "Pid", "Role", "InfoId", });
     internal_static_com_avos_avoscloud_DataCommand_descriptor =
       getDescriptor().getMessageTypes().get(4);
     internal_static_com_avos_avoscloud_DataCommand_fieldAccessorTable = new
@@ -41834,7 +42185,7 @@ public final class Messages {
     internal_static_com_avos_avoscloud_ConvCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_avos_avoscloud_ConvCommand_descriptor,
-        new java.lang.String[] { "M", "Transient", "Unique", "Cid", "Cdate", "InitBy", "Sort", "Limit", "Skip", "Flag", "Count", "Udate", "T", "N", "S", "StatusSub", "StatusPub", "StatusTTL", "UniqueId", "TargetClientId", "MaxReadTimestamp", "MaxAckTimestamp", "QueryAllMembers", "MaxReadTuples", "Cids", "Property", "TempConv", "TempConvTTL", "TempConvIds", "ConvBlockedPids", "ClientBlockedPids", "AllowedPids", "Results", "Where", "Attr", });
+        new java.lang.String[] { "M", "Transient", "Unique", "Cid", "Cdate", "InitBy", "Sort", "Limit", "Skip", "Flag", "Count", "Udate", "T", "N", "S", "StatusSub", "StatusPub", "StatusTTL", "UniqueId", "TargetClientId", "MaxReadTimestamp", "MaxAckTimestamp", "QueryAllMembers", "MaxReadTuples", "Cids", "Info", "TempConv", "TempConvTTL", "TempConvIds", "ConvBlockedPids", "ClientBlockedPids", "AllowedPids", "Offset", "Results", "Where", "Attr", });
     internal_static_com_avos_avoscloud_RoomCommand_descriptor =
       getDescriptor().getMessageTypes().get(11);
     internal_static_com_avos_avoscloud_RoomCommand_fieldAccessorTable = new
@@ -41846,7 +42197,7 @@ public final class Messages {
     internal_static_com_avos_avoscloud_LogsCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_avos_avoscloud_LogsCommand_descriptor,
-        new java.lang.String[] { "Cid", "L", "Limit", "T", "Tt", "Tmid", "Mid", "Checksum", "Stored", "Direction", "TIncluded", "TtIncluded", "Logs", });
+        new java.lang.String[] { "Cid", "L", "Limit", "T", "Tt", "Tmid", "Mid", "Checksum", "Stored", "Direction", "TIncluded", "TtIncluded", "Lctype", "Logs", });
     internal_static_com_avos_avoscloud_RcpCommand_descriptor =
       getDescriptor().getMessageTypes().get(13);
     internal_static_com_avos_avoscloud_RcpCommand_fieldAccessorTable = new
@@ -41906,13 +42257,13 @@ public final class Messages {
     internal_static_com_avos_avoscloud_BlacklistCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_avos_avoscloud_BlacklistCommand_descriptor,
-        new java.lang.String[] { "SrcCid", "ToPids", "SrcPid", "ToCids", "Limit", "Skip", "LastRk", "BlockedPids", "BlockedCids", });
+        new java.lang.String[] { "SrcCid", "ToPids", "SrcPid", "ToCids", "Limit", "Offset", "BlockedPids", "BlockedCids", });
     internal_static_com_avos_avoscloud_GenericCommand_descriptor =
       getDescriptor().getMessageTypes().get(23);
     internal_static_com_avos_avoscloud_GenericCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_avos_avoscloud_GenericCommand_descriptor,
-        new java.lang.String[] { "Cmd", "Op", "AppId", "PeerId", "I", "InstallationId", "Priority", "Service", "DataMessage", "SessionMessage", "ErrorMessage", "DirectMessage", "AckMessage", "UnreadMessage", "ReadMessage", "RcpMessage", "LogsMessage", "ConvMessage", "RoomMessage", "PresenceMessage", "ReportMessage", "PatchMessage", "PubsubMessage", "BlacklistMessage", });
+        new java.lang.String[] { "Cmd", "Op", "AppId", "PeerId", "I", "InstallationId", "Priority", "Service", "ServerTs", "DataMessage", "SessionMessage", "ErrorMessage", "DirectMessage", "AckMessage", "UnreadMessage", "ReadMessage", "RcpMessage", "LogsMessage", "ConvMessage", "RoomMessage", "PresenceMessage", "ReportMessage", "PatchMessage", "PubsubMessage", "BlacklistMessage", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)
