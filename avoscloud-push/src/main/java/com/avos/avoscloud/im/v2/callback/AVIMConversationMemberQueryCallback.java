@@ -8,10 +8,15 @@ import com.avos.avoscloud.im.v2.conversation.AVIMConversationMemberInfo;
 import java.util.List;
 
 /**
+ * 对话成员信息查询结果回调类
  * Created by fengjunwen on 2017/12/17.
  */
-
 public abstract class AVIMConversationMemberQueryCallback extends AVCallback<List<AVIMConversationMemberInfo>> {
+  /**
+   * 结果处理函数
+   * @param memberInfoList   结果列表
+   * @param e                异常实例，正常情况下为 null。
+   */
   public abstract void done(List<AVIMConversationMemberInfo> memberInfoList, AVIMException e);
 
   @Override

@@ -722,6 +722,10 @@ public class AVIMConversation {
     }
   }
 
+  /**
+   * 获取当前对话的所有角色信息
+   * @param callback  结果回调函数
+   */
   public void getAllMemberInfo(final AVIMConversationMemberQueryCallback callback) {
     QueryConditions conditions = new QueryConditions();
     conditions.addWhereItem("client_id", QueryOperation.EQUAL_OP, this.client.clientId);
@@ -729,6 +733,11 @@ public class AVIMConversation {
     queryMemberInfo(conditions, callback);
   }
 
+  /**
+   * 获取对话内指定成员的角色信息
+   * @param memberId  成员的 clientid
+   * @param callback  结果回调函数
+   */
   public void getMemberInfo(final String memberId, final AVIMConversationMemberQueryCallback callback) {
     QueryConditions conditions = new QueryConditions();
     conditions.addWhereItem("conversationId", QueryOperation.EQUAL_OP, this.conversationId);
@@ -736,6 +745,12 @@ public class AVIMConversation {
     queryMemberInfo(conditions, callback);
   }
 
+  /**
+   * 更新成员的角色信息
+   * @param memberId  成员的 client id
+   * @param role      角色
+   * @param callback  结果回调函数
+   */
   public void updateMemberRole(final String memberId, final MemberRole role, final AVIMConversationCallback callback) {
     AVIMConversationMemberInfo info = new AVIMConversationMemberInfo(this.conversationId, memberId, role);
     Map<String, Object> params = new HashMap<String, Object>();
@@ -755,9 +770,10 @@ public class AVIMConversation {
   private void queryMemberInfo(final QueryConditions queryConditions, final AVIMConversationMemberQueryCallback callback) {
     String queryPath = AVPowerfulUtils.getEndpoint("_ConversationMemberInfo");
 
-    queryConditions.addWhereItem("client_id", QueryOperation.EQUAL_OP, this.client.clientId);
     queryConditions.assembleParameters();
-    AVRequestParams params = new AVRequestParams(queryConditions.getParameters());
+    Map<String, String> queryParams = queryConditions.getParameters();
+    queryParams.put("client_id", this.client.clientId);
+    AVRequestParams params = new AVRequestParams(queryParams);
 
     Map<String, String> additionalHeader = new HashMap<>();
     additionalHeader.put("X-LC-IM-Session-Token", this.client.getRealtimeSessionToken());
