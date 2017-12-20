@@ -99,6 +99,40 @@ public abstract class AVIMConversationEventHandler extends AVIMEventHandler {
   public void onMemberUnmuted(AVIMClient client, AVIMConversation conversation, List<String> members, String operator){}
 
   /**
+   * 当前用户被加入黑名单通知处理函数
+   * @param client        聊天客户端
+   * @param conversation  对话
+   * @param operator      操作者 id
+   */
+  public void onBlocked(AVIMClient client, AVIMConversation conversation, String operator) {}
+
+  /**
+   * 当前用户被移出黑名单通知处理函数
+   * @param client        聊天客户端
+   * @param conversation  对话
+   * @param operator      操作者 id
+   */
+  public void onUnblocked(AVIMClient client, AVIMConversation conversation, String operator) {}
+
+  /**
+   * 聊天室成员被加入黑名单通知处理函数
+   * @param client        聊天客户端
+   * @param conversation  对话
+   * @param members       成员列表
+   * @param operator      操作者 id
+   */
+  public void onMemberBlocked(AVIMClient client, AVIMConversation conversation, List<String> members, String operator){}
+
+  /**
+   * 聊天室成员被移出黑名单通知处理函数
+   * @param client        聊天客户端
+   * @param conversation  对话
+   * @param members       成员列表
+   * @param operator      操作者 id
+   */
+  public void onMemberUnblocked(AVIMClient client, AVIMConversation conversation, List<String> members, String operator){}
+
+  /**
    * 实现本地方法来处理未读消息数量的通知
    * @param client
    * @param conversation
@@ -200,6 +234,30 @@ public abstract class AVIMConversationEventHandler extends AVIMEventHandler {
         break;
       case Conversation.STATUS_ON_MEMBER_INFO_CHANGED:
         onConversationMemberInfoChanged(conversation.client, conversation, (AVIMConversationMemberInfo) operand);
+        break;
+      case Conversation.STATUS_ON_MUTED:
+        onMuted(conversation.client, conversation, (String) operator);
+        break;
+      case Conversation.STATUS_ON_UNMUTED:
+        onUnmuted(conversation.client, conversation, (String) operator);
+        break;
+      case Conversation.STATUS_ON_BLOCKED:
+        onBlocked(conversation.client, conversation, (String) operator);
+        break;
+      case Conversation.STATUS_ON_UNBLOCKED:
+        onUnblocked(conversation.client, conversation, (String) operator);
+        break;
+      case Conversation.STATUS_ON_MEMBER_MUTED:
+        onMemberMuted(conversation.client, conversation, (List<String>) operand, (String) operator);
+        break;
+      case Conversation.STATUS_ON_MEMBER_UNMUTED:
+        onMemberUnmuted(conversation.client, conversation, (List<String>) operand, (String) operator);
+        break;
+      case Conversation.STATUS_ON_MEMBER_BLOCKED:
+        onMemberBlocked(conversation.client, conversation, (List<String>) operand, (String) operator);
+        break;
+      case Conversation.STATUS_ON_MEMBER_UNBLOCKED:
+        onMemberUnblocked(conversation.client, conversation, (List<String>) operand, (String) operator);
         break;
       default:
         break;

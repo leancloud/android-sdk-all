@@ -729,7 +729,6 @@ public class AVIMConversation {
    */
   public void getAllMemberInfo(final AVIMConversationMemberQueryCallback callback) {
     QueryConditions conditions = new QueryConditions();
-    conditions.addWhereItem("client_id", QueryOperation.EQUAL_OP, this.client.clientId);
     conditions.addWhereItem("conversationId", QueryOperation.EQUAL_OP, this.conversationId);
     queryMemberInfo(conditions, callback);
   }
