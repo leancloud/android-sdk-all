@@ -29,6 +29,7 @@ import com.avos.avoscloud.im.v2.Conversation.AVIMOperation;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationMemberCountCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationMemberQueryCallback;
+import com.avos.avoscloud.im.v2.callback.AVIMConversationSimpleResultCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMMessageRecalledCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMMessageUpdatedCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMMessagesQueryCallback;
@@ -800,6 +801,50 @@ public class AVIMConversation {
             }
           }
         }, AVQuery.CachePolicy.NETWORK_ONLY, 86400000);
+  }
+
+  /**
+   * 将部分成员禁言
+   * @param memberIds  成员列表
+   * @param callback   结果回调函数
+   */
+  public void muteMembers(final List<String> memberIds, final AVIMConversationCallback callback) {
+    if (null == memberIds || memberIds.size() < 1) {
+      if (null != callback) {
+        callback.done(new AVIMException(new IllegalArgumentException("memberIds is null")));
+      }
+      return;
+    }
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
+    sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_MUTE_MEMBER,
+        callback, null);
+  }
+
+  /**
+   * 将部分成员解除禁言
+   * @param memberIds  成员列表
+   * @param callback   结果回调函数
+   */
+  public void unmuteMembers(final List<String> memberIds, final AVIMConversationCallback callback) {
+    if (null == memberIds || memberIds.size() < 1) {
+      if (null != callback) {
+        callback.done(new AVIMException(new IllegalArgumentException("memberIds is null")));
+      }
+      return;
+    }
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
+    sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_UNMUTE_MEMBER,
+        callback, null);
+  }
+
+  /**
+   * 查询所有被禁言的成员列表
+   * @param callback  结果回调函数
+   */
+  public void queryMutedMembers(final AVIMConversationSimpleResultCallback callback) {
+    ;
   }
 
   protected List<AVIMConversationMemberInfo> processResults(String content) throws Exception {

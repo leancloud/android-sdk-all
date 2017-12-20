@@ -7,7 +7,7 @@ package com.avos.avoscloud.im.v2.conversation;
  */
 public enum MemberRole {
   MANAGER("Manager"),  // 管理员
-  MEMBER("Member"),    // 普通成员
+  MEMBER("Member");    // 普通成员
   private String role;
   MemberRole(String role) {
     this.role = role;

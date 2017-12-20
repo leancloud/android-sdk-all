@@ -65,6 +65,40 @@ public abstract class AVIMConversationEventHandler extends AVIMEventHandler {
       String operator);
 
   /**
+   * 当前用户被禁言通知处理函数
+   * @param client        聊天客户端
+   * @param conversation  对话
+   * @param operator      操作者 id
+   */
+  public void onMuted(AVIMClient client, AVIMConversation conversation, String operator) {}
+
+  /**
+   * 当前用户被解除禁言通知处理函数
+   * @param client        聊天客户端
+   * @param conversation  对话
+   * @param operator      操作者 id
+   */
+  public void onUnmuted(AVIMClient client, AVIMConversation conversation, String operator) {}
+
+  /**
+   * 聊天室成员被禁言通知处理函数
+   * @param client        聊天客户端
+   * @param conversation  对话
+   * @param members       成员列表
+   * @param operator      操作者 id
+   */
+  public void onMemberMuted(AVIMClient client, AVIMConversation conversation, List<String> members, String operator){}
+
+  /**
+   * 聊天室成员被解除禁言通知处理函数
+   * @param client        聊天客户端
+   * @param conversation  对话
+   * @param members       成员列表
+   * @param operator      操作者 id
+   */
+  public void onMemberUnmuted(AVIMClient client, AVIMConversation conversation, List<String> members, String operator){}
+
+  /**
    * 实现本地方法来处理未读消息数量的通知
    * @param client
    * @param conversation

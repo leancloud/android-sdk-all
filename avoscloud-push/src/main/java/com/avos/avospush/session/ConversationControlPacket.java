@@ -13,7 +13,9 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
   public static final String CONVERSATION_CMD = "conv";
 
   public static class ConversationControlOp {
-    // 客户端发出的op
+    /**
+     * 客户端发出的op
+     */
     public static final String START = "start";
     public static final String ADD = "add";
     public static final String REMOVE = "remove";
@@ -23,9 +25,18 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
     public static final String UNMUTE = "unmute";
     public static final String COUNT = "count";
     public static final String MAX_READ = "max_read";
+    // 权限
     public static final String MEMBER_UPDATE = "member_info_update";
+    // 禁言
+    public static final String ADD_SHUTUP = "add_shutup";
+    public static final String REMOVE_SHUTUP = "remove_shutup";
+    // 黑名单
+    public static final String ADD_BLOCKLIST = "block";
+    public static final String REMOVE_BLOCKLIST = "unblock";
 
-    // 服务器端会响应的op
+    /**
+     * 服务器端会响应的op
+     */
     public static final String STARTED = "started";
     public static final String JOINED = "joined";
     public static final String MEMBER_JOINED = "members_joined";
@@ -36,8 +47,15 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
     public static final String QUERY_RESULT = "results";
     public static final String MEMBER_COUNT_QUERY_RESULT = "result";
     public static final String UPDATED = "updated";
+    // 权限
     public static final String MEMBER_UPDATED = "member_info_updated";
     public static final String MEMBER_INFO_CHANGED = "member_info_changed";
+    // 禁言
+    public static final String SHUTUP_ADDED = "shutup_added";
+    public static final String SHUTUP_REMOVED = "shutup_removed";
+    // 黑名单
+    public static final String BLOCKLIST_ADDED = "blocked";
+    public static final String BLOCKLIST_REMOVED = "unblocked";
   }
 
   private List<String> members;

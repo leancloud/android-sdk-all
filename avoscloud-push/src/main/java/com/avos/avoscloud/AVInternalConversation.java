@@ -46,6 +46,8 @@ class AVInternalConversation {
   // 服务器端为了兼容老版本，这里需要使用group的invite
   private static final String GROUP_INVITE = "invite";
   private static final String GROUP_KICK = "kick";
+  private static final String BLOCK_MEMBER = "block";
+  private static final String UNBLOCK_MEMBER = "unblock";
 
   public AVInternalConversation(String conversationId, AVSession session, int convType) {
     this.session = session;
@@ -117,6 +119,107 @@ class AVInternalConversation {
         if (signatureFactory != null) {
           return signatureFactory.createConversationSignature(conversationId,
               session.getSelfPeerId(), members, GROUP_KICK);
+        }
+        return null;
+      }
+    };
+    new SignatureTask(callback).commit(session.getSelfPeerId());
+  }
+
+  // mute member
+  // notice: not use signature factory.
+  public void muteMembers(final List<String> members, final int requestId){
+    if (!checkSessionStatus(AVIMOperation.CONVERSATION_MUTE_MEMBER, requestId)) {
+      return;
+    }
+    session.conversationOperationCache.offer(Operation.getOperation(
+        AVIMOperation.CONVERSATION_MUTE_MEMBER.getCode(), session.getSelfPeerId(),
+        conversationId, requestId));
+    PushService.sendData(ConversationControlPacket.genConversationCommand(
+        session.getSelfPeerId(), conversationId, members,
+        ConversationControlOp.ADD_SHUTUP, null, null, requestId));
+  }
+
+  // unmute member
+  // notice: not use signature factory.
+  public void unmuteMembers(final List<String> members, final int requestId){
+    if (!checkSessionStatus(AVIMOperation.CONVERSATION_UNMUTE_MEMBER, requestId)) {
+      return;
+    }
+    session.conversationOperationCache.offer(Operation.getOperation(
+        AVIMOperation.CONVERSATION_UNMUTE_MEMBER.getCode(), session.getSelfPeerId(),
+        conversationId, requestId));
+    PushService.sendData(ConversationControlPacket.genConversationCommand(
+        session.getSelfPeerId(), conversationId, members,
+        ConversationControlOp.REMOVE_SHUTUP, null, null, requestId));
+  }
+
+  // block member
+  public void blockMembers(final List<String> members, final int requestId){
+    if (!checkSessionStatus(AVIMOperation.CONVERSATION_BLOCK_MEMBER, requestId)) {
+      return;
+    }
+    SignatureCallback callback = new SignatureCallback() {
+
+      @Override
+      public void onSignatureReady(Signature sig, AVException e) {
+        if (e == null) {
+          session.conversationOperationCache.offer(Operation.getOperation(
+              AVIMOperation.CONVERSATION_BLOCK_MEMBER.getCode(), session.getSelfPeerId(),
+              conversationId, requestId));
+          PushService.sendData(ConversationControlPacket.genConversationCommand(
+              session.getSelfPeerId(), conversationId, members,
+              ConversationControlOp.ADD_BLOCKLIST, null, sig, requestId));
+        } else {
+          BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), conversationId,
+              requestId, e, AVIMOperation.CONVERSATION_BLOCK_MEMBER);
+        }
+      }
+
+      @Override
+      public Signature computeSignature() throws SignatureException {
+        // 服务器端为兼容老版本，签名使用kick的action
+        final SignatureFactory signatureFactory = AVIMOptions.getGlobalOptions().getSignatureFactory();
+        if (signatureFactory != null) {
+          return signatureFactory.createConversationSignature(conversationId,
+              session.getSelfPeerId(), members, BLOCK_MEMBER);
+        }
+        return null;
+      }
+    };
+    new SignatureTask(callback).commit(session.getSelfPeerId());
+  }
+
+  // unblock member.
+  public void unblockMembers(final List<String> members, final int requestId){
+    if (!checkSessionStatus(AVIMOperation.CONVERSATION_UNBLOCK_MEMBER, requestId)) {
+      return;
+    }
+
+    SignatureCallback callback = new SignatureCallback() {
+
+      @Override
+      public void onSignatureReady(Signature sig, AVException e) {
+        if (e == null) {
+          session.conversationOperationCache.offer(Operation.getOperation(
+              AVIMOperation.CONVERSATION_UNBLOCK_MEMBER.getCode(), session.getSelfPeerId(),
+              conversationId, requestId));
+          PushService.sendData(ConversationControlPacket.genConversationCommand(
+              session.getSelfPeerId(), conversationId, members,
+              ConversationControlOp.REMOVE_BLOCKLIST, null, sig, requestId));
+        } else {
+          BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), conversationId,
+              requestId, e, AVIMOperation.CONVERSATION_UNBLOCK_MEMBER);
+        }
+      }
+
+      @Override
+      public Signature computeSignature() throws SignatureException {
+        // 服务器端为兼容老版本，签名使用kick的action
+        final SignatureFactory signatureFactory = AVIMOptions.getGlobalOptions().getSignatureFactory();
+        if (signatureFactory != null) {
+          return signatureFactory.createConversationSignature(conversationId,
+              session.getSelfPeerId(), members, UNBLOCK_MEMBER);
         }
         return null;
       }
@@ -392,6 +495,18 @@ class AVInternalConversation {
         if (null != memberInfo) {
           promoteMember(memberInfo, requestId);
         }
+        break;
+      case CONVERSATION_MUTE_MEMBER:
+        muteMembers(members, requestId);
+        break;
+      case CONVERSATION_UNMUTE_MEMBER:
+        unmuteMembers(members, requestId);
+        break;
+      case CONVERSATION_BLOCK_MEMBER:
+        blockMembers(members, requestId);
+        break;
+      case CONVERSATION_UNBLOCK_MEMBER:
+        unblockMembers(members, requestId);
         break;
       case CONVERSATION_MESSAGE_QUERY:
         // timestamp = 0时，原来的 (Long) 会发生强制转型错误(Integer cannot cast to Long)
