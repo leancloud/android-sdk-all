@@ -558,6 +558,7 @@ public class PushService extends Service {
       case CONVERSATION_UNMUTE_MEMBER:
       case CONVERSATION_BLOCK_MEMBER:
       case CONVERSATION_UNBLOCK_MEMBER:
+      case CONVERSATION_MUTED_MEMBER_QUERY:
         if (AVUtils.isBlankString(conversationId)) {
           LogUtil.log.e("conversation id is null during promoting MemberInfo");
         } else {

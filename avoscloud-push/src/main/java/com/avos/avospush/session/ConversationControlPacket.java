@@ -30,6 +30,7 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
     // 禁言
     public static final String ADD_SHUTUP = "add_shutup";
     public static final String REMOVE_SHUTUP = "remove_shutup";
+    public static final String QUERY_SHUTUP = "query_shutup";
     // 黑名单
     public static final String ADD_BLOCKLIST = "block";
     public static final String REMOVE_BLOCKLIST = "unblock";
@@ -53,6 +54,12 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
     // 禁言
     public static final String SHUTUP_ADDED = "shutup_added";
     public static final String SHUTUP_REMOVED = "shutup_removed";
+    public static final String SHUTUPED = "shutuped";
+    public static final String UNSHUTUPED = "unshutuped";
+    public static final String MEMBER_SHUTPED = "members_shutuped";
+    public static final String MEMBER_UNSHUTUPED = "members_unshutuped";
+    public static final String QUERY_SHUTUP_RESULT = "shutup_result";
+
     // 黑名单
     public static final String BLOCKLIST_ADDED = "blocked";
     public static final String BLOCKLIST_REMOVED = "unblocked";

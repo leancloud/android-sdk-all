@@ -27,8 +27,10 @@ import com.avos.avoscloud.SaveCallback;
 import com.avos.avoscloud.QueryConditions;
 import com.avos.avoscloud.im.v2.Conversation.AVIMOperation;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationCallback;
+import com.avos.avoscloud.im.v2.callback.AVIMConversationFailure;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationMemberCountCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationMemberQueryCallback;
+import com.avos.avoscloud.im.v2.callback.AVIMConversationPartiallySucceededCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationSimpleResultCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMMessageRecalledCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMMessageUpdatedCallback;
@@ -768,6 +770,10 @@ public class AVIMConversation {
   }
 
   private void queryMemberInfo(final QueryConditions queryConditions, final AVIMConversationMemberQueryCallback callback) {
+    if (null == callback) {
+      return;
+    }
+
     String queryPath = AVPowerfulUtils.getEndpoint("_ConversationMemberInfo");
 
     queryConditions.assembleParameters();
@@ -807,10 +813,10 @@ public class AVIMConversation {
    * @param memberIds  成员列表
    * @param callback   结果回调函数
    */
-  public void muteMembers(final List<String> memberIds, final AVIMConversationCallback callback) {
+  public void muteMembers(final List<String> memberIds, final AVIMConversationPartiallySucceededCallback callback) {
     if (null == memberIds || memberIds.size() < 1) {
       if (null != callback) {
-        callback.done(new AVIMException(new IllegalArgumentException("memberIds is null")));
+        callback.done(new AVIMException(new IllegalArgumentException("memberIds is null")), null, null);
       }
       return;
     }
@@ -825,10 +831,10 @@ public class AVIMConversation {
    * @param memberIds  成员列表
    * @param callback   结果回调函数
    */
-  public void unmuteMembers(final List<String> memberIds, final AVIMConversationCallback callback) {
+  public void unmuteMembers(final List<String> memberIds, final AVIMConversationPartiallySucceededCallback callback) {
     if (null == memberIds || memberIds.size() < 1) {
       if (null != callback) {
-        callback.done(new AVIMException(new IllegalArgumentException("memberIds is null")));
+        callback.done(new AVIMException(new IllegalArgumentException("memberIds is null")), null, null);
       }
       return;
     }
@@ -843,7 +849,13 @@ public class AVIMConversation {
    * @param callback  结果回调函数
    */
   public void queryMutedMembers(final AVIMConversationSimpleResultCallback callback) {
-    ;
+    if (null == callback) {
+      return;
+    }
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.QUERY_PARAM_LIMIT, 100);
+    sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY,
+        callback, null);
   }
 
   protected List<AVIMConversationMemberInfo> processResults(String content) throws Exception {
@@ -1341,19 +1353,6 @@ public class AVIMConversation {
       return;
     }
 
-    // TODO： need to switch to REST API
-//    Map<String, String> header = new HashMap<>();
-//    header.put("x-lc-session-token", "");
-//    PaasClient.storageInstance().getObject(AVPowerfulUtils.getEndpoint("_Conversation") + this.conversationId,
-//        null, false, header, new GenericObjectCallback() {
-//      public void onSuccess(String content, AVException e) {
-//        ;
-//      }
-//      public void onFailure(Throwable error, String content) {
-//        ;
-//      }
-//    });
-
     Map<String, Object> params = new HashMap<String, Object>();
     if (conversationId.startsWith(Conversation.TEMPCONV_ID_PREFIX)) {
       params.put(Conversation.QUERY_PARAM_TEMPCONV, conversationId);
@@ -1605,6 +1604,23 @@ public class AVIMConversation {
                 setLastDeliveredAt(intent.getLongExtra(Conversation.callbackDeliveredAt, 0L), false);
                 storage.updateConversationTimes(AVIMConversation.this);
                 callback.internalDone(null, AVIMException.wrapperAVException(error));
+                return;
+              }
+
+              if (operation.getCode() == AVIMOperation.CONVERSATION_MUTE_MEMBER.getCode()
+                  || operation.getCode() == AVIMOperation.CONVERSATION_BLOCK_MEMBER.getCode()) {
+                String[] allowedList = intent.getStringArrayExtra(Conversation.callbackConvMemberMuted_SUCC);
+                ArrayList<AVIMConversationFailure> failedList = intent.getParcelableArrayListExtra(Conversation.callbackConvMemberMuted_FAIL);
+                Map<String, Object> result = new HashMap<>();
+                result.put(Conversation.callbackConvMemberMuted_SUCC, allowedList);
+                result.put(Conversation.callbackConvMemberMuted_FAIL, failedList);
+                callback.internalDone(result, AVIMException.wrapperAVException(error));
+                return;
+              }
+
+              if (operation.getCode() == AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY.getCode()) {
+                String[] result = intent.getStringArrayExtra(Conversation.callbackData);
+                callback.internalDone(Arrays.asList(result), AVIMException.wrapperAVException(error));
                 return;
               }
 

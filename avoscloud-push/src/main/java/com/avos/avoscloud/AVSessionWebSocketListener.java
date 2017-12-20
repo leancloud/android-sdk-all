@@ -291,12 +291,26 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
   public void onConversationCommand(String operation, Integer requestKey, Messages.ConvCommand convCommand) {
     if (ConversationControlOp.QUERY_RESULT.equals(operation)) {
       Operation op = session.conversationOperationCache.poll(requestKey);
-      if (op.operation == AVIMOperation.CONVERSATION_QUERY.getCode()) {
+      if (null != op && op.operation == AVIMOperation.CONVERSATION_QUERY.getCode()) {
         String result = convCommand.getResults().getData();
         Bundle bundle = new Bundle();
         bundle.putString(Conversation.callbackData, result);
-        BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), null, requestKey, bundle, AVIMOperation.CONVERSATION_QUERY);
+        BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), null, requestKey,
+            bundle, AVIMOperation.CONVERSATION_QUERY);
         // verified: it's not need to update local cache?
+      } else {
+        ;
+      }
+    } else if (ConversationControlOp.QUERY_SHUTUP_RESULT.equals(operation)) {
+      Operation op = session.conversationOperationCache.poll(requestKey);
+      if (null != op && op.operation == AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY.getCode()) {
+        List<String> result = convCommand.getAllowedPidsList();
+        Bundle bundle = new Bundle();
+        bundle.putStringArray(Conversation.callbackData, (String[])result.toArray());
+        BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), null, requestKey,
+            bundle, AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY);
+      } else {
+        ;
       }
     } else {
       String conversationId = null;
@@ -305,7 +319,11 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
       if ((operation.equals(ConversationControlOp.ADDED)
           || operation.equals(ConversationControlOp.REMOVED)
           || operation.equals(ConversationControlOp.UPDATED)
-          || operation.equals(ConversationControlOp.MEMBER_COUNT_QUERY_RESULT))
+          || operation.equals(ConversationControlOp.MEMBER_COUNT_QUERY_RESULT)
+          || operation.equals(ConversationControlOp.BLOCKLIST_ADDED)
+          || operation.equals(ConversationControlOp.BLOCKLIST_REMOVED)
+          || operation.equals(ConversationControlOp.SHUTUP_ADDED)
+          || operation.equals(ConversationControlOp.SHUTUP_REMOVED))
           && requestId != CommandPacket.UNSUPPORTED_OPERATION) {
 
         Operation op = session.conversationOperationCache.poll(requestId);

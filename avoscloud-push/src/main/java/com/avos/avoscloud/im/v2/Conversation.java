@@ -66,6 +66,7 @@ public interface Conversation {
     CONVERSATION_UNMUTE_MEMBER(40023, "com.avoscloud.v2.im.conversation.unmuteMember"),
     CONVERSATION_BLOCK_MEMBER(40024, "com.avoscloud.v2.im.conversation.blockMember"),
     CONVERSATION_UNBLOCK_MEMBER(40025, "com.avoscloud.v2.im.conversation.unblockMember"),
+    CONVERSATION_MUTED_MEMBER_QUERY(40026, "com.avoscloud.v2.im.conversation.mutedMemberQuery"),
     CONVERSATION_UNKNOWN(49999, "com.avoscloud.v2.im.conversation.unknown");
 
     private final String header;
@@ -138,6 +139,8 @@ public interface Conversation {
           return CONVERSATION_BLOCK_MEMBER;
         case 40025:
           return CONVERSATION_UNBLOCK_MEMBER;
+        case 40026:
+          return CONVERSATION_MUTED_MEMBER_QUERY;
         default:
           return CONVERSATION_UNKNOWN;
       }
@@ -196,6 +199,8 @@ public interface Conversation {
 //  String callbackTransient = "callbackTransient";
 //  String callbackSystem = "callbackSystem";
   String callbackConvType = "callbackConvType";
+  String callbackConvMemberMuted_SUCC = "callbackConvMemberMutedSUCC";
+  String callbackConvMemberMuted_FAIL = "callbackConvMemberMutedFAIL";
 
   String QUERY_PARAM_OFFSET = "skip";
   String QUERY_PARAM_LIMIT = "limit";
