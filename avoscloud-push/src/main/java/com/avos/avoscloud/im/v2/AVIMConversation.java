@@ -1629,7 +1629,7 @@ public class AVIMConversation {
               // 处理被禁言成员列表查询
               if (operation.getCode() == AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY.getCode()) {
                 String[] result = intent.getStringArrayExtra(Conversation.callbackData);
-                callback.internalDone(Arrays.asList(result), AVIMException.wrapperAVException(error));
+                callback.internalDone(null != result? Arrays.asList(result): null, AVIMException.wrapperAVException(error));
                 return;
               }
 
