@@ -289,6 +289,8 @@ class AVPushConnectionManager implements AVPushWebSocketClient.AVSocketListener 
           case Messages.CommandType.unread_VALUE:
             processUnreadCommand(peerId, command.getUnreadMessage());
             break;
+          case Messages.CommandType.blacklist_VALUE:
+            break;
           case Messages.CommandType.patch_VALUE:
             if(command.getOp().equals(Messages.OpType.modify)) {
               // modify 为服务器端主动推送的 patch 消息

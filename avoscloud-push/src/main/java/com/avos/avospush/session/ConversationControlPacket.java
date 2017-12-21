@@ -30,6 +30,7 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
     // 禁言
     public static final String ADD_SHUTUP = "add_shutup";
     public static final String REMOVE_SHUTUP = "remove_shutup";
+    public static final String QUERY_SHUTUP = "query_shutup";
     // 黑名单
     public static final String ADD_BLOCKLIST = "block";
     public static final String REMOVE_BLOCKLIST = "unblock";
@@ -53,6 +54,12 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
     // 禁言
     public static final String SHUTUP_ADDED = "shutup_added";
     public static final String SHUTUP_REMOVED = "shutup_removed";
+    public static final String SHUTUPED = "shutuped";
+    public static final String UNSHUTUPED = "unshutuped";
+    public static final String MEMBER_SHUTPED = "members_shutuped";
+    public static final String MEMBER_UNSHUTUPED = "members_unshutuped";
+    public static final String QUERY_SHUTUP_RESULT = "shutup_result";
+
     // 黑名单
     public static final String BLOCKLIST_ADDED = "blocked";
     public static final String BLOCKLIST_REMOVED = "unblocked";
@@ -84,6 +91,9 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
   private int tempTTL = 0;
 
   private Map<String, Object> memberInfo = null;
+
+  private int queryOffset = 0;
+  private int queryLimit = 0;
 
   public ConversationControlPacket() {
     this.setCmd(CONVERSATION_CMD);
@@ -179,6 +189,22 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
     this.memberInfo = memberInfo;
   }
 
+  public int getQueryOffset() {
+    return queryOffset;
+  }
+
+  public void setQueryOffset(int queryOffset) {
+    this.queryOffset = queryOffset;
+  }
+
+  public int getQueryLimit() {
+    return queryLimit;
+  }
+
+  public void setQueryLimit(int queryLimit) {
+    this.queryLimit = queryLimit;
+  }
+
   @Override
   protected Messages.GenericCommand.Builder getGenericCommandBuilder() {
     Messages.GenericCommand.Builder builder = super.getGenericCommandBuilder();
@@ -233,6 +259,12 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
         cmiBuilder.setInfoId((String) memberInfo.get("infoId"));
       }
       builder.setInfo(cmiBuilder.build());
+    }
+    if (this.queryOffset > 0) {
+      builder.setOffset(new Integer(this.queryOffset).toString());
+    }
+    if (this.queryLimit > 0) {
+      builder.setLimit(this.queryLimit);
     }
     return builder.build();
   }

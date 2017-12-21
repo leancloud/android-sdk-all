@@ -558,6 +558,8 @@ public class PushService extends Service {
       case CONVERSATION_UNMUTE_MEMBER:
       case CONVERSATION_BLOCK_MEMBER:
       case CONVERSATION_UNBLOCK_MEMBER:
+      case CONVERSATION_MUTED_MEMBER_QUERY:
+      default:
         if (AVUtils.isBlankString(conversationId)) {
           LogUtil.log.e("conversation id is null during promoting MemberInfo");
         } else {
@@ -569,13 +571,6 @@ public class PushService extends Service {
           }
         }
         break;
-      default:
-        if (!AVUtils.isBlankString(conversationId)) {
-          AVInternalConversation conversation = session.getConversation(conversationId, convType);
-          if (null != conversation) {
-            conversation.processConversationCommandFromClient(operation, params, requestId);
-          }
-        }
     }
   }
 
