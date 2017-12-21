@@ -306,7 +306,9 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
       if (null != op && op.operation == AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY.getCode()) {
         List<String> result = convCommand.getMList(); // result stored in m field.
         String[] resultMembers = new String[null == result? 0 : result.size()];
-        result.toArray(resultMembers);
+        if (null != result) {
+          result.toArray(resultMembers);
+        }
         Bundle bundle = new Bundle();
         bundle.putStringArray(Conversation.callbackData, resultMembers);
         BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), null, requestKey,

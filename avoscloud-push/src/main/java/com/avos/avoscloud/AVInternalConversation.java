@@ -625,19 +625,13 @@ class AVInternalConversation {
       String changedBy = convCommand.getInitBy();
       Messages.ConvMemberInfo member = convCommand.getInfo();
       onMemberChanged(changedBy, member);
-    } else if (ConversationControlOp.SHUTUPED.equals(operation)) {
-      String mutedBy = convCommand.getInitBy();
-      if (null != mutedBy && mutedBy.equals(session.getSelfPeerId())) {
+    } else if (ConversationControlOp.SHUTUPED.equals(operation)
+        || ConversationControlOp.UNSHUTUPED.equals(operation)) {
+      String operator = convCommand.getInitBy();
+      if (null != operator && operator.equals(session.getSelfPeerId())) {
         return;
       } else {
-        onSelfShutupedNotify(true, mutedBy, convCommand);
-      }
-    } else if (ConversationControlOp.UNSHUTUPED.equals(operation)) {
-      String unmutedBy = convCommand.getInitBy();
-      if (null != unmutedBy && unmutedBy.equals(session.getSelfPeerId())) {
-        return;
-      } else {
-        onSelfShutupedNotify(false, unmutedBy, convCommand);
+        onSelfShutupedNotify(ConversationControlOp.SHUTUPED.equals(operation), operator, convCommand);
       }
     } else if (ConversationControlOp.MEMBER_SHUTPED.equals(operation)
         || ConversationControlOp.MEMBER_UNSHUTUPED.equals(operation)) {
@@ -654,7 +648,9 @@ class AVInternalConversation {
     // parse result.
     List<String> allowedList = convCommand.getAllowedPidsList();
     String[] allowedMembers = new String[null == allowedList? 0 : allowedList.size()];
-    allowedList.toArray(allowedMembers);
+    if (null != allowedList) {
+      allowedList.toArray(allowedMembers);
+    }
 
     ArrayList<AVIMOperationFailure> failedList = new ArrayList<>(convCommand.getFailedPidsCount());
     List<Messages.ErrorCommand> errorCommandList = convCommand.getFailedPidsList();
