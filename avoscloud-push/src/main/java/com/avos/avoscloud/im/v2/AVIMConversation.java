@@ -27,7 +27,7 @@ import com.avos.avoscloud.SaveCallback;
 import com.avos.avoscloud.QueryConditions;
 import com.avos.avoscloud.im.v2.Conversation.AVIMOperation;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationCallback;
-import com.avos.avoscloud.im.v2.callback.AVIMConversationFailure;
+import com.avos.avoscloud.im.v2.callback.AVIMOperationFailure;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationMemberCountCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationMemberQueryCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationPartiallySucceededCallback;
@@ -848,12 +848,16 @@ public class AVIMConversation {
    * 查询所有被禁言的成员列表
    * @param callback  结果回调函数
    */
-  public void queryMutedMembers(final AVIMConversationSimpleResultCallback callback) {
+  public void queryMutedMembers(int offset, int limit, final AVIMConversationSimpleResultCallback callback) {
     if (null == callback) {
+      return;
+    } else if (offset < 0 || limit > 100) {
+      callback.internalDone(null, new AVIMException(new IllegalArgumentException("offset/limit is illegal.")));
       return;
     }
     Map<String, Object> params = new HashMap<String, Object>();
-    params.put(Conversation.QUERY_PARAM_LIMIT, 100);
+    params.put(Conversation.QUERY_PARAM_LIMIT, limit);
+    params.put(Conversation.QUERY_PARAM_OFFSET, offset);
     sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY,
         callback, null);
   }
@@ -1593,6 +1597,7 @@ public class AVIMConversation {
                 }
               }
 
+              // 处理成员数量查询
               if (operation.getCode() == AVIMOperation.CONVERSATION_MEMBER_COUNT_QUERY.getCode()) {
                 int memberCount = intent.getIntExtra(Conversation.callbackMemberCount, 0);
                 callback.internalDone(memberCount, AVIMException.wrapperAVException(error));
@@ -1607,10 +1612,13 @@ public class AVIMConversation {
                 return;
               }
 
+              // 处理对成员禁言/拉黑系操作
               if (operation.getCode() == AVIMOperation.CONVERSATION_MUTE_MEMBER.getCode()
-                  || operation.getCode() == AVIMOperation.CONVERSATION_BLOCK_MEMBER.getCode()) {
+                  || operation.getCode() == AVIMOperation.CONVERSATION_UNMUTE_MEMBER.getCode()
+                  || operation.getCode() == AVIMOperation.CONVERSATION_BLOCK_MEMBER.getCode()
+                  || operation.getCode() == AVIMOperation.CONVERSATION_UNBLOCK_MEMBER.getCode()) {
                 String[] allowedList = intent.getStringArrayExtra(Conversation.callbackConvMemberMuted_SUCC);
-                ArrayList<AVIMConversationFailure> failedList = intent.getParcelableArrayListExtra(Conversation.callbackConvMemberMuted_FAIL);
+                ArrayList<AVIMOperationFailure> failedList = intent.getParcelableArrayListExtra(Conversation.callbackConvMemberMuted_FAIL);
                 Map<String, Object> result = new HashMap<>();
                 result.put(Conversation.callbackConvMemberMuted_SUCC, allowedList);
                 result.put(Conversation.callbackConvMemberMuted_FAIL, failedList);
@@ -1618,6 +1626,7 @@ public class AVIMConversation {
                 return;
               }
 
+              // 处理被禁言成员列表查询
               if (operation.getCode() == AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY.getCode()) {
                 String[] result = intent.getStringArrayExtra(Conversation.callbackData);
                 callback.internalDone(Arrays.asList(result), AVIMException.wrapperAVException(error));

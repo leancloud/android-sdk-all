@@ -15,12 +15,12 @@ import com.avos.avoscloud.im.v2.Conversation;
  */
 
 public abstract class AVIMConversationPartiallySucceededCallback extends AVCallback<Map<String, Object>> {
-  public abstract void done(AVIMException e, List<String> successfulClientIds, List<AVIMConversationFailure> failures);
+  public abstract void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures);
 
   @Override
   protected final void internalDone0(Map<String, Object> returnValue, AVException e) {
     String[] allowed = (String[]) returnValue.get(Conversation.callbackConvMemberMuted_SUCC);
-    ArrayList<AVIMConversationFailure> failed = (ArrayList<AVIMConversationFailure>)returnValue.get(Conversation.callbackConvMemberMuted_FAIL);
+    ArrayList<AVIMOperationFailure> failed = (ArrayList<AVIMOperationFailure>)returnValue.get(Conversation.callbackConvMemberMuted_FAIL);
 
     done(AVIMException.wrapperAVException(e), Arrays.asList(allowed), failed);
   }

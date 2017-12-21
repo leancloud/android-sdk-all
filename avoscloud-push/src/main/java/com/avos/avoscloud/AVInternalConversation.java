@@ -25,7 +25,7 @@ import com.avos.avoscloud.im.v2.AVIMMessageQueryDirection;
 import com.avos.avoscloud.im.v2.AVIMOptions;
 import com.avos.avoscloud.im.v2.Conversation;
 import com.avos.avoscloud.im.v2.Conversation.AVIMOperation;
-import com.avos.avoscloud.im.v2.callback.AVIMConversationFailure;
+import com.avos.avoscloud.im.v2.callback.AVIMOperationFailure;
 import com.avos.avoscloud.im.v2.conversation.AVIMConversationMemberInfo;
 import com.avos.avoscloud.im.v2.conversation.MemberRole;
 import com.avos.avospush.session.CommandPacket;
@@ -35,8 +35,6 @@ import com.avos.avospush.session.ConversationDirectMessagePacket;
 import com.avos.avospush.session.ConversationMessageQueryPacket;
 import com.avos.avospush.session.MessagePatchModifyPacket;
 import com.avos.avospush.session.UnreadMessagesClearPacket;
-
-import org.json.JSONObject;
 
 @TargetApi(11)
 class AVInternalConversation {
@@ -168,9 +166,10 @@ class AVInternalConversation {
           session.conversationOperationCache.offer(Operation.getOperation(
               AVIMOperation.CONVERSATION_BLOCK_MEMBER.getCode(), session.getSelfPeerId(),
               conversationId, requestId));
-          PushService.sendData(ConversationControlPacket.genConversationCommand(
-              session.getSelfPeerId(), conversationId, members,
-              ConversationControlOp.ADD_BLOCKLIST, null, sig, requestId));
+          // TODO: ConversationControlPacket -> BlacklistControlPacket
+//          PushService.sendData(ConversationControlPacket.genConversationCommand(
+//              session.getSelfPeerId(), conversationId, members,
+//              ConversationControlOp.ADD_BLOCKLIST, null, sig, requestId));
         } else {
           BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), conversationId,
               requestId, e, AVIMOperation.CONVERSATION_BLOCK_MEMBER);
@@ -205,9 +204,10 @@ class AVInternalConversation {
           session.conversationOperationCache.offer(Operation.getOperation(
               AVIMOperation.CONVERSATION_UNBLOCK_MEMBER.getCode(), session.getSelfPeerId(),
               conversationId, requestId));
-          PushService.sendData(ConversationControlPacket.genConversationCommand(
-              session.getSelfPeerId(), conversationId, members,
-              ConversationControlOp.REMOVE_BLOCKLIST, null, sig, requestId));
+          // TODO: ConversationControlPacket -> BlacklistControlPacket
+//          PushService.sendData(ConversationControlPacket.genConversationCommand(
+//              session.getSelfPeerId(), conversationId, members,
+//              ConversationControlOp.REMOVE_BLOCKLIST, null, sig, requestId));
         } else {
           BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), conversationId,
               requestId, e, AVIMOperation.CONVERSATION_UNBLOCK_MEMBER);
@@ -262,15 +262,18 @@ class AVInternalConversation {
     new SignatureTask(callback).commit(session.getSelfPeerId());
   }
 
-  public void queryMutedMembers(int requestId) {
+  public void queryMutedMembers(int offset, int limit, int requestId) {
     if (!checkSessionStatus(AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY, requestId)) {
       return;
     }
     session.conversationOperationCache.offer(Operation.getOperation(
         AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY.getCode(), session.getSelfPeerId(), conversationId,
         requestId));
-    PushService.sendData(ConversationControlPacket.genConversationCommand(session.getSelfPeerId(),
-        conversationId, null, ConversationControlOp.QUERY_SHUTUP, null, null, requestId));
+    ConversationControlPacket packet = ConversationControlPacket.genConversationCommand(session.getSelfPeerId(),
+        conversationId, null, ConversationControlOp.QUERY_SHUTUP, null, null, requestId);
+    packet.setQueryOffset(offset);
+    packet.setQueryLimit(limit);
+    PushService.sendData(packet);
   }
 
   public void updateInfo(Map<String, Object> attr, int requestId) {
@@ -521,7 +524,9 @@ class AVInternalConversation {
         unblockMembers(members, requestId);
         break;
       case CONVERSATION_MUTED_MEMBER_QUERY:
-        queryMutedMembers(requestId);
+        int offset = (Integer) params.get(Conversation.QUERY_PARAM_OFFSET);
+        int sizeLimit = (Integer) params.get(Conversation.QUERY_PARAM_LIMIT);
+        queryMutedMembers(offset, sizeLimit, requestId);
         break;
       case CONVERSATION_MESSAGE_QUERY:
         // timestamp = 0时，原来的 (Long) 会发生强制转型错误(Integer cannot cast to Long)
@@ -598,7 +603,8 @@ class AVInternalConversation {
       onTimesReceipt(requestId,  receiptTime, readTime);
     } else if (ConversationControlOp.MEMBER_UPDATED.equals(operation)) {
       onMemberUpdated(requestId);
-    } else if (ConversationControlOp.MEMBER_SHUTPED.equals(operation) || ConversationControlOp.MEMBER_UNSHUTUPED.equals(operation)) {
+    } else if (ConversationControlOp.MEMBER_SHUTPED.equals(operation)
+        || ConversationControlOp.MEMBER_UNSHUTUPED.equals(operation)) {
       // 禁言/取消禁言的 response
       if (null == imop) {
         LogUtil.log.e("IllegalState. operation is null, excepted is member_shutupped / member_unshutuped, originalOp=" + operation);
@@ -637,11 +643,12 @@ class AVInternalConversation {
   }
 
   private void onResponse4MemberMute(AVIMOperation imop, String operation, int requestId, Messages.ConvCommand convCommand) {
+    // parse result.
     List<String> allowedList = convCommand.getAllowedPidsList();
-    ArrayList<AVIMConversationFailure> failedList = new ArrayList<>(convCommand.getFailedPidsCount());
+    ArrayList<AVIMOperationFailure> failedList = new ArrayList<>(convCommand.getFailedPidsCount());
     List<Messages.ErrorCommand> errorCommandList = convCommand.getFailedPidsList();
     for (Messages.ErrorCommand cmd: errorCommandList) {
-      AVIMConversationFailure failure = new AVIMConversationFailure();
+      AVIMOperationFailure failure = new AVIMOperationFailure();
       failure.setCode(cmd.getCode());
       failure.setMemberIds(cmd.getPidsList());
       failure.setReason(cmd.getDetail());

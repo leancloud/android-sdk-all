@@ -92,6 +92,9 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
 
   private Map<String, Object> memberInfo = null;
 
+  private int queryOffset = 0;
+  private int queryLimit = 0;
+
   public ConversationControlPacket() {
     this.setCmd(CONVERSATION_CMD);
   }
@@ -186,6 +189,22 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
     this.memberInfo = memberInfo;
   }
 
+  public int getQueryOffset() {
+    return queryOffset;
+  }
+
+  public void setQueryOffset(int queryOffset) {
+    this.queryOffset = queryOffset;
+  }
+
+  public int getQueryLimit() {
+    return queryLimit;
+  }
+
+  public void setQueryLimit(int queryLimit) {
+    this.queryLimit = queryLimit;
+  }
+
   @Override
   protected Messages.GenericCommand.Builder getGenericCommandBuilder() {
     Messages.GenericCommand.Builder builder = super.getGenericCommandBuilder();
@@ -240,6 +259,12 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
         cmiBuilder.setInfoId((String) memberInfo.get("infoId"));
       }
       builder.setInfo(cmiBuilder.build());
+    }
+    if (this.queryOffset > 0) {
+      builder.setOffset(new Integer(this.queryOffset).toString());
+    }
+    if (this.queryLimit > 0) {
+      builder.setLimit(this.queryLimit);
     }
     return builder.build();
   }

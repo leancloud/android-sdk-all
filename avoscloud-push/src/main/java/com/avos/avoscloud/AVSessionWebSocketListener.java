@@ -299,18 +299,18 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
             bundle, AVIMOperation.CONVERSATION_QUERY);
         // verified: it's not need to update local cache?
       } else {
-        ;
+        LogUtil.log.w("not found requestKey: " + requestKey);
       }
     } else if (ConversationControlOp.QUERY_SHUTUP_RESULT.equals(operation)) {
       Operation op = session.conversationOperationCache.poll(requestKey);
       if (null != op && op.operation == AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY.getCode()) {
-        List<String> result = convCommand.getMList();
+        List<String> result = convCommand.getMList(); // result stored in m field.
         Bundle bundle = new Bundle();
         bundle.putStringArray(Conversation.callbackData, (String[])result.toArray());
         BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), null, requestKey,
             bundle, AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY);
       } else {
-        ;
+        LogUtil.log.w("not found requestKey: " + requestKey);
       }
     } else {
       String conversationId = null;
@@ -320,8 +320,6 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
           || operation.equals(ConversationControlOp.REMOVED)
           || operation.equals(ConversationControlOp.UPDATED)
           || operation.equals(ConversationControlOp.MEMBER_COUNT_QUERY_RESULT)
-          || operation.equals(ConversationControlOp.BLOCKLIST_ADDED)
-          || operation.equals(ConversationControlOp.BLOCKLIST_REMOVED)
           || operation.equals(ConversationControlOp.SHUTUP_ADDED)
           || operation.equals(ConversationControlOp.SHUTUP_REMOVED))
           && requestId != CommandPacket.UNSUPPORTED_OPERATION) {
