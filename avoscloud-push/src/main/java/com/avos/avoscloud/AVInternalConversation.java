@@ -28,6 +28,7 @@ import com.avos.avoscloud.im.v2.Conversation.AVIMOperation;
 import com.avos.avoscloud.im.v2.callback.AVIMOperationFailure;
 import com.avos.avoscloud.im.v2.conversation.AVIMConversationMemberInfo;
 import com.avos.avoscloud.im.v2.conversation.MemberRole;
+import com.avos.avospush.session.BlacklistCommandPacket;
 import com.avos.avospush.session.CommandPacket;
 import com.avos.avospush.session.ConversationControlPacket;
 import com.avos.avospush.session.ConversationControlPacket.ConversationControlOp;
@@ -166,10 +167,9 @@ class AVInternalConversation {
           session.conversationOperationCache.offer(Operation.getOperation(
               AVIMOperation.CONVERSATION_BLOCK_MEMBER.getCode(), session.getSelfPeerId(),
               conversationId, requestId));
-          // TODO: ConversationControlPacket -> BlacklistControlPacket
-//          PushService.sendData(ConversationControlPacket.genConversationCommand(
-//              session.getSelfPeerId(), conversationId, members,
-//              ConversationControlOp.ADD_BLOCKLIST, null, sig, requestId));
+          PushService.sendData(BlacklistCommandPacket.genBlacklistCommandPacket(
+              session.getSelfPeerId(), conversationId,
+              BlacklistCommandPacket.BlacklistCommandOp.BLOCK, members, sig, requestId));
         } else {
           BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), conversationId,
               requestId, e, AVIMOperation.CONVERSATION_BLOCK_MEMBER);
@@ -204,10 +204,9 @@ class AVInternalConversation {
           session.conversationOperationCache.offer(Operation.getOperation(
               AVIMOperation.CONVERSATION_UNBLOCK_MEMBER.getCode(), session.getSelfPeerId(),
               conversationId, requestId));
-          // TODO: ConversationControlPacket -> BlacklistControlPacket
-//          PushService.sendData(ConversationControlPacket.genConversationCommand(
-//              session.getSelfPeerId(), conversationId, members,
-//              ConversationControlOp.REMOVE_BLOCKLIST, null, sig, requestId));
+          PushService.sendData(BlacklistCommandPacket.genBlacklistCommandPacket(
+              session.getSelfPeerId(), conversationId,
+              BlacklistCommandPacket.BlacklistCommandOp.UNBLOCK, members, sig, requestId));
         } else {
           BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), conversationId,
               requestId, e, AVIMOperation.CONVERSATION_UNBLOCK_MEMBER);
@@ -273,6 +272,18 @@ class AVInternalConversation {
         conversationId, null, ConversationControlOp.QUERY_SHUTUP, null, null, requestId);
     packet.setQueryOffset(offset);
     packet.setQueryLimit(limit);
+    PushService.sendData(packet);
+  }
+
+  public void queryBlockedMembers(int offset, int limit, int requestId) {
+    if (!checkSessionStatus(AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY, requestId)) {
+      return;
+    }
+    session.conversationOperationCache.offer(Operation.getOperation(
+        AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY.getCode(), session.getSelfPeerId(), conversationId,
+        requestId));
+    BlacklistCommandPacket packet = BlacklistCommandPacket.genBlacklistCommandPacket(session.getSelfPeerId(),
+        conversationId, BlacklistCommandPacket.BlacklistCommandOp.QUERY, offset, limit, requestId);
     PushService.sendData(packet);
   }
 
@@ -527,6 +538,11 @@ class AVInternalConversation {
         int offset = (Integer) params.get(Conversation.QUERY_PARAM_OFFSET);
         int sizeLimit = (Integer) params.get(Conversation.QUERY_PARAM_LIMIT);
         queryMutedMembers(offset, sizeLimit, requestId);
+        break;
+      case CONVERSATION_BLOCKED_MEMBER_QUERY:
+        int blockedOffset = (Integer) params.get(Conversation.QUERY_PARAM_OFFSET);
+        int blockedSizeLimit = (Integer) params.get(Conversation.QUERY_PARAM_LIMIT);
+        queryBlockedMembers(blockedOffset, blockedSizeLimit, requestId);
         break;
       case CONVERSATION_MESSAGE_QUERY:
         // timestamp = 0时，原来的 (Long) 会发生强制转型错误(Integer cannot cast to Long)

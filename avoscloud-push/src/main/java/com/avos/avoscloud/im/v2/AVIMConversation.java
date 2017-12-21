@@ -880,6 +880,60 @@ public class AVIMConversation {
   }
 
   /**
+   * 将部分成员加入黑名单
+   * @param memberIds  成员列表
+   * @param callback   结果回调函数
+   */
+  public void blockMembers(final List<String> memberIds, final AVIMConversationPartiallySucceededCallback callback) {
+    if (null == memberIds || memberIds.size() < 1) {
+      if (null != callback) {
+        callback.done(new AVIMException(new IllegalArgumentException("memberIds is null")), null, null);
+      }
+      return;
+    }
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
+    sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_BLOCK_MEMBER,
+        callback, null);
+  }
+
+  /**
+   * 将部分成员从黑名单移出来
+   * @param memberIds  成员列表
+   * @param callback   结果回调函数
+   */
+  public void unblockMembers(final List<String> memberIds, final AVIMConversationPartiallySucceededCallback callback) {
+    if (null == memberIds || memberIds.size() < 1) {
+      if (null != callback) {
+        callback.done(new AVIMException(new IllegalArgumentException("memberIds is null")), null, null);
+      }
+      return;
+    }
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
+    sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_UNBLOCK_MEMBER,
+        callback, null);
+  }
+
+  /**
+   * 查询黑名单的成员列表
+   * @param callback  结果回调函数
+   */
+  public void queryBlockedMembers(int offset, int limit, final AVIMConversationSimpleResultCallback callback) {
+    if (null == callback) {
+      return;
+    } else if (offset < 0 || limit > 100) {
+      callback.internalDone(null, new AVIMException(new IllegalArgumentException("offset/limit is illegal.")));
+      return;
+    }
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.QUERY_PARAM_LIMIT, limit);
+    params.put(Conversation.QUERY_PARAM_OFFSET, offset);
+    sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY,
+        callback, null);
+  }
+
+  /**
    * 查询成员数量
    * @param callback
    */
@@ -1627,7 +1681,8 @@ public class AVIMConversation {
               }
 
               // 处理被禁言成员列表查询
-              if (operation.getCode() == AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY.getCode()) {
+              if (operation.getCode() == AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY.getCode()
+                  || operation.getCode() == AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY.getCode()) {
                 String[] result = intent.getStringArrayExtra(Conversation.callbackData);
                 callback.internalDone(null != result? Arrays.asList(result): null, AVIMException.wrapperAVException(error));
                 return;

@@ -24,6 +24,8 @@ public interface AVWebSocketListener {
 
   void onListenerRemoved();
 
+  void onBlacklistCommand(String operation, Integer requestKey, Messages.BlacklistCommand blacklistCommand);
+
   void onConversationCommand(String operation, Integer requestKey, Messages.ConvCommand convCommand);
 
   void onError(Integer requestKey, Messages.ErrorCommand errorCommand);
