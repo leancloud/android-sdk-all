@@ -295,7 +295,6 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
       if (null == op || op.operation != AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY.getCode()) {
         LogUtil.log.w("not found requestKey: " + requestKey);
       } else {
-        // TODO: verify pls.
         List<String> result = blacklistCommand.getBlockedPidsList();
         String[] resultArray = new String[null == result ? 0: result.size()];
         if (null != result) {
@@ -307,8 +306,18 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
         BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), cid, requestKey,
             bundle, AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY);
       }
-    } else {
-
+    } else if (BlacklistCommandPacket.BlacklistCommandOp.BLOCKED.equals(operation)
+        || BlacklistCommandPacket.BlacklistCommandOp.UNBLOCKED.equals(operation)){
+      // response for block/unblock reqeust.
+      String conversationId = blacklistCommand.getSrcCid();
+      AVInternalConversation internalConversation = session.getConversation(conversationId, Conversation.CONV_TYPE_NORMAL);
+      Operation op = session.conversationOperationCache.poll(requestKey);
+      if (null == op || null == internalConversation) {
+        // warning.
+      } else {
+        AVIMOperation originOperation = AVIMOperation.getAVIMOperation(op.operation);
+        internalConversation.onResponse4MemberBlock(originOperation, operation, requestKey, blacklistCommand);
+      }
     }
   }
   @Override

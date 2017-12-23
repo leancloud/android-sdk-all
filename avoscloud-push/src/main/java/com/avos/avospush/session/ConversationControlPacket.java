@@ -56,6 +56,11 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
     public static final String MEMBER_SHUTPED = "members_shutuped";
     public static final String MEMBER_UNSHUTUPED = "members_unshutuped";
     public static final String QUERY_SHUTUP_RESULT = "shutup_result";
+    // 黑名单通知
+    public static final String BLOCKED = "blocked";
+    public static final String UNBLOCKED = "unblocked";
+    public static final String MEMBER_BLOCKED_NOTIFY = "members_blocked";
+    public static final String MEMBER_UNBLOCKED_NOTIFY = "members_unblocked";
   }
 
   private List<String> members;

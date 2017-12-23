@@ -129,9 +129,9 @@ public class BlacklistCommandPacket extends PeerBasedCommandPacket {
       builder.setLimit(limit);
     }
     if (!AVUtils.isBlankString(this.signature)) {
-//      builder.setS(getSignature());
-//      builder.setT(getTimestamp());
-//      builder.setN(getNonce());
+      builder.setS(getSignature());
+      builder.setT(getTimestamp());
+      builder.setN(getNonce());
     }
 
     return builder.build();
