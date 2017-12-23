@@ -687,7 +687,9 @@ class AVInternalConversation {
   }
 
   void onResponse4MemberMute(AVIMOperation imop, String operation, int requestId, Messages.ConvCommand convCommand) {
-    // parse result.
+    if (null == convCommand) {
+      return;
+    }
     List<String> allowedList = convCommand.getAllowedPidsList();
     List<Messages.ErrorCommand> errorCommandList = convCommand.getFailedPidsList();
     Bundle bundle = genBundleFromPartiallyResult(allowedList, errorCommandList);
