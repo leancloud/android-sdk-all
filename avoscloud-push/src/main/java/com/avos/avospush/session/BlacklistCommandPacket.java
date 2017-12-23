@@ -40,7 +40,7 @@ public class BlacklistCommandPacket extends PeerBasedCommandPacket {
   private int limit = 0;
 
   public BlacklistCommandPacket() {
-    setCmd("BLACKLIST_CMD");
+    setCmd(BLACKLIST_CMD);
   }
 
   public String getOp() {
@@ -166,6 +166,7 @@ public class BlacklistCommandPacket extends PeerBasedCommandPacket {
     packet.setOp(op);
     packet.setLimit(limit);
     packet.setOffset(offset);
+    packet.setRequestId(requestId);
     return packet;
   }
 }
