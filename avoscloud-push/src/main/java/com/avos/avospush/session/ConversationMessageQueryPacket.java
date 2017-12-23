@@ -163,7 +163,7 @@ public class ConversationMessageQueryPacket extends PeerBasedCommandPacket {
   public static ConversationMessageQueryPacket getConversationMessageQueryPacket(String peerId, String conversationId,
                                                                                  String msgId, long timestamp, boolean sclosed,
                                                                                  String toMsgId, long toTimestamp, boolean tclosed,
-                                                                                 int direct, int limit, int type, int requestId) {
+                                                                                 int direct, int limit, int msgType, int requestId) {
     ConversationMessageQueryPacket cqp = new ConversationMessageQueryPacket();
     if (AVIMClient.getClientsCount() > 1) {
       // peerId is necessary only when more than 1 client logined.
@@ -181,7 +181,7 @@ public class ConversationMessageQueryPacket extends PeerBasedCommandPacket {
     cqp.setToMsgId(toMsgId);
     cqp.setToTimestamp(toTimestamp);
     cqp.setTclosed(tclosed);
-    cqp.setMsgType(type);
+    cqp.setMsgType(msgType);
 
     return cqp;
   }

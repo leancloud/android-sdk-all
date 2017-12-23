@@ -375,29 +375,31 @@ public class AVIMConversation {
   }
 
   /**
-   * 获取特停类型的历史记录，注意：这个操作总是会从云端获取记录。
-   * 该函数和 queryMessagesByType(type, msgId, timestamp, limit, callback) 配合使用可以实现翻页效果。
+   * 获取特停类型的历史消息。
+   * 注意：这个操作总是会从云端获取记录。
+   * 另，该函数和 queryMessagesByType(type, msgId, timestamp, limit, callback) 配合使用可以实现翻页效果。
    *
-   * @param type     消息类型，可以参看  `AVIMMessageType` 里的定义。
-   * @param limit    本批次希望获取的消息数量。
-   * @param callback 结果回调函数
+   * @param msgType     消息类型，可以参看  `AVIMMessageType` 里的定义。
+   * @param limit       本批次希望获取的消息数量。
+   * @param callback    结果回调函数
    */
-  public void queryMessagesByType(int type, int limit, final AVIMMessagesQueryCallback callback) {
-    queryMessagesByType(type, null, 0, limit, callback);
+  public void queryMessagesByType(int msgType, int limit, final AVIMMessagesQueryCallback callback) {
+    queryMessagesByType(msgType, null, 0, limit, callback);
   }
 
   /**
-   * 获取特定类型的历史记录，注意：这个操作总是会从云端获取记录。
-   * 如果不指定 msgId 和 timestamp，则该函数效果等同于 queryMessageByType(type, limit, callback)
+   * 获取特定类型的历史消息。
+   * 注意：这个操作总是会从云端获取记录。
+   * 另，如果不指定 msgId 和 timestamp，则该函数效果等同于 queryMessageByType(type, limit, callback)
    *
-   * @param type        消息类型，可以参看  `AVIMMessageType` 里的定义。
+   * @param msgType     消息类型，可以参看  `AVIMMessageType` 里的定义。
    * @param msgId       消息id，从特定消息 id 开始向前查询（结果不会包含该记录）
    * @param timestamp   查询起始的时间戳，返回小于这个时间的记录，必须配合 msgId 一起使用。
    *                    要从最新消息开始获取时，请用 0 代替客户端的本地当前时间（System.currentTimeMillis()）
    * @param limit       返回条数限制
    * @param callback    结果回调函数
    */
-  public void queryMessagesByType(int type, final String msgId, final long timestamp, final int limit,
+  public void queryMessagesByType(int msgType, final String msgId, final long timestamp, final int limit,
                                   final AVIMMessagesQueryCallback callback) {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_MESSAGE_QUERY_MSGID, msgId);
@@ -408,7 +410,7 @@ public class AVIMConversation {
     params.put(Conversation.PARAM_MESSAGE_QUERY_TOCLOSED, false);
     params.put(Conversation.PARAM_MESSAGE_QUERY_DIRECT, AVIMMessageQueryDirection.AVIMMessageQueryDirectionFromNewToOld.getCode());
     params.put(Conversation.PARAM_MESSAGE_QUERY_LIMIT, limit);
-    params.put(Conversation.PARAM_MESSAGE_QUERY_TYPE, type);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_TYPE, msgType);
     sendNonSideEffectCommand(JSON.toJSONString(params),
         AVIMOperation.CONVERSATION_MESSAGE_QUERY, callback);
   }

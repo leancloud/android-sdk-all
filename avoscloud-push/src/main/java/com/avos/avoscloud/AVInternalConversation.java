@@ -389,7 +389,7 @@ class AVInternalConversation {
 
   public void queryHistoryMessages(String msgId, long timestamp, boolean sclosed,
                                    String toMsgId, long toTimestamp, boolean toclosed,
-                                   int direct, int limit, int type, int requestId) {
+                                   int direct, int limit, int msgType, int requestId) {
     if (!checkSessionStatus(AVIMOperation.CONVERSATION_MESSAGE_QUERY, requestId)) {
       return;
     }
@@ -398,7 +398,7 @@ class AVInternalConversation {
         conversationId, requestId));
     PushService.sendData(ConversationMessageQueryPacket.getConversationMessageQueryPacket(
         session.getSelfPeerId(), conversationId, msgId, timestamp, sclosed, toMsgId, toTimestamp, toclosed,
-        direct, limit, type, requestId));
+        direct, limit, msgType, requestId));
   }
 
   public void mute(int requestId) {
@@ -554,8 +554,8 @@ class AVInternalConversation {
         boolean tclosed = (Boolean) params.get(Conversation.PARAM_MESSAGE_QUERY_TOCLOSED);
         int direct = (Integer) params.get(Conversation.PARAM_MESSAGE_QUERY_DIRECT);
         int limit = (Integer) params.get(Conversation.PARAM_MESSAGE_QUERY_LIMIT);
-        int type = (Integer) params.get(Conversation.PARAM_MESSAGE_QUERY_TYPE);
-        queryHistoryMessages(msgId, ts, sclosed, toMsgId, tts, tclosed, direct, limit, type, requestId);
+        int msgType = (Integer) params.get(Conversation.PARAM_MESSAGE_QUERY_TYPE);
+        queryHistoryMessages(msgId, ts, sclosed, toMsgId, tts, tclosed, direct, limit, msgType, requestId);
         break;
       default:
           break;
