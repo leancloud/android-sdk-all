@@ -31,9 +31,6 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
     public static final String ADD_SHUTUP = "add_shutup";
     public static final String REMOVE_SHUTUP = "remove_shutup";
     public static final String QUERY_SHUTUP = "query_shutup";
-    // 黑名单
-    public static final String ADD_BLOCKLIST = "block";
-    public static final String REMOVE_BLOCKLIST = "unblock";
 
     /**
      * 服务器端会响应的op
@@ -59,10 +56,11 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
     public static final String MEMBER_SHUTPED = "members_shutuped";
     public static final String MEMBER_UNSHUTUPED = "members_unshutuped";
     public static final String QUERY_SHUTUP_RESULT = "shutup_result";
-
-    // 黑名单
-    public static final String BLOCKLIST_ADDED = "blocked";
-    public static final String BLOCKLIST_REMOVED = "unblocked";
+    // 黑名单通知
+    public static final String BLOCKED = "blocked";
+    public static final String UNBLOCKED = "unblocked";
+    public static final String MEMBER_BLOCKED_NOTIFY = "members_blocked";
+    public static final String MEMBER_UNBLOCKED_NOTIFY = "members_unblocked";
   }
 
   private List<String> members;

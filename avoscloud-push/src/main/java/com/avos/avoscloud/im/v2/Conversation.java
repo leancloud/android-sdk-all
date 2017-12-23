@@ -67,6 +67,7 @@ public interface Conversation {
     CONVERSATION_BLOCK_MEMBER(40024, "com.avoscloud.v2.im.conversation.blockMember"),
     CONVERSATION_UNBLOCK_MEMBER(40025, "com.avoscloud.v2.im.conversation.unblockMember"),
     CONVERSATION_MUTED_MEMBER_QUERY(40026, "com.avoscloud.v2.im.conversation.mutedMemberQuery"),
+    CONVERSATION_BLOCKED_MEMBER_QUERY(40027, "com.avoscloud.v2.im.conversation.blockedMemberQuery"),
     CONVERSATION_UNKNOWN(49999, "com.avoscloud.v2.im.conversation.unknown");
 
     private final String header;
@@ -141,6 +142,8 @@ public interface Conversation {
           return CONVERSATION_UNBLOCK_MEMBER;
         case 40026:
           return CONVERSATION_MUTED_MEMBER_QUERY;
+        case 40027:
+          return CONVERSATION_BLOCKED_MEMBER_QUERY;
         default:
           return CONVERSATION_UNKNOWN;
       }

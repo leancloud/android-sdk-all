@@ -290,6 +290,7 @@ class AVPushConnectionManager implements AVPushWebSocketClient.AVSocketListener 
             processUnreadCommand(peerId, command.getUnreadMessage());
             break;
           case Messages.CommandType.blacklist_VALUE:
+            processBlacklistCommand(peerId, command.getOp().name(), requestKey, command.getBlacklistMessage());
             break;
           case Messages.CommandType.patch_VALUE:
             if(command.getOp().equals(Messages.OpType.modify)) {
@@ -363,6 +364,14 @@ class AVPushConnectionManager implements AVPushWebSocketClient.AVSocketListener 
     AVSession session = peerIdEnabledSessions.get(peerId);
     if (session != null && session.getWebSocketListener() != null) {
       session.getWebSocketListener().onAckCommand(requestKey, command);
+    }
+  }
+
+  private void processBlacklistCommand(String peerId, String operation, Integer requestKey,
+                                       Messages.BlacklistCommand blacklistCommand) {
+    AVSession session = peerIdEnabledSessions.get(peerId);
+    if (session != null && session.getWebSocketListener() != null) {
+      session.getWebSocketListener().onBlacklistCommand(operation, requestKey, blacklistCommand);
     }
   }
 
