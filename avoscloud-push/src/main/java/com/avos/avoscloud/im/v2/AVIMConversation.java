@@ -372,14 +372,45 @@ public class AVIMConversation {
       String toMsgId, long toTimestamp, AVIMMessagesQueryCallback callback) {
     queryMessagesFromServer(msgId, timestamp, false, toMsgId, toTimestamp, false,
         AVIMMessageQueryDirection.AVIMMessageQueryDirectionFromNewToOld, limit, callback);
-//    Map<String, Object> params = new HashMap<String, Object>();
-//    params.put(Conversation.PARAM_MESSAGE_QUERY_LIMIT, limit);
-//    params.put(Conversation.PARAM_MESSAGE_QUERY_MSGID, msgId);
-//    params.put(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP, timestamp);
-//    params.put(Conversation.PARAM_MESSAGE_QUERY_TO_MSGID, toMsgId);
-//    params.put(Conversation.PARAM_MESSAGE_QUERY_TO_TIMESTAMP, toTimestamp);
-//    sendCMDToPushService(JSON.toJSONString(params),
-//        AVIMOperation.CONVERSATION_MESSAGE_QUERY, callback);
+  }
+
+  /**
+   * 获取特停类型的历史记录，注意：这个操作总是会从云端获取记录。
+   * 该函数和 queryMessagesByType(type, msgId, timestamp, limit, callback) 配合使用可以实现翻页效果。
+   *
+   * @param type     消息类型，可以参看  `AVIMMessageType` 里的定义。
+   * @param limit    本批次希望获取的消息数量。
+   * @param callback 结果回调函数
+   */
+  public void queryMessagesByType(int type, int limit, final AVIMMessagesQueryCallback callback) {
+    queryMessagesByType(type, null, 0, limit, callback);
+  }
+
+  /**
+   * 获取特定类型的历史记录，注意：这个操作总是会从云端获取记录。
+   * 如果不指定 msgId 和 timestamp，则该函数效果等同于 queryMessageByType(type, limit, callback)
+   *
+   * @param type        消息类型，可以参看  `AVIMMessageType` 里的定义。
+   * @param msgId       消息id，从特定消息 id 开始向前查询（结果不会包含该记录）
+   * @param timestamp   查询起始的时间戳，返回小于这个时间的记录，必须配合 msgId 一起使用。
+   *                    要从最新消息开始获取时，请用 0 代替客户端的本地当前时间（System.currentTimeMillis()）
+   * @param limit       返回条数限制
+   * @param callback    结果回调函数
+   */
+  public void queryMessagesByType(int type, final String msgId, final long timestamp, final int limit,
+                                  final AVIMMessagesQueryCallback callback) {
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.PARAM_MESSAGE_QUERY_MSGID, msgId);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP, timestamp);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_STARTCLOSED, false);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_TO_MSGID, "");
+    params.put(Conversation.PARAM_MESSAGE_QUERY_TO_TIMESTAMP, 0);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_TOCLOSED, false);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_DIRECT, AVIMMessageQueryDirection.AVIMMessageQueryDirectionFromNewToOld.getCode());
+    params.put(Conversation.PARAM_MESSAGE_QUERY_LIMIT, limit);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_TYPE, type);
+    sendNonSideEffectCommand(JSON.toJSONString(params),
+        AVIMOperation.CONVERSATION_MESSAGE_QUERY, callback);
   }
 
   private void queryMessagesFromServer(String msgId, long timestamp, boolean startClosed,
@@ -540,15 +571,6 @@ public class AVIMConversation {
               String startMsgId = msgId;
               long startTS = timestamp;
               int requestLimit = limit;
-              // comment by jwfing[2017/8/25]: it is not necessary to find out newer message, isn't it?
-//              if (indicatorMessage != null && isIndicateMessageBreakPoint) {
-//                AVIMMessage nextMessage = storage.getNextMessage(indicatorMessage);
-//                if (nextMessage != null) {
-//                  startMsgId = nextMessage.getMessageId();
-//                  startTS = nextMessage.getTimestamp();
-//                  requestLimit = limit + 1;
-//                }
-//              }
               queryMessagesFromServer(startMsgId, startTS, requestLimit, null, 0,
                   new AVIMMessagesQueryCallback() {
                     @Override
@@ -686,12 +708,6 @@ public class AVIMConversation {
     } else {
       final int restCount;
       final AVIMMessage startMessage;
-//      if (firstBreakPointIndex > 0 && firstBreakPointIndex < cachedMessages.size()) {
-//        // 这个地方是指这些缓存中间有breakPoint的时候
-//        restCount = limit - continuousMessages.size() + 1;
-//        startMessage = cachedMessages.get(firstBreakPointIndex - 1);
-//        continuousMessages.add(startMessage);
-//      } else
       if (!continuousMessages.isEmpty()) {
         // 这里是缓存里面没有breakPoint，但是limit不够的情况下
         restCount = limit - continuousMessages.size();
@@ -1556,6 +1572,45 @@ public class AVIMConversation {
   protected void sendCMDToPushService(String dataInString, final AVIMOperation operation,
                                     AVCallback callback) {
     sendCMDToPushService(dataInString, null, null, operation, callback, null);
+  }
+
+  private void sendNonSideEffectCommand(String dataInString, final AVIMOperation operation, AVCallback callback) {
+    if (null == callback) {
+      return;
+    }
+    final int requestId = AVUtils.getNextIMRequestId();
+    Intent i = new Intent(AVOSCloud.applicationContext, PushService.class);
+    i.setAction(Conversation.AV_CONVERSATION_INTENT_ACTION);
+    if (!AVUtils.isBlankString(dataInString)) {
+      i.putExtra(Conversation.INTENT_KEY_DATA, dataInString);
+    }
+    i.putExtra(Conversation.INTENT_KEY_CLIENT, client.clientId);
+    i.putExtra(Conversation.INTENT_KEY_CONVERSATION, this.conversationId);
+    i.putExtra(Conversation.INTENT_KEY_CONV_TYPE, this.getType());
+    i.putExtra(Conversation.INTENT_KEY_OPERATION, operation.getCode());
+    i.putExtra(Conversation.INTENT_KEY_REQUESTID, requestId);
+    AVOSCloud.applicationContext.startService(IntentUtil.setupIntentFlags(i));
+    LocalBroadcastManager.getInstance(AVOSCloud.applicationContext).registerReceiver(
+        new AVIMBaseBroadcastReceiver(callback) {
+          @Override
+          public void execute(Intent intent, Throwable ex) {
+            // 处理历史消息查询
+            if (operation.getCode() == AVIMOperation.CONVERSATION_MESSAGE_QUERY.getCode()) {
+              List<AVIMMessage> historyMessages =
+                  intent.getParcelableArrayListExtra(Conversation.callbackHistoryMessages);
+
+              if (ex != null) {
+                callback.internalDone(null, new AVIMException(ex));
+              } else {
+                if (historyMessages == null) {
+                  historyMessages = Collections.EMPTY_LIST;
+                }
+                callback.internalDone(historyMessages, null);
+              }
+              return;
+            }
+          }
+        }, new IntentFilter(operation.getOperation() + requestId));
   }
 
   private void sendCMDToPushService(String dataInString, final AVIMMessage message, final AVIMMessageOption messageOption, final AVIMOperation operation,
