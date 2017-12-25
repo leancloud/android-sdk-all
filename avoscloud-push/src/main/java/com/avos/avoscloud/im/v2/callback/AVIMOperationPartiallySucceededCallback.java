@@ -14,7 +14,14 @@ import com.avos.avoscloud.im.v2.Conversation;
  * Created by fengjunwen on 2017/12/20.
  */
 
-public abstract class AVIMConversationPartiallySucceededCallback extends AVCallback<Map<String, Object>> {
+public abstract class AVIMOperationPartiallySucceededCallback extends AVCallback<Map<String, Object>> {
+  /**
+   * 部分成功结果回调函数
+   *
+   * @param e                    异常实例，如果 null != e 则表示操作失败，此时不用参考后面的两个参数 successfulClientIds/failures。
+   * @param successfulClientIds  操作整体成功（此时 null == e），其中成功的成员 id 列表。
+   * @param failures             操作整体成功（此时 null == e），其中部分失败的成员信息列表。
+   */
   public abstract void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures);
 
   @Override
