@@ -18,13 +18,15 @@ public class AVIMConversationMemberInfo {
   public static String ATTR_CONVID = "conversationId";
   public static String ATTR_MEMBERID = "peerId";
   public static String ATTR_ROLE = "role";
-  public static String ATTR_CREATEDAT = "createdAt";
-  public static String ATTR_NICKNAME = "nickname";
-  public static String ATTR_INVITER = "inviter";
+  private static String ATTR_CREATEDAT = "createdAt";
+  private static String ATTR_NICKNAME = "nickname";
+  private static String ATTR_INVITER = "inviter";
 
   private String conversationId = null;
   private String memberId = null;
   private MemberRole role;
+  private boolean isOwner = false;
+
   private String createdAt = null;
   private String objectId = null;
   private String inviter = null;
@@ -146,6 +148,10 @@ public class AVIMConversationMemberInfo {
    */
   public void setNickname(String nickname) {
     this.nickname = nickname;
+  }
+
+  public boolean isOwner() {
+    return isOwner;
   }
 
   /**

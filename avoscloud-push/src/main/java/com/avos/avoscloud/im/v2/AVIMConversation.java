@@ -30,7 +30,7 @@ import com.avos.avoscloud.im.v2.callback.AVIMConversationCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMOperationFailure;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationMemberCountCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationMemberQueryCallback;
-import com.avos.avoscloud.im.v2.callback.AVIMConversationPartiallySucceededCallback;
+import com.avos.avoscloud.im.v2.callback.AVIMOperationPartiallySucceededCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationSimpleResultCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMMessageRecalledCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMMessageUpdatedCallback;
@@ -831,7 +831,7 @@ public class AVIMConversation {
    * @param memberIds  成员列表
    * @param callback   结果回调函数
    */
-  public void muteMembers(final List<String> memberIds, final AVIMConversationPartiallySucceededCallback callback) {
+  public void muteMembers(final List<String> memberIds, final AVIMOperationPartiallySucceededCallback callback) {
     if (null == memberIds || memberIds.size() < 1) {
       if (null != callback) {
         callback.done(new AVIMException(new IllegalArgumentException("memberIds is null")), null, null);
@@ -849,7 +849,7 @@ public class AVIMConversation {
    * @param memberIds  成员列表
    * @param callback   结果回调函数
    */
-  public void unmuteMembers(final List<String> memberIds, final AVIMConversationPartiallySucceededCallback callback) {
+  public void unmuteMembers(final List<String> memberIds, final AVIMOperationPartiallySucceededCallback callback) {
     if (null == memberIds || memberIds.size() < 1) {
       if (null != callback) {
         callback.done(new AVIMException(new IllegalArgumentException("memberIds is null")), null, null);
@@ -902,7 +902,7 @@ public class AVIMConversation {
    * @param memberIds  成员列表
    * @param callback   结果回调函数
    */
-  public void blockMembers(final List<String> memberIds, final AVIMConversationPartiallySucceededCallback callback) {
+  public void blockMembers(final List<String> memberIds, final AVIMOperationPartiallySucceededCallback callback) {
     if (null == memberIds || memberIds.size() < 1) {
       if (null != callback) {
         callback.done(new AVIMException(new IllegalArgumentException("memberIds is null")), null, null);
@@ -920,7 +920,7 @@ public class AVIMConversation {
    * @param memberIds  成员列表
    * @param callback   结果回调函数
    */
-  public void unblockMembers(final List<String> memberIds, final AVIMConversationPartiallySucceededCallback callback) {
+  public void unblockMembers(final List<String> memberIds, final AVIMOperationPartiallySucceededCallback callback) {
     if (null == memberIds || memberIds.size() < 1) {
       if (null != callback) {
         callback.done(new AVIMException(new IllegalArgumentException("memberIds is null")), null, null);
