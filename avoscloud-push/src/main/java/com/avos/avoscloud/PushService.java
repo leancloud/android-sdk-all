@@ -482,7 +482,8 @@ public class PushService extends Service {
     // 先检查一下session的状态，但是消息记录查询和conversation查询由于支持缓存则跳过
     if (operation != AVIMOperation.CLIENT_OPEN
         && operation != AVIMOperation.CONVERSATION_MESSAGE_QUERY
-        && operation != AVIMOperation.CONVERSATION_QUERY) {
+        && operation != AVIMOperation.CONVERSATION_QUERY
+        && operation != AVIMOperation.CLIENT_REFRESH_TOKEN) {
       AVException connectionException = session.checkSessionStatus();
       if (connectionException != null) {
         BroadcastUtil.sendIMLocalBroadcast(clientId, conversationId, requestId,
@@ -495,6 +496,9 @@ public class PushService extends Service {
       case CLIENT_OPEN:
         AVIMClientParcel parcel = intent.getExtras().getParcelable(Conversation.INTENT_KEY_CLIENT_PARCEL);
         session.open(parcel, requestId);
+        break;
+      case CLIENT_REFRESH_TOKEN:
+        session.renewRealtimeSesionToken(requestId);
         break;
       case CLIENT_DISCONNECT:
         session.close(requestId);

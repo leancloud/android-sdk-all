@@ -131,13 +131,14 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
 
   @Override
   public void onSessionCommand(String op, Integer requestKey, Messages.SessionCommand command) {
+    int requestId = (null != requestKey ? requestKey : CommandPacket.UNSUPPORTED_OPERATION);
+
     if (op.equals(SessionControlPacket.SessionControlOp.OPENED)) {
       try {
         session.sessionOpened.set(true);
         session.sessionResume.set(false);
 
         if (!session.sessionPaused.getAndSet(false)) {
-          int requestId = (null != requestKey ? requestKey : CommandPacket.UNSUPPORTED_OPERATION);
           if (requestId != CommandPacket.UNSUPPORTED_OPERATION) {
             session.conversationOperationCache.poll(requestId);
           }
@@ -154,14 +155,17 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
       } catch (Exception e) {
         session.sessionListener.onError(AVOSCloud.applicationContext, session, e);
       }
-    } else if (op.equals(SessionControlPacket.SessionControlOp.QUERY_RESULT)) {
+    } else if (op.equals(SessionControlPacket.SessionControlOp.RENEWED_RTMTOKEN)) {
+      if (command.hasSt() && command.hasStTtl()) {
+        session.updateRealtimeSessionToken(command.getSt(), Integer.valueOf(command.getStTtl()));
+      }
+      session.sessionListener.onSessionTokenRenewed(AVOSCloud.applicationContext, session, requestId);
+    }else if (op.equals(SessionControlPacket.SessionControlOp.QUERY_RESULT)) {
       final List<String> sessionPeerIds = command.getOnlineSessionPeerIdsList();
-      int requestId = (null != requestKey ? requestKey : CommandPacket.UNSUPPORTED_OPERATION);
       session.sessionListener.onOnlineQuery(AVOSCloud.applicationContext, session, sessionPeerIds,
           requestId);
 
     } else if (op.equals(SessionControlPacket.SessionControlOp.CLOSED)) {
-      int requestId = (null != requestKey ? requestKey : CommandPacket.UNSUPPORTED_OPERATION);
       if (command.hasCode()) {
         session.sessionListener.onSessionClosedFromServer(AVOSCloud.applicationContext, session,
             command.getCode());
