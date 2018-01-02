@@ -75,7 +75,7 @@ public class AVIMFileMessage extends AVIMTypedMessage {
   public AVFile getAVFile() {
     if (actualFile != null) {
       return actualFile;
-    } else if (file.containsKey(FILE_URL)) {
+    } else if (null != file && file.containsKey(FILE_URL)) {
       Map<String, Object> avfileMeta = null;
       if (file.containsKey(FILE_META)) {
         avfileMeta = (Map) file.get(FILE_META);
