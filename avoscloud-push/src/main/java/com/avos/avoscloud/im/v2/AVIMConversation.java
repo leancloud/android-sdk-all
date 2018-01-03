@@ -428,6 +428,7 @@ public class AVIMConversation {
     params.put(Conversation.PARAM_MESSAGE_QUERY_TOCLOSED, toClosed);
     params.put(Conversation.PARAM_MESSAGE_QUERY_DIRECT, direction.getCode());
     params.put(Conversation.PARAM_MESSAGE_QUERY_LIMIT, limit);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_TYPE, 0);
     sendCMDToPushService(JSON.toJSONString(params),
         AVIMOperation.CONVERSATION_MESSAGE_QUERY, cb);
   }
@@ -788,10 +789,10 @@ public class AVIMConversation {
   }
 
   private void queryMemberInfo(final QueryConditions queryConditions, final AVIMConversationMemberQueryCallback callback) {
-    if (null == callback) {
+    if (null == queryConditions || null == callback) {
       return;
     }
-    this.client.queryConversationMemberInfo(queryConditions, callback);
+    client.queryConversationMemberInfo(queryConditions, callback);
   }
 
   /**

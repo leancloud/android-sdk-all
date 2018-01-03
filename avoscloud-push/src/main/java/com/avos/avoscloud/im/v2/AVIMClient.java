@@ -18,6 +18,7 @@ import com.alibaba.fastjson.JSON;
 import com.avos.avoscloud.AVErrorUtils;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVIMClientParcel;
+import com.avos.avoscloud.AVLogger;
 import com.avos.avoscloud.AVOSCloud;
 import com.avos.avoscloud.AVPowerfulUtils;
 import com.avos.avoscloud.AVQuery;
@@ -692,11 +693,13 @@ public class AVIMClient {
       queryConvMemberThroughNetwork(queryConditions, cb);
     } else {
       // refresh realtime session token.
+      LogUtil.log.d("realtime session token expired, start to refresh...");
       BroadcastReceiver receiver = null;
       receiver = new AVIMBaseBroadcastReceiver(null) {
         @Override
         public void execute(Intent intent, Throwable error) {
           if (null != error) {
+            LogUtil.log.e("failed to refresh realtime session token. cause: " + error.getMessage());
             cb.internalDone(null, AVIMException.wrapperAVException(error));
           } else {
             queryConvMemberThroughNetwork(queryConditions, cb);
@@ -727,6 +730,7 @@ public class AVIMClient {
             callback.internalDone(result, null);
           }
         } catch (Exception ex) {
+          LogUtil.log.e("failed to parse ConversationMemberInfo result, cause: " + ex.getMessage());
           if (callback != null) {
             callback.internalDone(null, AVErrorUtils.createException(ex, null));
           }
@@ -735,6 +739,7 @@ public class AVIMClient {
 
       @Override
       public void onFailure(Throwable error, String content) {
+        LogUtil.log.e("failed to fetch ConversationMemberInfo, cause: " + error.getMessage());
         if (callback != null) {
           callback.internalDone(null, AVErrorUtils.createException(error, content));
         }
