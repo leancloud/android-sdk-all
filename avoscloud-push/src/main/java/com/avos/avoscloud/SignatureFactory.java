@@ -45,6 +45,22 @@ public interface SignatureFactory {
   public Signature createConversationSignature(String conversationId, String clientId,
       List<String> targetIds, String action) throws SignatureException;
 
+  /**
+   * 实现黑名单相关的签名计算
+   *
+   * @param clientId        当前登录用户的 id，必须
+   * @param conversationId  目标对话的 id，可选
+   * @param memberIds       目标成员的 id，可选
+   * @param action          操作类型的字符串，有如下集中类型：
+   *                        conversation-block-clients    在对话中拉黑部分成员，此时 conversationId 和 memberIds 是必须的。
+   *                        conversation-unblock-clients  在对话中解禁部分成员，此时 conversationId 和 memberIds 是必须的。
+   *                        。
+   * @return
+   * @throws SignatureException
+   */
+  public Signature createBlacklistSignature(String clientId, String conversationId, List<String> memberIds,
+                                            String action) throws SignatureException;
+
   public static class SignatureException extends AVException {
 
     public SignatureException(int theCode, String theMessage) {
