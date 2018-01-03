@@ -46,8 +46,8 @@ class AVInternalConversation {
   // 服务器端为了兼容老版本，这里需要使用group的invite
   private static final String GROUP_INVITE = "invite";
   private static final String GROUP_KICK = "kick";
-  private static final String BLOCK_MEMBER = "block";
-  private static final String UNBLOCK_MEMBER = "unblock";
+  private static final String BLOCK_MEMBER = "conversation-block-clients";
+  private static final String UNBLOCK_MEMBER = "conversation-unblock-clients";
 
   public AVInternalConversation(String conversationId, AVSession session, int convType) {
     this.session = session;
@@ -178,11 +178,9 @@ class AVInternalConversation {
 
       @Override
       public Signature computeSignature() throws SignatureException {
-        // 服务器端为兼容老版本，签名使用kick的action
         final SignatureFactory signatureFactory = AVIMOptions.getGlobalOptions().getSignatureFactory();
         if (signatureFactory != null) {
-          return signatureFactory.createConversationSignature(conversationId,
-              session.getSelfPeerId(), members, BLOCK_MEMBER);
+          return signatureFactory.createBlacklistSignature(session.getSelfPeerId(), conversationId, members, BLOCK_MEMBER);
         }
         return null;
       }
@@ -215,11 +213,9 @@ class AVInternalConversation {
 
       @Override
       public Signature computeSignature() throws SignatureException {
-        // 服务器端为兼容老版本，签名使用kick的action
         final SignatureFactory signatureFactory = AVIMOptions.getGlobalOptions().getSignatureFactory();
         if (signatureFactory != null) {
-          return signatureFactory.createConversationSignature(conversationId,
-              session.getSelfPeerId(), members, UNBLOCK_MEMBER);
+          return signatureFactory.createBlacklistSignature(session.getSelfPeerId(), conversationId, members, UNBLOCK_MEMBER);
         }
         return null;
       }
