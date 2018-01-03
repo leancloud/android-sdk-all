@@ -428,6 +428,7 @@ public class AVIMConversation {
     params.put(Conversation.PARAM_MESSAGE_QUERY_TOCLOSED, toClosed);
     params.put(Conversation.PARAM_MESSAGE_QUERY_DIRECT, direction.getCode());
     params.put(Conversation.PARAM_MESSAGE_QUERY_LIMIT, limit);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_TYPE, 0);
     sendCMDToPushService(JSON.toJSONString(params),
         AVIMOperation.CONVERSATION_MESSAGE_QUERY, cb);
   }
@@ -788,42 +789,10 @@ public class AVIMConversation {
   }
 
   private void queryMemberInfo(final QueryConditions queryConditions, final AVIMConversationMemberQueryCallback callback) {
-    if (null == callback) {
+    if (null == queryConditions || null == callback) {
       return;
     }
-
-    String queryPath = AVPowerfulUtils.getEndpoint("_ConversationMemberInfo");
-
-    queryConditions.assembleParameters();
-    Map<String, String> queryParams = queryConditions.getParameters();
-    queryParams.put("client_id", this.client.clientId);
-    AVRequestParams params = new AVRequestParams(queryParams);
-
-    Map<String, String> additionalHeader = new HashMap<>();
-    additionalHeader.put("X-LC-IM-Session-Token", this.client.getRealtimeSessionToken());
-
-    PaasClient.storageInstance().getObject(queryPath, params, false, additionalHeader, new GenericObjectCallback() {
-          @Override
-          public void onSuccess(String content, AVException e) {
-            try {
-              List<AVIMConversationMemberInfo> result = processResults(content);
-              if (callback != null) {
-                callback.internalDone(result, null);
-              }
-            } catch (Exception ex) {
-              if (callback != null) {
-                callback.internalDone(null, AVErrorUtils.createException(ex, null));
-              }
-            }
-          }
-
-          @Override
-          public void onFailure(Throwable error, String content) {
-            if (callback != null) {
-              callback.internalDone(null, AVErrorUtils.createException(error, content));
-            }
-          }
-        }, AVQuery.CachePolicy.NETWORK_ONLY, 86400000);
+    client.queryConversationMemberInfo(queryConditions, callback);
   }
 
   /**
@@ -878,23 +847,6 @@ public class AVIMConversation {
     params.put(Conversation.QUERY_PARAM_OFFSET, offset);
     sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY,
         callback, null);
-  }
-
-  protected List<AVIMConversationMemberInfo> processResults(String content) throws Exception {
-    if (AVUtils.isBlankContent(content)) {
-      return Collections.emptyList();
-    }
-    AVResponse resp = new AVResponse();
-    resp = JSON.parseObject(content, resp.getClass());
-
-    List<AVIMConversationMemberInfo> result = new LinkedList<AVIMConversationMemberInfo>();
-    for (Map item : resp.results) {
-      if (item != null && !item.isEmpty()) {
-        AVIMConversationMemberInfo object = AVIMConversationMemberInfo.createInstance(item);
-        result.add(object);
-      }
-    }
-    return result;
   }
 
   /**

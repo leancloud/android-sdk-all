@@ -42,6 +42,14 @@ public class AVDefaultSessionListener extends AVInternalSessionListener {
   }
 
   @Override
+  public void onSessionTokenRenewed(Context context, AVSession session, int requestId) {
+    if (requestId > CommandPacket.UNSUPPORTED_OPERATION) {
+      BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), null, requestId,
+          AVIMOperation.CLIENT_REFRESH_TOKEN);
+    }
+  }
+
+  @Override
   public void onSessionResumed(Context context, AVSession session) {
     AVIMClientEventHandler handler = AVIMMessageManagerHelper.getClientEventHandler();
     if (handler != null) {

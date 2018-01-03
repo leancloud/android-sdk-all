@@ -137,6 +137,50 @@ public class AVSession {
     }
   }
 
+  public void renewRealtimeSesionToken(final int requestId) {
+    final SignatureCallback callback = new SignatureCallback() {
+      @Override
+      public void onSignatureReady(Signature sig, AVException exception) {
+        if (null != exception) {
+
+          LogUtil.log.d("failed to generate signaure. cause:", exception);
+        } else {
+          SessionControlPacket scp = SessionControlPacket.genSessionCommand(
+              getSelfPeerId(), null,
+              SessionControlPacket.SessionControlOp.RENEW_RTMTOKEN, sig,
+              getLastNotifyTime(), getLastPatchTime(), requestId);
+          scp.setTag(tag);
+          scp.setSessionToken(realtimeSessionToken);
+          PushService.sendData(scp);
+        }
+      }
+
+      @Override
+      public Signature computeSignature() throws SignatureException {
+        SignatureFactory signatureFactory = AVIMOptions.getGlobalOptions().getSignatureFactory();
+        if (null == signatureFactory && !AVUtils.isBlankString(getUserSessionToken())) {
+          signatureFactory = new AVUserSignatureFactory(getUserSessionToken());
+        }
+        if (null != signatureFactory) {
+          return signatureFactory.createSignature(getSelfPeerId(), new ArrayList<String>());
+        }
+        return null;
+      }
+    };
+    // 在某些特定的rom上，socket回来的线程会与Service本身的线程不一致，导致AsyncTask调用出现异常
+    if (!AVUtils.isMainThread()) {
+      AVOSCloud.handler.post(new Runnable() {
+        @Override
+        public void run() {
+          new SignatureTask(callback).commit(getSelfPeerId());
+        }
+      });
+    } else {
+      new SignatureTask(callback).commit(getSelfPeerId());
+    }
+
+  };
+
   void updateRealtimeSessionToken(String sessionToken, int expireInSec) {
     this.realtimeSessionToken = sessionToken;
     this.realtimeSessionTokenExpired = System.currentTimeMillis() + expireInSec * 1000;

@@ -2,7 +2,9 @@ package com.avos.avoscloud.im.v2;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,22 +15,33 @@ import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.alibaba.fastjson.JSON;
+import com.avos.avoscloud.AVErrorUtils;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVIMClientParcel;
+import com.avos.avoscloud.AVLogger;
 import com.avos.avoscloud.AVOSCloud;
+import com.avos.avoscloud.AVPowerfulUtils;
+import com.avos.avoscloud.AVQuery;
+import com.avos.avoscloud.AVRequestParams;
+import com.avos.avoscloud.AVResponse;
 import com.avos.avoscloud.AVRuntimeException;
 import com.avos.avoscloud.AVSession;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.AVUtils;
+import com.avos.avoscloud.GenericObjectCallback;
 import com.avos.avoscloud.IntentUtil;
 import com.avos.avoscloud.LogUtil;
+import com.avos.avoscloud.PaasClient;
 import com.avos.avoscloud.PushService;
+import com.avos.avoscloud.QueryConditions;
 import com.avos.avoscloud.SignatureFactory;
 import com.avos.avoscloud.im.v2.Conversation.AVIMOperation;
 import com.avos.avoscloud.im.v2.callback.AVIMClientCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMClientStatusCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationCreatedCallback;
+import com.avos.avoscloud.im.v2.callback.AVIMConversationMemberQueryCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMOnlineClientsCallback;
+import com.avos.avoscloud.im.v2.conversation.AVIMConversationMemberInfo;
 
 /**
  * 实时聊天的实例类，一个实例表示一个用户的登录
@@ -49,6 +62,7 @@ public class AVIMClient {
   volatile boolean isConversationSync = false;
 
   private static boolean isAutoOpen = true;
+  private static int REALTIME_TOKEN_WINDOW_INSECOND = 5 * 60;
 
   public SignatureFactory getSignatureFactory() {
     return AVIMOptions.getGlobalOptions().getSignatureFactory();
@@ -201,6 +215,11 @@ public class AVIMClient {
 
   public String getRealtimeSessionToken() {
     return this.realtimeSessionToken;
+  }
+
+  boolean realtimeSessionTokenExpired() {
+    long now = System.currentTimeMillis()/1000;
+    return (now + REALTIME_TOKEN_WINDOW_INSECOND) >= this.realtimeSessionTokenExpired;
   }
 
   /**
@@ -665,6 +684,86 @@ public class AVIMClient {
     conversationCache.clear();
     storage.deleteClientData();
   }
+
+  void queryConversationMemberInfo(final QueryConditions queryConditions, final AVIMConversationMemberQueryCallback cb) {
+    if (null == queryConditions || null == cb) {
+      return;
+    }
+    if (!realtimeSessionTokenExpired()) {
+      queryConvMemberThroughNetwork(queryConditions, cb);
+    } else {
+      // refresh realtime session token.
+      LogUtil.log.d("realtime session token expired, start to refresh...");
+      BroadcastReceiver receiver = null;
+      receiver = new AVIMBaseBroadcastReceiver(null) {
+        @Override
+        public void execute(Intent intent, Throwable error) {
+          if (null != error) {
+            LogUtil.log.e("failed to refresh realtime session token. cause: " + error.getMessage());
+            cb.internalDone(null, AVIMException.wrapperAVException(error));
+          } else {
+            queryConvMemberThroughNetwork(queryConditions, cb);
+          }
+        }
+      };
+      this.sendClientCMDToPushService(null, receiver, AVIMOperation.CLIENT_REFRESH_TOKEN);
+    }
+  }
+
+  private void queryConvMemberThroughNetwork(final QueryConditions queryConditions, final AVIMConversationMemberQueryCallback callback) {
+    String queryPath = AVPowerfulUtils.getEndpoint("_ConversationMemberInfo");
+
+    queryConditions.assembleParameters();
+    Map<String, String> queryParams = queryConditions.getParameters();
+    queryParams.put("client_id", this.clientId);
+    AVRequestParams params = new AVRequestParams(queryParams);
+
+    Map<String, String> additionalHeader = new HashMap<>();
+    additionalHeader.put("X-LC-IM-Session-Token", this.getRealtimeSessionToken());
+
+    PaasClient.storageInstance().getObject(queryPath, params, false, additionalHeader, new GenericObjectCallback() {
+      @Override
+      public void onSuccess(String content, AVException e) {
+        try {
+          List<AVIMConversationMemberInfo> result = processResults(content);
+          if (callback != null) {
+            callback.internalDone(result, null);
+          }
+        } catch (Exception ex) {
+          LogUtil.log.e("failed to parse ConversationMemberInfo result, cause: " + ex.getMessage());
+          if (callback != null) {
+            callback.internalDone(null, AVErrorUtils.createException(ex, null));
+          }
+        }
+      }
+
+      @Override
+      public void onFailure(Throwable error, String content) {
+        LogUtil.log.e("failed to fetch ConversationMemberInfo, cause: " + error.getMessage());
+        if (callback != null) {
+          callback.internalDone(null, AVErrorUtils.createException(error, content));
+        }
+      }
+    }, AVQuery.CachePolicy.NETWORK_ONLY, 86400000);
+  }
+
+  private List<AVIMConversationMemberInfo> processResults(String content) throws Exception {
+    if (AVUtils.isBlankContent(content)) {
+      return Collections.emptyList();
+    }
+    AVResponse resp = new AVResponse();
+    resp = JSON.parseObject(content, resp.getClass());
+
+    List<AVIMConversationMemberInfo> result = new LinkedList<AVIMConversationMemberInfo>();
+    for (Map item : resp.results) {
+      if (item != null && !item.isEmpty()) {
+        AVIMConversationMemberInfo object = AVIMConversationMemberInfo.createInstance(item);
+        result.add(object);
+      }
+    }
+    return result;
+  }
+
 
   /**
    * 当前client的状态
