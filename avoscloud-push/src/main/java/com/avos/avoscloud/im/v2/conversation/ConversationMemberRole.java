@@ -5,11 +5,11 @@ package com.avos.avoscloud.im.v2.conversation;
  *
  * Created by fengjunwen on 2017/12/14.
  */
-public enum MemberRole {
+public enum ConversationMemberRole {
   MANAGER("Manager"),  // 管理员
   MEMBER("Member");    // 普通成员
   private String role;
-  MemberRole(String role) {
+  ConversationMemberRole(String role) {
     this.role = role;
   }
 
@@ -26,8 +26,8 @@ public enum MemberRole {
    * @param role 角色名字
    * @return
    */
-  public static MemberRole fromString(String role) {
-    for(MemberRole mr: MemberRole.values()) {
+  public static ConversationMemberRole fromString(String role) {
+    for(ConversationMemberRole mr: ConversationMemberRole.values()) {
       if (mr.role.equalsIgnoreCase(role)) {
         return mr;
       }

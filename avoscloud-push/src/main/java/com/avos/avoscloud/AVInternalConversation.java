@@ -27,7 +27,7 @@ import com.avos.avoscloud.im.v2.Conversation;
 import com.avos.avoscloud.im.v2.Conversation.AVIMOperation;
 import com.avos.avoscloud.im.v2.callback.AVIMOperationFailure;
 import com.avos.avoscloud.im.v2.conversation.AVIMConversationMemberInfo;
-import com.avos.avoscloud.im.v2.conversation.MemberRole;
+import com.avos.avoscloud.im.v2.conversation.ConversationMemberRole;
 import com.avos.avospush.session.BlacklistCommandPacket;
 import com.avos.avospush.session.CommandPacket;
 import com.avos.avospush.session.ConversationControlPacket;
@@ -816,7 +816,7 @@ class AVInternalConversation {
       String roleStr = member.getRole();
       String peerId = member.getPid();
       AVIMConversationMemberInfo memberInfo = new AVIMConversationMemberInfo(objectId, this.conversationId,
-          peerId, MemberRole.fromString(roleStr));
+          peerId, ConversationMemberRole.fromString(roleStr));
       handler.processEvent(Conversation.STATUS_ON_MEMBER_INFO_CHANGED, operator, memberInfo, conversation);
     }
   }

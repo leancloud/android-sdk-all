@@ -24,7 +24,7 @@ public class AVIMConversationMemberInfo {
 
   private String conversationId = null;
   private String memberId = null;
-  private MemberRole role;
+  private ConversationMemberRole role;
   private boolean isOwner = false;
 
   private String createdAt = null;
@@ -38,7 +38,7 @@ public class AVIMConversationMemberInfo {
    * @param memberId       成员的 client id
    * @param role           角色
    */
-  public AVIMConversationMemberInfo(String conversationId, String memberId, MemberRole role) {
+  public AVIMConversationMemberInfo(String conversationId, String memberId, ConversationMemberRole role) {
     this(null, conversationId, memberId, role);
   }
 
@@ -49,7 +49,7 @@ public class AVIMConversationMemberInfo {
    * @param memberId         成员的 client id
    * @param role             角色
    */
-  public AVIMConversationMemberInfo(String objectId, String conversationId, String memberId, MemberRole role) {
+  public AVIMConversationMemberInfo(String objectId, String conversationId, String memberId, ConversationMemberRole role) {
     this.objectId = objectId;
     this.conversationId = conversationId;
     this.memberId = memberId;
@@ -76,7 +76,7 @@ public class AVIMConversationMemberInfo {
    * 获取角色信息
    * @return
    */
-  public MemberRole getRole() {
+  public ConversationMemberRole getRole() {
     return this.role;
   }
 
@@ -84,7 +84,7 @@ public class AVIMConversationMemberInfo {
    * 设置角色
    * @param role
    */
-  public void setRole(MemberRole role) {
+  public void setRole(ConversationMemberRole role) {
     this.role = role;
   }
 
@@ -179,7 +179,7 @@ public class AVIMConversationMemberInfo {
     String memberId = (String)data.get(ATTR_MEMBERID);
     String roleStr = (String)data.get(ATTR_ROLE);
     String objectId = (String)data.get(ATTR_OJBECTID);
-    MemberRole role = MemberRole.valueOf(roleStr);
+    ConversationMemberRole role = ConversationMemberRole.valueOf(roleStr);
     return new AVIMConversationMemberInfo(objectId, conversationId, memberId, role);
   }
 }
