@@ -905,7 +905,7 @@ class AVInternalConversation {
     if (handler != null && null != members) {
       members.remove(session.getSelfPeerId());
       if (members.size() < 1) {
-        ;
+        // ignore self member_shutuped notify, bcz server sends both shutuped and member_shutuped notification.
       } else {
         AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
         AVIMConversation conversation = parseConversation(client, convCommand);
@@ -937,17 +937,12 @@ class AVInternalConversation {
     AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
     List<String> members = convCommand.getMList();
     if (handler != null && null != members) {
-      members.remove(session.getSelfPeerId());
-      if (members.size() < 1) {
-        ;
+      AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
+      AVIMConversation conversation = parseConversation(client, convCommand);
+      if (isBlocked) {
+        handler.processEvent(Conversation.STATUS_ON_MEMBER_BLOCKED, operator, members, conversation);
       } else {
-        AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
-        AVIMConversation conversation = parseConversation(client, convCommand);
-        if (isBlocked) {
-          handler.processEvent(Conversation.STATUS_ON_MEMBER_BLOCKED, operator, members, conversation);
-        } else {
-          handler.processEvent(Conversation.STATUS_ON_MEMBER_UNBLOCKED, operator, members, conversation);
-        }
+        handler.processEvent(Conversation.STATUS_ON_MEMBER_UNBLOCKED, operator, members, conversation);
       }
     }
   }
