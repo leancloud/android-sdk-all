@@ -706,7 +706,7 @@ class AVInternalConversation {
         AVIMOperationFailure failure = new AVIMOperationFailure();
         failure.setCode(cmd.getCode());
         failure.setMemberIds(cmd.getPidsList());
-        failure.setReason(cmd.getDetail());
+        failure.setReason(cmd.getReason());
         failedList.add(failure);
       }
     }
