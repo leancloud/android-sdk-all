@@ -742,7 +742,7 @@ public class AVIMConversation {
    */
   public void getAllMemberInfo(int skip, int limit, final AVIMConversationMemberQueryCallback callback) {
     QueryConditions conditions = new QueryConditions();
-    conditions.addWhereItem("conversationId", QueryOperation.EQUAL_OP, this.conversationId);
+    conditions.addWhereItem("cid", QueryOperation.EQUAL_OP, this.conversationId);
     conditions.setSkip(skip);
     conditions.setLimit(limit);
     queryMemberInfo(conditions, callback);
@@ -755,7 +755,7 @@ public class AVIMConversation {
    */
   public void getMemberInfo(final String memberId, final AVIMConversationMemberQueryCallback callback) {
     QueryConditions conditions = new QueryConditions();
-    conditions.addWhereItem("conversationId", QueryOperation.EQUAL_OP, this.conversationId);
+    conditions.addWhereItem("cid", QueryOperation.EQUAL_OP, this.conversationId);
     conditions.addWhereItem("peerId", QueryOperation.EQUAL_OP, memberId);
     queryMemberInfo(conditions, callback);
   }

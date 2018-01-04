@@ -902,13 +902,18 @@ class AVInternalConversation {
   void onMemberShutupedNotify(boolean isMuted, String operator, Messages.ConvCommand convCommand) {
     AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
     List<String> members = convCommand.getMList();
-    if (handler != null) {
-      AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
-      AVIMConversation conversation = parseConversation(client, convCommand);
-      if (isMuted) {
-        handler.processEvent(Conversation.STATUS_ON_MEMBER_MUTED, operator, members, conversation);
+    if (handler != null && null != members) {
+      members.remove(session.getSelfPeerId());
+      if (members.size() < 1) {
+        ;
       } else {
-        handler.processEvent(Conversation.STATUS_ON_MEMBER_UNMUTED, operator, members, conversation);
+        AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
+        AVIMConversation conversation = parseConversation(client, convCommand);
+        if (isMuted) {
+          handler.processEvent(Conversation.STATUS_ON_MEMBER_MUTED, operator, members, conversation);
+        } else {
+          handler.processEvent(Conversation.STATUS_ON_MEMBER_UNMUTED, operator, members, conversation);
+        }
       }
     }
   }
@@ -931,13 +936,18 @@ class AVInternalConversation {
   void onMemberBlockedNotify(boolean isBlocked, String operator, Messages.ConvCommand convCommand) {
     AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
     List<String> members = convCommand.getMList();
-    if (handler != null) {
-      AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
-      AVIMConversation conversation = parseConversation(client, convCommand);
-      if (isBlocked) {
-        handler.processEvent(Conversation.STATUS_ON_MEMBER_BLOCKED, operator, members, conversation);
+    if (handler != null && null != members) {
+      members.remove(session.getSelfPeerId());
+      if (members.size() < 1) {
+        ;
       } else {
-        handler.processEvent(Conversation.STATUS_ON_MEMBER_UNBLOCKED, operator, members, conversation);
+        AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
+        AVIMConversation conversation = parseConversation(client, convCommand);
+        if (isBlocked) {
+          handler.processEvent(Conversation.STATUS_ON_MEMBER_BLOCKED, operator, members, conversation);
+        } else {
+          handler.processEvent(Conversation.STATUS_ON_MEMBER_UNBLOCKED, operator, members, conversation);
+        }
       }
     }
   }
