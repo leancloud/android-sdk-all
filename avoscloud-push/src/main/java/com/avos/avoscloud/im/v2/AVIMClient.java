@@ -18,7 +18,6 @@ import com.alibaba.fastjson.JSON;
 import com.avos.avoscloud.AVErrorUtils;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVIMClientParcel;
-import com.avos.avoscloud.AVLogger;
 import com.avos.avoscloud.AVOSCloud;
 import com.avos.avoscloud.AVPowerfulUtils;
 import com.avos.avoscloud.AVQuery;
@@ -40,6 +39,7 @@ import com.avos.avoscloud.im.v2.callback.AVIMClientCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMClientStatusCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationCreatedCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationMemberQueryCallback;
+import com.avos.avoscloud.im.v2.callback.AVIMConversationQueryCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMOnlineClientsCallback;
 import com.avos.avoscloud.im.v2.conversation.AVIMConversationMemberInfo;
 
@@ -621,6 +621,62 @@ public class AVIMClient {
     return new AVIMConversationsQuery(this);
   }
 
+  /**
+   * 获取服务号的查询对象
+   * 开发者拿到这个对象之后，就可以像 AVIMConversationsQuery 以前的接口一样对目标属性（如名字）等进行查询。
+   * @return
+   */
+  public AVIMConversationsQuery getServiceConversationQuery() {
+    AVIMConversationsQuery query = new AVIMConversationsQuery(this);
+    query.whereEqualTo("sys", true);
+    return query;
+  }
+
+  /**
+   * 获取临时对话的查询对象
+   * 开发者拿到这个对象之后，就可以像 AVIMConversationsQuery 以前的接口一样对目标属性（如名字）等进行查询。
+   * @return
+   */
+  public AVIMConversationsQuery getTemporaryConversationQuery() {
+    AVIMConversationsQuery query = new AVIMConversationsQuery(this);
+    query.whereEqualTo("temp", true);
+    return query;
+  }
+
+  /**
+   * 获取开放聊天室的查询对象
+   * 开发者拿到这个对象之后，就可以像 AVIMConversationsQuery 以前的接口一样对目标属性（如名字）等进行查询。
+   * @return
+   */
+  public AVIMConversationsQuery getChatRoomQuery() {
+    AVIMConversationsQuery query = new AVIMConversationsQuery(this);
+    query.whereEqualTo("tr", true);
+    return query;
+  }
+
+  /**
+   * 查询当前用户已经订阅的服务号
+   *
+   * @param limit     查询结果上限
+   * @param callback  结果回调函数
+   */
+  private void querySubscribedServiceConversations(int limit, final AVIMConversationQueryCallback callback) {
+    querySubscribedServiceConversations(null, 0, limit, callback);
+  }
+
+  /**
+   * 查询当前用户已经订阅的服务号
+   *
+   * @param startConversationId         查询起始服务号 id
+   * @param startConversationTimestamp  查询起始服务号被订阅的时间
+   * @param limit                       查询结果上限
+   * @param callback                    结果回调函数
+   */
+  private void querySubscribedServiceConversations(String startConversationId, long startConversationTimestamp,
+                                                  int limit, final AVIMConversationQueryCallback callback) {
+    ;
+  }
+
   static AVIMClientEventHandler clientEventHandler;
 
   /**
@@ -732,7 +788,7 @@ public class AVIMClient {
         } catch (Exception ex) {
           LogUtil.log.e("failed to parse ConversationMemberInfo result, cause: " + ex.getMessage());
           if (callback != null) {
-            callback.internalDone(null, AVErrorUtils.createException(ex, null));
+            callback.internalDone(null, new AVIMException(ex));
           }
         }
       }
@@ -741,7 +797,7 @@ public class AVIMClient {
       public void onFailure(Throwable error, String content) {
         LogUtil.log.e("failed to fetch ConversationMemberInfo, cause: " + error.getMessage());
         if (callback != null) {
-          callback.internalDone(null, AVErrorUtils.createException(error, content));
+          callback.internalDone(null, new AVIMException(content, error));
         }
       }
     }, AVQuery.CachePolicy.NETWORK_ONLY, 86400000);

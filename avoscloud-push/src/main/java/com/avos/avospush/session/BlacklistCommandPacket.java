@@ -123,7 +123,7 @@ public class BlacklistCommandPacket extends PeerBasedCommandPacket {
     }
 
     if (offset > 0) {
-      builder.setOffset(new Integer(offset).toString());
+      builder.setNext(new Integer(offset).toString());
     }
     if (limit > 0) {
       builder.setLimit(limit);

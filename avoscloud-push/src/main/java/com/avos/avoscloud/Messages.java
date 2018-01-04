@@ -16998,29 +16998,29 @@ public final class Messages {
 
     /**
      * <pre>
-     * used in blacklist/shutup query
+     * used in shutup query
      * </pre>
      *
-     * <code>optional string offset = 40;</code>
+     * <code>optional string next = 40;</code>
      */
-    boolean hasOffset();
+    boolean hasNext();
     /**
      * <pre>
-     * used in blacklist/shutup query
+     * used in shutup query
      * </pre>
      *
-     * <code>optional string offset = 40;</code>
+     * <code>optional string next = 40;</code>
      */
-    java.lang.String getOffset();
+    java.lang.String getNext();
     /**
      * <pre>
-     * used in blacklist/shutup query
+     * used in shutup query
      * </pre>
      *
-     * <code>optional string offset = 40;</code>
+     * <code>optional string next = 40;</code>
      */
     com.google.protobuf.ByteString
-        getOffsetBytes();
+        getNextBytes();
 
     /**
      * <code>optional .com.avos.avoscloud.JsonObjectMessage results = 100;</code>
@@ -17104,7 +17104,7 @@ public final class Messages {
       tempConvIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       allowedPids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       failedPids_ = java.util.Collections.emptyList();
-      offset_ = "";
+      next_ = "";
     }
 
     @java.lang.Override
@@ -17335,7 +17335,7 @@ public final class Messages {
             case 322: {
               com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x02000000;
-              offset_ = bs;
+              next_ = bs;
               break;
             }
             case 802: {
@@ -18230,27 +18230,27 @@ public final class Messages {
       return failedPids_.get(index);
     }
 
-    public static final int OFFSET_FIELD_NUMBER = 40;
-    private volatile java.lang.Object offset_;
+    public static final int NEXT_FIELD_NUMBER = 40;
+    private volatile java.lang.Object next_;
     /**
      * <pre>
-     * used in blacklist/shutup query
+     * used in shutup query
      * </pre>
      *
-     * <code>optional string offset = 40;</code>
+     * <code>optional string next = 40;</code>
      */
-    public boolean hasOffset() {
+    public boolean hasNext() {
       return ((bitField0_ & 0x02000000) == 0x02000000);
     }
     /**
      * <pre>
-     * used in blacklist/shutup query
+     * used in shutup query
      * </pre>
      *
-     * <code>optional string offset = 40;</code>
+     * <code>optional string next = 40;</code>
      */
-    public java.lang.String getOffset() {
-      java.lang.Object ref = offset_;
+    public java.lang.String getNext() {
+      java.lang.Object ref = next_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
@@ -18258,26 +18258,26 @@ public final class Messages {
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          offset_ = s;
+          next_ = s;
         }
         return s;
       }
     }
     /**
      * <pre>
-     * used in blacklist/shutup query
+     * used in shutup query
      * </pre>
      *
-     * <code>optional string offset = 40;</code>
+     * <code>optional string next = 40;</code>
      */
     public com.google.protobuf.ByteString
-        getOffsetBytes() {
-      java.lang.Object ref = offset_;
+        getNextBytes() {
+      java.lang.Object ref = next_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        offset_ = b;
+        next_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -18477,7 +18477,7 @@ public final class Messages {
         output.writeMessage(31, failedPids_.get(i));
       }
       if (((bitField0_ & 0x02000000) == 0x02000000)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 40, offset_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 40, next_);
       }
       if (((bitField0_ & 0x04000000) == 0x04000000)) {
         output.writeMessage(100, getResults());
@@ -18628,7 +18628,7 @@ public final class Messages {
           .computeMessageSize(31, failedPids_.get(i));
       }
       if (((bitField0_ & 0x02000000) == 0x02000000)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(40, offset_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(40, next_);
       }
       if (((bitField0_ & 0x04000000) == 0x04000000)) {
         size += com.google.protobuf.CodedOutputStream
@@ -18795,10 +18795,10 @@ public final class Messages {
           .equals(other.getAllowedPidsList());
       result = result && getFailedPidsList()
           .equals(other.getFailedPidsList());
-      result = result && (hasOffset() == other.hasOffset());
-      if (hasOffset()) {
-        result = result && getOffset()
-            .equals(other.getOffset());
+      result = result && (hasNext() == other.hasNext());
+      if (hasNext()) {
+        result = result && getNext()
+            .equals(other.getNext());
       }
       result = result && (hasResults() == other.hasResults());
       if (hasResults()) {
@@ -18959,9 +18959,9 @@ public final class Messages {
         hash = (37 * hash) + FAILEDPIDS_FIELD_NUMBER;
         hash = (53 * hash) + getFailedPidsList().hashCode();
       }
-      if (hasOffset()) {
-        hash = (37 * hash) + OFFSET_FIELD_NUMBER;
-        hash = (53 * hash) + getOffset().hashCode();
+      if (hasNext()) {
+        hash = (37 * hash) + NEXT_FIELD_NUMBER;
+        hash = (53 * hash) + getNext().hashCode();
       }
       if (hasResults()) {
         hash = (37 * hash) + RESULTS_FIELD_NUMBER;
@@ -19184,7 +19184,7 @@ public final class Messages {
         } else {
           failedPidsBuilder_.clear();
         }
-        offset_ = "";
+        next_ = "";
         bitField0_ = (bitField0_ & ~0x80000000);
         if (resultsBuilder_ == null) {
           results_ = null;
@@ -19374,7 +19374,7 @@ public final class Messages {
         if (((from_bitField0_ & 0x80000000) == 0x80000000)) {
           to_bitField0_ |= 0x02000000;
         }
-        result.offset_ = offset_;
+        result.next_ = next_;
         if (((from_bitField1_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x04000000;
         }
@@ -19626,9 +19626,9 @@ public final class Messages {
             }
           }
         }
-        if (other.hasOffset()) {
+        if (other.hasNext()) {
           bitField0_ |= 0x80000000;
-          offset_ = other.offset_;
+          next_ = other.next_;
           onChanged();
         }
         if (other.hasResults()) {
@@ -21823,32 +21823,32 @@ public final class Messages {
         return failedPidsBuilder_;
       }
 
-      private java.lang.Object offset_ = "";
+      private java.lang.Object next_ = "";
       /**
        * <pre>
-       * used in blacklist/shutup query
+       * used in shutup query
        * </pre>
        *
-       * <code>optional string offset = 40;</code>
+       * <code>optional string next = 40;</code>
        */
-      public boolean hasOffset() {
+      public boolean hasNext() {
         return ((bitField0_ & 0x80000000) == 0x80000000);
       }
       /**
        * <pre>
-       * used in blacklist/shutup query
+       * used in shutup query
        * </pre>
        *
-       * <code>optional string offset = 40;</code>
+       * <code>optional string next = 40;</code>
        */
-      public java.lang.String getOffset() {
-        java.lang.Object ref = offset_;
+      public java.lang.String getNext() {
+        java.lang.Object ref = next_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           if (bs.isValidUtf8()) {
-            offset_ = s;
+            next_ = s;
           }
           return s;
         } else {
@@ -21857,19 +21857,19 @@ public final class Messages {
       }
       /**
        * <pre>
-       * used in blacklist/shutup query
+       * used in shutup query
        * </pre>
        *
-       * <code>optional string offset = 40;</code>
+       * <code>optional string next = 40;</code>
        */
       public com.google.protobuf.ByteString
-          getOffsetBytes() {
-        java.lang.Object ref = offset_;
+          getNextBytes() {
+        java.lang.Object ref = next_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          offset_ = b;
+          next_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
@@ -21877,48 +21877,48 @@ public final class Messages {
       }
       /**
        * <pre>
-       * used in blacklist/shutup query
+       * used in shutup query
        * </pre>
        *
-       * <code>optional string offset = 40;</code>
+       * <code>optional string next = 40;</code>
        */
-      public Builder setOffset(
+      public Builder setNext(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x80000000;
-        offset_ = value;
+        next_ = value;
         onChanged();
         return this;
       }
       /**
        * <pre>
-       * used in blacklist/shutup query
+       * used in shutup query
        * </pre>
        *
-       * <code>optional string offset = 40;</code>
+       * <code>optional string next = 40;</code>
        */
-      public Builder clearOffset() {
+      public Builder clearNext() {
         bitField0_ = (bitField0_ & ~0x80000000);
-        offset_ = getDefaultInstance().getOffset();
+        next_ = getDefaultInstance().getNext();
         onChanged();
         return this;
       }
       /**
        * <pre>
-       * used in blacklist/shutup query
+       * used in shutup query
        * </pre>
        *
-       * <code>optional string offset = 40;</code>
+       * <code>optional string next = 40;</code>
        */
-      public Builder setOffsetBytes(
+      public Builder setNextBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x80000000;
-        offset_ = value;
+        next_ = value;
         onChanged();
         return this;
       }
@@ -35684,18 +35684,18 @@ public final class Messages {
     int getLimit();
 
     /**
-     * <code>optional string offset = 6;</code>
+     * <code>optional string next = 6;</code>
      */
-    boolean hasOffset();
+    boolean hasNext();
     /**
-     * <code>optional string offset = 6;</code>
+     * <code>optional string next = 6;</code>
      */
-    java.lang.String getOffset();
+    java.lang.String getNext();
     /**
-     * <code>optional string offset = 6;</code>
+     * <code>optional string next = 6;</code>
      */
     com.google.protobuf.ByteString
-        getOffsetBytes();
+        getNextBytes();
 
     /**
      * <code>repeated string blockedPids = 8;</code>
@@ -35833,7 +35833,7 @@ public final class Messages {
       srcPid_ = "";
       toCids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       limit_ = 0;
-      offset_ = "";
+      next_ = "";
       blockedPids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       blockedCids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       allowedPids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
@@ -35909,7 +35909,7 @@ public final class Messages {
             case 50: {
               com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000008;
-              offset_ = bs;
+              next_ = bs;
               break;
             }
             case 66: {
@@ -36165,19 +36165,19 @@ public final class Messages {
       return limit_;
     }
 
-    public static final int OFFSET_FIELD_NUMBER = 6;
-    private volatile java.lang.Object offset_;
+    public static final int NEXT_FIELD_NUMBER = 6;
+    private volatile java.lang.Object next_;
     /**
-     * <code>optional string offset = 6;</code>
+     * <code>optional string next = 6;</code>
      */
-    public boolean hasOffset() {
+    public boolean hasNext() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     /**
-     * <code>optional string offset = 6;</code>
+     * <code>optional string next = 6;</code>
      */
-    public java.lang.String getOffset() {
-      java.lang.Object ref = offset_;
+    public java.lang.String getNext() {
+      java.lang.Object ref = next_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
@@ -36185,22 +36185,22 @@ public final class Messages {
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          offset_ = s;
+          next_ = s;
         }
         return s;
       }
     }
     /**
-     * <code>optional string offset = 6;</code>
+     * <code>optional string next = 6;</code>
      */
     public com.google.protobuf.ByteString
-        getOffsetBytes() {
-      java.lang.Object ref = offset_;
+        getNextBytes() {
+      java.lang.Object ref = next_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        offset_ = b;
+        next_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -36462,7 +36462,7 @@ public final class Messages {
         output.writeInt32(5, limit_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 6, offset_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 6, next_);
       }
       for (int i = 0; i < blockedPids_.size(); i++) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 8, blockedPids_.getRaw(i));
@@ -36520,7 +36520,7 @@ public final class Messages {
           .computeInt32Size(5, limit_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, offset_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, next_);
       }
       {
         int dataSize = 0;
@@ -36595,10 +36595,10 @@ public final class Messages {
         result = result && (getLimit()
             == other.getLimit());
       }
-      result = result && (hasOffset() == other.hasOffset());
-      if (hasOffset()) {
-        result = result && getOffset()
-            .equals(other.getOffset());
+      result = result && (hasNext() == other.hasNext());
+      if (hasNext()) {
+        result = result && getNext()
+            .equals(other.getNext());
       }
       result = result && getBlockedPidsList()
           .equals(other.getBlockedPidsList());
@@ -36654,9 +36654,9 @@ public final class Messages {
         hash = (37 * hash) + LIMIT_FIELD_NUMBER;
         hash = (53 * hash) + getLimit();
       }
-      if (hasOffset()) {
-        hash = (37 * hash) + OFFSET_FIELD_NUMBER;
-        hash = (53 * hash) + getOffset().hashCode();
+      if (hasNext()) {
+        hash = (37 * hash) + NEXT_FIELD_NUMBER;
+        hash = (53 * hash) + getNext().hashCode();
       }
       if (getBlockedPidsCount() > 0) {
         hash = (37 * hash) + BLOCKEDPIDS_FIELD_NUMBER;
@@ -36827,7 +36827,7 @@ public final class Messages {
         bitField0_ = (bitField0_ & ~0x00000008);
         limit_ = 0;
         bitField0_ = (bitField0_ & ~0x00000010);
-        offset_ = "";
+        next_ = "";
         bitField0_ = (bitField0_ & ~0x00000020);
         blockedPids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000040);
@@ -36896,7 +36896,7 @@ public final class Messages {
         if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
           to_bitField0_ |= 0x00000008;
         }
-        result.offset_ = offset_;
+        result.next_ = next_;
         if (((bitField0_ & 0x00000040) == 0x00000040)) {
           blockedPids_ = blockedPids_.getUnmodifiableView();
           bitField0_ = (bitField0_ & ~0x00000040);
@@ -37008,9 +37008,9 @@ public final class Messages {
         if (other.hasLimit()) {
           setLimit(other.getLimit());
         }
-        if (other.hasOffset()) {
+        if (other.hasNext()) {
           bitField0_ |= 0x00000020;
-          offset_ = other.offset_;
+          next_ = other.next_;
           onChanged();
         }
         if (!other.blockedPids_.isEmpty()) {
@@ -37485,24 +37485,24 @@ public final class Messages {
         return this;
       }
 
-      private java.lang.Object offset_ = "";
+      private java.lang.Object next_ = "";
       /**
-       * <code>optional string offset = 6;</code>
+       * <code>optional string next = 6;</code>
        */
-      public boolean hasOffset() {
+      public boolean hasNext() {
         return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       /**
-       * <code>optional string offset = 6;</code>
+       * <code>optional string next = 6;</code>
        */
-      public java.lang.String getOffset() {
-        java.lang.Object ref = offset_;
+      public java.lang.String getNext() {
+        java.lang.Object ref = next_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           if (bs.isValidUtf8()) {
-            offset_ = s;
+            next_ = s;
           }
           return s;
         } else {
@@ -37510,53 +37510,53 @@ public final class Messages {
         }
       }
       /**
-       * <code>optional string offset = 6;</code>
+       * <code>optional string next = 6;</code>
        */
       public com.google.protobuf.ByteString
-          getOffsetBytes() {
-        java.lang.Object ref = offset_;
+          getNextBytes() {
+        java.lang.Object ref = next_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          offset_ = b;
+          next_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>optional string offset = 6;</code>
+       * <code>optional string next = 6;</code>
        */
-      public Builder setOffset(
+      public Builder setNext(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000020;
-        offset_ = value;
+        next_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string offset = 6;</code>
+       * <code>optional string next = 6;</code>
        */
-      public Builder clearOffset() {
+      public Builder clearNext() {
         bitField0_ = (bitField0_ & ~0x00000020);
-        offset_ = getDefaultInstance().getOffset();
+        next_ = getDefaultInstance().getNext();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string offset = 6;</code>
+       * <code>optional string next = 6;</code>
        */
-      public Builder setOffsetBytes(
+      public Builder setNextBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000020;
-        offset_ = value;
+        next_ = value;
         onChanged();
         return this;
       }
@@ -43171,7 +43171,7 @@ public final class Messages {
       "\030\010 \001(\003\022\014\n\004type\030\t \001(\t\022\013\n\003ids\030\n \003(\t\022\017\n\007app" +
       "Code\030\013 \001(\005\"R\n\rUnreadCommand\022.\n\005convs\030\001 \003",
       "(\0132\037.com.avos.avoscloud.UnreadTuple\022\021\n\tn" +
-      "otifTime\030\002 \001(\003\"\301\006\n\013ConvCommand\022\t\n\001m\030\001 \003(" +
+      "otifTime\030\002 \001(\003\"\277\006\n\013ConvCommand\022\t\n\001m\030\001 \003(" +
       "\t\022\021\n\ttransient\030\002 \001(\010\022\016\n\006unique\030\003 \001(\010\022\013\n\003" +
       "cid\030\004 \001(\t\022\r\n\005cdate\030\005 \001(\t\022\016\n\006initBy\030\006 \001(\t" +
       "\022\014\n\004sort\030\007 \001(\t\022\r\n\005limit\030\010 \001(\005\022\014\n\004skip\030\t " +
@@ -43187,113 +43187,113 @@ public final class Messages {
       "d.ConvMemberInfo\022\020\n\010tempConv\030\033 \001(\010\022\023\n\013te" +
       "mpConvTTL\030\034 \001(\005\022\023\n\013tempConvIds\030\035 \003(\t\022\023\n\013" +
       "allowedPids\030\036 \003(\t\0224\n\nfailedPids\030\037 \003(\0132 ." +
-      "com.avos.avoscloud.ErrorCommand\022\016\n\006offse" +
-      "t\030( \001(\t\0226\n\007results\030d \001(\0132%.com.avos.avos" +
-      "cloud.JsonObjectMessage\0224\n\005where\030e \001(\0132%",
-      ".com.avos.avoscloud.JsonObjectMessage\0223\n" +
-      "\004attr\030g \001(\0132%.com.avos.avoscloud.JsonObj" +
-      "ectMessage\"x\n\013RoomCommand\022\016\n\006roomId\030\001 \001(" +
-      "\t\022\t\n\001s\030\002 \001(\t\022\t\n\001t\030\003 \001(\003\022\t\n\001n\030\004 \001(\t\022\021\n\ttr" +
-      "ansient\030\005 \001(\010\022\023\n\013roomPeerIds\030\006 \003(\t\022\020\n\010by" +
-      "PeerId\030\007 \001(\t\"\326\002\n\013LogsCommand\022\013\n\003cid\030\001 \001(" +
-      "\t\022\t\n\001l\030\002 \001(\005\022\r\n\005limit\030\003 \001(\005\022\t\n\001t\030\004 \001(\003\022\n" +
-      "\n\002tt\030\005 \001(\003\022\014\n\004tmid\030\006 \001(\t\022\013\n\003mid\030\007 \001(\t\022\020\n" +
-      "\010checksum\030\010 \001(\t\022\016\n\006stored\030\t \001(\010\022F\n\tdirec" +
-      "tion\030\n \001(\0162..com.avos.avoscloud.LogsComm",
-      "and.QueryDirection:\003OLD\022\021\n\ttIncluded\030\013 \001" +
-      "(\010\022\022\n\nttIncluded\030\014 \001(\010\022\016\n\006lctype\030\r \001(\005\022)" +
-      "\n\004logs\030i \003(\0132\033.com.avos.avoscloud.LogIte" +
-      "m\"\"\n\016QueryDirection\022\007\n\003OLD\020\001\022\007\n\003NEW\020\002\"L\n" +
-      "\nRcpCommand\022\n\n\002id\030\001 \001(\t\022\013\n\003cid\030\002 \001(\t\022\t\n\001" +
-      "t\030\003 \001(\003\022\014\n\004read\030\004 \001(\010\022\014\n\004from\030\005 \001(\t\"8\n\tR" +
-      "eadTuple\022\013\n\003cid\030\001 \002(\t\022\021\n\ttimestamp\030\002 \001(\003" +
-      "\022\013\n\003mid\030\003 \001(\t\"N\n\014MaxReadTuple\022\013\n\003pid\030\001 \001" +
-      "(\t\022\027\n\017maxAckTimestamp\030\002 \001(\003\022\030\n\020maxReadTi" +
-      "mestamp\030\003 \001(\003\"V\n\013ReadCommand\022\013\n\003cid\030\001 \001(",
-      "\t\022\014\n\004cids\030\002 \003(\t\022,\n\005convs\030\003 \003(\0132\035.com.avo" +
-      "s.avoscloud.ReadTuple\"f\n\017PresenceCommand" +
-      "\022.\n\006status\030\001 \001(\0162\036.com.avos.avoscloud.St" +
-      "atusType\022\026\n\016sessionPeerIds\030\002 \003(\t\022\013\n\003cid\030" +
-      "\003 \001(\t\"?\n\rReportCommand\022\022\n\ninitiative\030\001 \001" +
-      "(\010\022\014\n\004type\030\002 \001(\t\022\014\n\004data\030\003 \001(\t\"\270\001\n\tPatch" +
-      "Item\022\013\n\003cid\030\001 \001(\t\022\013\n\003mid\030\002 \001(\t\022\021\n\ttimest" +
-      "amp\030\003 \001(\003\022\016\n\006recall\030\004 \001(\010\022\014\n\004data\030\005 \001(\t\022" +
-      "\026\n\016patchTimestamp\030\006 \001(\003\022\014\n\004from\030\007 \001(\t\022\021\n" +
-      "\tbinaryMsg\030\010 \001(\014\022\022\n\nmentionAll\030\t \001(\010\022\023\n\013",
-      "mentionPids\030\n \003(\t\"U\n\014PatchCommand\022.\n\007pat" +
-      "ches\030\001 \003(\0132\035.com.avos.avoscloud.PatchIte" +
-      "m\022\025\n\rlastPatchTime\030\002 \001(\003\"\246\001\n\rPubsubComma" +
-      "nd\022\013\n\003cid\030\001 \001(\t\022\014\n\004cids\030\002 \003(\t\022\r\n\005topic\030\003" +
-      " \001(\t\022\020\n\010subtopic\030\004 \001(\t\022\016\n\006topics\030\005 \003(\t\022\021" +
-      "\n\tsubtopics\030\006 \003(\t\0226\n\007results\030\007 \001(\0132%.com" +
-      ".avos.avoscloud.JsonObjectMessage\"\207\002\n\020Bl" +
-      "acklistCommand\022\016\n\006srcCid\030\001 \001(\t\022\016\n\006toPids" +
-      "\030\002 \003(\t\022\016\n\006srcPid\030\003 \001(\t\022\016\n\006toCids\030\004 \003(\t\022\r" +
-      "\n\005limit\030\005 \001(\005\022\016\n\006offset\030\006 \001(\t\022\023\n\013blocked",
-      "Pids\030\010 \003(\t\022\023\n\013blockedCids\030\t \003(\t\022\023\n\013allow" +
-      "edPids\030\n \003(\t\0224\n\nfailedPids\030\013 \003(\0132 .com.a" +
-      "vos.avoscloud.ErrorCommand\022\t\n\001t\030\014 \001(\003\022\t\n" +
-      "\001n\030\r \001(\t\022\t\n\001s\030\016 \001(\t\"\345\010\n\016GenericCommand\022," +
-      "\n\003cmd\030\001 \001(\0162\037.com.avos.avoscloud.Command" +
-      "Type\022&\n\002op\030\002 \001(\0162\032.com.avos.avoscloud.Op" +
-      "Type\022\r\n\005appId\030\003 \001(\t\022\016\n\006peerId\030\004 \001(\t\022\t\n\001i" +
-      "\030\005 \001(\005\022\026\n\016installationId\030\006 \001(\t\022\020\n\010priori" +
-      "ty\030\007 \001(\005\022\017\n\007service\030\010 \001(\005\022\020\n\010serverTs\030\t " +
-      "\001(\003\0224\n\013dataMessage\030e \001(\0132\037.com.avos.avos",
-      "cloud.DataCommand\022:\n\016sessionMessage\030f \001(" +
-      "\0132\".com.avos.avoscloud.SessionCommand\0226\n" +
-      "\014errorMessage\030g \001(\0132 .com.avos.avoscloud" +
-      ".ErrorCommand\0228\n\rdirectMessage\030h \001(\0132!.c" +
-      "om.avos.avoscloud.DirectCommand\0222\n\nackMe" +
-      "ssage\030i \001(\0132\036.com.avos.avoscloud.AckComm" +
-      "and\0228\n\runreadMessage\030j \001(\0132!.com.avos.av" +
-      "oscloud.UnreadCommand\0224\n\013readMessage\030k \001" +
-      "(\0132\037.com.avos.avoscloud.ReadCommand\0222\n\nr" +
-      "cpMessage\030l \001(\0132\036.com.avos.avoscloud.Rcp",
-      "Command\0224\n\013logsMessage\030m \001(\0132\037.com.avos." +
-      "avoscloud.LogsCommand\0224\n\013convMessage\030n \001" +
-      "(\0132\037.com.avos.avoscloud.ConvCommand\0224\n\013r" +
-      "oomMessage\030o \001(\0132\037.com.avos.avoscloud.Ro" +
-      "omCommand\022<\n\017presenceMessage\030p \001(\0132#.com" +
-      ".avos.avoscloud.PresenceCommand\0228\n\rrepor" +
-      "tMessage\030q \001(\0132!.com.avos.avoscloud.Repo" +
-      "rtCommand\0226\n\014patchMessage\030r \001(\0132 .com.av" +
-      "os.avoscloud.PatchCommand\0228\n\rpubsubMessa" +
-      "ge\030s \001(\0132!.com.avos.avoscloud.PubsubComm",
-      "and\022>\n\020blacklistMessage\030t \001(\0132$.com.avos" +
-      ".avoscloud.BlacklistCommand*\377\001\n\013CommandT" +
-      "ype\022\013\n\007session\020\000\022\010\n\004conv\020\001\022\n\n\006direct\020\002\022\007" +
-      "\n\003ack\020\003\022\007\n\003rcp\020\004\022\n\n\006unread\020\005\022\010\n\004logs\020\006\022\t" +
-      "\n\005error\020\007\022\t\n\005login\020\010\022\010\n\004data\020\t\022\010\n\004room\020\n" +
-      "\022\010\n\004read\020\013\022\014\n\010presence\020\014\022\n\n\006report\020\r\022\010\n\004" +
-      "echo\020\016\022\014\n\010loggedin\020\017\022\n\n\006logout\020\020\022\r\n\tlogg" +
-      "edout\020\021\022\t\n\005patch\020\022\022\n\n\006pubsub\020\023\022\r\n\tblackl" +
-      "ist\020\024*\325\007\n\006OpType\022\010\n\004open\020\001\022\007\n\003add\020\002\022\n\n\006r" +
-      "emove\020\003\022\t\n\005close\020\004\022\n\n\006opened\020\005\022\n\n\006closed",
-      "\020\006\022\t\n\005query\020\007\022\020\n\014query_result\020\010\022\014\n\010confl" +
-      "ict\020\t\022\t\n\005added\020\n\022\013\n\007removed\020\013\022\013\n\007refresh" +
-      "\020\014\022\r\n\trefreshed\020\r\022\t\n\005start\020\036\022\013\n\007started\020" +
-      "\037\022\n\n\006joined\020 \022\022\n\016members_joined\020!\022\010\n\004lef" +
-      "t\020\'\022\020\n\014members_left\020(\022\013\n\007results\020*\022\t\n\005co" +
-      "unt\020+\022\n\n\006result\020,\022\n\n\006update\020-\022\013\n\007updated" +
-      "\020.\022\010\n\004mute\020/\022\n\n\006unmute\0200\022\n\n\006status\0201\022\013\n\007" +
-      "members\0202\022\014\n\010max_read\0203\022\r\n\tis_member\0204\022\026" +
-      "\n\022member_info_update\0205\022\027\n\023member_info_up" +
-      "dated\0206\022\027\n\023member_info_changed\0207\022\010\n\004join",
-      "\020P\022\n\n\006invite\020Q\022\t\n\005leave\020R\022\010\n\004kick\020S\022\n\n\006r" +
-      "eject\020T\022\013\n\007invited\020U\022\n\n\006kicked\020V\022\n\n\006uplo" +
-      "ad\020d\022\014\n\010uploaded\020e\022\r\n\tsubscribe\020x\022\016\n\nsub" +
-      "scribed\020y\022\017\n\013unsubscribe\020z\022\020\n\014unsubscrib" +
-      "ed\020{\022\021\n\ris_subscribed\020|\022\013\n\006modify\020\226\001\022\r\n\010" +
-      "modified\020\227\001\022\n\n\005block\020\252\001\022\014\n\007unblock\020\253\001\022\014\n" +
-      "\007blocked\020\254\001\022\016\n\tunblocked\020\255\001\022\024\n\017members_b" +
-      "locked\020\256\001\022\026\n\021members_unblocked\020\257\001\022\017\n\nadd" +
-      "_shutup\020\264\001\022\022\n\rremove_shutup\020\265\001\022\021\n\014query_" +
-      "shutup\020\266\001\022\021\n\014shutup_added\020\267\001\022\023\n\016shutup_r",
-      "emoved\020\270\001\022\022\n\rshutup_result\020\271\001\022\r\n\010shutupe" +
-      "d\020\272\001\022\017\n\nunshutuped\020\273\001\022\025\n\020members_shutupe" +
-      "d\020\274\001\022\027\n\022members_unshutuped\020\275\001*\035\n\nStatusT" +
-      "ype\022\006\n\002on\020\001\022\007\n\003off\020\002B\007\242\002\004AVIM"
+      "com.avos.avoscloud.ErrorCommand\022\014\n\004next\030" +
+      "( \001(\t\0226\n\007results\030d \001(\0132%.com.avos.avoscl" +
+      "oud.JsonObjectMessage\0224\n\005where\030e \001(\0132%.c",
+      "om.avos.avoscloud.JsonObjectMessage\0223\n\004a" +
+      "ttr\030g \001(\0132%.com.avos.avoscloud.JsonObjec" +
+      "tMessage\"x\n\013RoomCommand\022\016\n\006roomId\030\001 \001(\t\022" +
+      "\t\n\001s\030\002 \001(\t\022\t\n\001t\030\003 \001(\003\022\t\n\001n\030\004 \001(\t\022\021\n\ttran" +
+      "sient\030\005 \001(\010\022\023\n\013roomPeerIds\030\006 \003(\t\022\020\n\010byPe" +
+      "erId\030\007 \001(\t\"\326\002\n\013LogsCommand\022\013\n\003cid\030\001 \001(\t\022" +
+      "\t\n\001l\030\002 \001(\005\022\r\n\005limit\030\003 \001(\005\022\t\n\001t\030\004 \001(\003\022\n\n\002" +
+      "tt\030\005 \001(\003\022\014\n\004tmid\030\006 \001(\t\022\013\n\003mid\030\007 \001(\t\022\020\n\010c" +
+      "hecksum\030\010 \001(\t\022\016\n\006stored\030\t \001(\010\022F\n\tdirecti" +
+      "on\030\n \001(\0162..com.avos.avoscloud.LogsComman",
+      "d.QueryDirection:\003OLD\022\021\n\ttIncluded\030\013 \001(\010" +
+      "\022\022\n\nttIncluded\030\014 \001(\010\022\016\n\006lctype\030\r \001(\005\022)\n\004" +
+      "logs\030i \003(\0132\033.com.avos.avoscloud.LogItem\"" +
+      "\"\n\016QueryDirection\022\007\n\003OLD\020\001\022\007\n\003NEW\020\002\"L\n\nR" +
+      "cpCommand\022\n\n\002id\030\001 \001(\t\022\013\n\003cid\030\002 \001(\t\022\t\n\001t\030" +
+      "\003 \001(\003\022\014\n\004read\030\004 \001(\010\022\014\n\004from\030\005 \001(\t\"8\n\tRea" +
+      "dTuple\022\013\n\003cid\030\001 \002(\t\022\021\n\ttimestamp\030\002 \001(\003\022\013" +
+      "\n\003mid\030\003 \001(\t\"N\n\014MaxReadTuple\022\013\n\003pid\030\001 \001(\t" +
+      "\022\027\n\017maxAckTimestamp\030\002 \001(\003\022\030\n\020maxReadTime" +
+      "stamp\030\003 \001(\003\"V\n\013ReadCommand\022\013\n\003cid\030\001 \001(\t\022",
+      "\014\n\004cids\030\002 \003(\t\022,\n\005convs\030\003 \003(\0132\035.com.avos." +
+      "avoscloud.ReadTuple\"f\n\017PresenceCommand\022." +
+      "\n\006status\030\001 \001(\0162\036.com.avos.avoscloud.Stat" +
+      "usType\022\026\n\016sessionPeerIds\030\002 \003(\t\022\013\n\003cid\030\003 " +
+      "\001(\t\"?\n\rReportCommand\022\022\n\ninitiative\030\001 \001(\010" +
+      "\022\014\n\004type\030\002 \001(\t\022\014\n\004data\030\003 \001(\t\"\270\001\n\tPatchIt" +
+      "em\022\013\n\003cid\030\001 \001(\t\022\013\n\003mid\030\002 \001(\t\022\021\n\ttimestam" +
+      "p\030\003 \001(\003\022\016\n\006recall\030\004 \001(\010\022\014\n\004data\030\005 \001(\t\022\026\n" +
+      "\016patchTimestamp\030\006 \001(\003\022\014\n\004from\030\007 \001(\t\022\021\n\tb" +
+      "inaryMsg\030\010 \001(\014\022\022\n\nmentionAll\030\t \001(\010\022\023\n\013me",
+      "ntionPids\030\n \003(\t\"U\n\014PatchCommand\022.\n\007patch" +
+      "es\030\001 \003(\0132\035.com.avos.avoscloud.PatchItem\022" +
+      "\025\n\rlastPatchTime\030\002 \001(\003\"\246\001\n\rPubsubCommand" +
+      "\022\013\n\003cid\030\001 \001(\t\022\014\n\004cids\030\002 \003(\t\022\r\n\005topic\030\003 \001" +
+      "(\t\022\020\n\010subtopic\030\004 \001(\t\022\016\n\006topics\030\005 \003(\t\022\021\n\t" +
+      "subtopics\030\006 \003(\t\0226\n\007results\030\007 \001(\0132%.com.a" +
+      "vos.avoscloud.JsonObjectMessage\"\205\002\n\020Blac" +
+      "klistCommand\022\016\n\006srcCid\030\001 \001(\t\022\016\n\006toPids\030\002" +
+      " \003(\t\022\016\n\006srcPid\030\003 \001(\t\022\016\n\006toCids\030\004 \003(\t\022\r\n\005" +
+      "limit\030\005 \001(\005\022\014\n\004next\030\006 \001(\t\022\023\n\013blockedPids",
+      "\030\010 \003(\t\022\023\n\013blockedCids\030\t \003(\t\022\023\n\013allowedPi" +
+      "ds\030\n \003(\t\0224\n\nfailedPids\030\013 \003(\0132 .com.avos." +
+      "avoscloud.ErrorCommand\022\t\n\001t\030\014 \001(\003\022\t\n\001n\030\r" +
+      " \001(\t\022\t\n\001s\030\016 \001(\t\"\345\010\n\016GenericCommand\022,\n\003cm" +
+      "d\030\001 \001(\0162\037.com.avos.avoscloud.CommandType" +
+      "\022&\n\002op\030\002 \001(\0162\032.com.avos.avoscloud.OpType" +
+      "\022\r\n\005appId\030\003 \001(\t\022\016\n\006peerId\030\004 \001(\t\022\t\n\001i\030\005 \001" +
+      "(\005\022\026\n\016installationId\030\006 \001(\t\022\020\n\010priority\030\007" +
+      " \001(\005\022\017\n\007service\030\010 \001(\005\022\020\n\010serverTs\030\t \001(\003\022" +
+      "4\n\013dataMessage\030e \001(\0132\037.com.avos.avosclou",
+      "d.DataCommand\022:\n\016sessionMessage\030f \001(\0132\"." +
+      "com.avos.avoscloud.SessionCommand\0226\n\014err" +
+      "orMessage\030g \001(\0132 .com.avos.avoscloud.Err" +
+      "orCommand\0228\n\rdirectMessage\030h \001(\0132!.com.a" +
+      "vos.avoscloud.DirectCommand\0222\n\nackMessag" +
+      "e\030i \001(\0132\036.com.avos.avoscloud.AckCommand\022" +
+      "8\n\runreadMessage\030j \001(\0132!.com.avos.avoscl" +
+      "oud.UnreadCommand\0224\n\013readMessage\030k \001(\0132\037" +
+      ".com.avos.avoscloud.ReadCommand\0222\n\nrcpMe" +
+      "ssage\030l \001(\0132\036.com.avos.avoscloud.RcpComm",
+      "and\0224\n\013logsMessage\030m \001(\0132\037.com.avos.avos" +
+      "cloud.LogsCommand\0224\n\013convMessage\030n \001(\0132\037" +
+      ".com.avos.avoscloud.ConvCommand\0224\n\013roomM" +
+      "essage\030o \001(\0132\037.com.avos.avoscloud.RoomCo" +
+      "mmand\022<\n\017presenceMessage\030p \001(\0132#.com.avo" +
+      "s.avoscloud.PresenceCommand\0228\n\rreportMes" +
+      "sage\030q \001(\0132!.com.avos.avoscloud.ReportCo" +
+      "mmand\0226\n\014patchMessage\030r \001(\0132 .com.avos.a" +
+      "voscloud.PatchCommand\0228\n\rpubsubMessage\030s" +
+      " \001(\0132!.com.avos.avoscloud.PubsubCommand\022",
+      ">\n\020blacklistMessage\030t \001(\0132$.com.avos.avo" +
+      "scloud.BlacklistCommand*\377\001\n\013CommandType\022" +
+      "\013\n\007session\020\000\022\010\n\004conv\020\001\022\n\n\006direct\020\002\022\007\n\003ac" +
+      "k\020\003\022\007\n\003rcp\020\004\022\n\n\006unread\020\005\022\010\n\004logs\020\006\022\t\n\005er" +
+      "ror\020\007\022\t\n\005login\020\010\022\010\n\004data\020\t\022\010\n\004room\020\n\022\010\n\004" +
+      "read\020\013\022\014\n\010presence\020\014\022\n\n\006report\020\r\022\010\n\004echo" +
+      "\020\016\022\014\n\010loggedin\020\017\022\n\n\006logout\020\020\022\r\n\tloggedou" +
+      "t\020\021\022\t\n\005patch\020\022\022\n\n\006pubsub\020\023\022\r\n\tblacklist\020" +
+      "\024*\325\007\n\006OpType\022\010\n\004open\020\001\022\007\n\003add\020\002\022\n\n\006remov" +
+      "e\020\003\022\t\n\005close\020\004\022\n\n\006opened\020\005\022\n\n\006closed\020\006\022\t",
+      "\n\005query\020\007\022\020\n\014query_result\020\010\022\014\n\010conflict\020" +
+      "\t\022\t\n\005added\020\n\022\013\n\007removed\020\013\022\013\n\007refresh\020\014\022\r" +
+      "\n\trefreshed\020\r\022\t\n\005start\020\036\022\013\n\007started\020\037\022\n\n" +
+      "\006joined\020 \022\022\n\016members_joined\020!\022\010\n\004left\020\'\022" +
+      "\020\n\014members_left\020(\022\013\n\007results\020*\022\t\n\005count\020" +
+      "+\022\n\n\006result\020,\022\n\n\006update\020-\022\013\n\007updated\020.\022\010" +
+      "\n\004mute\020/\022\n\n\006unmute\0200\022\n\n\006status\0201\022\013\n\007memb" +
+      "ers\0202\022\014\n\010max_read\0203\022\r\n\tis_member\0204\022\026\n\022me" +
+      "mber_info_update\0205\022\027\n\023member_info_update" +
+      "d\0206\022\027\n\023member_info_changed\0207\022\010\n\004join\020P\022\n",
+      "\n\006invite\020Q\022\t\n\005leave\020R\022\010\n\004kick\020S\022\n\n\006rejec" +
+      "t\020T\022\013\n\007invited\020U\022\n\n\006kicked\020V\022\n\n\006upload\020d" +
+      "\022\014\n\010uploaded\020e\022\r\n\tsubscribe\020x\022\016\n\nsubscri" +
+      "bed\020y\022\017\n\013unsubscribe\020z\022\020\n\014unsubscribed\020{" +
+      "\022\021\n\ris_subscribed\020|\022\013\n\006modify\020\226\001\022\r\n\010modi" +
+      "fied\020\227\001\022\n\n\005block\020\252\001\022\014\n\007unblock\020\253\001\022\014\n\007blo" +
+      "cked\020\254\001\022\016\n\tunblocked\020\255\001\022\024\n\017members_block" +
+      "ed\020\256\001\022\026\n\021members_unblocked\020\257\001\022\017\n\nadd_shu" +
+      "tup\020\264\001\022\022\n\rremove_shutup\020\265\001\022\021\n\014query_shut" +
+      "up\020\266\001\022\021\n\014shutup_added\020\267\001\022\023\n\016shutup_remov",
+      "ed\020\270\001\022\022\n\rshutup_result\020\271\001\022\r\n\010shutuped\020\272\001" +
+      "\022\017\n\nunshutuped\020\273\001\022\025\n\020members_shutuped\020\274\001" +
+      "\022\027\n\022members_unshutuped\020\275\001*\035\n\nStatusType\022" +
+      "\006\n\002on\020\001\022\007\n\003off\020\002B\007\242\002\004AVIM"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -43372,7 +43372,7 @@ public final class Messages {
     internal_static_com_avos_avoscloud_ConvCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_avos_avoscloud_ConvCommand_descriptor,
-        new java.lang.String[] { "M", "Transient", "Unique", "Cid", "Cdate", "InitBy", "Sort", "Limit", "Skip", "Flag", "Count", "Udate", "T", "N", "S", "StatusSub", "StatusPub", "StatusTTL", "UniqueId", "TargetClientId", "MaxReadTimestamp", "MaxAckTimestamp", "QueryAllMembers", "MaxReadTuples", "Cids", "Info", "TempConv", "TempConvTTL", "TempConvIds", "AllowedPids", "FailedPids", "Offset", "Results", "Where", "Attr", });
+        new java.lang.String[] { "M", "Transient", "Unique", "Cid", "Cdate", "InitBy", "Sort", "Limit", "Skip", "Flag", "Count", "Udate", "T", "N", "S", "StatusSub", "StatusPub", "StatusTTL", "UniqueId", "TargetClientId", "MaxReadTimestamp", "MaxAckTimestamp", "QueryAllMembers", "MaxReadTuples", "Cids", "Info", "TempConv", "TempConvTTL", "TempConvIds", "AllowedPids", "FailedPids", "Next", "Results", "Where", "Attr", });
     internal_static_com_avos_avoscloud_RoomCommand_descriptor =
       getDescriptor().getMessageTypes().get(11);
     internal_static_com_avos_avoscloud_RoomCommand_fieldAccessorTable = new
@@ -43444,7 +43444,7 @@ public final class Messages {
     internal_static_com_avos_avoscloud_BlacklistCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_avos_avoscloud_BlacklistCommand_descriptor,
-        new java.lang.String[] { "SrcCid", "ToPids", "SrcPid", "ToCids", "Limit", "Offset", "BlockedPids", "BlockedCids", "AllowedPids", "FailedPids", "T", "N", "S", });
+        new java.lang.String[] { "SrcCid", "ToPids", "SrcPid", "ToCids", "Limit", "Next", "BlockedPids", "BlockedCids", "AllowedPids", "FailedPids", "T", "N", "S", });
     internal_static_com_avos_avoscloud_GenericCommand_descriptor =
       getDescriptor().getMessageTypes().get(23);
     internal_static_com_avos_avoscloud_GenericCommand_fieldAccessorTable = new

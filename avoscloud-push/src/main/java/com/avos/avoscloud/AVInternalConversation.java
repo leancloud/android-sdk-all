@@ -27,7 +27,7 @@ import com.avos.avoscloud.im.v2.Conversation;
 import com.avos.avoscloud.im.v2.Conversation.AVIMOperation;
 import com.avos.avoscloud.im.v2.callback.AVIMOperationFailure;
 import com.avos.avoscloud.im.v2.conversation.AVIMConversationMemberInfo;
-import com.avos.avoscloud.im.v2.conversation.MemberRole;
+import com.avos.avoscloud.im.v2.conversation.ConversationMemberRole;
 import com.avos.avospush.session.BlacklistCommandPacket;
 import com.avos.avospush.session.CommandPacket;
 import com.avos.avospush.session.ConversationControlPacket;
@@ -706,7 +706,7 @@ class AVInternalConversation {
         AVIMOperationFailure failure = new AVIMOperationFailure();
         failure.setCode(cmd.getCode());
         failure.setMemberIds(cmd.getPidsList());
-        failure.setReason(cmd.getDetail());
+        failure.setReason(cmd.getReason());
         failedList.add(failure);
       }
     }
@@ -816,7 +816,7 @@ class AVInternalConversation {
       String roleStr = member.getRole();
       String peerId = member.getPid();
       AVIMConversationMemberInfo memberInfo = new AVIMConversationMemberInfo(objectId, this.conversationId,
-          peerId, MemberRole.fromString(roleStr));
+          peerId, ConversationMemberRole.fromString(roleStr));
       handler.processEvent(Conversation.STATUS_ON_MEMBER_INFO_CHANGED, operator, memberInfo, conversation);
     }
   }
@@ -902,13 +902,18 @@ class AVInternalConversation {
   void onMemberShutupedNotify(boolean isMuted, String operator, Messages.ConvCommand convCommand) {
     AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
     List<String> members = convCommand.getMList();
-    if (handler != null) {
-      AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
-      AVIMConversation conversation = parseConversation(client, convCommand);
-      if (isMuted) {
-        handler.processEvent(Conversation.STATUS_ON_MEMBER_MUTED, operator, members, conversation);
+    if (handler != null && null != members) {
+      members.remove(session.getSelfPeerId());
+      if (members.size() < 1) {
+        // ignore self member_shutuped notify, bcz server sends both shutuped and member_shutuped notification.
       } else {
-        handler.processEvent(Conversation.STATUS_ON_MEMBER_UNMUTED, operator, members, conversation);
+        AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
+        AVIMConversation conversation = parseConversation(client, convCommand);
+        if (isMuted) {
+          handler.processEvent(Conversation.STATUS_ON_MEMBER_MUTED, operator, members, conversation);
+        } else {
+          handler.processEvent(Conversation.STATUS_ON_MEMBER_UNMUTED, operator, members, conversation);
+        }
       }
     }
   }
@@ -931,7 +936,7 @@ class AVInternalConversation {
   void onMemberBlockedNotify(boolean isBlocked, String operator, Messages.ConvCommand convCommand) {
     AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
     List<String> members = convCommand.getMList();
-    if (handler != null) {
+    if (handler != null && null != members) {
       AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
       AVIMConversation conversation = parseConversation(client, convCommand);
       if (isBlocked) {
