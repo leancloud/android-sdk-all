@@ -738,12 +738,14 @@ public class AVIMConversation {
 
   /**
    * 获取当前对话的所有角色信息
+   * @param offset    查询结果的起始点
+   * @param limit     查询结果集上限
    * @param callback  结果回调函数
    */
-  public void getAllMemberInfo(int skip, int limit, final AVIMConversationMemberQueryCallback callback) {
+  public void getAllMemberInfo(int offset, int limit, final AVIMConversationMemberQueryCallback callback) {
     QueryConditions conditions = new QueryConditions();
     conditions.addWhereItem("cid", QueryOperation.EQUAL_OP, this.conversationId);
-    conditions.setSkip(skip);
+    conditions.setSkip(offset);
     conditions.setLimit(limit);
     queryMemberInfo(conditions, callback);
   }

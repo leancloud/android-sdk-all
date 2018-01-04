@@ -169,11 +169,11 @@ public abstract class AVIMConversationEventHandler extends AVIMEventHandler {
   /**
    * 对话成员信息变更通知。
    * 常见的有：某成员权限发生变化（如，被设为管理员等）。
-   * @param client
-   * @param conversation
-   * @param memberInfo
-   * @param updatedProperties
-   * @param operator
+   * @param client             通知关联的 AVIMClient
+   * @param conversation       通知关联的对话
+   * @param memberInfo         变更后的成员信息
+   * @param updatedProperties  发生变更的属性列表（当前固定为 "role"）
+   * @param operator           操作者 id
    */
   public void onMemberInfoUpdated(AVIMClient client, AVIMConversation conversation,
                                   AVIMConversationMemberInfo memberInfo, List<String> updatedProperties, String operator) {}
