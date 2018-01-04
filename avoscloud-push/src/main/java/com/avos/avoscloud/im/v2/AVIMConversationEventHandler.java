@@ -7,6 +7,7 @@ import com.avos.avoscloud.AVIMEventHandler;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationCallback;
 import com.avos.avoscloud.im.v2.conversation.AVIMConversationMemberInfo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -167,14 +168,15 @@ public abstract class AVIMConversationEventHandler extends AVIMEventHandler {
 
   /**
    * 对话成员信息变更通知。
-   * 常见的有：某成员权限发生变化（如，被设为管理员 or 禁言 等）。
+   * 常见的有：某成员权限发生变化（如，被设为管理员等）。
    * @param client
    * @param conversation
    * @param memberInfo
+   * @param updatedProperties
+   * @param operator
    */
-  public void onConversationMemberInfoChanged(AVIMClient client, AVIMConversation conversation, AVIMConversationMemberInfo memberInfo) {
-    // do nothing.
-  }
+  public void onMemberInfoUpdated(AVIMClient client, AVIMConversation conversation,
+                                  AVIMConversationMemberInfo memberInfo, List<String> updatedProperties, String operator) {}
 
   @Override
   protected final void processEvent0(final int operation, final Object operator, final Object operand,
@@ -233,7 +235,10 @@ public abstract class AVIMConversationEventHandler extends AVIMEventHandler {
         onMessageRecalled(conversation.client, conversation, recalledMessage);
         break;
       case Conversation.STATUS_ON_MEMBER_INFO_CHANGED:
-        onConversationMemberInfoChanged(conversation.client, conversation, (AVIMConversationMemberInfo) operand);
+        List<String> attr = new ArrayList<>();
+        attr.add(AVIMConversationMemberInfo.ATTR_ROLE);
+        onMemberInfoUpdated(conversation.client, conversation, (AVIMConversationMemberInfo) operand,
+            attr, (String) operator);
         break;
       case Conversation.STATUS_ON_MUTED:
         onMuted(conversation.client, conversation, (String) operator);

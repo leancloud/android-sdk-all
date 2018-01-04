@@ -7,19 +7,12 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.avos.avoscloud.AVCallback;
-import com.avos.avoscloud.AVErrorUtils;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVOSCloud;
 import com.avos.avoscloud.AVObject;
-import com.avos.avoscloud.AVPowerfulUtils;
-import com.avos.avoscloud.AVQuery;
-import com.avos.avoscloud.AVRequestParams;
-import com.avos.avoscloud.AVResponse;
 import com.avos.avoscloud.AVUtils;
-import com.avos.avoscloud.GenericObjectCallback;
 import com.avos.avoscloud.IntentUtil;
 import com.avos.avoscloud.LogUtil;
-import com.avos.avoscloud.PaasClient;
 import com.avos.avoscloud.PushService;
 import com.avos.avoscloud.PushServiceParcel;
 import com.avos.avoscloud.QueryOperation;
@@ -37,7 +30,7 @@ import com.avos.avoscloud.im.v2.callback.AVIMMessageUpdatedCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMMessagesQueryCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMSingleMessageQueryCallback;
 import com.avos.avoscloud.im.v2.conversation.AVIMConversationMemberInfo;
-import com.avos.avoscloud.im.v2.conversation.MemberRole;
+import com.avos.avoscloud.im.v2.conversation.ConversationMemberRole;
 import com.avos.avoscloud.im.v2.messages.AVIMFileMessage;
 import com.avos.avoscloud.im.v2.messages.AVIMFileMessageAccessor;
 import com.avos.avoscloud.im.v2.messages.AVIMRecalledMessage;
@@ -71,7 +64,6 @@ public class AVIMConversation {
   public static final int RECEIPT_MESSAGE_FLAG = 0x100;
 
   private static final String ATTR_PERFIX = Conversation.ATTRIBUTE + ".";
-
 
   String conversationId;
   Set<String> members;
@@ -748,9 +740,11 @@ public class AVIMConversation {
    * 获取当前对话的所有角色信息
    * @param callback  结果回调函数
    */
-  public void getAllMemberInfo(final AVIMConversationMemberQueryCallback callback) {
+  public void getAllMemberInfo(int skip, int limit, final AVIMConversationMemberQueryCallback callback) {
     QueryConditions conditions = new QueryConditions();
     conditions.addWhereItem("conversationId", QueryOperation.EQUAL_OP, this.conversationId);
+    conditions.setSkip(skip);
+    conditions.setLimit(limit);
     queryMemberInfo(conditions, callback);
   }
 
@@ -772,7 +766,7 @@ public class AVIMConversation {
    * @param role      角色
    * @param callback  结果回调函数
    */
-  public void updateMemberRole(final String memberId, final MemberRole role, final AVIMConversationCallback callback) {
+  public void updateMemberRole(final String memberId, final ConversationMemberRole role, final AVIMConversationCallback callback) {
     AVIMConversationMemberInfo info = new AVIMConversationMemberInfo(this.conversationId, memberId, role);
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER_DETAILS, info.getUpdateAttrs());
@@ -832,7 +826,9 @@ public class AVIMConversation {
   }
 
   /**
-   * 查询所有被禁言的成员列表
+   * 查询被禁言的成员列表
+   * @param offset    查询结果的起始点
+   * @param limit     查询结果集上限
    * @param callback  结果回调函数
    */
   public void queryMutedMembers(int offset, int limit, final AVIMConversationSimpleResultCallback callback) {
@@ -887,6 +883,8 @@ public class AVIMConversation {
 
   /**
    * 查询黑名单的成员列表
+   * @param offset    查询结果的起始点
+   * @param limit     查询结果集上限
    * @param callback  结果回调函数
    */
   public void queryBlockedMembers(int offset, int limit, final AVIMConversationSimpleResultCallback callback) {
