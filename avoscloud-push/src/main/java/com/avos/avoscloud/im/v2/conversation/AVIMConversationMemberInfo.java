@@ -56,6 +56,10 @@ public class AVIMConversationMemberInfo {
     this.role = role;
   }
 
+  public String toString() {
+    return "convId:" + this.conversationId + ", memberId:" + this.memberId + ", role:" + this.role.toString();
+  }
+
   /**
    * 获取对话 id
    * @return

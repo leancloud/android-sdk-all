@@ -903,16 +903,18 @@ class AVInternalConversation {
     AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
     List<String> members = convCommand.getMList();
     if (handler != null && null != members) {
-      members.remove(session.getSelfPeerId());
-      if (members.size() < 1) {
+      List<String> copyMembers = new ArrayList<>(members);
+      copyMembers.remove(session.getSelfPeerId());
+      if (copyMembers.size() < 1) {
         // ignore self member_shutuped notify, bcz server sends both shutuped and member_shutuped notification.
+        LogUtil.log.d("Notification --- ignore shutuped/unshutuped notify bcz duplicated.");
       } else {
         AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
         AVIMConversation conversation = parseConversation(client, convCommand);
         if (isMuted) {
-          handler.processEvent(Conversation.STATUS_ON_MEMBER_MUTED, operator, members, conversation);
+          handler.processEvent(Conversation.STATUS_ON_MEMBER_MUTED, operator, copyMembers, conversation);
         } else {
-          handler.processEvent(Conversation.STATUS_ON_MEMBER_UNMUTED, operator, members, conversation);
+          handler.processEvent(Conversation.STATUS_ON_MEMBER_UNMUTED, operator, copyMembers, conversation);
         }
       }
     }
