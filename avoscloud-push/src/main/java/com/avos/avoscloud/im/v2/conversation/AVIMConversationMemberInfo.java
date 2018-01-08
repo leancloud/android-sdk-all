@@ -56,6 +56,10 @@ public class AVIMConversationMemberInfo {
     this.role = role;
   }
 
+  public String toString() {
+    return "convId:" + this.conversationId + ", memberId:" + this.memberId + ", role:" + this.role.toString();
+  }
+
   /**
    * 获取对话 id
    * @return
@@ -179,7 +183,7 @@ public class AVIMConversationMemberInfo {
     String memberId = (String)data.get(ATTR_MEMBERID);
     String roleStr = (String)data.get(ATTR_ROLE);
     String objectId = (String)data.get(ATTR_OJBECTID);
-    ConversationMemberRole role = ConversationMemberRole.valueOf(roleStr);
+    ConversationMemberRole role = ConversationMemberRole.fromString(roleStr);
     return new AVIMConversationMemberInfo(objectId, conversationId, memberId, role);
   }
 }

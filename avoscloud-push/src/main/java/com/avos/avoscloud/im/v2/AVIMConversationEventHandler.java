@@ -4,8 +4,10 @@ import android.annotation.TargetApi;
 import android.util.Pair;
 
 import com.avos.avoscloud.AVIMEventHandler;
+import com.avos.avoscloud.LogUtil;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationCallback;
 import com.avos.avoscloud.im.v2.conversation.AVIMConversationMemberInfo;
+import com.avos.avoscloud.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +73,9 @@ public abstract class AVIMConversationEventHandler extends AVIMEventHandler {
    * @param conversation  对话
    * @param operator      操作者 id
    */
-  public void onMuted(AVIMClient client, AVIMConversation conversation, String operator) {}
+  public void onMuted(AVIMClient client, AVIMConversation conversation, String operator) {
+    LogUtil.log.d("Notification --- " + " you are muted by " + operator );
+  }
 
   /**
    * 当前用户被解除禁言通知处理函数
@@ -79,7 +83,9 @@ public abstract class AVIMConversationEventHandler extends AVIMEventHandler {
    * @param conversation  对话
    * @param operator      操作者 id
    */
-  public void onUnmuted(AVIMClient client, AVIMConversation conversation, String operator) {}
+  public void onUnmuted(AVIMClient client, AVIMConversation conversation, String operator) {
+    LogUtil.log.d("Notification --- " + " you are unmuted by " + operator );
+  }
 
   /**
    * 聊天室成员被禁言通知处理函数
@@ -88,7 +94,9 @@ public abstract class AVIMConversationEventHandler extends AVIMEventHandler {
    * @param members       成员列表
    * @param operator      操作者 id
    */
-  public void onMemberMuted(AVIMClient client, AVIMConversation conversation, List<String> members, String operator){}
+  public void onMemberMuted(AVIMClient client, AVIMConversation conversation, List<String> members, String operator){
+    LogUtil.log.d("Notification --- " + operator + " muted members: " + StringUtils.join(", ", members));
+  }
 
   /**
    * 聊天室成员被解除禁言通知处理函数
@@ -97,7 +105,9 @@ public abstract class AVIMConversationEventHandler extends AVIMEventHandler {
    * @param members       成员列表
    * @param operator      操作者 id
    */
-  public void onMemberUnmuted(AVIMClient client, AVIMConversation conversation, List<String> members, String operator){}
+  public void onMemberUnmuted(AVIMClient client, AVIMConversation conversation, List<String> members, String operator){
+    LogUtil.log.d("Notification --- " + operator + " unmuted members: " + StringUtils.join(", ", members));
+  }
 
   /**
    * 当前用户被加入黑名单通知处理函数
@@ -105,7 +115,9 @@ public abstract class AVIMConversationEventHandler extends AVIMEventHandler {
    * @param conversation  对话
    * @param operator      操作者 id
    */
-  public void onBlocked(AVIMClient client, AVIMConversation conversation, String operator) {}
+  public void onBlocked(AVIMClient client, AVIMConversation conversation, String operator) {
+    LogUtil.log.d("Notification --- " + " you are blocked by " + operator );
+  }
 
   /**
    * 当前用户被移出黑名单通知处理函数
@@ -113,7 +125,9 @@ public abstract class AVIMConversationEventHandler extends AVIMEventHandler {
    * @param conversation  对话
    * @param operator      操作者 id
    */
-  public void onUnblocked(AVIMClient client, AVIMConversation conversation, String operator) {}
+  public void onUnblocked(AVIMClient client, AVIMConversation conversation, String operator) {
+    LogUtil.log.d("Notification --- " + " you are unblocked by " + operator );
+  }
 
   /**
    * 聊天室成员被加入黑名单通知处理函数
@@ -122,7 +136,9 @@ public abstract class AVIMConversationEventHandler extends AVIMEventHandler {
    * @param members       成员列表
    * @param operator      操作者 id
    */
-  public void onMemberBlocked(AVIMClient client, AVIMConversation conversation, List<String> members, String operator){}
+  public void onMemberBlocked(AVIMClient client, AVIMConversation conversation, List<String> members, String operator){
+    LogUtil.log.d("Notification --- " + operator + " blocked members: " + StringUtils.join(", ", members));
+  }
 
   /**
    * 聊天室成员被移出黑名单通知处理函数
@@ -131,7 +147,9 @@ public abstract class AVIMConversationEventHandler extends AVIMEventHandler {
    * @param members       成员列表
    * @param operator      操作者 id
    */
-  public void onMemberUnblocked(AVIMClient client, AVIMConversation conversation, List<String> members, String operator){}
+  public void onMemberUnblocked(AVIMClient client, AVIMConversation conversation, List<String> members, String operator){
+    LogUtil.log.d("Notification --- " + operator + " unblocked members: " + StringUtils.join(", ", members));
+  }
 
   /**
    * 实现本地方法来处理未读消息数量的通知
@@ -176,7 +194,9 @@ public abstract class AVIMConversationEventHandler extends AVIMEventHandler {
    * @param operator           操作者 id
    */
   public void onMemberInfoUpdated(AVIMClient client, AVIMConversation conversation,
-                                  AVIMConversationMemberInfo memberInfo, List<String> updatedProperties, String operator) {}
+                                  AVIMConversationMemberInfo memberInfo, List<String> updatedProperties, String operator) {
+    LogUtil.log.d("Notification --- " + operator + " updated memberInfo: " + memberInfo.toString());
+  }
 
   @Override
   protected final void processEvent0(final int operation, final Object operator, final Object operand,

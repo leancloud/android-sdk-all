@@ -13,6 +13,7 @@ import android.webkit.MimeTypeMap;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.avos.avoscloud.utils.StringUtils;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -122,11 +123,11 @@ public class AVUtils {
   }
 
   public static boolean isBlankString(String str) {
-    return str == null || str.trim().equals("");
+    return StringUtils.isBlankString(str);
   }
 
   public static boolean isBlankContent(String content) {
-    return isBlankString(content) || content.trim().equals("{}");
+    return StringUtils.isBlankJsonContent(content);
   }
 
   public static boolean contains(Map<String, Object> map, String key) {
@@ -189,14 +190,7 @@ public class AVUtils {
       new ThreadLocal<SimpleDateFormat>();
 
   public static boolean isDigitString(String s) {
-    if (s == null) return false;
-    for (int i = 0; i < s.length(); i++) {
-      char c = s.charAt(i);
-      if (!Character.isDigit(c)) {
-        return false;
-      }
-    }
-    return true;
+    return StringUtils.isDigitString(s);
   }
 
   public static Date dateFromString(String content) {
@@ -764,26 +758,13 @@ public class AVUtils {
   // String Utils
   // ================================================================================
   public static String md5(String string) {
-    byte[] hash = null;
-    try {
-      hash = string.getBytes("UTF-8");
-    } catch (UnsupportedEncodingException e) {
-      throw new RuntimeException("Huh,UTF-8 should be supported?", e);
-    }
-    return computeMD5(hash);
+    return StringUtils.md5(string);
   }
 
   static Random random = new Random(System.currentTimeMillis());
 
   public static String getRandomString(int length) {
-    String letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    StringBuilder randomString = new StringBuilder(length);
-
-    for (int i = 0; i < length; i++) {
-      randomString.append(letters.charAt(random.nextInt(letters.length())));
-    }
-
-    return randomString.toString();
+    return StringUtils.getRandomString(length);
   }
 
   static AtomicInteger acu = new AtomicInteger(-65536);
@@ -836,26 +817,11 @@ public class AVUtils {
   }
 
   public static String joinCollection(Collection<String> collection, String separator) {
-    StringBuilder builder = new StringBuilder();
-    boolean wasFirst = true;
-    for (String value : collection) {
-      if (wasFirst) {
-        wasFirst = false;
-        builder.append(value);
-      } else {
-        builder.append(separator).append(value);
-      }
-    }
-    return builder.toString();
+    return StringUtils.join(separator, collection);
   }
 
   public static String stringFromBytes(byte[] bytes) {
-    try {
-      return new String(bytes, "UTF-8");
-    } catch (Exception e) {
-      // e.printStackTrace();
-    }
-    return null;
+    return StringUtils.stringFromBytes(bytes);
   }
 
   // ==================
@@ -944,31 +910,11 @@ public class AVUtils {
   }
 
   public static String hexEncodeBytes(byte[] md5bytes) {
-    if (null == md5bytes) {
-      return "";
-    }
-    StringBuffer hexString = new StringBuffer();
-    for (int i = 0; i < md5bytes.length; i++) {
-      String hex = Integer.toHexString(0xff & md5bytes[i]);
-      if (hex.length() == 1) hexString.append('0');
-      hexString.append(hex);
-    }
-    return hexString.toString();
+    return StringUtils.hexEncodeBytes(md5bytes);
   }
 
   public static String computeMD5(byte[] input) {
-    try {
-      if (null == input) {
-        return null;
-      }
-      MessageDigest md = MessageDigest.getInstance("MD5");
-      md.update(input, 0, input.length);
-      byte[] md5bytes = md.digest();
-
-      return hexEncodeBytes(md5bytes);
-    } catch (NoSuchAlgorithmException e) {
-      throw new RuntimeException(e);
-    }
+    return StringUtils.computeMD5(input);
   }
 
   static String getJSONString(com.alibaba.fastjson.JSONObject object, final String key,
