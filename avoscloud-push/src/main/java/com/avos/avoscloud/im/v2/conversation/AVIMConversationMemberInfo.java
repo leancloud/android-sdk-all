@@ -179,7 +179,7 @@ public class AVIMConversationMemberInfo {
     String memberId = (String)data.get(ATTR_MEMBERID);
     String roleStr = (String)data.get(ATTR_ROLE);
     String objectId = (String)data.get(ATTR_OJBECTID);
-    ConversationMemberRole role = ConversationMemberRole.valueOf(roleStr);
+    ConversationMemberRole role = ConversationMemberRole.fromString(roleStr);
     return new AVIMConversationMemberInfo(objectId, conversationId, memberId, role);
   }
 }
