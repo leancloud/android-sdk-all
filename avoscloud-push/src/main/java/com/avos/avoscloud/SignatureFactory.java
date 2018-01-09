@@ -54,13 +54,15 @@ public interface SignatureFactory {
    * @param action          操作类型的字符串，有如下集中类型：
    *                        conversation-block-clients    在对话中拉黑部分成员，此时 conversationId 和 memberIds 是必须的。
    *                        conversation-unblock-clients  在对话中解禁部分成员，此时 conversationId 和 memberIds 是必须的。
-   *                        。
    * @return
    * @throws SignatureException
    */
   public Signature createBlacklistSignature(String clientId, String conversationId, List<String> memberIds,
                                             String action) throws SignatureException;
 
+  /**
+   * 签名异常类
+   */
   public static class SignatureException extends AVException {
 
     public SignatureException(int theCode, String theMessage) {
