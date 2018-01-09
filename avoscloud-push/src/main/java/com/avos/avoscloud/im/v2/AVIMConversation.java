@@ -1698,6 +1698,7 @@ public class AVIMConversation {
               }
 
               if (operation.getCode() == AVIMOperation.CONVERSATION_QUERY.getCode()) {
+                // for fetchInfoInBackground() method.
                 if (null != error) {
                   callback.internalDone(null, AVIMException.wrapperAVException(error));
                 } else {
@@ -1723,8 +1724,10 @@ public class AVIMConversation {
         String result = (String)serializable;
         JSONArray jsonArray = JSON.parseArray(String.valueOf(result));
         if (null != jsonArray && !jsonArray.isEmpty()) {
-          updateConversation(this, jsonArray.getJSONObject(0));
-          client.conversationCache.put(conversationId, this);
+          JSONObject jsonObject = jsonArray.getJSONObject(0);
+          updateConversation(this, jsonObject);
+          client.mergeConversationCache(this, true, null);
+//          client.conversationCache.put(conversationId, this);
           storage.insertConversations(Arrays.asList(this));
         }
       } catch (Exception e) {
@@ -1775,7 +1778,7 @@ public class AVIMConversation {
     return updateConversation(originConv, jsonObj);
   }
 
-  private static AVIMConversation updateConversation(AVIMConversation conversation, JSONObject jsonObj) {
+  static AVIMConversation updateConversation(AVIMConversation conversation, JSONObject jsonObj) {
     if (null == jsonObj || null == conversation) {
       return conversation;
     }

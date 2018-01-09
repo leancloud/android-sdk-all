@@ -15,6 +15,7 @@ import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.avos.avoscloud.AVErrorUtils;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVIMClientParcel;
@@ -58,7 +59,7 @@ public class AVIMClient {
   private String userSessionToken;
   static ConcurrentHashMap<String, AVIMClient> clients =
       new ConcurrentHashMap<String, AVIMClient>();
-  ConcurrentHashMap<String, AVIMConversation> conversationCache =
+  private ConcurrentHashMap<String, AVIMConversation> conversationCache =
       new ConcurrentHashMap<String, AVIMConversation>();
   volatile boolean isConversationSync = false;
 
@@ -947,6 +948,27 @@ public class AVIMClient {
 
   protected void removeConversationCache(AVIMConversation conversation) {
     conversationCache.remove(conversation.getConversationId());
+  }
+
+  AVIMConversation mergeConversationCache(AVIMConversation allNewConversation, boolean forceReplace, JSONObject deltaObject) {
+    if (null == allNewConversation || StringUtils.isBlankString(allNewConversation.getConversationId())) {
+      return null;
+    }
+    String convId = allNewConversation.getConversationId();
+    if (forceReplace) {
+      this.conversationCache.put(convId, allNewConversation);
+      return allNewConversation;
+    } else {
+      AVIMConversation origin = this.conversationCache.get(convId);
+      if (null == origin) {
+        this.conversationCache.put(convId, allNewConversation);
+        origin = allNewConversation;
+      } else {
+        // update cache object again.
+        origin = AVIMConversation.updateConversation(origin, deltaObject);
+      }
+      return origin;
+    }
   }
 
   @Override
