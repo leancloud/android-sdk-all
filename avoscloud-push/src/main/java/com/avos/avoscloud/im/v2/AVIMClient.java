@@ -42,6 +42,7 @@ import com.avos.avoscloud.im.v2.callback.AVIMConversationMemberQueryCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationQueryCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMOnlineClientsCallback;
 import com.avos.avoscloud.im.v2.conversation.AVIMConversationMemberInfo;
+import com.avos.avoscloud.utils.StringUtils;
 
 /**
  * 实时聊天的实例类，一个实例表示一个用户的登录
@@ -495,7 +496,10 @@ public class AVIMClient {
    * @since 3.0
    */
   public AVIMConversation getConversation(String conversationId) {
-    return this.getConversation(conversationId, false, false);
+    if (StringUtils.isBlankString(conversationId)) {
+      return null;
+    }
+    return this.getConversation(conversationId, false, conversationId.startsWith(Conversation.TEMPCONV_ID_PREFIX));
   }
 
   /**
