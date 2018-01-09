@@ -637,10 +637,8 @@ public class AVIMClient {
    * 开发者拿到这个对象之后，就可以像 AVIMConversationsQuery 以前的接口一样对目标属性（如名字）等进行查询。
    * @return
    */
-  public AVIMConversationsQuery getTemporaryConversationQuery() {
-    AVIMConversationsQuery query = new AVIMConversationsQuery(this);
-    query.whereEqualTo("temp", true);
-    return query;
+  private AVIMConversationsQuery getTemporaryConversationQuery() {
+    throw new UnsupportedOperationException("only conversationId query is allowed, please invoke #getTemporaryConversaton with conversationId.");
   }
 
   /**
