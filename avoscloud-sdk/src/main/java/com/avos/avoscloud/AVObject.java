@@ -1353,7 +1353,15 @@ public class AVObject implements Parcelable {
         }
       }
       if (newValue == null) {
-        instanceData.remove(key);
+        if (alwaysUsePost()) {
+          // alwaysUsePost 仅对 AVInstallation 有效，这时候不能直接从 instanceData 中删除属性，而是要设成 {"__op": "Delete"} 才能实际删除。
+          // modify by jfeng@2018-01-10
+          Map<String, String> deleteValue = new HashMap<>(1);
+          deleteValue.put("__op", "Delete");
+          instanceData.put(key, deleteValue);
+        } else {
+          instanceData.remove(key);
+        }
       } else {
         instanceData.put(key, newValue);
       }
@@ -1408,7 +1416,9 @@ public class AVObject implements Parcelable {
   }
 
   private boolean checkKey(String key) {
-    if (AVUtils.isBlankString(key)) throw new IllegalArgumentException("Blank key");
+    if (AVUtils.isBlankString(key)) {
+      throw new IllegalArgumentException("Blank key");
+    }
     if (key.startsWith("_")) {
       throw new IllegalArgumentException("key should not start with '_'");
     }
