@@ -12,19 +12,19 @@ public abstract class MessageHandler<T extends AVIMMessage> extends AVIMEventHan
   protected final void processEvent0(final int operation, final Object operator, final Object operand,
                                      Object eventScene) {
     final AVIMConversation conversation = (AVIMConversation) eventScene;
-    if (conversation.isShouldFetch()) {
-      conversation.fetchInfoInBackground(new AVIMConversationCallback() {
-        @Override
-        public void done(AVIMException e) {
-          if (null != e && e.getCode() > 0) {
-            conversation.latestConversationFetch = System.currentTimeMillis();
-          }
-          processMessage(operation, operand, conversation);
-        }
-      });
-    } else {
+//    if (conversation.isShouldFetch()) {
+//      conversation.fetchInfoInBackground(new AVIMConversationCallback() {
+//        @Override
+//        public void done(AVIMException e) {
+//          if (null != e && e.getCode() > 0) {
+//            conversation.latestConversationFetch = System.currentTimeMillis();
+//          }
+//          processMessage(operation, operand, conversation);
+//        }
+//      });
+//    } else {
       processMessage(operation, operand, conversation);
-    }
+//    }
   }
 
   private void processMessage(int operation, final Object operand, AVIMConversation conversation) {

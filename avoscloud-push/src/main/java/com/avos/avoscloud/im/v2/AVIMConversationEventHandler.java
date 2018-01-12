@@ -202,19 +202,19 @@ public abstract class AVIMConversationEventHandler extends AVIMEventHandler {
   protected final void processEvent0(final int operation, final Object operator, final Object operand,
       Object eventScene) {
     final AVIMConversation conversation = (AVIMConversation) eventScene;
-    if (conversation.isShouldFetch()) {
-      conversation.fetchInfoInBackground(new AVIMConversationCallback() {
-        @Override
-        public void done(AVIMException e) {
-          if (null != e && e.getCode() > 0) {
-            conversation.latestConversationFetch = System.currentTimeMillis();
-          }
-          processConversationEvent(operation, operator, operand, conversation);
-        }
-      });
-    } else {
+//    if (conversation.isShouldFetch()) {
+//      conversation.fetchInfoInBackground(new AVIMConversationCallback() {
+//        @Override
+//        public void done(AVIMException e) {
+//          if (null != e && e.getCode() > 0) {
+//            conversation.latestConversationFetch = System.currentTimeMillis();
+//          }
+//          processConversationEvent(operation, operator, operand, conversation);
+//        }
+//      });
+//    } else {
       processConversationEvent(operation, operator, operand, conversation);
-    }
+//    }
   }
 
   private void processConversationEvent(int operation, Object operator, Object operand, AVIMConversation conversation) {
