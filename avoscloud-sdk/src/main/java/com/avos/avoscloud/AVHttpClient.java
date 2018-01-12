@@ -1,11 +1,14 @@
 package com.avos.avoscloud;
 
+import com.avos.avoscloud.utils.StringUtils;
+
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.CertificatePinner;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -33,7 +36,19 @@ public class AVHttpClient {
       // 避免直接 new OkHttpClient，这里虽然 okHttpClient 是多实例，但是是共享同一线程池的
       builder = client.newBuilder();
     } else {
-      builder = new OkHttpClient.Builder();
+      CertificatePinner.Builder cerpinnerBuilder = new CertificatePinner.Builder();
+      cerpinnerBuilder.add("api.leancloud.cn","sha256/b9zUg9NP/lLIcFw3LPMQYvJr6uD+IJ8zDn6ePuVDsBk=");
+      String appId = AVOSCloud.applicationId;
+      if (!StringUtils.isBlankString(appId)) {
+        String prefixHost = appId.toLowerCase().substring(0, 8);
+        String[] services = {"api", "engine", "stats", "push", "rtm"};
+        for (String service : services) {
+          cerpinnerBuilder.add(String.format("%s.%s.lncld.net", prefixHost, service),
+              "sha256/433QeCheSH3if8k7yDTiXEdJ71X5PEBSTTtli3qNgm8=");
+        }
+      }
+      CertificatePinner certPinner = cerpinnerBuilder.build();
+      builder = new OkHttpClient.Builder().certificatePinner(certPinner);
       builder.dns(DNSAmendNetwork.getInstance());
       builder.addInterceptor(new RequestStatisticInterceptor());
     }
