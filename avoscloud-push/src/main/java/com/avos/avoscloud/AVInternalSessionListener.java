@@ -19,6 +19,7 @@ public abstract class AVInternalSessionListener {
 
   public abstract void onSessionClose(Context context, AVSession session, int requestId);
 
+  public abstract void onSessionTokenRenewed(Context context, AVSession session, int requestId);
 
   public abstract void onSessionPaused(Context context, AVSession session);
 

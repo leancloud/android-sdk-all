@@ -2,7 +2,9 @@ package com.avos.avoscloud.im.v2;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,22 +15,35 @@ import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.avos.avoscloud.AVErrorUtils;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVIMClientParcel;
 import com.avos.avoscloud.AVOSCloud;
+import com.avos.avoscloud.AVPowerfulUtils;
+import com.avos.avoscloud.AVQuery;
+import com.avos.avoscloud.AVRequestParams;
+import com.avos.avoscloud.AVResponse;
 import com.avos.avoscloud.AVRuntimeException;
 import com.avos.avoscloud.AVSession;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.AVUtils;
+import com.avos.avoscloud.GenericObjectCallback;
 import com.avos.avoscloud.IntentUtil;
 import com.avos.avoscloud.LogUtil;
+import com.avos.avoscloud.PaasClient;
 import com.avos.avoscloud.PushService;
+import com.avos.avoscloud.QueryConditions;
 import com.avos.avoscloud.SignatureFactory;
 import com.avos.avoscloud.im.v2.Conversation.AVIMOperation;
 import com.avos.avoscloud.im.v2.callback.AVIMClientCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMClientStatusCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationCreatedCallback;
+import com.avos.avoscloud.im.v2.callback.AVIMConversationMemberQueryCallback;
+import com.avos.avoscloud.im.v2.callback.AVIMConversationQueryCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMOnlineClientsCallback;
+import com.avos.avoscloud.im.v2.conversation.AVIMConversationMemberInfo;
+import com.avos.avoscloud.utils.StringUtils;
 
 /**
  * 实时聊天的实例类，一个实例表示一个用户的登录
@@ -44,11 +59,12 @@ public class AVIMClient {
   private String userSessionToken;
   static ConcurrentHashMap<String, AVIMClient> clients =
       new ConcurrentHashMap<String, AVIMClient>();
-  ConcurrentHashMap<String, AVIMConversation> conversationCache =
+  private ConcurrentHashMap<String, AVIMConversation> conversationCache =
       new ConcurrentHashMap<String, AVIMConversation>();
   volatile boolean isConversationSync = false;
 
   private static boolean isAutoOpen = true;
+  private static int REALTIME_TOKEN_WINDOW_INSECOND = 5 * 60;
 
   public SignatureFactory getSignatureFactory() {
     return AVIMOptions.getGlobalOptions().getSignatureFactory();
@@ -91,6 +107,12 @@ public class AVIMClient {
   public static boolean isAutoOpen() {
     return isAutoOpen;
   }
+
+  /**
+   * 实时通信的 sessiontoken 信息
+   */
+  private String realtimeSessionToken = null;
+  private long realtimeSessionTokenExpired = 0l;
 
   private AVIMClient(String clientId) {
     this.clientId = clientId;
@@ -186,6 +208,20 @@ public class AVIMClient {
     AVIMClient client = getInstance(user);
     client.tag = tag;
     return client;
+  }
+
+  public void updateRealtimeSessionToken(String sessionToken, long expireInSec) {
+    this.realtimeSessionToken = sessionToken;
+    this.realtimeSessionTokenExpired = expireInSec;
+  }
+
+  public String getRealtimeSessionToken() {
+    return this.realtimeSessionToken;
+  }
+
+  boolean realtimeSessionTokenExpired() {
+    long now = System.currentTimeMillis()/1000;
+    return (now + REALTIME_TOKEN_WINDOW_INSECOND) >= this.realtimeSessionTokenExpired;
   }
 
   /**
@@ -461,7 +497,10 @@ public class AVIMClient {
    * @since 3.0
    */
   public AVIMConversation getConversation(String conversationId) {
-    return this.getConversation(conversationId, false, false);
+    if (StringUtils.isBlankString(conversationId)) {
+      return null;
+    }
+    return this.getConversation(conversationId, false, conversationId.startsWith(Conversation.TEMPCONV_ID_PREFIX));
   }
 
   /**
@@ -587,6 +626,60 @@ public class AVIMClient {
     return new AVIMConversationsQuery(this);
   }
 
+  /**
+   * 获取服务号的查询对象
+   * 开发者拿到这个对象之后，就可以像 AVIMConversationsQuery 以前的接口一样对目标属性（如名字）等进行查询。
+   * @return
+   */
+  public AVIMConversationsQuery getServiceConversationQuery() {
+    AVIMConversationsQuery query = new AVIMConversationsQuery(this);
+    query.whereEqualTo("sys", true);
+    return query;
+  }
+
+  /**
+   * 获取临时对话的查询对象
+   * 开发者拿到这个对象之后，就可以像 AVIMConversationsQuery 以前的接口一样对目标属性（如名字）等进行查询。
+   * @return
+   */
+  private AVIMConversationsQuery getTemporaryConversationQuery() {
+    throw new UnsupportedOperationException("only conversationId query is allowed, please invoke #getTemporaryConversaton with conversationId.");
+  }
+
+  /**
+   * 获取开放聊天室的查询对象
+   * 开发者拿到这个对象之后，就可以像 AVIMConversationsQuery 以前的接口一样对目标属性（如名字）等进行查询。
+   * @return
+   */
+  public AVIMConversationsQuery getChatRoomQuery() {
+    AVIMConversationsQuery query = new AVIMConversationsQuery(this);
+    query.whereEqualTo("tr", true);
+    return query;
+  }
+
+  /**
+   * 查询当前用户已经订阅的服务号
+   *
+   * @param limit     查询结果上限
+   * @param callback  结果回调函数
+   */
+  private void querySubscribedServiceConversations(int limit, final AVIMConversationQueryCallback callback) {
+    querySubscribedServiceConversations(null, 0, limit, callback);
+  }
+
+  /**
+   * 查询当前用户已经订阅的服务号
+   *
+   * @param startConversationId         查询起始服务号 id
+   * @param startConversationTimestamp  查询起始服务号被订阅的时间
+   * @param limit                       查询结果上限
+   * @param callback                    结果回调函数
+   */
+  private void querySubscribedServiceConversations(String startConversationId, long startConversationTimestamp,
+                                                  int limit, final AVIMConversationQueryCallback callback) {
+    ;
+  }
+
   static AVIMClientEventHandler clientEventHandler;
 
   /**
@@ -650,6 +743,86 @@ public class AVIMClient {
     conversationCache.clear();
     storage.deleteClientData();
   }
+
+  void queryConversationMemberInfo(final QueryConditions queryConditions, final AVIMConversationMemberQueryCallback cb) {
+    if (null == queryConditions || null == cb) {
+      return;
+    }
+    if (!realtimeSessionTokenExpired()) {
+      queryConvMemberThroughNetwork(queryConditions, cb);
+    } else {
+      // refresh realtime session token.
+      LogUtil.log.d("realtime session token expired, start to refresh...");
+      BroadcastReceiver receiver = null;
+      receiver = new AVIMBaseBroadcastReceiver(null) {
+        @Override
+        public void execute(Intent intent, Throwable error) {
+          if (null != error) {
+            LogUtil.log.e("failed to refresh realtime session token. cause: " + error.getMessage());
+            cb.internalDone(null, AVIMException.wrapperAVException(error));
+          } else {
+            queryConvMemberThroughNetwork(queryConditions, cb);
+          }
+        }
+      };
+      this.sendClientCMDToPushService(null, receiver, AVIMOperation.CLIENT_REFRESH_TOKEN);
+    }
+  }
+
+  private void queryConvMemberThroughNetwork(final QueryConditions queryConditions, final AVIMConversationMemberQueryCallback callback) {
+    String queryPath = AVPowerfulUtils.getEndpoint("_ConversationMemberInfo");
+
+    queryConditions.assembleParameters();
+    Map<String, String> queryParams = queryConditions.getParameters();
+    queryParams.put("client_id", this.clientId);
+    AVRequestParams params = new AVRequestParams(queryParams);
+
+    Map<String, String> additionalHeader = new HashMap<>();
+    additionalHeader.put("X-LC-IM-Session-Token", this.getRealtimeSessionToken());
+
+    PaasClient.storageInstance().getObject(queryPath, params, false, additionalHeader, new GenericObjectCallback() {
+      @Override
+      public void onSuccess(String content, AVException e) {
+        try {
+          List<AVIMConversationMemberInfo> result = processResults(content);
+          if (callback != null) {
+            callback.internalDone(result, null);
+          }
+        } catch (Exception ex) {
+          LogUtil.log.e("failed to parse ConversationMemberInfo result, cause: " + ex.getMessage());
+          if (callback != null) {
+            callback.internalDone(null, new AVIMException(ex));
+          }
+        }
+      }
+
+      @Override
+      public void onFailure(Throwable error, String content) {
+        LogUtil.log.e("failed to fetch ConversationMemberInfo, cause: " + error.getMessage());
+        if (callback != null) {
+          callback.internalDone(null, new AVIMException(content, error));
+        }
+      }
+    }, AVQuery.CachePolicy.NETWORK_ONLY, 86400000);
+  }
+
+  private List<AVIMConversationMemberInfo> processResults(String content) throws Exception {
+    if (AVUtils.isBlankContent(content)) {
+      return Collections.emptyList();
+    }
+    AVResponse resp = new AVResponse();
+    resp = JSON.parseObject(content, resp.getClass());
+
+    List<AVIMConversationMemberInfo> result = new LinkedList<AVIMConversationMemberInfo>();
+    for (Map item : resp.results) {
+      if (item != null && !item.isEmpty()) {
+        AVIMConversationMemberInfo object = AVIMConversationMemberInfo.createInstance(item);
+        result.add(object);
+      }
+    }
+    return result;
+  }
+
 
   /**
    * 当前client的状态
@@ -775,6 +948,27 @@ public class AVIMClient {
 
   protected void removeConversationCache(AVIMConversation conversation) {
     conversationCache.remove(conversation.getConversationId());
+  }
+
+  AVIMConversation mergeConversationCache(AVIMConversation allNewConversation, boolean forceReplace, JSONObject deltaObject) {
+    if (null == allNewConversation || StringUtils.isBlankString(allNewConversation.getConversationId())) {
+      return null;
+    }
+    String convId = allNewConversation.getConversationId();
+    if (forceReplace) {
+      this.conversationCache.put(convId, allNewConversation);
+      return allNewConversation;
+    } else {
+      AVIMConversation origin = this.conversationCache.get(convId);
+      if (null == origin) {
+        this.conversationCache.put(convId, allNewConversation);
+        origin = allNewConversation;
+      } else {
+        // update cache object again.
+        origin = AVIMConversation.updateConversation(origin, deltaObject);
+      }
+      return origin;
+    }
   }
 
   @Override

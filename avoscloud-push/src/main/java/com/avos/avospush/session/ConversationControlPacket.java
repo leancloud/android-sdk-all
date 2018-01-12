@@ -13,7 +13,9 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
   public static final String CONVERSATION_CMD = "conv";
 
   public static class ConversationControlOp {
-    // 客户端发出的op
+    /**
+     * 客户端发出的op
+     */
     public static final String START = "start";
     public static final String ADD = "add";
     public static final String REMOVE = "remove";
@@ -22,9 +24,17 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
     public static final String MUTE = "mute";
     public static final String UNMUTE = "unmute";
     public static final String COUNT = "count";
-    public static final String MAX_READ = "max-read";
+    public static final String MAX_READ = "max_read";
+    // 权限
+    public static final String MEMBER_UPDATE = "member_info_update";
+    // 禁言
+    public static final String ADD_SHUTUP = "add_shutup";
+    public static final String REMOVE_SHUTUP = "remove_shutup";
+    public static final String QUERY_SHUTUP = "query_shutup";
 
-    // 服务器端会响应的op
+    /**
+     * 服务器端会响应的op
+     */
     public static final String STARTED = "started";
     public static final String JOINED = "joined";
     public static final String MEMBER_JOINED = "members_joined";
@@ -35,6 +45,22 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
     public static final String QUERY_RESULT = "results";
     public static final String MEMBER_COUNT_QUERY_RESULT = "result";
     public static final String UPDATED = "updated";
+    // 权限
+    public static final String MEMBER_UPDATED = "member_info_updated";
+    public static final String MEMBER_INFO_CHANGED = "member_info_changed";
+    // 禁言
+    public static final String SHUTUP_ADDED = "shutup_added";
+    public static final String SHUTUP_REMOVED = "shutup_removed";
+    public static final String SHUTUPED = "shutuped";
+    public static final String UNSHUTUPED = "unshutuped";
+    public static final String MEMBER_SHUTPED = "members_shutuped";
+    public static final String MEMBER_UNSHUTUPED = "members_unshutuped";
+    public static final String QUERY_SHUTUP_RESULT = "shutup_result";
+    // 黑名单通知
+    public static final String BLOCKED = "blocked";
+    public static final String UNBLOCKED = "unblocked";
+    public static final String MEMBER_BLOCKED_NOTIFY = "members_blocked";
+    public static final String MEMBER_UNBLOCKED_NOTIFY = "members_unblocked";
   }
 
   private List<String> members;
@@ -61,6 +87,11 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
   private boolean isTemporary = false;
 
   private int tempTTL = 0;
+
+  private Map<String, Object> memberInfo = null;
+
+  private int queryOffset = 0;
+  private int queryLimit = 0;
 
   public ConversationControlPacket() {
     this.setCmd(CONVERSATION_CMD);
@@ -152,6 +183,25 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
     this.tempTTL = tempTTL;
   }
 
+  public void setMemberInfo(Map<String, Object> memberInfo) {
+    this.memberInfo = memberInfo;
+  }
+
+  public int getQueryOffset() {
+    return queryOffset;
+  }
+
+  public void setQueryOffset(int queryOffset) {
+    this.queryOffset = queryOffset;
+  }
+
+  public int getQueryLimit() {
+    return queryLimit;
+  }
+
+  public void setQueryLimit(int queryLimit) {
+    this.queryLimit = queryLimit;
+  }
 
   @Override
   protected Messages.GenericCommand.Builder getGenericCommandBuilder() {
@@ -166,7 +216,6 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
 
     if (attributes != null && !attributes.isEmpty()) {
       Messages.JsonObjectMessage.Builder attrBuilder = Messages.JsonObjectMessage.newBuilder();
-
       attrBuilder.setData(attributes.toString());
       builder.setAttr(attrBuilder);
     }
@@ -195,6 +244,26 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
       builder.setTempConvTTL(tempTTL);
     }
 
+    if (null != memberInfo) {
+      Messages.ConvMemberInfo.Builder cmiBuilder = Messages.ConvMemberInfo.newBuilder();
+      if (memberInfo.containsKey("peerId")) {
+        cmiBuilder.setPid((String) memberInfo.get("peerId"));
+        builder.setTargetClientId((String) memberInfo.get("peerId"));
+      }
+      if (memberInfo.containsKey("role")) {
+        cmiBuilder.setRole((String) memberInfo.get("role"));
+      }
+      if (memberInfo.containsKey("infoId")) {
+        cmiBuilder.setInfoId((String) memberInfo.get("infoId"));
+      }
+      builder.setInfo(cmiBuilder.build());
+    }
+    if (this.queryOffset > 0) {
+      builder.setNext(new Integer(this.queryOffset).toString());
+    }
+    if (this.queryLimit > 0) {
+      builder.setLimit(this.queryLimit);
+    }
     return builder.build();
   }
 
@@ -247,5 +316,14 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
       Signature signature, int requestId) {
     return genConversationCommand(selfId, conversationId, peers, op, attributes, signature, false,
         requestId);
+  }
+
+  public static ConversationControlPacket genConversationMemberCommand(String selfId, String conversationId,
+                                                                       String op, Map<String, Object> memberInfo,
+                                                                       Signature signature, int requestId) {
+    ConversationControlPacket ccp = genConversationCommand(selfId, conversationId, null, op, null, signature,
+        false, false, false, 0, false, requestId);
+    ccp.setMemberInfo(memberInfo);
+    return ccp;
   }
 }

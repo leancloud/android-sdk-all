@@ -36,6 +36,9 @@ public class SessionControlPacket extends PeerBasedCommandPacket {
 
     public static final String CLOSED = "closed";
 
+    public static final String RENEW_RTMTOKEN = "refresh";
+    public static final String RENEWED_RTMTOKEN = "refreshed";
+
     public static final String SESSION_TOKEN = "st";
 
     public static final String SESSION_TOKEN_TTL = "stTtl";
@@ -49,6 +52,7 @@ public class SessionControlPacket extends PeerBasedCommandPacket {
 
   private static final long PATCH_FLAG = 0x01;
   private static final long PATCH_FLAG_BIND_INSTALLATION_TO_SESSION = 0x04;
+  private static final long PATCH_FLAG_SUPPORT_CONVMEMBER_INFO = 0x20;
 
   private String op;
 
@@ -165,7 +169,10 @@ public class SessionControlPacket extends PeerBasedCommandPacket {
     scp.lastUnreadNotifyTime = lastUnreadNotifyTime;
     scp.lastPatchTime = lastPatchTime;
     scp.sessionConfig |= PATCH_FLAG;
-    if (op.equals(SessionControlOp.OPEN)) {
+    scp.sessionConfig |= PATCH_FLAG_SUPPORT_CONVMEMBER_INFO;
+    if (op.equals(SessionControlOp.RENEW_RTMTOKEN)) {
+      scp.setPeerId(selfId);
+    } else if (op.equals(SessionControlOp.OPEN)) {
       // selfId is mandotary for session/open
       scp.sessionConfig |= PATCH_FLAG_BIND_INSTALLATION_TO_SESSION;
       scp.setPeerId(selfId);

@@ -25,6 +25,10 @@ import com.avos.avoscloud.im.v2.AVIMMessageQueryDirection;
 import com.avos.avoscloud.im.v2.AVIMOptions;
 import com.avos.avoscloud.im.v2.Conversation;
 import com.avos.avoscloud.im.v2.Conversation.AVIMOperation;
+import com.avos.avoscloud.im.v2.callback.AVIMOperationFailure;
+import com.avos.avoscloud.im.v2.conversation.AVIMConversationMemberInfo;
+import com.avos.avoscloud.im.v2.conversation.ConversationMemberRole;
+import com.avos.avospush.session.BlacklistCommandPacket;
 import com.avos.avospush.session.CommandPacket;
 import com.avos.avospush.session.ConversationControlPacket;
 import com.avos.avospush.session.ConversationControlPacket.ConversationControlOp;
@@ -42,6 +46,8 @@ class AVInternalConversation {
   // 服务器端为了兼容老版本，这里需要使用group的invite
   private static final String GROUP_INVITE = "invite";
   private static final String GROUP_KICK = "kick";
+  private static final String BLOCK_MEMBER = "conversation-block-clients";
+  private static final String UNBLOCK_MEMBER = "conversation-unblock-clients";
 
   public AVInternalConversation(String conversationId, AVSession session, int convType) {
     this.session = session;
@@ -120,6 +126,103 @@ class AVInternalConversation {
     new SignatureTask(callback).commit(session.getSelfPeerId());
   }
 
+  // mute member
+  // notice: not use signature factory.
+  public void muteMembers(final List<String> members, final int requestId){
+    if (!checkSessionStatus(AVIMOperation.CONVERSATION_MUTE_MEMBER, requestId)) {
+      return;
+    }
+    session.conversationOperationCache.offer(Operation.getOperation(
+        AVIMOperation.CONVERSATION_MUTE_MEMBER.getCode(), session.getSelfPeerId(),
+        conversationId, requestId));
+    PushService.sendData(ConversationControlPacket.genConversationCommand(
+        session.getSelfPeerId(), conversationId, members,
+        ConversationControlOp.ADD_SHUTUP, null, null, requestId));
+  }
+
+  // unmute member
+  // notice: not use signature factory.
+  public void unmuteMembers(final List<String> members, final int requestId){
+    if (!checkSessionStatus(AVIMOperation.CONVERSATION_UNMUTE_MEMBER, requestId)) {
+      return;
+    }
+    session.conversationOperationCache.offer(Operation.getOperation(
+        AVIMOperation.CONVERSATION_UNMUTE_MEMBER.getCode(), session.getSelfPeerId(),
+        conversationId, requestId));
+    PushService.sendData(ConversationControlPacket.genConversationCommand(
+        session.getSelfPeerId(), conversationId, members,
+        ConversationControlOp.REMOVE_SHUTUP, null, null, requestId));
+  }
+
+  // block member
+  public void blockMembers(final List<String> members, final int requestId){
+    if (!checkSessionStatus(AVIMOperation.CONVERSATION_BLOCK_MEMBER, requestId)) {
+      return;
+    }
+    SignatureCallback callback = new SignatureCallback() {
+
+      @Override
+      public void onSignatureReady(Signature sig, AVException e) {
+        if (e == null) {
+          session.conversationOperationCache.offer(Operation.getOperation(
+              AVIMOperation.CONVERSATION_BLOCK_MEMBER.getCode(), session.getSelfPeerId(),
+              conversationId, requestId));
+          PushService.sendData(BlacklistCommandPacket.genBlacklistCommandPacket(
+              session.getSelfPeerId(), conversationId,
+              BlacklistCommandPacket.BlacklistCommandOp.BLOCK, members, sig, requestId));
+        } else {
+          BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), conversationId,
+              requestId, e, AVIMOperation.CONVERSATION_BLOCK_MEMBER);
+        }
+      }
+
+      @Override
+      public Signature computeSignature() throws SignatureException {
+        final SignatureFactory signatureFactory = AVIMOptions.getGlobalOptions().getSignatureFactory();
+        if (signatureFactory != null) {
+          return signatureFactory.createBlacklistSignature(session.getSelfPeerId(), conversationId, members, BLOCK_MEMBER);
+        }
+        return null;
+      }
+    };
+    new SignatureTask(callback).commit(session.getSelfPeerId());
+  }
+
+  // unblock member.
+  public void unblockMembers(final List<String> members, final int requestId){
+    if (!checkSessionStatus(AVIMOperation.CONVERSATION_UNBLOCK_MEMBER, requestId)) {
+      return;
+    }
+
+    SignatureCallback callback = new SignatureCallback() {
+
+      @Override
+      public void onSignatureReady(Signature sig, AVException e) {
+        if (e == null) {
+          session.conversationOperationCache.offer(Operation.getOperation(
+              AVIMOperation.CONVERSATION_UNBLOCK_MEMBER.getCode(), session.getSelfPeerId(),
+              conversationId, requestId));
+          PushService.sendData(BlacklistCommandPacket.genBlacklistCommandPacket(
+              session.getSelfPeerId(), conversationId,
+              BlacklistCommandPacket.BlacklistCommandOp.UNBLOCK, members, sig, requestId));
+        } else {
+          BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), conversationId,
+              requestId, e, AVIMOperation.CONVERSATION_UNBLOCK_MEMBER);
+        }
+      }
+
+      @Override
+      public Signature computeSignature() throws SignatureException {
+        final SignatureFactory signatureFactory = AVIMOptions.getGlobalOptions().getSignatureFactory();
+        if (signatureFactory != null) {
+          return signatureFactory.createBlacklistSignature(session.getSelfPeerId(), conversationId, members, UNBLOCK_MEMBER);
+        }
+        return null;
+      }
+    };
+    new SignatureTask(callback).commit(session.getSelfPeerId());
+  }
+
   public void join(final int requestId) {
 
     SignatureCallback callback = new SignatureCallback() {
@@ -154,8 +257,34 @@ class AVInternalConversation {
     new SignatureTask(callback).commit(session.getSelfPeerId());
   }
 
+  public void queryMutedMembers(int offset, int limit, int requestId) {
+    if (!checkSessionStatus(AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY, requestId)) {
+      return;
+    }
+    session.conversationOperationCache.offer(Operation.getOperation(
+        AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY.getCode(), session.getSelfPeerId(), conversationId,
+        requestId));
+    ConversationControlPacket packet = ConversationControlPacket.genConversationCommand(session.getSelfPeerId(),
+        conversationId, null, ConversationControlOp.QUERY_SHUTUP, null, null, requestId);
+    packet.setQueryOffset(offset);
+    packet.setQueryLimit(limit);
+    PushService.sendData(packet);
+  }
+
+  public void queryBlockedMembers(int offset, int limit, int requestId) {
+    if (!checkSessionStatus(AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY, requestId)) {
+      return;
+    }
+    session.conversationOperationCache.offer(Operation.getOperation(
+        AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY.getCode(), session.getSelfPeerId(), conversationId,
+        requestId));
+    BlacklistCommandPacket packet = BlacklistCommandPacket.genBlacklistCommandPacket(session.getSelfPeerId(),
+        conversationId, BlacklistCommandPacket.BlacklistCommandOp.QUERY, offset, limit, requestId);
+    PushService.sendData(packet);
+  }
+
   public void updateInfo(Map<String, Object> attr, int requestId) {
-    if (!checkSessionStatus(AVIMOperation.CONVERSATION_SEND_MESSAGE, requestId)) {
+    if (!checkSessionStatus(AVIMOperation.CONVERSATION_UPDATE, requestId)) {
       return;
     }
     session.conversationOperationCache.offer(Operation.getOperation(
@@ -163,6 +292,18 @@ class AVInternalConversation {
         requestId));
     PushService.sendData(ConversationControlPacket.genConversationCommand(session.getSelfPeerId(),
         conversationId, null, ConversationControlOp.UPDATE, attr, null, requestId));
+  }
+
+  public void promoteMember(Map<String, Object> member, int requestId) {
+    if (!checkSessionStatus(AVIMOperation.CONVERSATION_PROMOTE_MEMBER, requestId)) {
+      return;
+    }
+    session.conversationOperationCache.offer(Operation.getOperation(
+        AVIMOperation.CONVERSATION_PROMOTE_MEMBER.getCode(), session.getSelfPeerId(), conversationId,
+        requestId));
+    ConversationControlPacket ccp = ConversationControlPacket.genConversationMemberCommand(session.getSelfPeerId(),
+        conversationId, ConversationControlOp.MEMBER_UPDATE, member, null, requestId);
+    PushService.sendData(ccp);
   }
 
   public void sendMessage(AVIMMessage message, int requestId, AVIMMessageOption messageOption) {
@@ -195,7 +336,7 @@ class AVInternalConversation {
 
 
   public void patchMessage(PushServiceParcel pushServiceParcel, AVIMOperation operation, int requestId) {
-    if (!checkSessionStatus(AVIMOperation.CONVERSATION_SEND_MESSAGE, requestId)) {
+    if (!checkSessionStatus(AVIMOperation.CONVERSATION_RECALL_MESSAGE, requestId)) {
       return;
     }
 
@@ -239,13 +380,13 @@ class AVInternalConversation {
   public void queryHistoryMessages(String msgId, long timestamp, int limit, String toMsgId,
       long toTimestamp, int requestId) {
     queryHistoryMessages(msgId, timestamp, false, toMsgId, toTimestamp, false,
-        AVIMMessageQueryDirection.AVIMMessageQueryDirectionFromNewToOld.getCode(), limit, requestId);
+        AVIMMessageQueryDirection.AVIMMessageQueryDirectionFromNewToOld.getCode(), limit, 0, requestId);
   }
 
   public void queryHistoryMessages(String msgId, long timestamp, boolean sclosed,
                                    String toMsgId, long toTimestamp, boolean toclosed,
-                                   int direct, int limit, int requestId) {
-    if (!checkSessionStatus(AVIMOperation.CONVERSATION_QUIT, requestId)) {
+                                   int direct, int limit, int msgType, int requestId) {
+    if (!checkSessionStatus(AVIMOperation.CONVERSATION_MESSAGE_QUERY, requestId)) {
       return;
     }
     session.conversationOperationCache.offer(Operation.getOperation(
@@ -253,7 +394,7 @@ class AVInternalConversation {
         conversationId, requestId));
     PushService.sendData(ConversationMessageQueryPacket.getConversationMessageQueryPacket(
         session.getSelfPeerId(), conversationId, msgId, timestamp, sclosed, toMsgId, toTimestamp, toclosed,
-        direct, limit, requestId));
+        direct, limit, msgType, requestId));
   }
 
   public void mute(int requestId) {
@@ -279,7 +420,7 @@ class AVInternalConversation {
   }
 
   public void getMemberCount(int requestId) {
-    if (!checkSessionStatus(AVIMOperation.CONVERSATION_UNMUTE, requestId)) {
+    if (!checkSessionStatus(AVIMOperation.CONVERSATION_MEMBER_COUNT_QUERY, requestId)) {
       return;
     }
     session.conversationOperationCache.offer(Operation.getOperation(
@@ -302,7 +443,7 @@ class AVInternalConversation {
   }
 
   private void read(String msgId, long timestamp, int requestId) {
-    if (!checkSessionStatus(AVIMOperation.CONVERSATION_UNMUTE, requestId)) {
+    if (!checkSessionStatus(AVIMOperation.CONVERSATION_READ, requestId)) {
       return;
     }
     session.conversationOperationCache.offer(Operation.getOperation(
@@ -327,51 +468,93 @@ class AVInternalConversation {
     }
   }
 
-  public void processConversationCommandFromClient(int operationCode, Map<String, Object> params,
+  public void processConversationCommandFromClient(AVIMOperation imop, Map<String, Object> params,
       int requestId) {
-    if (operationCode == AVIMOperation.CONVERSATION_JOIN.getCode()) {
-      this.join(requestId);
-    } else if (operationCode == AVIMOperation.CONVERSATION_ADD_MEMBER.getCode()) {
-      List<String> members = (List<String>) params.get(Conversation.PARAM_CONVERSATION_MEMBER);
-      this.addMembers(members, requestId);
-    } else if (operationCode == AVIMOperation.CONVERSATION_RM_MEMBER.getCode()) {
-      List<String> members = (List<String>) params.get(Conversation.PARAM_CONVERSATION_MEMBER);
-      this.kickMembers(members, requestId);
-    } else if (operationCode == AVIMOperation.CONVERSATION_QUIT.getCode()) {
-      this.quit(requestId);
-    } else if (operationCode == AVIMOperation.CONVERSATION_UPDATE.getCode()) {
-      Map<String, Object> attr =
-          (Map<String, Object>) params.get(Conversation.PARAM_CONVERSATION_ATTRIBUTE);
-      this.updateInfo(attr, requestId);
-    } else if (operationCode == AVIMOperation.CONVERSATION_MESSAGE_QUERY.getCode()) {
-      // timestamp = 0时，原来的 (Long) 会发生强制转型错误(Integer cannot cast to Long)
-      String msgId = (String) params.get(Conversation.PARAM_MESSAGE_QUERY_MSGID);
-      long ts = ((Number) params.get(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP)).longValue();
-      boolean sclosed = (Boolean) params.get(Conversation.PARAM_MESSAGE_QUERY_STARTCLOSED);
-      String toMsgId = (String) params.get(Conversation.PARAM_MESSAGE_QUERY_TO_MSGID);
-      long tts = ((Number) params.get(Conversation.PARAM_MESSAGE_QUERY_TO_TIMESTAMP)).longValue();
-      boolean tclosed = (Boolean) params.get(Conversation.PARAM_MESSAGE_QUERY_TOCLOSED);
-      int direct = (Integer) params.get(Conversation.PARAM_MESSAGE_QUERY_DIRECT);
-      int limit = (Integer) params.get(Conversation.PARAM_MESSAGE_QUERY_LIMIT);
-      this.queryHistoryMessages(msgId, ts, sclosed, toMsgId, tts, tclosed, direct, limit, requestId);
-    } else if (operationCode == AVIMOperation.CONVERSATION_MUTE.getCode()) {
-      mute(requestId);
-    } else if (operationCode == AVIMOperation.CONVERSATION_UNMUTE.getCode()) {
-      unmute(requestId);
-    } else if (operationCode == AVIMOperation.CONVERSATION_MEMBER_COUNT_QUERY.getCode()) {
-      getMemberCount(requestId);
-    } else if (operationCode == AVIMOperation.CONVERSATION_READ.getCode()) {
-      String messageId = "";
-      if (null != params && params.containsKey(Conversation.PARAM_MESSAGE_QUERY_MSGID)) {
-        messageId = (String)params.get(Conversation.PARAM_MESSAGE_QUERY_MSGID);
-      }
-      long messageTS = 0;
-      if (null != params && params.containsKey(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP)) {
-        messageTS = ((Number) params.get(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP)).longValue();
-      }
-      read(messageId, messageTS, requestId);
-    } else if (operationCode == AVIMOperation.CONVERSATION_FETCH_RECEIPT_TIME.getCode()) {
-      getReceiptTime(requestId);
+    List<String> members = null != params ? ((List<String>) params.get(Conversation.PARAM_CONVERSATION_MEMBER)) : null;
+    switch (imop) {
+      case CONVERSATION_JOIN:
+        join(requestId);
+        break;
+      case CONVERSATION_ADD_MEMBER:
+        addMembers(members, requestId);
+        break;
+      case CONVERSATION_RM_MEMBER:
+        kickMembers(members, requestId);
+        break;
+      case CONVERSATION_QUIT:
+        quit(requestId);
+        break;
+      case CONVERSATION_UPDATE:
+        Map<String, Object> attr =
+            (Map<String, Object>) params.get(Conversation.PARAM_CONVERSATION_ATTRIBUTE);
+        this.updateInfo(attr, requestId);
+        break;
+      case CONVERSATION_MUTE:
+        mute(requestId);
+        break;
+      case CONVERSATION_UNMUTE:
+        unmute(requestId);
+        break;
+      case CONVERSATION_MEMBER_COUNT_QUERY:
+        getMemberCount(requestId);
+        break;
+      case CONVERSATION_FETCH_RECEIPT_TIME:
+        getReceiptTime(requestId);
+        break;
+      case CONVERSATION_READ:
+        String messageId = "";
+        if (null != params && params.containsKey(Conversation.PARAM_MESSAGE_QUERY_MSGID)) {
+          messageId = (String)params.get(Conversation.PARAM_MESSAGE_QUERY_MSGID);
+        }
+        long messageTS = 0;
+        if (null != params && params.containsKey(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP)) {
+          messageTS = ((Number) params.get(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP)).longValue();
+        }
+        read(messageId, messageTS, requestId);
+        break;
+      case CONVERSATION_PROMOTE_MEMBER:
+        Map<String, Object> memberInfo = null != params? (Map<String, Object>) params.get(Conversation.PARAM_CONVERSATION_MEMBER_DETAILS) : null;
+        if (null != memberInfo) {
+          promoteMember(memberInfo, requestId);
+        }
+        break;
+      case CONVERSATION_MUTE_MEMBER:
+        muteMembers(members, requestId);
+        break;
+      case CONVERSATION_UNMUTE_MEMBER:
+        unmuteMembers(members, requestId);
+        break;
+      case CONVERSATION_BLOCK_MEMBER:
+        blockMembers(members, requestId);
+        break;
+      case CONVERSATION_UNBLOCK_MEMBER:
+        unblockMembers(members, requestId);
+        break;
+      case CONVERSATION_MUTED_MEMBER_QUERY:
+        int offset = (Integer) params.get(Conversation.QUERY_PARAM_OFFSET);
+        int sizeLimit = (Integer) params.get(Conversation.QUERY_PARAM_LIMIT);
+        queryMutedMembers(offset, sizeLimit, requestId);
+        break;
+      case CONVERSATION_BLOCKED_MEMBER_QUERY:
+        int blockedOffset = (Integer) params.get(Conversation.QUERY_PARAM_OFFSET);
+        int blockedSizeLimit = (Integer) params.get(Conversation.QUERY_PARAM_LIMIT);
+        queryBlockedMembers(blockedOffset, blockedSizeLimit, requestId);
+        break;
+      case CONVERSATION_MESSAGE_QUERY:
+        // timestamp = 0时，原来的 (Long) 会发生强制转型错误(Integer cannot cast to Long)
+        String msgId = (String) params.get(Conversation.PARAM_MESSAGE_QUERY_MSGID);
+        long ts = ((Number) params.get(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP)).longValue();
+        boolean sclosed = (Boolean) params.get(Conversation.PARAM_MESSAGE_QUERY_STARTCLOSED);
+        String toMsgId = (String) params.get(Conversation.PARAM_MESSAGE_QUERY_TO_MSGID);
+        long tts = ((Number) params.get(Conversation.PARAM_MESSAGE_QUERY_TO_TIMESTAMP)).longValue();
+        boolean tclosed = (Boolean) params.get(Conversation.PARAM_MESSAGE_QUERY_TOCLOSED);
+        int direct = (Integer) params.get(Conversation.PARAM_MESSAGE_QUERY_DIRECT);
+        int limit = (Integer) params.get(Conversation.PARAM_MESSAGE_QUERY_LIMIT);
+        int msgType = (Integer) params.get(Conversation.PARAM_MESSAGE_QUERY_TYPE);
+        queryHistoryMessages(msgId, ts, sclosed, toMsgId, tts, tclosed, direct, limit, msgType, requestId);
+        break;
+      default:
+          break;
     }
   }
 
@@ -431,6 +614,16 @@ class AVInternalConversation {
       long receiptTime = convCommand.getMaxAckTimestamp();
       long readTime = convCommand.getMaxReadTimestamp();
       onTimesReceipt(requestId,  receiptTime, readTime);
+    } else if (ConversationControlOp.MEMBER_UPDATED.equals(operation)) {
+      onMemberUpdated(requestId);
+    } else if (ConversationControlOp.SHUTUP_ADDED.equals(operation)
+        || ConversationControlOp.SHUTUP_REMOVED.equals(operation)) {
+      // 禁言/取消禁言的 response
+      if (null == imop) {
+        LogUtil.log.e("IllegalState. operation is null, excepted is member_shutupped / member_unshutuped, originalOp=" + operation);
+      } else {
+        onResponse4MemberMute(imop, operation, requestId, convCommand);
+      }
     }
     // 下面都是被动
     else if (ConversationControlOp.MEMBER_JOINED.equals(operation)) {
@@ -441,7 +634,86 @@ class AVInternalConversation {
       String removedBy = convCommand.getInitBy();
       List<String> leftMembers = convCommand.getMList();
       onMembersLeft(leftMembers, removedBy);
+    } else if (ConversationControlOp.MEMBER_INFO_CHANGED.equals(operation)) {
+      String changedBy = convCommand.getInitBy();
+      Messages.ConvMemberInfo member = convCommand.getInfo();
+      onMemberChanged(changedBy, member);
+    } else if (ConversationControlOp.SHUTUPED.equals(operation)
+        || ConversationControlOp.UNSHUTUPED.equals(operation)) {
+      String operator = convCommand.getInitBy();
+      if (null != operator && operator.equals(session.getSelfPeerId())) {
+        return;
+      } else {
+        onSelfShutupedNotify(ConversationControlOp.SHUTUPED.equals(operation), operator, convCommand);
+      }
+    } else if (ConversationControlOp.MEMBER_SHUTPED.equals(operation)
+        || ConversationControlOp.MEMBER_UNSHUTUPED.equals(operation)) {
+      String operator = convCommand.getInitBy();
+      if (null != operator && operator.equals(session.getSelfPeerId())) {
+        return;
+      } else {
+        onMemberShutupedNotify(ConversationControlOp.MEMBER_SHUTPED.equals(operation), operator, convCommand);
+      }
+    } else if (ConversationControlOp.BLOCKED.equals(operation)
+        || ConversationControlOp.UNBLOCKED.equals(operation)) {
+      String operator = convCommand.getInitBy();
+      if (null != operator && operator.equals(session.getSelfPeerId())) {
+        return;
+      } else {
+        onSelfBlockedNotify(ConversationControlOp.BLOCKED.equals(operation), operator, convCommand);
+      }
+    } else if (ConversationControlOp.MEMBER_BLOCKED_NOTIFY.equals(operation)
+        || ConversationControlOp.MEMBER_UNBLOCKED_NOTIFY.equals(operation)) {
+      String operator = convCommand.getInitBy();
+      if (null != operator && operator.equals(session.getSelfPeerId())) {
+        return;
+      } else {
+        onMemberBlockedNotify(ConversationControlOp.MEMBER_BLOCKED_NOTIFY.equals(operation), operator, convCommand);
+      }
     }
+  }
+
+  void onResponse4MemberBlock(AVIMOperation imop, String operation, int reqeustId, Messages.BlacklistCommand blacklistCommand) {
+    if (null == blacklistCommand) {
+      return;
+    }
+    List<String> allowedList = blacklistCommand.getAllowedPidsList();
+    List<Messages.ErrorCommand> errorCommandList = blacklistCommand.getFailedPidsList();
+    Bundle bundle = genBundleFromPartiallyResult(allowedList, errorCommandList);
+    BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), blacklistCommand.getSrcCid(), reqeustId, bundle, imop);
+  }
+
+  void onResponse4MemberMute(AVIMOperation imop, String operation, int requestId, Messages.ConvCommand convCommand) {
+    if (null == convCommand) {
+      return;
+    }
+    List<String> allowedList = convCommand.getAllowedPidsList();
+    List<Messages.ErrorCommand> errorCommandList = convCommand.getFailedPidsList();
+    Bundle bundle = genBundleFromPartiallyResult(allowedList, errorCommandList);
+    BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), conversationId, requestId,
+        bundle, imop);
+  }
+
+  private Bundle genBundleFromPartiallyResult(List<String> allowedList, List<Messages.ErrorCommand> errorCommandList) {
+    String[] allowedMembers = new String[null == allowedList? 0 : allowedList.size()];
+    if (null != allowedList) {
+      allowedList.toArray(allowedMembers);
+    }
+    int errorCommandSize = (null == errorCommandList)? 0 : errorCommandList.size();
+    ArrayList<AVIMOperationFailure> failedList = new ArrayList<>(errorCommandSize);
+    if (null != errorCommandList) {
+      for (Messages.ErrorCommand cmd: errorCommandList) {
+        AVIMOperationFailure failure = new AVIMOperationFailure();
+        failure.setCode(cmd.getCode());
+        failure.setMemberIds(cmd.getPidsList());
+        failure.setReason(cmd.getReason());
+        failedList.add(failure);
+      }
+    }
+    Bundle bundle = new Bundle();
+    bundle.putStringArray(Conversation.callbackConvMemberMuted_SUCC, allowedMembers);
+    bundle.putParcelableArrayList(Conversation.callbackConvMemberMuted_FAIL, failedList);
+    return bundle;
   }
 
   public void processMessages(Integer requestKey, List<Messages.LogItem> logItems) {
@@ -530,6 +802,25 @@ class AVInternalConversation {
         AVIMOperation.CONVERSATION_UPDATE);
   }
 
+  private void onMemberUpdated(int requestId) {
+    BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), conversationId, requestId,
+        AVIMOperation.CONVERSATION_PROMOTE_MEMBER);
+  }
+
+  private void onMemberChanged(String operator, Messages.ConvMemberInfo member) {
+    AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
+    if (handler != null) {
+      AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
+      AVIMConversation conversation = client.getConversation(this.conversationId);
+      String objectId = member.getInfoId();
+      String roleStr = member.getRole();
+      String peerId = member.getPid();
+      AVIMConversationMemberInfo memberInfo = new AVIMConversationMemberInfo(objectId, this.conversationId,
+          peerId, ConversationMemberRole.fromString(roleStr));
+      handler.processEvent(Conversation.STATUS_ON_MEMBER_INFO_CHANGED, operator, memberInfo, conversation);
+    }
+  }
+
   void onMuted(int requestId) {
     BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), conversationId, requestId,
         AVIMOperation.CONVERSATION_MUTE);
@@ -578,12 +869,7 @@ class AVInternalConversation {
     AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
     if (handler != null) {
       AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
-      boolean isTemp = convCommand.hasTempConv()? convCommand.getTempConv() : false;
-      boolean isTransient = convCommand.hasTransient()? convCommand.getTransient() : false;
-      int tempTTL = convCommand.hasTempConvTTL()?convCommand.getTempConvTTL() : 0;
-
-      AVIMConversation conversation = client.getConversation(this.conversationId, isTransient, isTemp);
-      conversation.setTemporaryExpiredat(System.currentTimeMillis()/1000 + tempTTL);
+      AVIMConversation conversation = parseConversation(client, convCommand);
       handler.processEvent(Conversation.STATUS_ON_JOINED, invitedBy, null, conversation);
     }
   }
@@ -600,6 +886,81 @@ class AVInternalConversation {
     AVIMMessageManagerHelper.removeConversationCache(conversation);
   }
 
+  void onSelfShutupedNotify(boolean isMuted, String operator, Messages.ConvCommand convCommand) {
+    AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
+    if (handler != null) {
+      AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
+      AVIMConversation conversation = parseConversation(client, convCommand);
+      if (isMuted) {
+        handler.processEvent(Conversation.STATUS_ON_MUTED, operator, null, conversation);
+      } else {
+        handler.processEvent(Conversation.STATUS_ON_UNMUTED, operator, null, conversation);
+      }
+    }
+  }
+
+  void onMemberShutupedNotify(boolean isMuted, String operator, Messages.ConvCommand convCommand) {
+    AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
+    List<String> members = convCommand.getMList();
+    if (handler != null && null != members) {
+      List<String> copyMembers = new ArrayList<>(members);
+      copyMembers.remove(session.getSelfPeerId());
+      if (copyMembers.size() < 1) {
+        // ignore self member_shutuped notify, bcz server sends both shutuped and member_shutuped notification.
+        LogUtil.log.d("Notification --- ignore shutuped/unshutuped notify bcz duplicated.");
+      } else {
+        AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
+        AVIMConversation conversation = parseConversation(client, convCommand);
+        if (isMuted) {
+          handler.processEvent(Conversation.STATUS_ON_MEMBER_MUTED, operator, copyMembers, conversation);
+        } else {
+          handler.processEvent(Conversation.STATUS_ON_MEMBER_UNMUTED, operator, copyMembers, conversation);
+        }
+      }
+    }
+  }
+
+  void onSelfBlockedNotify(boolean isBlocked, String operator, Messages.ConvCommand convCommand) {
+    AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
+    if (null == handler) {
+      return;
+    }
+    AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
+    AVIMConversation conversation = parseConversation(client, convCommand);
+    if (isBlocked) {
+      handler.processEvent(Conversation.STATUS_ON_BLOCKED, operator, null, conversation);
+    } else {
+      handler.processEvent(Conversation.STATUS_ON_UNBLOCKED, operator, null, conversation);
+    }
+
+  }
+
+  void onMemberBlockedNotify(boolean isBlocked, String operator, Messages.ConvCommand convCommand) {
+    AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
+    List<String> members = convCommand.getMList();
+    if (handler != null && null != members) {
+      AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
+      AVIMConversation conversation = parseConversation(client, convCommand);
+      if (isBlocked) {
+        handler.processEvent(Conversation.STATUS_ON_MEMBER_BLOCKED, operator, members, conversation);
+      } else {
+        handler.processEvent(Conversation.STATUS_ON_MEMBER_UNBLOCKED, operator, members, conversation);
+      }
+    }
+  }
+
+  private AVIMConversation parseConversation(AVIMClient client, Messages.ConvCommand convCommand) {
+    if (null == client || null == convCommand) {
+      return null;
+    }
+    boolean isTemp = convCommand.hasTempConv()? convCommand.getTempConv() : false;
+    boolean isTransient = convCommand.hasTransient()? convCommand.getTransient() : false;
+    int tempTTL = convCommand.hasTempConvTTL()?convCommand.getTempConvTTL() : 0;
+
+    AVIMConversation conversation = client.getConversation(this.conversationId, isTransient, isTemp);
+    conversation.setTemporaryExpiredat(System.currentTimeMillis()/1000 + tempTTL);
+    return conversation;
+  }
 
   void onMembersJoined(List<String> members, String invitedBy) {
     AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();

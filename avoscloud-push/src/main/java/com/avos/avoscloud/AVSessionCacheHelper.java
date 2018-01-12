@@ -153,13 +153,13 @@ class AVSessionCacheHelper {
      * @param realtimeSessionToken
      * @param expireInSec
      */
-    static void addIMSessionToken(String clientId, String realtimeSessionToken, int expireInSec) {
+    static void addIMSessionToken(String clientId, String realtimeSessionToken, long expireInSec) {
       if (AVIMClient.isAutoOpen()) {
         AVPersistenceUtils.sharedInstance().savePersistentSettingString(SESSION_TOKEN_KEY, clientId,
             realtimeSessionToken);
         AVPersistenceUtils.sharedInstance().savePersistentSettingString(SESSION_TOKEN_KEY,
           getSessionTokenExpiredAtKey(clientId),
-          String.valueOf(System.currentTimeMillis() + expireInSec * 1000));
+          String.valueOf(expireInSec));
       } else {
         imSessionTokenMap.put(clientId, realtimeSessionToken);
       }

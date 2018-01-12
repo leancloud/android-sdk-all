@@ -15,6 +15,7 @@ public interface Conversation {
   String PARAM_CONVERSATION_TEMPORARY_TTL = "conversation.tempTTL";
   String PARAM_CONVERSATION_ISSYSTEM = "conversation.sys";
   String PARAM_ONLINE_CLIENTS = "client.oneline";
+  String PARAM_CONVERSATION_MEMBER_DETAILS = "conversation.memberDetails";
 
   String PARAM_MESSAGE_QUERY_LIMIT = "limit";
   String PARAM_MESSAGE_QUERY_DIRECT = "direct";
@@ -24,6 +25,7 @@ public interface Conversation {
   String PARAM_MESSAGE_QUERY_TO_MSGID = "tmid";
   String PARAM_MESSAGE_QUERY_TO_TIMESTAMP = "tt";
   String PARAM_MESSAGE_QUERY_TOCLOSED = "tinc";
+  String PARAM_MESSAGE_QUERY_TYPE = "type";
 
   String INTENT_KEY_DATA = "conversation.data";
   String INTENT_KEY_MESSAGE_OPTION = "conversation.messageoption";
@@ -59,6 +61,14 @@ public interface Conversation {
     CONVERSATION_FETCH_RECEIPT_TIME(40017, "com.avoscloud.v2.im.conversation.fetchReceiptTimestamps."),
     CONVERSATION_UPDATE_MESSAGE(40018, "com.avoscloud.v2.im.conversation.updateMessage."),
     CONVERSATION_RECALL_MESSAGE(40019, "com.avoscloud.v2.im.conversation.recallMessage."),
+    CLIENT_REFRESH_TOKEN(40020, "com.avoscloud.v2.im.client.refreshToken"),
+    CONVERSATION_PROMOTE_MEMBER(40021, "com.avoscloud.v2.im.conversation.promoteMember"),
+    CONVERSATION_MUTE_MEMBER(40022, "com.avoscloud.v2.im.conversation.muteMember"),
+    CONVERSATION_UNMUTE_MEMBER(40023, "com.avoscloud.v2.im.conversation.unmuteMember"),
+    CONVERSATION_BLOCK_MEMBER(40024, "com.avoscloud.v2.im.conversation.blockMember"),
+    CONVERSATION_UNBLOCK_MEMBER(40025, "com.avoscloud.v2.im.conversation.unblockMember"),
+    CONVERSATION_MUTED_MEMBER_QUERY(40026, "com.avoscloud.v2.im.conversation.mutedMemberQuery"),
+    CONVERSATION_BLOCKED_MEMBER_QUERY(40027, "com.avoscloud.v2.im.conversation.blockedMemberQuery"),
     CONVERSATION_UNKNOWN(49999, "com.avoscloud.v2.im.conversation.unknown");
 
     private final String header;
@@ -119,6 +129,22 @@ public interface Conversation {
           return CONVERSATION_UPDATE_MESSAGE;
         case 40019:
           return CONVERSATION_RECALL_MESSAGE;
+        case 40020:
+          return CLIENT_REFRESH_TOKEN;
+        case 40021:
+          return CONVERSATION_PROMOTE_MEMBER;
+        case 40022:
+          return CONVERSATION_MUTE_MEMBER;
+        case 40023:
+          return CONVERSATION_UNMUTE_MEMBER;
+        case 40024:
+          return CONVERSATION_BLOCK_MEMBER;
+        case 40025:
+          return CONVERSATION_UNBLOCK_MEMBER;
+        case 40026:
+          return CONVERSATION_MUTED_MEMBER_QUERY;
+        case 40027:
+          return CONVERSATION_BLOCKED_MEMBER_QUERY;
         default:
           return CONVERSATION_UNKNOWN;
       }
@@ -139,6 +165,17 @@ public interface Conversation {
   int STATUS_ON_MESSAGE_DELIVERED = 50014;
   int STATUS_ON_MESSAGE_UPDATED = 50015;
   int STATUS_ON_MESSAGE_RECALLED = 50016;
+  int STATUS_ON_MEMBER_INFO_CHANGED = 50017;
+  // mute member
+  int STATUS_ON_MUTED = 50018;
+  int STATUS_ON_UNMUTED = 50019;
+  int STATUS_ON_MEMBER_MUTED = 50020;
+  int STATUS_ON_MEMBER_UNMUTED = 50021;
+  // block member
+  int STATUS_ON_BLOCKED = 50022;
+  int STATUS_ON_UNBLOCKED = 50023;
+  int STATUS_ON_MEMBER_BLOCKED = 50024;
+  int STATUS_ON_MEMBER_UNBLOCKED = 50025;
 
   int CONV_TYPE_UNKNOWN = 0;
   int CONV_TYPE_NORMAL = 1;
@@ -166,6 +203,8 @@ public interface Conversation {
 //  String callbackTransient = "callbackTransient";
 //  String callbackSystem = "callbackSystem";
   String callbackConvType = "callbackConvType";
+  String callbackConvMemberMuted_SUCC = "callbackConvMemberMutedSUCC";
+  String callbackConvMemberMuted_FAIL = "callbackConvMemberMutedFAIL";
 
   String QUERY_PARAM_OFFSET = "skip";
   String QUERY_PARAM_LIMIT = "limit";

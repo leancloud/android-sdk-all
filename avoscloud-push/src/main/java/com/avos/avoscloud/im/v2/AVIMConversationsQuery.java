@@ -574,10 +574,12 @@ public class AVIMConversationsQuery {
     List<AVIMConversation> conversations = new LinkedList<AVIMConversation>();
     for (int i = 0; i < content.size(); i++) {
       JSONObject jsonObject = content.getJSONObject(i);
-      AVIMConversation conversation = AVIMConversation.parseFromJson(client, jsonObject);
-      if (null != conversation) {
-        conversations.add(conversation);
-        client.conversationCache.put(conversation.getConversationId(), conversation);
+      AVIMConversation allNewConversation = AVIMConversation.parseFromJson(client, jsonObject);
+      if (null != allNewConversation) {
+        AVIMConversation convResult = client.mergeConversationCache(allNewConversation, false, jsonObject);
+        if (null != convResult) {
+          conversations.add(convResult);
+        }
       }
     }
     return conversations;

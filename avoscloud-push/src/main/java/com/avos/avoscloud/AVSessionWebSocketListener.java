@@ -15,6 +15,7 @@ import com.avos.avoscloud.im.v2.AVIMTypedMessage;
 import com.avos.avoscloud.im.v2.Conversation;
 import com.avos.avoscloud.im.v2.Conversation.AVIMOperation;
 import com.avos.avospush.push.AVWebSocketListener;
+import com.avos.avospush.session.BlacklistCommandPacket;
 import com.avos.avospush.session.CommandPacket;
 import com.avos.avospush.session.ConversationAckPacket;
 import com.avos.avospush.session.ConversationControlPacket.ConversationControlOp;
@@ -130,38 +131,41 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
 
   @Override
   public void onSessionCommand(String op, Integer requestKey, Messages.SessionCommand command) {
+    int requestId = (null != requestKey ? requestKey : CommandPacket.UNSUPPORTED_OPERATION);
+
     if (op.equals(SessionControlPacket.SessionControlOp.OPENED)) {
       try {
         session.sessionOpened.set(true);
         session.sessionResume.set(false);
 
         if (!session.sessionPaused.getAndSet(false)) {
-          int requestId = (null != requestKey ? requestKey : CommandPacket.UNSUPPORTED_OPERATION);
           if (requestId != CommandPacket.UNSUPPORTED_OPERATION) {
             session.conversationOperationCache.poll(requestId);
           }
           session.sessionListener.onSessionOpen(AVOSCloud.applicationContext, session, requestId);
-          if (command.hasSt() && command.hasStTtl()) {
-            AVSessionCacheHelper.IMSessionTokenCache.addIMSessionToken(session.getSelfPeerId(),
-              command.getSt(), Integer.valueOf(command.getStTtl()));
-          }
         } else {
           if (AVOSCloud.showInternalDebugLog()) {
             LogUtil.avlog.d("session resumed");
           }
           session.sessionListener.onSessionResumed(AVOSCloud.applicationContext, session);
         }
+        if (command.hasSt() && command.hasStTtl()) {
+          session.updateRealtimeSessionToken(command.getSt(), Integer.valueOf(command.getStTtl()));
+        }
       } catch (Exception e) {
         session.sessionListener.onError(AVOSCloud.applicationContext, session, e);
       }
-    } else if (op.equals(SessionControlPacket.SessionControlOp.QUERY_RESULT)) {
+    } else if (op.equals(SessionControlPacket.SessionControlOp.RENEWED_RTMTOKEN)) {
+      if (command.hasSt() && command.hasStTtl()) {
+        session.updateRealtimeSessionToken(command.getSt(), Integer.valueOf(command.getStTtl()));
+      }
+      session.sessionListener.onSessionTokenRenewed(AVOSCloud.applicationContext, session, requestId);
+    }else if (op.equals(SessionControlPacket.SessionControlOp.QUERY_RESULT)) {
       final List<String> sessionPeerIds = command.getOnlineSessionPeerIdsList();
-      int requestId = (null != requestKey ? requestKey : CommandPacket.UNSUPPORTED_OPERATION);
       session.sessionListener.onOnlineQuery(AVOSCloud.applicationContext, session, sessionPeerIds,
           requestId);
 
     } else if (op.equals(SessionControlPacket.SessionControlOp.CLOSED)) {
-      int requestId = (null != requestKey ? requestKey : CommandPacket.UNSUPPORTED_OPERATION);
       if (command.hasCode()) {
         session.sessionListener.onSessionClosedFromServer(AVOSCloud.applicationContext, session,
             command.getCode());
@@ -289,15 +293,65 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
   }
 
   @Override
+  public void onBlacklistCommand(String operation, Integer requestKey, Messages.BlacklistCommand blacklistCommand) {
+    if (BlacklistCommandPacket.BlacklistCommandOp.QUERY_RESULT.equals(operation)) {
+      Operation op = session.conversationOperationCache.poll(requestKey);
+      if (null == op || op.operation != AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY.getCode()) {
+        LogUtil.log.w("not found requestKey: " + requestKey);
+      } else {
+        List<String> result = blacklistCommand.getBlockedPidsList();
+        String[] resultArray = new String[null == result ? 0: result.size()];
+        if (null != result) {
+          result.toArray(resultArray);
+        }
+        String cid = blacklistCommand.getSrcCid();
+        Bundle bundle = new Bundle();
+        bundle.putStringArray(Conversation.callbackData, resultArray);
+        BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), cid, requestKey,
+            bundle, AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY);
+      }
+    } else if (BlacklistCommandPacket.BlacklistCommandOp.BLOCKED.equals(operation)
+        || BlacklistCommandPacket.BlacklistCommandOp.UNBLOCKED.equals(operation)){
+      // response for block/unblock reqeust.
+      String conversationId = blacklistCommand.getSrcCid();
+      AVInternalConversation internalConversation = session.getConversation(conversationId, Conversation.CONV_TYPE_NORMAL);
+      Operation op = session.conversationOperationCache.poll(requestKey);
+      if (null == op || null == internalConversation) {
+        // warning.
+      } else {
+        AVIMOperation originOperation = AVIMOperation.getAVIMOperation(op.operation);
+        internalConversation.onResponse4MemberBlock(originOperation, operation, requestKey, blacklistCommand);
+      }
+    }
+  }
+  @Override
   public void onConversationCommand(String operation, Integer requestKey, Messages.ConvCommand convCommand) {
     if (ConversationControlOp.QUERY_RESULT.equals(operation)) {
       Operation op = session.conversationOperationCache.poll(requestKey);
-      if (op.operation == AVIMOperation.CONVERSATION_QUERY.getCode()) {
+      if (null != op && op.operation == AVIMOperation.CONVERSATION_QUERY.getCode()) {
         String result = convCommand.getResults().getData();
         Bundle bundle = new Bundle();
         bundle.putString(Conversation.callbackData, result);
-        BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), null, requestKey, bundle, AVIMOperation.CONVERSATION_QUERY);
+        BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), null, requestKey,
+            bundle, AVIMOperation.CONVERSATION_QUERY);
         // verified: it's not need to update local cache?
+      } else {
+        LogUtil.log.w("not found requestKey: " + requestKey);
+      }
+    } else if (ConversationControlOp.QUERY_SHUTUP_RESULT.equals(operation)) {
+      Operation op = session.conversationOperationCache.poll(requestKey);
+      if (null != op && op.operation == AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY.getCode()) {
+        List<String> result = convCommand.getMList(); // result stored in m field.
+        String[] resultMembers = new String[null == result? 0 : result.size()];
+        if (null != result) {
+          result.toArray(resultMembers);
+        }
+        Bundle bundle = new Bundle();
+        bundle.putStringArray(Conversation.callbackData, resultMembers);
+        BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), null, requestKey,
+            bundle, AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY);
+      } else {
+        LogUtil.log.w("not found requestKey: " + requestKey);
       }
     } else {
       String conversationId = null;
@@ -306,7 +360,10 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
       if ((operation.equals(ConversationControlOp.ADDED)
           || operation.equals(ConversationControlOp.REMOVED)
           || operation.equals(ConversationControlOp.UPDATED)
-          || operation.equals(ConversationControlOp.MEMBER_COUNT_QUERY_RESULT))
+          || operation.equals(ConversationControlOp.MEMBER_COUNT_QUERY_RESULT)
+          || operation.equals(ConversationControlOp.SHUTUP_ADDED)
+          || operation.equals(ConversationControlOp.SHUTUP_REMOVED)
+          || operation.equals(ConversationControlOp.MEMBER_UPDATED))
           && requestId != CommandPacket.UNSUPPORTED_OPERATION) {
 
         Operation op = session.conversationOperationCache.poll(requestId);
@@ -345,14 +402,14 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
   public void onError(Integer requestKey, Messages.ErrorCommand errorCommand) {
     if (null != requestKey && requestKey != CommandPacket.UNSUPPORTED_OPERATION) {
       Operation op = session.conversationOperationCache.poll(requestKey);
-      if (op.operation == AVIMOperation.CLIENT_OPEN.getCode()) {
+      if (null != op && op.operation == AVIMOperation.CLIENT_OPEN.getCode()) {
         session.sessionOpened.set(false);
         session.sessionResume.set(false);
       }
       int code = errorCommand.getCode();
       int appCode = (errorCommand.hasAppCode() ? errorCommand.getAppCode() : 0);
       String reason = errorCommand.getReason();
-      AVIMOperation operation = AVIMOperation.getAVIMOperation(op.operation);
+      AVIMOperation operation = (null != op)? AVIMOperation.getAVIMOperation(op.operation): null;
       BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), null, requestKey,
           new AVIMException(code, appCode, reason), operation);
     }
@@ -365,7 +422,7 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
         AVSessionCacheHelper.getTagCacheInstance().removeSession(session.getSelfPeerId());
       } else if (CODE_SESSION_TOKEN_FAILURE == code) {
         // 如果遇到session token 失效或者过期的情况，先是清理缓存，然后再重新触发一次自动登录
-        AVSessionCacheHelper.IMSessionTokenCache.removeIMSessionToken(session.getSelfPeerId());
+        session.updateRealtimeSessionToken("", 0);
         this.onWebSocketOpen();
       }
     }

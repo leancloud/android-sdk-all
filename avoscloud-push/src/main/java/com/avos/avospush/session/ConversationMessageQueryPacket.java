@@ -27,6 +27,8 @@ public class ConversationMessageQueryPacket extends PeerBasedCommandPacket {
   boolean tclosed;
   int direct;
 
+  int msgType;
+
   public boolean isSclosed() {
     return sclosed;
   }
@@ -109,6 +111,14 @@ public class ConversationMessageQueryPacket extends PeerBasedCommandPacket {
     this.requestId = requestId;
   }
 
+  public int getMsgType() {
+    return msgType;
+  }
+
+  public void setMsgType(int msgType) {
+    this.msgType = msgType;
+  }
+
   @Override
   protected Messages.GenericCommand.Builder getGenericCommandBuilder() {
     Messages.GenericCommand.Builder builder = super.getGenericCommandBuilder();
@@ -144,13 +154,16 @@ public class ConversationMessageQueryPacket extends PeerBasedCommandPacket {
     } else {
       builder.setDirection(Messages.LogsCommand.QueryDirection.NEW);
     }
+    if (msgType != 0) {
+      builder.setLctype(msgType);
+    }
     return builder.build();
   }
 
   public static ConversationMessageQueryPacket getConversationMessageQueryPacket(String peerId, String conversationId,
                                                                                  String msgId, long timestamp, boolean sclosed,
                                                                                  String toMsgId, long toTimestamp, boolean tclosed,
-                                                                                 int direct, int limit, int requestId) {
+                                                                                 int direct, int limit, int msgType, int requestId) {
     ConversationMessageQueryPacket cqp = new ConversationMessageQueryPacket();
     if (AVIMClient.getClientsCount() > 1) {
       // peerId is necessary only when more than 1 client logined.
@@ -168,6 +181,7 @@ public class ConversationMessageQueryPacket extends PeerBasedCommandPacket {
     cqp.setToMsgId(toMsgId);
     cqp.setToTimestamp(toTimestamp);
     cqp.setTclosed(tclosed);
+    cqp.setMsgType(msgType);
 
     return cqp;
   }

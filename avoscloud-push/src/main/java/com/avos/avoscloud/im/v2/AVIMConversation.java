@@ -15,14 +15,22 @@ import com.avos.avoscloud.IntentUtil;
 import com.avos.avoscloud.LogUtil;
 import com.avos.avoscloud.PushService;
 import com.avos.avoscloud.PushServiceParcel;
+import com.avos.avoscloud.QueryOperation;
 import com.avos.avoscloud.SaveCallback;
+import com.avos.avoscloud.QueryConditions;
 import com.avos.avoscloud.im.v2.Conversation.AVIMOperation;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationCallback;
+import com.avos.avoscloud.im.v2.callback.AVIMOperationFailure;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationMemberCountCallback;
+import com.avos.avoscloud.im.v2.callback.AVIMConversationMemberQueryCallback;
+import com.avos.avoscloud.im.v2.callback.AVIMOperationPartiallySucceededCallback;
+import com.avos.avoscloud.im.v2.callback.AVIMConversationSimpleResultCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMMessageRecalledCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMMessageUpdatedCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMMessagesQueryCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMSingleMessageQueryCallback;
+import com.avos.avoscloud.im.v2.conversation.AVIMConversationMemberInfo;
+import com.avos.avoscloud.im.v2.conversation.ConversationMemberRole;
 import com.avos.avoscloud.im.v2.messages.AVIMFileMessage;
 import com.avos.avoscloud.im.v2.messages.AVIMFileMessageAccessor;
 import com.avos.avoscloud.im.v2.messages.AVIMRecalledMessage;
@@ -56,7 +64,6 @@ public class AVIMConversation {
   public static final int RECEIPT_MESSAGE_FLAG = 0x100;
 
   private static final String ATTR_PERFIX = Conversation.ATTRIBUTE + ".";
-
 
   String conversationId;
   Set<String> members;
@@ -357,14 +364,47 @@ public class AVIMConversation {
       String toMsgId, long toTimestamp, AVIMMessagesQueryCallback callback) {
     queryMessagesFromServer(msgId, timestamp, false, toMsgId, toTimestamp, false,
         AVIMMessageQueryDirection.AVIMMessageQueryDirectionFromNewToOld, limit, callback);
-//    Map<String, Object> params = new HashMap<String, Object>();
-//    params.put(Conversation.PARAM_MESSAGE_QUERY_LIMIT, limit);
-//    params.put(Conversation.PARAM_MESSAGE_QUERY_MSGID, msgId);
-//    params.put(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP, timestamp);
-//    params.put(Conversation.PARAM_MESSAGE_QUERY_TO_MSGID, toMsgId);
-//    params.put(Conversation.PARAM_MESSAGE_QUERY_TO_TIMESTAMP, toTimestamp);
-//    sendCMDToPushService(JSON.toJSONString(params),
-//        AVIMOperation.CONVERSATION_MESSAGE_QUERY, callback);
+  }
+
+  /**
+   * 获取特停类型的历史消息。
+   * 注意：这个操作总是会从云端获取记录。
+   * 另，该函数和 queryMessagesByType(type, msgId, timestamp, limit, callback) 配合使用可以实现翻页效果。
+   *
+   * @param msgType     消息类型，可以参看  `AVIMMessageType` 里的定义。
+   * @param limit       本批次希望获取的消息数量。
+   * @param callback    结果回调函数
+   */
+  public void queryMessagesByType(int msgType, int limit, final AVIMMessagesQueryCallback callback) {
+    queryMessagesByType(msgType, null, 0, limit, callback);
+  }
+
+  /**
+   * 获取特定类型的历史消息。
+   * 注意：这个操作总是会从云端获取记录。
+   * 另，如果不指定 msgId 和 timestamp，则该函数效果等同于 queryMessageByType(type, limit, callback)
+   *
+   * @param msgType     消息类型，可以参看  `AVIMMessageType` 里的定义。
+   * @param msgId       消息id，从特定消息 id 开始向前查询（结果不会包含该记录）
+   * @param timestamp   查询起始的时间戳，返回小于这个时间的记录，必须配合 msgId 一起使用。
+   *                    要从最新消息开始获取时，请用 0 代替客户端的本地当前时间（System.currentTimeMillis()）
+   * @param limit       返回条数限制
+   * @param callback    结果回调函数
+   */
+  public void queryMessagesByType(int msgType, final String msgId, final long timestamp, final int limit,
+                                  final AVIMMessagesQueryCallback callback) {
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.PARAM_MESSAGE_QUERY_MSGID, msgId);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP, timestamp);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_STARTCLOSED, false);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_TO_MSGID, "");
+    params.put(Conversation.PARAM_MESSAGE_QUERY_TO_TIMESTAMP, 0);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_TOCLOSED, false);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_DIRECT, AVIMMessageQueryDirection.AVIMMessageQueryDirectionFromNewToOld.getCode());
+    params.put(Conversation.PARAM_MESSAGE_QUERY_LIMIT, limit);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_TYPE, msgType);
+    sendNonSideEffectCommand(JSON.toJSONString(params),
+        AVIMOperation.CONVERSATION_MESSAGE_QUERY, callback);
   }
 
   private void queryMessagesFromServer(String msgId, long timestamp, boolean startClosed,
@@ -380,6 +420,7 @@ public class AVIMConversation {
     params.put(Conversation.PARAM_MESSAGE_QUERY_TOCLOSED, toClosed);
     params.put(Conversation.PARAM_MESSAGE_QUERY_DIRECT, direction.getCode());
     params.put(Conversation.PARAM_MESSAGE_QUERY_LIMIT, limit);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_TYPE, 0);
     sendCMDToPushService(JSON.toJSONString(params),
         AVIMOperation.CONVERSATION_MESSAGE_QUERY, cb);
   }
@@ -525,15 +566,6 @@ public class AVIMConversation {
               String startMsgId = msgId;
               long startTS = timestamp;
               int requestLimit = limit;
-              // comment by jwfing[2017/8/25]: it is not necessary to find out newer message, isn't it?
-//              if (indicatorMessage != null && isIndicateMessageBreakPoint) {
-//                AVIMMessage nextMessage = storage.getNextMessage(indicatorMessage);
-//                if (nextMessage != null) {
-//                  startMsgId = nextMessage.getMessageId();
-//                  startTS = nextMessage.getTimestamp();
-//                  requestLimit = limit + 1;
-//                }
-//              }
               queryMessagesFromServer(startMsgId, startTS, requestLimit, null, 0,
                   new AVIMMessagesQueryCallback() {
                     @Override
@@ -671,12 +703,6 @@ public class AVIMConversation {
     } else {
       final int restCount;
       final AVIMMessage startMessage;
-//      if (firstBreakPointIndex > 0 && firstBreakPointIndex < cachedMessages.size()) {
-//        // 这个地方是指这些缓存中间有breakPoint的时候
-//        restCount = limit - continuousMessages.size() + 1;
-//        startMessage = cachedMessages.get(firstBreakPointIndex - 1);
-//        continuousMessages.add(startMessage);
-//      } else
       if (!continuousMessages.isEmpty()) {
         // 这里是缓存里面没有breakPoint，但是limit不够的情况下
         restCount = limit - continuousMessages.size();
@@ -710,6 +736,177 @@ public class AVIMConversation {
     }
   }
 
+  /**
+   * 获取当前对话的所有角色信息
+   * @param offset    查询结果的起始点
+   * @param limit     查询结果集上限
+   * @param callback  结果回调函数
+   */
+  public void getAllMemberInfo(int offset, int limit, final AVIMConversationMemberQueryCallback callback) {
+    QueryConditions conditions = new QueryConditions();
+    conditions.addWhereItem("cid", QueryOperation.EQUAL_OP, this.conversationId);
+    conditions.setSkip(offset);
+    conditions.setLimit(limit);
+    queryMemberInfo(conditions, callback);
+  }
+
+  /**
+   * 获取对话内指定成员的角色信息
+   * @param memberId  成员的 clientid
+   * @param callback  结果回调函数
+   */
+  public void getMemberInfo(final String memberId, final AVIMConversationMemberQueryCallback callback) {
+    QueryConditions conditions = new QueryConditions();
+    conditions.addWhereItem("cid", QueryOperation.EQUAL_OP, this.conversationId);
+    conditions.addWhereItem("peerId", QueryOperation.EQUAL_OP, memberId);
+    queryMemberInfo(conditions, callback);
+  }
+
+  /**
+   * 更新成员的角色信息
+   * @param memberId  成员的 client id
+   * @param role      角色
+   * @param callback  结果回调函数
+   */
+  public void updateMemberRole(final String memberId, final ConversationMemberRole role, final AVIMConversationCallback callback) {
+    AVIMConversationMemberInfo info = new AVIMConversationMemberInfo(this.conversationId, memberId, role);
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.PARAM_CONVERSATION_MEMBER_DETAILS, info.getUpdateAttrs());
+    sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_PROMOTE_MEMBER,
+        callback, null);
+  }
+
+  private void updateNickName(final String nickname, final AVIMConversationCallback callback) {
+    ;
+  }
+
+  private void updateMemberComment(final String memberComment, final AVIMConversationCallback callback) {
+    ;
+  }
+
+  private void queryMemberInfo(final QueryConditions queryConditions, final AVIMConversationMemberQueryCallback callback) {
+    if (null == queryConditions || null == callback) {
+      return;
+    }
+    client.queryConversationMemberInfo(queryConditions, callback);
+  }
+
+  /**
+   * 将部分成员禁言
+   * @param memberIds  成员列表
+   * @param callback   结果回调函数
+   */
+  public void muteMembers(final List<String> memberIds, final AVIMOperationPartiallySucceededCallback callback) {
+    if (null == memberIds || memberIds.size() < 1) {
+      if (null != callback) {
+        callback.done(new AVIMException(new IllegalArgumentException("memberIds is null")), null, null);
+      }
+      return;
+    }
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
+    sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_MUTE_MEMBER,
+        callback, null);
+  }
+
+  /**
+   * 将部分成员解除禁言
+   * @param memberIds  成员列表
+   * @param callback   结果回调函数
+   */
+  public void unmuteMembers(final List<String> memberIds, final AVIMOperationPartiallySucceededCallback callback) {
+    if (null == memberIds || memberIds.size() < 1) {
+      if (null != callback) {
+        callback.done(new AVIMException(new IllegalArgumentException("memberIds is null")), null, null);
+      }
+      return;
+    }
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
+    sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_UNMUTE_MEMBER,
+        callback, null);
+  }
+
+  /**
+   * 查询被禁言的成员列表
+   * @param offset    查询结果的起始点
+   * @param limit     查询结果集上限
+   * @param callback  结果回调函数
+   */
+  public void queryMutedMembers(int offset, int limit, final AVIMConversationSimpleResultCallback callback) {
+    if (null == callback) {
+      return;
+    } else if (offset < 0 || limit > 100) {
+      callback.internalDone(null, new AVIMException(new IllegalArgumentException("offset/limit is illegal.")));
+      return;
+    }
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.QUERY_PARAM_LIMIT, limit);
+    params.put(Conversation.QUERY_PARAM_OFFSET, offset);
+    sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY,
+        callback, null);
+  }
+
+  /**
+   * 将部分成员加入黑名单
+   * @param memberIds  成员列表
+   * @param callback   结果回调函数
+   */
+  public void blockMembers(final List<String> memberIds, final AVIMOperationPartiallySucceededCallback callback) {
+    if (null == memberIds || memberIds.size() < 1) {
+      if (null != callback) {
+        callback.done(new AVIMException(new IllegalArgumentException("memberIds is null")), null, null);
+      }
+      return;
+    }
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
+    sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_BLOCK_MEMBER,
+        callback, null);
+  }
+
+  /**
+   * 将部分成员从黑名单移出来
+   * @param memberIds  成员列表
+   * @param callback   结果回调函数
+   */
+  public void unblockMembers(final List<String> memberIds, final AVIMOperationPartiallySucceededCallback callback) {
+    if (null == memberIds || memberIds.size() < 1) {
+      if (null != callback) {
+        callback.done(new AVIMException(new IllegalArgumentException("memberIds is null")), null, null);
+      }
+      return;
+    }
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
+    sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_UNBLOCK_MEMBER,
+        callback, null);
+  }
+
+  /**
+   * 查询黑名单的成员列表
+   * @param offset    查询结果的起始点
+   * @param limit     查询结果集上限
+   * @param callback  结果回调函数
+   */
+  public void queryBlockedMembers(int offset, int limit, final AVIMConversationSimpleResultCallback callback) {
+    if (null == callback) {
+      return;
+    } else if (offset < 0 || limit > 100) {
+      callback.internalDone(null, new AVIMException(new IllegalArgumentException("offset/limit is illegal.")));
+      return;
+    }
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.QUERY_PARAM_LIMIT, limit);
+    params.put(Conversation.QUERY_PARAM_OFFSET, offset);
+    sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY,
+        callback, null);
+  }
+
+  /**
+   * 查询成员数量
+   * @param callback
+   */
   public void getMemberCount(AVIMConversationMemberCountCallback callback) {
     sendCMDToPushService(null, AVIMOperation.CONVERSATION_MEMBER_COUNT_QUERY, callback);
   }
@@ -1331,6 +1528,45 @@ public class AVIMConversation {
     sendCMDToPushService(dataInString, null, null, operation, callback, null);
   }
 
+  private void sendNonSideEffectCommand(String dataInString, final AVIMOperation operation, AVCallback callback) {
+    if (null == callback) {
+      return;
+    }
+    final int requestId = AVUtils.getNextIMRequestId();
+    Intent i = new Intent(AVOSCloud.applicationContext, PushService.class);
+    i.setAction(Conversation.AV_CONVERSATION_INTENT_ACTION);
+    if (!AVUtils.isBlankString(dataInString)) {
+      i.putExtra(Conversation.INTENT_KEY_DATA, dataInString);
+    }
+    i.putExtra(Conversation.INTENT_KEY_CLIENT, client.clientId);
+    i.putExtra(Conversation.INTENT_KEY_CONVERSATION, this.conversationId);
+    i.putExtra(Conversation.INTENT_KEY_CONV_TYPE, this.getType());
+    i.putExtra(Conversation.INTENT_KEY_OPERATION, operation.getCode());
+    i.putExtra(Conversation.INTENT_KEY_REQUESTID, requestId);
+    AVOSCloud.applicationContext.startService(IntentUtil.setupIntentFlags(i));
+    LocalBroadcastManager.getInstance(AVOSCloud.applicationContext).registerReceiver(
+        new AVIMBaseBroadcastReceiver(callback) {
+          @Override
+          public void execute(Intent intent, Throwable ex) {
+            // 处理历史消息查询
+            if (operation.getCode() == AVIMOperation.CONVERSATION_MESSAGE_QUERY.getCode()) {
+              List<AVIMMessage> historyMessages =
+                  intent.getParcelableArrayListExtra(Conversation.callbackHistoryMessages);
+
+              if (ex != null) {
+                callback.internalDone(null, new AVIMException(ex));
+              } else {
+                if (historyMessages == null) {
+                  historyMessages = Collections.EMPTY_LIST;
+                }
+                callback.internalDone(historyMessages, null);
+              }
+              return;
+            }
+          }
+        }, new IntentFilter(operation.getOperation() + requestId));
+  }
+
   private void sendCMDToPushService(String dataInString, final AVIMMessage message, final AVIMMessageOption messageOption, final AVIMOperation operation,
                                     final AVCallback callback, final OperationCompleteCallback occ) {
     final int requestId = AVUtils.getNextIMRequestId();
@@ -1424,6 +1660,7 @@ public class AVIMConversation {
                 }
               }
 
+              // 处理成员数量查询
               if (operation.getCode() == AVIMOperation.CONVERSATION_MEMBER_COUNT_QUERY.getCode()) {
                 int memberCount = intent.getIntExtra(Conversation.callbackMemberCount, 0);
                 callback.internalDone(memberCount, AVIMException.wrapperAVException(error));
@@ -1438,7 +1675,30 @@ public class AVIMConversation {
                 return;
               }
 
+              // 处理对成员禁言/拉黑系操作
+              if (operation.getCode() == AVIMOperation.CONVERSATION_MUTE_MEMBER.getCode()
+                  || operation.getCode() == AVIMOperation.CONVERSATION_UNMUTE_MEMBER.getCode()
+                  || operation.getCode() == AVIMOperation.CONVERSATION_BLOCK_MEMBER.getCode()
+                  || operation.getCode() == AVIMOperation.CONVERSATION_UNBLOCK_MEMBER.getCode()) {
+                String[] allowedList = intent.getStringArrayExtra(Conversation.callbackConvMemberMuted_SUCC);
+                ArrayList<AVIMOperationFailure> failedList = intent.getParcelableArrayListExtra(Conversation.callbackConvMemberMuted_FAIL);
+                Map<String, Object> result = new HashMap<>();
+                result.put(Conversation.callbackConvMemberMuted_SUCC, allowedList);
+                result.put(Conversation.callbackConvMemberMuted_FAIL, failedList);
+                callback.internalDone(result, AVIMException.wrapperAVException(error));
+                return;
+              }
+
+              // 处理被禁言成员列表查询
+              if (operation.getCode() == AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY.getCode()
+                  || operation.getCode() == AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY.getCode()) {
+                String[] result = intent.getStringArrayExtra(Conversation.callbackData);
+                callback.internalDone(null != result? Arrays.asList(result): null, AVIMException.wrapperAVException(error));
+                return;
+              }
+
               if (operation.getCode() == AVIMOperation.CONVERSATION_QUERY.getCode()) {
+                // for fetchInfoInBackground() method.
                 if (null != error) {
                   callback.internalDone(null, AVIMException.wrapperAVException(error));
                 } else {
@@ -1464,8 +1724,10 @@ public class AVIMConversation {
         String result = (String)serializable;
         JSONArray jsonArray = JSON.parseArray(String.valueOf(result));
         if (null != jsonArray && !jsonArray.isEmpty()) {
-          updateConversation(this, jsonArray.getJSONObject(0));
-          client.conversationCache.put(conversationId, this);
+          JSONObject jsonObject = jsonArray.getJSONObject(0);
+          updateConversation(this, jsonObject);
+          client.mergeConversationCache(this, true, null);
+//          client.conversationCache.put(conversationId, this);
           storage.insertConversations(Arrays.asList(this));
         }
       } catch (Exception e) {
@@ -1516,7 +1778,7 @@ public class AVIMConversation {
     return updateConversation(originConv, jsonObj);
   }
 
-  private static AVIMConversation updateConversation(AVIMConversation conversation, JSONObject jsonObj) {
+  static AVIMConversation updateConversation(AVIMConversation conversation, JSONObject jsonObj) {
     if (null == jsonObj || null == conversation) {
       return conversation;
     }

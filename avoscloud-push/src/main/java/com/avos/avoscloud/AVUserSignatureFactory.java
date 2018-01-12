@@ -59,6 +59,11 @@ public class AVUserSignatureFactory implements SignatureFactory {
     return null;
   }
 
+  public Signature createBlacklistSignature(String clientId, String conversationId, List<String> memberIds,
+                                            String action) throws SignatureException {
+    return null;
+  }
+
   private Signature parseSiparseSignaturegnature(String content) throws SignatureException {
     if (AVUtils.isBlankString(content)) {
       throw new SignatureException(SignatureFactory.SIGNATURE_FAILED_LOGIN, "singnature is empty");
