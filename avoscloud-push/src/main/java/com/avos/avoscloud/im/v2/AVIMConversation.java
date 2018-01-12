@@ -1394,22 +1394,6 @@ public class AVIMConversation {
   }
 
   /**
-   * 在 Push Service 内部直接发送请求来更新属性
-   *
-   * @param callback
-   */
-  void internalFetchInfo(final AVIMConversationCallback callback) {
-    if (null == callback) {
-      return;
-    }
-    if (StringUtils.isBlankString(conversationId)) {
-      callback.internalDone(null, new AVException(AVException.INVALID_QUERY, "ConversationId is empty"));
-      return;
-    }
-    // send data through websocket.
-  }
-
-  /**
    * 加入当前聊天对话
    *
    * @param callback
