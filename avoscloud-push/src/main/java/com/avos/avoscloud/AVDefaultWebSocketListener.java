@@ -2,15 +2,12 @@ package com.avos.avoscloud;
 
 import android.os.Bundle;
 
-import java.util.ArrayList;
 import java.util.List;
 import com.avos.avoscloud.AVIMOperationQueue.Operation;
 import com.avos.avoscloud.PendingMessageCache.Message;
-import com.avos.avoscloud.SignatureFactory.SignatureException;
 import com.avos.avoscloud.im.v2.AVIMBinaryMessage;
 import com.avos.avoscloud.im.v2.AVIMException;
 import com.avos.avoscloud.im.v2.AVIMMessage;
-import com.avos.avoscloud.im.v2.AVIMOptions;
 import com.avos.avoscloud.im.v2.AVIMTypedMessage;
 import com.avos.avoscloud.im.v2.Conversation;
 import com.avos.avoscloud.im.v2.Conversation.AVIMOperation;
@@ -25,13 +22,13 @@ import com.avos.avospush.session.SessionControlPacket;
 import com.avos.avospush.session.StaleMessageDepot;
 import com.google.protobuf.ByteString;
 
-class AVSessionWebSocketListener implements AVWebSocketListener {
+class AVDefaultWebSocketListener implements AVWebSocketListener {
 
   AVSession session;
   private final StaleMessageDepot depot;
   private static final String SESSION_MESSASGE_DEPOT = "com.avos.push.session.message.";
 
-  public AVSessionWebSocketListener(AVSession session) {
+  public AVDefaultWebSocketListener(AVSession session) {
     this.session = session;
     depot = new StaleMessageDepot(SESSION_MESSASGE_DEPOT + session.getSelfPeerId());
   }
@@ -59,7 +56,7 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
           while (!session.pendingMessages.isEmpty()) {
             Message m = session.pendingMessages.poll();
             if (!AVUtils.isBlankString(m.cid)) {
-              AVInternalConversation conversation = session.getConversation(m.cid, Conversation.CONV_TYPE_NORMAL);
+              AVConversationHolder conversation = session.getConversationHolder(m.cid, Conversation.CONV_TYPE_NORMAL);
               BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(),
                   conversation.conversationId, Integer.parseInt(m.id), new RuntimeException(
                       "Connection Lost"),
@@ -109,7 +106,7 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
       }
 
       if (depot.putStableMessage(messageId) && !AVUtils.isBlankString(conversationId)) {
-        AVInternalConversation conversation = session.getConversation(conversationId, convType);
+        AVConversationHolder conversation = session.getConversationHolder(conversationId, convType);
         AVIMMessage message = null;
         if (AVUtils.isBlankString(msg) && null != binaryMsg) {
           message = new AVIMBinaryMessage(conversationId, fromPeerId, timestamp, -1);
@@ -203,7 +200,7 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
       this.onAckError(requestKey, ackCommand, m);
     } else {
       if (null != m && !AVUtils.isBlankString(m.cid)) {
-        AVInternalConversation conversation = session.getConversation(m.cid, Conversation.CONV_TYPE_NORMAL);
+        AVConversationHolder conversation = session.getConversationHolder(m.cid, Conversation.CONV_TYPE_NORMAL);
         session.conversationOperationCache.poll(requestKey);
         String msgId = ackCommand.getUid();
         conversation.onMessageSent(requestKey, msgId, timestamp);
@@ -256,7 +253,7 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
    * @param timestamp
    */
   private void processConversationDeliveredAt(String conversationId, int convType, long timestamp) {
-    AVInternalConversation conversation = session.getConversation(conversationId, convType);
+    AVConversationHolder conversation = session.getConversationHolder(conversationId, convType);
     conversation.onConversationDeliveredAtEvent(timestamp);
   }
 
@@ -278,7 +275,7 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
     msg.setMessageId(m.id);
     msg.setContent(m.msg);
     msg.setMessageStatus(AVIMMessage.AVIMMessageStatus.AVIMMessageStatusReceipt);
-    AVInternalConversation conversation = session.getConversation(conversationId, convType);
+    AVConversationHolder conversation = session.getConversationHolder(conversationId, convType);
     conversation.onMessageReceipt(msg);
   }
 
@@ -287,7 +284,7 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
     if (rcpCommand.hasRead() && rcpCommand.hasCid()) {
       final Long timestamp = rcpCommand.getT();
       String conversationId = rcpCommand.getCid();
-      AVInternalConversation conversation = session.getConversation(conversationId, Conversation.CONV_TYPE_NORMAL);
+      AVConversationHolder conversation = session.getConversationHolder(conversationId, Conversation.CONV_TYPE_NORMAL);
       conversation.onConversationReadAtEvent(timestamp);
     }
   }
@@ -314,7 +311,7 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
         || BlacklistCommandPacket.BlacklistCommandOp.UNBLOCKED.equals(operation)){
       // response for block/unblock reqeust.
       String conversationId = blacklistCommand.getSrcCid();
-      AVInternalConversation internalConversation = session.getConversation(conversationId, Conversation.CONV_TYPE_NORMAL);
+      AVConversationHolder internalConversation = session.getConversationHolder(conversationId, Conversation.CONV_TYPE_NORMAL);
       Operation op = session.conversationOperationCache.poll(requestKey);
       if (null == op || null == internalConversation) {
         // warning.
@@ -382,7 +379,7 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
         convType = Conversation.CONV_TYPE_TRANSIENT;
       }
       if (!AVUtils.isBlankString(conversationId)) {
-        AVInternalConversation conversation = session.getConversation(conversationId, convType);
+        AVConversationHolder conversation = session.getConversationHolder(conversationId, convType);
         conversation.processConversationCommandFromServer(originOperation, operation, requestId, convCommand);
       }
     }
@@ -439,7 +436,7 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
           convType = item.getConvType();
         }
       }
-      AVInternalConversation conversation = session.getConversation(op.conversationId, convType);
+      AVConversationHolder conversation = session.getConversationHolder(op.conversationId, convType);
       conversation.processMessages(requestKey, command.getLogsList());
     }
   }
@@ -473,7 +470,7 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
           message.setMessageId(msgId);
           message.setUpdateAt(updateTS);
 
-          AVInternalConversation conversation = session.getConversation(conversationId, convType);
+          AVConversationHolder conversation = session.getConversationHolder(conversationId, convType);
           conversation.onUnreadMessagesEvent(message, unreadTuple.getUnread(), mentioned);
         }
       }
@@ -488,7 +485,7 @@ class AVSessionWebSocketListener implements AVWebSocketListener {
         for (Messages.PatchItem patchItem : patchCommand.getPatchesList()) {
           AVIMMessage message = AVIMTypedMessage.getMessage(patchItem.getCid(), patchItem.getMid(), patchItem.getData(), patchItem.getFrom(), patchItem.getTimestamp(), 0, 0);
           message.setUpdateAt(patchItem.getPatchTimestamp());
-          AVInternalConversation conversation = session.getConversation(patchItem.getCid(), Conversation.CONV_TYPE_NORMAL);
+          AVConversationHolder conversation = session.getConversationHolder(patchItem.getCid(), Conversation.CONV_TYPE_NORMAL);
           conversation.onMessageUpdateEvent(message, patchItem.getRecall());
         }
       }

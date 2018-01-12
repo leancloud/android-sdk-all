@@ -38,7 +38,7 @@ import com.avos.avospush.session.MessagePatchModifyPacket;
 import com.avos.avospush.session.UnreadMessagesClearPacket;
 
 @TargetApi(11)
-class AVInternalConversation {
+class AVConversationHolder {
   AVSession session;
   String conversationId;
   int convType;
@@ -49,7 +49,7 @@ class AVInternalConversation {
   private static final String BLOCK_MEMBER = "conversation-block-clients";
   private static final String UNBLOCK_MEMBER = "conversation-unblock-clients";
 
-  public AVInternalConversation(String conversationId, AVSession session, int convType) {
+  public AVConversationHolder(String conversationId, AVSession session, int convType) {
     this.session = session;
     this.conversationId = conversationId;
     this.conversationGene = getConversationGeneString();

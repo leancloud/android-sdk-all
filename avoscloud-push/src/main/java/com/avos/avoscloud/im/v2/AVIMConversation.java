@@ -34,6 +34,7 @@ import com.avos.avoscloud.im.v2.conversation.ConversationMemberRole;
 import com.avos.avoscloud.im.v2.messages.AVIMFileMessage;
 import com.avos.avoscloud.im.v2.messages.AVIMFileMessageAccessor;
 import com.avos.avoscloud.im.v2.messages.AVIMRecalledMessage;
+import com.avos.avoscloud.utils.StringUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -1390,6 +1391,22 @@ public class AVIMConversation {
       params.put(Conversation.QUERY_PARAM_WHERE, whereMap);
     }
     sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_QUERY, callback);
+  }
+
+  /**
+   * 在 Push Service 内部直接发送请求来更新属性
+   *
+   * @param callback
+   */
+  void internalFetchInfo(final AVIMConversationCallback callback) {
+    if (null == callback) {
+      return;
+    }
+    if (StringUtils.isBlankString(conversationId)) {
+      callback.internalDone(null, new AVException(AVException.INVALID_QUERY, "ConversationId is empty"));
+      return;
+    }
+    // send data through websocket.
   }
 
   /**

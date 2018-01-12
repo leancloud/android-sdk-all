@@ -6,7 +6,7 @@ import android.content.Context;
 
 import java.util.List;
 
-public abstract class AVInternalSessionListener {
+public abstract class AVSessionListener {
 
   public abstract void onError(Context context, AVSession session, Throwable e, int sessionOperation,
       int requestId);
