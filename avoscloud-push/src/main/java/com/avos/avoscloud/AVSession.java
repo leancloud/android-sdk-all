@@ -7,7 +7,6 @@ import com.avos.avoscloud.AVIMOperationQueue.Operation;
 import com.avos.avoscloud.PendingMessageCache.Message;
 import com.avos.avoscloud.SignatureFactory.SignatureException;
 import com.avos.avoscloud.im.v2.AVIMClient;
-import com.avos.avoscloud.im.v2.AVIMConversation;
 import com.avos.avoscloud.im.v2.AVIMMessage;
 import com.avos.avoscloud.im.v2.AVIMOptions;
 import com.avos.avoscloud.im.v2.Conversation.AVIMOperation;
@@ -71,13 +70,13 @@ public class AVSession {
 
   PendingMessageCache<Message> pendingMessages;
   AVIMOperationQueue conversationOperationCache;
-  private final ConcurrentHashMap<String, AVInternalConversation> sessionConversationCache =
-      new ConcurrentHashMap<String, AVInternalConversation>();
+  private final ConcurrentHashMap<String, AVConversationHolder> conversationHolderCache =
+      new ConcurrentHashMap<String, AVConversationHolder>();
 
   // responsable for session event(open/close/resume/error)
-  final AVInternalSessionListener sessionListener;
+  final AVSessionListener sessionListener;
   // responsable for im protocol: directCommand/sessionCommand, etc
-  private final AVSessionWebSocketListener websocketListener;
+  private final AVWebSocketListener websocketListener;
 
   /**
    * 离线消息推送模式
@@ -89,11 +88,11 @@ public class AVSession {
     return this.websocketListener;
   }
 
-  public AVSession(String selfId, AVInternalSessionListener sessionListener) {
+  public AVSession(String selfId, AVSessionListener sessionListener) {
     this.selfId = selfId;
     this.context = AVOSCloud.applicationContext;
     this.sessionListener = sessionListener;
-    this.websocketListener = new AVSessionWebSocketListener(this);
+    this.websocketListener = new AVDefaultWebSocketListener(this);
     pendingMessages = new PendingMessageCache<Message>(selfId, Message.class);
     conversationOperationCache = new AVIMOperationQueue(selfId);
   }
@@ -272,7 +271,7 @@ public class AVSession {
     if (conversationOperationCache != null) {
       this.conversationOperationCache.clear();
     }
-    this.sessionConversationCache.clear();
+    this.conversationHolderCache.clear();
     MessageReceiptCache.clean(this.getSelfPeerId());
   }
 
@@ -361,20 +360,20 @@ public class AVSession {
     }
   }
 
-  public AVInternalConversation getConversation(String conversationId, int convType) {
-    AVInternalConversation conversation = sessionConversationCache.get(conversationId);
+  public AVConversationHolder getConversationHolder(String conversationId, int convType) {
+    AVConversationHolder conversation = conversationHolderCache.get(conversationId);
     if (conversation != null) {
       return conversation;
     } else {
-      conversation = new AVInternalConversation(conversationId, this, convType);
-      AVInternalConversation elderObject =
-          sessionConversationCache.putIfAbsent(conversationId, conversation);
+      conversation = new AVConversationHolder(conversationId, this, convType);
+      AVConversationHolder elderObject =
+          conversationHolderCache.putIfAbsent(conversationId, conversation);
       return elderObject == null ? conversation : elderObject;
     }
   }
 
   protected void removeConversation(String conversationId) {
-    sessionConversationCache.remove(conversationId);
+    conversationHolderCache.remove(conversationId);
   }
 
   protected void createConversation(final List<String> members,

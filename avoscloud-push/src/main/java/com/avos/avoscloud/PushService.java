@@ -19,7 +19,6 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
-import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
 import com.avos.avoscloud.im.v2.AVIMClient;
@@ -449,7 +448,7 @@ public class PushService extends Service {
       case CONVERSATION_RECALL_MESSAGE:
       case CONVERSATION_UPDATE_MESSAGE:
         if (!AVUtils.isBlankString(conversationId)) {
-          AVInternalConversation conversation = session.getConversation(conversationId, convType);
+          AVConversationHolder conversation = session.getConversationHolder(conversationId, convType);
           if (null != conversation) {
             conversation.patchMessage(parcel, operation, requestId);
           } else {
@@ -540,7 +539,7 @@ public class PushService extends Service {
         break;
       case CONVERSATION_SEND_MESSAGE:
         if (!AVUtils.isBlankString(conversationId)) {
-          AVInternalConversation conversation = session.getConversation(conversationId, convType);
+          AVConversationHolder conversation = session.getConversationHolder(conversationId, convType);
           if (null != conversation) {
             AVIMMessage message = intent.getExtras().getParcelable(Conversation.INTENT_KEY_DATA);
             AVIMMessageOption messageOption = null;
@@ -568,7 +567,7 @@ public class PushService extends Service {
         if (AVUtils.isBlankString(conversationId)) {
           LogUtil.log.e("conversation id is null during promoting MemberInfo");
         } else {
-          AVInternalConversation internalConversation = session.getConversation(conversationId, convType);
+          AVConversationHolder internalConversation = session.getConversationHolder(conversationId, convType);
           if (null == internalConversation) {
             LogUtil.log.w("not found target conversation with id=" + conversationId);
           } else {

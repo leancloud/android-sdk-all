@@ -18,7 +18,7 @@ import java.nio.ByteBuffer;
 @Config(constants = BuildConfig.class, manifest = Config.NONE, sdk = 21)
 public class AVPushWebSocketClientTests {
 
-  private AVPushWebSocketClient.AVSocketListener listener = new AVPushWebSocketClient.AVSocketListener() {
+  private AVPushWebSocketClient.AVPacketParser listener = new AVPushWebSocketClient.AVPacketParser() {
     @Override
     public void loginCmd() {
 

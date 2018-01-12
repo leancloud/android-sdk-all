@@ -13,7 +13,7 @@ import com.avos.avoscloud.im.v2.Conversation;
 import com.avos.avoscloud.im.v2.Conversation.AVIMOperation;
 import com.avos.avospush.session.CommandPacket;
 
-public class AVDefaultSessionListener extends AVInternalSessionListener {
+public class AVDefaultSessionListener extends AVSessionListener {
   // 所有的返回不再直接在listener中间处理，而是抛出一个broadcast出来，让用户自定义的receiver来处理
   AVPushConnectionManager manager;
 

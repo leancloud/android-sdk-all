@@ -28,7 +28,9 @@ import java.util.Map;
 /**
  * Created by yangchaozhong on 3/14/14.
  */
-class AVPushConnectionManager implements AVPushWebSocketClient.AVSocketListener {
+class AVPushConnectionManager implements AVPushWebSocketClient.AVPacketParser {
+  private static final String SUB_PROTOCOL_2_3 = "lc.protobuf2.3";
+  private static final String SUB_PROTOCOL_2_1 = "lc.protobuf2.1";
   private static AVPushConnectionManager instance = null;
 
   private volatile AVPushWebSocketClient socketClient;
@@ -186,10 +188,10 @@ class AVPushConnectionManager implements AVPushWebSocketClient.AVSocketListener 
 
       if (AVSession.isOnlyPushCount()) {
         socketClient =
-            new AVPushWebSocketClient(URI.create(pushServer), this, "lc.protobuf2.3", true);
+            new AVPushWebSocketClient(URI.create(pushServer), this, SUB_PROTOCOL_2_3, true);
       } else {
         socketClient =
-            new AVPushWebSocketClient(URI.create(pushServer), this, "lc.protobuf2.1", true);
+            new AVPushWebSocketClient(URI.create(pushServer), this, SUB_PROTOCOL_2_1, true);
       }
 
       socketClient.connect();

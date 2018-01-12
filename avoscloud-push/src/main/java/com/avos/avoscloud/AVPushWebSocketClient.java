@@ -46,10 +46,10 @@ public class AVPushWebSocketClient extends WebSocketClient {
     }
   };
 
-  AVSocketListener listener;
+  AVPacketParser receiver;
   SSLSessionCache sessionCache;
 
-  public AVPushWebSocketClient(URI serverURI, AVSocketListener listener,
+  public AVPushWebSocketClient(URI serverURI, AVPacketParser parser,
                                final String subProtocol, boolean secEnabled) {
     super(serverURI, new Draft_17(), new HashMap<String, String>() {
       {
@@ -63,7 +63,7 @@ public class AVPushWebSocketClient extends WebSocketClient {
     if (secEnabled) {
       setSocket();
     }
-    this.listener = listener;
+    this.receiver = parser;
   }
 
   private void initHeartBeatPolicy() {
@@ -124,18 +124,18 @@ public class AVPushWebSocketClient extends WebSocketClient {
   public void onOpen(ServerHandshake handshakedata) {
     this.cancelReconnect();
     heartBeatPolicy.startHeartbeat();
-    if (listener != null) {
-      listener.loginCmd();
-      listener.processConnectionStatus(null);
-      listener.processSessionsStatus(false);
+    if (receiver != null) {
+      receiver.loginCmd();
+      receiver.processConnectionStatus(null);
+      receiver.processSessionsStatus(false);
     }
     LogUtil.avlog.d("onOpen()");
   }
 
   @Override
   public void onMessage(ByteBuffer byteBuffer) {
-    if (listener != null) {
-      listener.processCommand(byteBuffer);
+    if (receiver != null) {
+      receiver.processCommand(byteBuffer);
     }
   }
 
@@ -145,19 +145,19 @@ public class AVPushWebSocketClient extends WebSocketClient {
   @Override
   public void onClose(int code, String reason, boolean remote) {
     heartBeatPolicy.stopHeartbeat();
-    if (listener != null) {
-      listener.processSessionsStatus(true);
+    if (receiver != null) {
+      receiver.processSessionsStatus(true);
     }
-    if (listener != null) {
-      listener.processConnectionStatus(new AVException(code, reason));
+    if (receiver != null) {
+      receiver.processConnectionStatus(new AVException(code, reason));
     }
     LogUtil.avlog.d("onClose(). local disconnection:" + code + "  " + reason + " :" + remote);
     switch (code) {
       case -1:
         LogUtil.avlog.d("connection refused");
         if(remote){
-          if(listener!=null){
-            listener.processRemoteServerNotAvailable();
+          if(receiver !=null){
+            receiver.processRemoteServerNotAvailable();
           }
         }else{
           scheduleReconnect();
@@ -179,8 +179,8 @@ public class AVPushWebSocketClient extends WebSocketClient {
   @Override
   public void onError(Exception ex) {
     ex.printStackTrace();
-    if (listener != null && AVUtils.isConnected(AVOSCloud.applicationContext)) {
-      listener.processRemoteServerNotAvailable();
+    if (receiver != null && AVUtils.isConnected(AVOSCloud.applicationContext)) {
+      receiver.processRemoteServerNotAvailable();
     }
   }
 
@@ -235,7 +235,7 @@ public class AVPushWebSocketClient extends WebSocketClient {
     heartBeatPolicy.onPong();
   }
 
-  public interface AVSocketListener {
+  public interface AVPacketParser {
     void loginCmd();
 
     void processCommand(ByteBuffer bytes);
