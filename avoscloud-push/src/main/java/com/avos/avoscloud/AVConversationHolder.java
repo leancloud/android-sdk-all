@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.avos.avoscloud.AVIMOperationQueue.Operation;
 import com.avos.avoscloud.PendingMessageCache.Message;
 import com.avos.avoscloud.SignatureFactory.SignatureException;
@@ -604,6 +605,8 @@ class AVConversationHolder {
     } else if (ConversationControlOp.UPDATED.equals(operation)) {
       if (null == imop) {
         LogUtil.log.e("IllegalState. operation is null, excepted is MUTE / UNMUTE / UPDATE, originalOp=" + operation);
+        // conv/updated notification
+        onInfoChangedNotify(convCommand);
       } else if (AVIMOperation.CONVERSATION_MUTE.getCode() == imop.getCode()) {
         onMuted(requestId);
       } else if (AVIMOperation.CONVERSATION_UNMUTE.getCode() == imop.getCode()) {
@@ -883,6 +886,21 @@ class AVConversationHolder {
     }
   }
 
+  void onInfoChangedNotify(Messages.ConvCommand convCommand) {
+    final AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
+    if (null != handler) {
+      AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
+      final AVIMConversation conversation = parseConversation(client, convCommand);
+      final String operator = convCommand.getInitBy();
+      final JSONObject operand = JSON.parseObject(convCommand.getAttr().getData());
+      refreshConversationThenNotify(conversation, new SimpleCallback() {
+        @Override
+        public void done() {
+          handler.processEvent(Conversation.STATUS_ON_INFO_CHANGED, operator, operand, conversation);
+        }
+      });
+    }
+  }
   void onKickedFromConversation(final String invitedBy) {
     final AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
     AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
