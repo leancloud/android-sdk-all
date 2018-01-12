@@ -1382,14 +1382,7 @@ public class AVIMConversation {
       return;
     }
 
-    Map<String, Object> params = new HashMap<String, Object>();
-    if (conversationId.startsWith(Conversation.TEMPCONV_ID_PREFIX)) {
-      params.put(Conversation.QUERY_PARAM_TEMPCONV, conversationId);
-    } else {
-      Map<String, Object> whereMap = new HashMap<String, Object>();
-      whereMap.put("objectId", conversationId);
-      params.put(Conversation.QUERY_PARAM_WHERE, whereMap);
-    }
+    Map<String, Object> params = getFetchRequestParams();
     sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_QUERY, callback);
   }
 
@@ -1741,7 +1734,7 @@ public class AVIMConversation {
           updateConversation(this, jsonObject);
           client.mergeConversationCache(this, true, null);
           storage.insertConversations(Arrays.asList(this));
-          this.latestConversationFetch = System.currentTimeMillis();
+          latestConversationFetch = System.currentTimeMillis();
         }
       } catch (Exception e) {
         return e;

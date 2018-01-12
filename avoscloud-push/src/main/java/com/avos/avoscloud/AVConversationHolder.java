@@ -1081,7 +1081,10 @@ class AVConversationHolder {
     if (!conversation.isShouldFetch()) {
       callback.done();
     } else {
+      LogUtil.log.d("try to query conversation info for id=" + conversation.getConversationId());
       Map<String, Object> fetchParams = conversation.getFetchRequestParams();
+      Map<String, Object> params = JSON.parseObject(JSON.toJSONString(fetchParams), Map.class);
+
       final int requestId = AVUtils.getNextIMRequestId();
       AVIMOperation operation = AVIMOperation.CONVERSATION_QUERY;
       LocalBroadcastManager.getInstance(AVOSCloud.applicationContext).registerReceiver(new AVIMBaseBroadcastReceiver(null) {
@@ -1089,11 +1092,12 @@ class AVConversationHolder {
         public void execute(Intent intent, Throwable ex) {
           if (null == ex) {
             conversation.processQueryResult(intent.getExtras().getSerializable(Conversation.callbackData));
+            LogUtil.log.d("updated conversation info. id=" + conversation.getConversationId());
           }
           callback.done();
         }
       }, new IntentFilter(operation.getOperation() + requestId));
-      session.conversationQuery(fetchParams, requestId);
+      session.conversationQuery(params, requestId);
     }
   }
 
