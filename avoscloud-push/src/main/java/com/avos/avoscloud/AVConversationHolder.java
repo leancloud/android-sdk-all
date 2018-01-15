@@ -811,17 +811,22 @@ class AVConversationHolder {
         AVIMOperation.CONVERSATION_PROMOTE_MEMBER);
   }
 
-  private void onMemberChanged(String operator, Messages.ConvMemberInfo member) {
-    AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
+  private void onMemberChanged(final String operator, Messages.ConvMemberInfo member) {
+    final AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
     if (handler != null) {
       AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
-      AVIMConversation conversation = client.getConversation(this.conversationId);
-      String objectId = member.getInfoId();
-      String roleStr = member.getRole();
-      String peerId = member.getPid();
-      AVIMConversationMemberInfo memberInfo = new AVIMConversationMemberInfo(objectId, this.conversationId,
+      final AVIMConversation conversation = client.getConversation(this.conversationId);
+      final String objectId = member.getInfoId();
+      final String roleStr = member.getRole();
+      final String peerId = member.getPid();
+      final AVIMConversationMemberInfo memberInfo = new AVIMConversationMemberInfo(objectId, conversationId,
           peerId, ConversationMemberRole.fromString(roleStr));
-      handler.processEvent(Conversation.STATUS_ON_MEMBER_INFO_CHANGED, operator, memberInfo, conversation);
+      refreshConversationThenNotify(conversation, new SimpleCallback() {
+        @Override
+        public void done() {
+          handler.processEvent(Conversation.STATUS_ON_MEMBER_INFO_CHANGED, operator, memberInfo, conversation);
+        }
+      });
     }
   }
 
