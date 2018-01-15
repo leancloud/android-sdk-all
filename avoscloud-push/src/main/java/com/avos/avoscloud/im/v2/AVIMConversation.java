@@ -1382,6 +1382,11 @@ public class AVIMConversation {
       return;
     }
 
+    Map<String, Object> params = getFetchRequestParams();
+    sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_QUERY, callback);
+  }
+
+  public Map<String, Object> getFetchRequestParams() {
     Map<String, Object> params = new HashMap<String, Object>();
     if (conversationId.startsWith(Conversation.TEMPCONV_ID_PREFIX)) {
       params.put(Conversation.QUERY_PARAM_TEMPCONV, conversationId);
@@ -1390,23 +1395,7 @@ public class AVIMConversation {
       whereMap.put("objectId", conversationId);
       params.put(Conversation.QUERY_PARAM_WHERE, whereMap);
     }
-    sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_QUERY, callback);
-  }
-
-  /**
-   * 在 Push Service 内部直接发送请求来更新属性
-   *
-   * @param callback
-   */
-  void internalFetchInfo(final AVIMConversationCallback callback) {
-    if (null == callback) {
-      return;
-    }
-    if (StringUtils.isBlankString(conversationId)) {
-      callback.internalDone(null, new AVException(AVException.INVALID_QUERY, "ConversationId is empty"));
-      return;
-    }
-    // send data through websocket.
+    return params;
   }
 
   /**
@@ -1456,7 +1445,7 @@ public class AVIMConversation {
    * 客户端就会在收到消息后一直做 fetch 操作，所以这里加了一个判断，如果在 FETCH_TIME_INTERVEL 内有业务类型的
    * error code 返回，则不在请求
    */
-  boolean isShouldFetch() {
+  public boolean isShouldFetch() {
     return null == getCreatedAt() &&
       (System.currentTimeMillis() - latestConversationFetch > FETCH_TIME_INTERVEL);
   }
@@ -1735,7 +1724,7 @@ public class AVIMConversation {
    * @param serializable
    * @return
    */
-  private Exception processQueryResult(Serializable serializable) {
+  public Exception processQueryResult(Serializable serializable) {
     if (null != serializable) {
       try {
         String result = (String)serializable;
@@ -1744,8 +1733,8 @@ public class AVIMConversation {
           JSONObject jsonObject = jsonArray.getJSONObject(0);
           updateConversation(this, jsonObject);
           client.mergeConversationCache(this, true, null);
-//          client.conversationCache.put(conversationId, this);
           storage.insertConversations(Arrays.asList(this));
+          latestConversationFetch = System.currentTimeMillis();
         }
       } catch (Exception e) {
         return e;
@@ -1791,6 +1780,7 @@ public class AVIMConversation {
     } else {
       originConv = new AVIMConversation(client, conversationId);
     }
+    originConv.latestConversationFetch = System.currentTimeMillis();
 
     return updateConversation(originConv, jsonObj);
   }
@@ -1853,6 +1843,7 @@ public class AVIMConversation {
     if (jsonObj.containsKey(Conversation.TRANSIENT)) {
       conversation.isTransient = jsonObj.getBoolean(Conversation.TRANSIENT);
     }
+
     return conversation;
   }
 

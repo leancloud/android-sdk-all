@@ -515,7 +515,7 @@ public class AVIMClient {
    * @return
    * @since 4.6
    */
-  AVIMConversation getConversation(String conversationId, int convType) {
+  public AVIMConversation getConversation(String conversationId, int convType) {
     AVIMConversation result = null;
     switch (convType) {
       case Conversation.CONV_TYPE_SYSTEM:

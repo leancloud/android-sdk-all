@@ -1,7 +1,10 @@
 package com.avos.avoscloud;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Pair;
 
 import java.util.ArrayList;
@@ -14,6 +17,7 @@ import com.alibaba.fastjson.JSON;
 import com.avos.avoscloud.AVIMOperationQueue.Operation;
 import com.avos.avoscloud.PendingMessageCache.Message;
 import com.avos.avoscloud.SignatureFactory.SignatureException;
+import com.avos.avoscloud.im.v2.AVIMBaseBroadcastReceiver;
 import com.avos.avoscloud.im.v2.AVIMBinaryMessage;
 import com.avos.avoscloud.im.v2.AVIMClient;
 import com.avos.avoscloud.im.v2.AVIMConversation;
@@ -807,17 +811,22 @@ class AVConversationHolder {
         AVIMOperation.CONVERSATION_PROMOTE_MEMBER);
   }
 
-  private void onMemberChanged(String operator, Messages.ConvMemberInfo member) {
-    AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
+  private void onMemberChanged(final String operator, Messages.ConvMemberInfo member) {
+    final AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
     if (handler != null) {
       AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
-      AVIMConversation conversation = client.getConversation(this.conversationId);
-      String objectId = member.getInfoId();
-      String roleStr = member.getRole();
-      String peerId = member.getPid();
-      AVIMConversationMemberInfo memberInfo = new AVIMConversationMemberInfo(objectId, this.conversationId,
+      final AVIMConversation conversation = client.getConversation(this.conversationId);
+      final String objectId = member.getInfoId();
+      final String roleStr = member.getRole();
+      final String peerId = member.getPid();
+      final AVIMConversationMemberInfo memberInfo = new AVIMConversationMemberInfo(objectId, conversationId,
           peerId, ConversationMemberRole.fromString(roleStr));
-      handler.processEvent(Conversation.STATUS_ON_MEMBER_INFO_CHANGED, operator, memberInfo, conversation);
+      refreshConversationThenNotify(conversation, new SimpleCallback() {
+        @Override
+        public void done() {
+          handler.processEvent(Conversation.STATUS_ON_MEMBER_INFO_CHANGED, operator, memberInfo, conversation);
+        }
+      });
     }
   }
 
@@ -865,87 +874,116 @@ class AVConversationHolder {
   }
 
   // 以下的所有内容都是从服务器端来得，客户端是被动接受的
-  void onInvitedToConversation(String invitedBy, Messages.ConvCommand convCommand) {
-    AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
+  void onInvitedToConversation(final String invitedBy, Messages.ConvCommand convCommand) {
+    final AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
     if (handler != null) {
       AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
-      AVIMConversation conversation = parseConversation(client, convCommand);
-      handler.processEvent(Conversation.STATUS_ON_JOINED, invitedBy, null, conversation);
+      final AVIMConversation conversation = parseConversation(client, convCommand);
+      refreshConversationThenNotify(conversation, new SimpleCallback() {
+        @Override
+        public void done() {
+          handler.processEvent(Conversation.STATUS_ON_JOINED, invitedBy, null, conversation);
+        }
+      });
     }
   }
 
-  void onKickedFromConversation(String invitedBy) {
-    AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
+  void onKickedFromConversation(final String invitedBy) {
+    final AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
     AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
-    AVIMConversation conversation = client.getConversation(this.conversationId);
+    final AVIMConversation conversation = client.getConversation(this.conversationId);
     if (handler != null) {
-      handler.processEvent(Conversation.STATUS_ON_KICKED_FROM_CONVERSATION, invitedBy, null,
-          conversation);
+      refreshConversationThenNotify(conversation, new SimpleCallback() {
+        @Override
+        public void done() {
+          handler.processEvent(Conversation.STATUS_ON_KICKED_FROM_CONVERSATION, invitedBy, null,
+              conversation);
+        }
+      });
     }
     session.removeConversation(conversationId);
     AVIMMessageManagerHelper.removeConversationCache(conversation);
   }
 
-  void onSelfShutupedNotify(boolean isMuted, String operator, Messages.ConvCommand convCommand) {
-    AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
+  void onSelfShutupedNotify(final boolean isMuted, final String operator, Messages.ConvCommand convCommand) {
+    final AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
     if (handler != null) {
       AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
-      AVIMConversation conversation = parseConversation(client, convCommand);
-      if (isMuted) {
-        handler.processEvent(Conversation.STATUS_ON_MUTED, operator, null, conversation);
-      } else {
-        handler.processEvent(Conversation.STATUS_ON_UNMUTED, operator, null, conversation);
-      }
+      final AVIMConversation conversation = parseConversation(client, convCommand);
+      refreshConversationThenNotify(conversation, new SimpleCallback() {
+        @Override
+        public void done() {
+          if (isMuted) {
+            handler.processEvent(Conversation.STATUS_ON_MUTED, operator, null, conversation);
+          } else {
+            handler.processEvent(Conversation.STATUS_ON_UNMUTED, operator, null, conversation);
+          }
+        }
+      });
     }
   }
 
-  void onMemberShutupedNotify(boolean isMuted, String operator, Messages.ConvCommand convCommand) {
-    AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
+  void onMemberShutupedNotify(final boolean isMuted, final String operator, Messages.ConvCommand convCommand) {
+    final AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
     List<String> members = convCommand.getMList();
     if (handler != null && null != members) {
-      List<String> copyMembers = new ArrayList<>(members);
+      final List<String> copyMembers = new ArrayList<>(members);
       copyMembers.remove(session.getSelfPeerId());
       if (copyMembers.size() < 1) {
         // ignore self member_shutuped notify, bcz server sends both shutuped and member_shutuped notification.
         LogUtil.log.d("Notification --- ignore shutuped/unshutuped notify bcz duplicated.");
       } else {
         AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
-        AVIMConversation conversation = parseConversation(client, convCommand);
-        if (isMuted) {
-          handler.processEvent(Conversation.STATUS_ON_MEMBER_MUTED, operator, copyMembers, conversation);
-        } else {
-          handler.processEvent(Conversation.STATUS_ON_MEMBER_UNMUTED, operator, copyMembers, conversation);
-        }
+        final AVIMConversation conversation = parseConversation(client, convCommand);
+        refreshConversationThenNotify(conversation, new SimpleCallback() {
+          @Override
+          public void done() {
+            if (isMuted) {
+              handler.processEvent(Conversation.STATUS_ON_MEMBER_MUTED, operator, copyMembers, conversation);
+            } else {
+              handler.processEvent(Conversation.STATUS_ON_MEMBER_UNMUTED, operator, copyMembers, conversation);
+            }
+          }
+        });
       }
     }
   }
 
-  void onSelfBlockedNotify(boolean isBlocked, String operator, Messages.ConvCommand convCommand) {
-    AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
+  void onSelfBlockedNotify(final boolean isBlocked, final String operator, Messages.ConvCommand convCommand) {
+    final AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
     if (null == handler) {
       return;
     }
     AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
-    AVIMConversation conversation = parseConversation(client, convCommand);
-    if (isBlocked) {
-      handler.processEvent(Conversation.STATUS_ON_BLOCKED, operator, null, conversation);
-    } else {
-      handler.processEvent(Conversation.STATUS_ON_UNBLOCKED, operator, null, conversation);
-    }
-
+    final AVIMConversation conversation = parseConversation(client, convCommand);
+    refreshConversationThenNotify(conversation, new SimpleCallback() {
+      @Override
+      public void done() {
+        if (isBlocked) {
+          handler.processEvent(Conversation.STATUS_ON_BLOCKED, operator, null, conversation);
+        } else {
+          handler.processEvent(Conversation.STATUS_ON_UNBLOCKED, operator, null, conversation);
+        }
+      }
+    });
   }
 
-  void onMemberBlockedNotify(boolean isBlocked, String operator, Messages.ConvCommand convCommand) {
-    AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
-    List<String> members = convCommand.getMList();
+  void onMemberBlockedNotify(final boolean isBlocked, final String operator, Messages.ConvCommand convCommand) {
+    final AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
+    final List<String> members = convCommand.getMList();
     if (handler != null && null != members) {
       AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
-      AVIMConversation conversation = parseConversation(client, convCommand);
-      if (isBlocked) {
-        handler.processEvent(Conversation.STATUS_ON_MEMBER_BLOCKED, operator, members, conversation);
-      } else {
-        handler.processEvent(Conversation.STATUS_ON_MEMBER_UNBLOCKED, operator, members, conversation);
-      }
+      final AVIMConversation conversation = parseConversation(client, convCommand);
+      refreshConversationThenNotify(conversation, new SimpleCallback() {
+        @Override
+        public void done() {
+          if (isBlocked) {
+            handler.processEvent(Conversation.STATUS_ON_MEMBER_BLOCKED, operator, members, conversation);
+          } else {
+            handler.processEvent(Conversation.STATUS_ON_MEMBER_UNBLOCKED, operator, members, conversation);
+          }
+        }
+      });
     }
   }
 
@@ -962,88 +1000,164 @@ class AVConversationHolder {
     return conversation;
   }
 
-  void onMembersJoined(List<String> members, String invitedBy) {
-    AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
+  void onMembersJoined(final List<String> members, final String invitedBy) {
+    final AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
     if (handler != null) {
       AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
-      AVIMConversation conversation = client.getConversation(this.conversationId);
-      handler.processEvent(Conversation.STATUS_ON_MEMBERS_JOINED, invitedBy, members, conversation);
+      final AVIMConversation conversation = client.getConversation(this.conversationId);
+      refreshConversationThenNotify(conversation, new SimpleCallback() {
+        @Override
+        public void done() {
+          handler.processEvent(Conversation.STATUS_ON_MEMBERS_JOINED, invitedBy, members, conversation);
+        }
+      });
     }
   }
 
-  void onMembersLeft(List<String> members, String removedBy) {
+  void onMembersLeft(final List<String> members, final String removedBy) {
 
-    AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
+    final AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
     if (handler != null) {
       AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
-      AVIMConversation conversation = client.getConversation(this.conversationId);
+      final AVIMConversation conversation = client.getConversation(this.conversationId);
 
-      handler.processEvent(Conversation.STATUS_ON_MEMBERS_LEFT, removedBy, members, conversation);
+      refreshConversationThenNotify(conversation, new SimpleCallback() {
+        @Override
+        public void done() {
+          handler.processEvent(Conversation.STATUS_ON_MEMBERS_LEFT, removedBy, members, conversation);
+        }
+      });
     }
   }
 
-  void onMessageUpdateEvent(AVIMMessage message, boolean isRecall) {
-    AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
+  void onMessageUpdateEvent(final AVIMMessage message, final boolean isRecall) {
+    final AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
     if (handler != null) {
       AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
-      AVIMConversation conversation = client.getConversation(this.conversationId);
-      if (isRecall) {
-        handler.processEvent(Conversation.STATUS_ON_MESSAGE_RECALLED, message, null, conversation);
-      } else {
-        handler.processEvent(Conversation.STATUS_ON_MESSAGE_UPDATED, message, null, conversation);
-      }
+      final AVIMConversation conversation = client.getConversation(this.conversationId);
+      refreshConversationThenNotify(conversation, new SimpleCallback() {
+        @Override
+        public void done() {
+          if (isRecall) {
+            handler.processEvent(Conversation.STATUS_ON_MESSAGE_RECALLED, message, null, conversation);
+          } else {
+            handler.processEvent(Conversation.STATUS_ON_MESSAGE_UPDATED, message, null, conversation);
+          }
+        }
+      });
     }
   }
 
-  void onMessage(AVIMMessage message, boolean hasMore, boolean isTransient) {
+  void onMessage(final AVIMMessage message, final boolean hasMore, final boolean isTransient) {
     message.setMessageIOType(AVIMMessage.AVIMMessageIOType.AVIMMessageIOTypeIn);
     message.setMessageStatus(AVIMMessage.AVIMMessageStatus.AVIMMessageStatusSent);
 
-    AVIMMessageManagerHelper.processMessage(message, convType,
-        AVIMClient.getInstance(session.getSelfPeerId()), hasMore, isTransient);
+    final AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
+    refreshConversationThenNotify(message, new SimpleCallback() {
+      @Override
+      public void done() {
+        AVIMMessageManagerHelper.processMessage(message, convType, client, hasMore, isTransient);
+      }
+    });
   }
 
-  void onMessageReceipt(AVIMMessage message) {
-    AVIMMessageManagerHelper.processMessageReceipt(message,
-        AVIMClient.getInstance(session.getSelfPeerId()));
+  void onMessageReceipt(final AVIMMessage message) {
+    refreshConversationThenNotify(message, new SimpleCallback() {
+      @Override
+      public void done() {
+        AVIMMessageManagerHelper.processMessageReceipt(message, AVIMClient.getInstance(session.getSelfPeerId()));
+      }
+    });
+  }
+
+  private void refreshConversationThenNotify(final AVIMMessage message, final SimpleCallback callback) {
+    if (null == message || null == callback) {
+      return;
+    }
+    final AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
+    final AVIMConversation conversation = client.getConversation(message.getConversationId(), convType);
+    refreshConversationThenNotify(conversation, callback);
+  }
+
+  private void refreshConversationThenNotify(final AVIMConversation conversation, final SimpleCallback callback) {
+    if (null == conversation) {
+      return;
+    }
+    if (!conversation.isShouldFetch()) {
+      callback.done();
+    } else {
+      LogUtil.log.d("try to query conversation info for id=" + conversation.getConversationId());
+      Map<String, Object> fetchParams = conversation.getFetchRequestParams();
+      Map<String, Object> params = JSON.parseObject(JSON.toJSONString(fetchParams), Map.class);
+
+      final int requestId = AVUtils.getNextIMRequestId();
+      AVIMOperation operation = AVIMOperation.CONVERSATION_QUERY;
+      LocalBroadcastManager.getInstance(AVOSCloud.applicationContext).registerReceiver(new AVIMBaseBroadcastReceiver(null) {
+        @Override
+        public void execute(Intent intent, Throwable ex) {
+          if (null == ex) {
+            conversation.processQueryResult(intent.getExtras().getSerializable(Conversation.callbackData));
+            LogUtil.log.d("updated conversation info. id=" + conversation.getConversationId());
+          }
+          callback.done();
+        }
+      }, new IntentFilter(operation.getOperation() + requestId));
+      session.conversationQuery(params, requestId);
+    }
   }
 
   /**
    * process the unread messages event
    */
   void onUnreadMessagesEvent(AVIMMessage message, int unreadCount, boolean mentioned) {
-    AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
+    final AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
     if (handler != null) {
       AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
-      AVIMConversation conversation = client.getConversation(this.conversationId);
+      final AVIMConversation conversation = client.getConversation(this.conversationId);
       if (conversation.getUnreadMessagesCount() != unreadCount) {
-        Pair<Integer, Boolean> unreadInfo = new Pair<>(unreadCount, mentioned);
+        final Pair<Integer, Boolean> unreadInfo = new Pair<>(unreadCount, mentioned);
         if (null != message) {
           message.setMessageIOType(AVIMMessage.AVIMMessageIOType.AVIMMessageIOTypeIn);
           message.setMessageStatus(AVIMMessage.AVIMMessageStatus.AVIMMessageStatusSent);
           message = AVIMMessageManagerHelper.parseTypedMessage(message);
         }
+        final AVIMMessage msgCopy = message;
 
-        handler.processEvent(Conversation.STATUS_ON_UNREAD_EVENT, message, unreadInfo, conversation);
+        refreshConversationThenNotify(conversation, new SimpleCallback() {
+          @Override
+          public void done() {
+            handler.processEvent(Conversation.STATUS_ON_UNREAD_EVENT, msgCopy, unreadInfo, conversation);
+          }
+        });
       }
     }
   }
 
-  void onConversationReadAtEvent(long readAt) {
-    AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
+  void onConversationReadAtEvent(final long readAt) {
+    final AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
     if (handler != null) {
       AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
-      AVIMConversation conversation = client.getConversation(this.conversationId);
-      handler.processEvent(Conversation.STATUS_ON_MESSAGE_READ, readAt, null, conversation);
+      final AVIMConversation conversation = client.getConversation(this.conversationId);
+      refreshConversationThenNotify(conversation, new SimpleCallback() {
+        @Override
+        public void done() {
+          handler.processEvent(Conversation.STATUS_ON_MESSAGE_READ, readAt, null, conversation);
+        }
+      });
     }
   }
 
-  void onConversationDeliveredAtEvent(long deliveredAt) {
-    AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
+  void onConversationDeliveredAtEvent(final long deliveredAt) {
+    final AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
     if (handler != null) {
       AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
-      AVIMConversation conversation = client.getConversation(this.conversationId);
-      handler.processEvent(Conversation.STATUS_ON_MESSAGE_DELIVERED, deliveredAt, null, conversation);
+      final AVIMConversation conversation = client.getConversation(this.conversationId);
+      refreshConversationThenNotify(conversation, new SimpleCallback() {
+        @Override
+        public void done() {
+          handler.processEvent(Conversation.STATUS_ON_MESSAGE_DELIVERED, deliveredAt, null, conversation);
+        }
+      });
     }
   }
 
@@ -1057,5 +1171,9 @@ class AVConversationHolder {
       conversationGene = JSON.toJSONString(conversationGeneMap);
     }
     return conversationGene;
+  }
+
+  private static abstract class SimpleCallback {
+    public abstract void done();
   }
 }

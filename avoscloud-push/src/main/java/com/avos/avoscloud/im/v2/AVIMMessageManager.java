@@ -143,24 +143,24 @@ public class AVIMMessageManager {
     }
     conversation.setLastMessageAt(new Date(message.getTimestamp()));
 
-    if (conversation.isShouldFetch()) {
-      final AVIMMessage finalMessageObject = message;
-      conversation.fetchInfoInBackground(new AVIMConversationCallback() {
-
-        @Override
-        public void done(AVIMException e) {
-          if (null != e && e.getCode() > 0) {
-            LogUtil.avlog.e("failed to update conversation. cause:" + e.getMessage());
-          } else {
-            conversation.latestConversationFetch = System.currentTimeMillis();
-            conversation.client.storage.insertConversations(Arrays.asList(conversation));
-          }
-          retrieveAllMessageHandlers(finalMessageObject, conversation, false);
-        }
-      });
-    } else {
+//    if (conversation.isShouldFetch()) {
+//      final AVIMMessage finalMessageObject = message;
+//      conversation.fetchInfoInBackground(new AVIMConversationCallback() {
+//
+//        @Override
+//        public void done(AVIMException e) {
+//          if (null != e && e.getCode() > 0) {
+//            LogUtil.avlog.e("failed to update conversation. cause:" + e.getMessage());
+//          } else {
+//            conversation.latestConversationFetch = System.currentTimeMillis();
+//            conversation.client.storage.insertConversations(Arrays.asList(conversation));
+//          }
+//          retrieveAllMessageHandlers(finalMessageObject, conversation, false);
+//        }
+//      });
+//    } else {
       retrieveAllMessageHandlers(message, conversation, false);
-    }
+//    }
   }
 
   protected static void processMessageReceipt(AVIMMessage message, AVIMClient client) {
@@ -168,20 +168,20 @@ public class AVIMMessageManager {
     message = parseTypedMessage(message);
     final AVIMMessage finalMessageObject = message;
     final AVIMConversation conversation = client.getConversation(message.getConversationId());
-    if (conversation.isShouldFetch()) {
-      conversation.fetchInfoInBackground(new AVIMConversationCallback() {
-
-        @Override
-        public void done(AVIMException e) {
-          if (null != e && e.getCode() > 0) {
-            conversation.latestConversationFetch = System.currentTimeMillis();
-          }
-          retrieveAllMessageHandlers(finalMessageObject, conversation, true);
-        }
-      });
-    } else {
+//    if (conversation.isShouldFetch()) {
+//      conversation.fetchInfoInBackground(new AVIMConversationCallback() {
+//
+//        @Override
+//        public void done(AVIMException e) {
+//          if (null != e && e.getCode() > 0) {
+//            conversation.latestConversationFetch = System.currentTimeMillis();
+//          }
+//          retrieveAllMessageHandlers(finalMessageObject, conversation, true);
+//        }
+//      });
+//    } else {
       retrieveAllMessageHandlers(message, conversation, true);
-    }
+//    }
   }
 
   private static void retrieveAllMessageHandlers(AVIMMessage message,
