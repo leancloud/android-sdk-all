@@ -892,13 +892,18 @@ class AVConversationHolder {
       AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
       final AVIMConversation conversation = parseConversation(client, convCommand);
       final String operator = convCommand.getInitBy();
-      final JSONObject operand = JSON.parseObject(convCommand.getAttr().getData());
-      refreshConversationThenNotify(conversation, new SimpleCallback() {
-        @Override
-        public void done() {
-          handler.processEvent(Conversation.STATUS_ON_INFO_CHANGED, operator, operand, conversation);
-        }
-      });
+      Messages.JsonObjectMessage attrMsg = convCommand.getAttr();
+      JSONObject operand = null;
+      if (null == attrMsg || null == attrMsg.getData() || attrMsg.getData().trim().length() < 1) {
+        // attached data is empty
+        conversation.setMustFetch();
+      } else {
+        // diff data is pushed, but deleted attr is ignored.
+        operand = JSON.parseObject(attrMsg.getData());
+        AVIMConversation.mergeConversationFromJsonObject(conversation, operand);
+      }
+      // Notice: SDK doesn't refresh conversation data automatically.
+      handler.processEvent(Conversation.STATUS_ON_INFO_CHANGED, operator, operand, conversation);
     }
   }
   void onKickedFromConversation(final String invitedBy) {

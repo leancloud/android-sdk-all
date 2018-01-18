@@ -210,7 +210,7 @@ public abstract class AVIMConversationEventHandler extends AVIMEventHandler {
    */
   public void onInfoChanged(AVIMClient client, AVIMConversation conversation, JSONObject attr,
                             String operator) {
-    LogUtil.log.d("Notification --- " + operator + " by member: " + operator);
+    LogUtil.log.d("Notification --- " + operator + " by member: " + operator + ", changedTo: " + attr.toJSONString());
   }
 
   @Override
