@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.annotation.JSONType;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.avos.avoscloud.utils.StringUtils;
 
 import java.io.File;
 import java.util.*;
@@ -43,6 +44,10 @@ public class AVUser extends AVObject {
   private static final String expiresAtTag = "expires_at";
   private static final String authDataTag = "authData";
   private static final String anonymousTag = "anonymous";
+
+  private static final String AUTHDATA_ATTR_UNIONID = "unionid";
+  private static final String AUTHDATA_ATTR_UNIONID_PLATFORM = "platform";
+  private static final String AUTHDATA_ATTR_MAIN_ACCOUNT = "main_account";
 
   static private File currentUserArchivePath() {
     File file = new File(AVPersistenceUtils.getPaasDocumentDir() + "/currentUser");
@@ -2254,6 +2259,53 @@ public class AVUser extends AVObject {
     loginWithAuthData(AVUser.class, authData, platform, callback);
   }
 
+  public static void loginWithAuthData(final Map<String, Object> authData, final String platform,
+                                       final String unionId, final String unionIdPlatform, final boolean asMainAccount,
+                                       final LogInCallback callback) {
+    loginWithAuthData(AVUser.class, authData, platform, unionId, unionIdPlatform, asMainAccount, callback);
+  }
+
+  public static <T extends AVUser> void loginWithAuthData(final Class<T> clazz, final Map<String, Object> authData, final String platform,
+                                       final String unionId, final String unionIdPlatform, final boolean asMainAccount,
+                                       final LogInCallback callback) {
+    if (null == clazz) {
+      if (null != callback) {
+        callback.internalDone(AVErrorUtils.createException(AVException.OTHER_CAUSE, "illegal parameter. clazz must not null/empty."));
+      }
+      return;
+    }
+    if (null == authData || authData.isEmpty()) {
+      if (null != callback) {
+        callback.internalDone(AVErrorUtils.createException(AVException.OTHER_CAUSE, "illegal parameter. authdata must not null/empty."));
+      }
+      return;
+    }
+    if (StringUtils.isBlankString(platform)) {
+      if (null != callback) {
+        callback.internalDone(AVErrorUtils.createException(AVException.OTHER_CAUSE, "illegal parameter. platform must not null/empty."));
+      }
+      return;
+    }
+    if (StringUtils.isBlankString(unionId)) {
+      if (null != callback) {
+        callback.internalDone(AVErrorUtils.createException(AVException.OTHER_CAUSE, "illegal parameter. unionId must not null/empty."));
+      }
+      return;
+    }
+    if (StringUtils.isBlankString(unionIdPlatform)) {
+      if (null != callback) {
+        callback.internalDone(AVErrorUtils.createException(AVException.OTHER_CAUSE, "illegal parameter. unionIdPlatform must not null/empty."));
+      }
+      return;
+    }
+    authData.put(AUTHDATA_ATTR_UNIONID, unionId);
+    authData.put(AUTHDATA_ATTR_UNIONID_PLATFORM, unionIdPlatform);
+    if (asMainAccount) {
+      authData.put(AUTHDATA_ATTR_MAIN_ACCOUNT, asMainAccount);
+    }
+    loginWithAuthData(clazz, authData, platform, callback);
+  }
+
   /**
    * 生成一个新的 AVUser 子类化对象，并且将该对象与 SNS 平台获取的 authData 关联。
    *
@@ -2286,7 +2338,7 @@ public class AVUser extends AVObject {
       }
       return;
     }
-    if (AVUtils.isBlankString(platform)) {
+    if (StringUtils.isBlankString(platform)) {
       if (null != callback) {
         callback.internalDone(AVErrorUtils.createException(AVException.OTHER_CAUSE, "illegal parameter. platform must not null/empty."));
       }
@@ -2429,7 +2481,7 @@ public class AVUser extends AVObject {
       }
       return;
     }
-    if (AVUtils.isBlankString(platform)) {
+    if (StringUtils.isBlankString(platform)) {
       if (null != callback) {
         callback.internalDone(AVErrorUtils.createException(AVException.OTHER_CAUSE, "illegal parameter. platform must not null/empty."));
       }
@@ -2444,6 +2496,40 @@ public class AVUser extends AVObject {
     this.put(authDataTag, authDataAttr);
     this.markAnonymousUserTransfer();
     this.saveInBackground(callback);
+  }
+
+  public void associateWithAuthData(Map<String, Object> authData, String platform, String unionId, String unionIdPlatform,
+                                    boolean asMainAccount, final SaveCallback callback) {
+    if (null == authData || authData.isEmpty()) {
+      if (null != callback) {
+        callback.internalDone(AVErrorUtils.createException(AVException.OTHER_CAUSE, "illegal parameter. authdata must not null/empty."));
+      }
+      return;
+    }
+    if (StringUtils.isBlankString(platform)) {
+      if (null != callback) {
+        callback.internalDone(AVErrorUtils.createException(AVException.OTHER_CAUSE, "illegal parameter. platform must not null/empty."));
+      }
+      return;
+    }
+    if (StringUtils.isBlankString(unionId)) {
+      if (null != callback) {
+        callback.internalDone(AVErrorUtils.createException(AVException.OTHER_CAUSE, "illegal parameter. unionId must not null/empty."));
+      }
+      return;
+    }
+    if (StringUtils.isBlankString(unionIdPlatform)) {
+      if (null != callback) {
+        callback.internalDone(AVErrorUtils.createException(AVException.OTHER_CAUSE, "illegal parameter. unionIdPlatform must not null/empty."));
+      }
+      return;
+    }
+    authData.put(AUTHDATA_ATTR_UNIONID, unionId);
+    authData.put(AUTHDATA_ATTR_UNIONID_PLATFORM, unionIdPlatform);
+    if (asMainAccount) {
+      authData.put(AUTHDATA_ATTR_MAIN_ACCOUNT, true);
+    }
+    this.associateWithAuthData(authData, platform, callback);
   }
 
   /**
