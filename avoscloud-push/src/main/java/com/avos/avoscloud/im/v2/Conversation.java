@@ -176,6 +176,8 @@ public interface Conversation {
   int STATUS_ON_UNBLOCKED = 50023;
   int STATUS_ON_MEMBER_BLOCKED = 50024;
   int STATUS_ON_MEMBER_UNBLOCKED = 50025;
+  // info changed
+  int STATUS_ON_INFO_CHANGED = 50026;
 
   int CONV_TYPE_UNKNOWN = 0;
   int CONV_TYPE_NORMAL = 1;

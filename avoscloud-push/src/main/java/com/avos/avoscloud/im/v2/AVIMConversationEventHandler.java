@@ -3,6 +3,7 @@ package com.avos.avoscloud.im.v2;
 import android.annotation.TargetApi;
 import android.util.Pair;
 
+import com.alibaba.fastjson.JSONObject;
 import com.avos.avoscloud.AVIMEventHandler;
 import com.avos.avoscloud.LogUtil;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationCallback;
@@ -11,6 +12,7 @@ import com.avos.avoscloud.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 用于处理AVIMConversation中产生的事件
@@ -198,6 +200,19 @@ public abstract class AVIMConversationEventHandler extends AVIMEventHandler {
     LogUtil.log.d("Notification --- " + operator + " updated memberInfo: " + memberInfo.toString());
   }
 
+  /**
+   * 对话自身属性变更通知
+   *
+   * @param client
+   * @param conversation
+   * @param attr
+   * @param operator
+   */
+  public void onInfoChanged(AVIMClient client, AVIMConversation conversation, JSONObject attr,
+                            String operator) {
+    LogUtil.log.d("Notification --- " + operator + " by member: " + operator + ", changedTo: " + attr.toJSONString());
+  }
+
   @Override
   protected final void processEvent0(final int operation, final Object operator, final Object operand,
       Object eventScene) {
@@ -284,6 +299,8 @@ public abstract class AVIMConversationEventHandler extends AVIMEventHandler {
       case Conversation.STATUS_ON_MEMBER_UNBLOCKED:
         onMemberUnblocked(conversation.client, conversation, (List<String>) operand, (String) operator);
         break;
+      case Conversation.STATUS_ON_INFO_CHANGED:
+        onInfoChanged(conversation.client, conversation, (JSONObject)operand, (String) operator);
       default:
         break;
     }

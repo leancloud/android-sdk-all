@@ -1446,8 +1446,11 @@ public class AVIMConversation {
    * error code 返回，则不在请求
    */
   public boolean isShouldFetch() {
-    return null == getCreatedAt() &&
-      (System.currentTimeMillis() - latestConversationFetch > FETCH_TIME_INTERVEL);
+    return null == getCreatedAt() || (System.currentTimeMillis() - latestConversationFetch > FETCH_TIME_INTERVEL);
+  }
+
+  public void setMustFetch() {
+    latestConversationFetch = 0;
   }
 
   private void processContinuousMessages(List<AVIMMessage> messages) {
@@ -1783,6 +1786,34 @@ public class AVIMConversation {
     originConv.latestConversationFetch = System.currentTimeMillis();
 
     return updateConversation(originConv, jsonObj);
+  }
+
+  public static void mergeConversationFromJsonObject(AVIMConversation conversation, JSONObject jsonObj) {
+    if (null == conversation || null == jsonObj) {
+      return;
+    }
+    // Notice: cannot update deleted attr.
+    HashMap<String, Object> attributes = new HashMap<String, Object>();
+    if (jsonObj.containsKey(Conversation.NAME)) {
+      attributes.put(Conversation.NAME, jsonObj.getString(Conversation.NAME));
+    }
+    if (jsonObj.containsKey(Conversation.ATTRIBUTE)) {
+      JSONObject moreAttributes = jsonObj.getJSONObject(Conversation.ATTRIBUTE);
+      if (moreAttributes != null) {
+        Map<String, Object> moreAttributesMap = JSON.toJavaObject(moreAttributes, Map.class);
+        attributes.putAll(moreAttributesMap);
+      }
+    }
+    conversation.attributes.putAll(attributes);
+    Set<String> keySet = jsonObj.keySet();
+    if (!keySet.isEmpty()) {
+      for (String key : keySet) {
+        if (!Arrays.asList(Conversation.CONVERSATION_COLUMNS).contains(key)) {
+          conversation.instanceData.put(key, jsonObj.get(key));
+        }
+      }
+    }
+    // conversation.latestConversationFetch = System.currentTimeMillis();
   }
 
   static AVIMConversation updateConversation(AVIMConversation conversation, JSONObject jsonObj) {

@@ -364,8 +364,12 @@ class AVDefaultWebSocketListener implements AVWebSocketListener {
           && requestId != CommandPacket.UNSUPPORTED_OPERATION) {
 
         Operation op = session.conversationOperationCache.poll(requestId);
-        originOperation = AVIMOperation.getAVIMOperation(op.operation);
-        conversationId = op.conversationId;
+        if (null != op) {
+          originOperation = AVIMOperation.getAVIMOperation(op.operation);
+          conversationId = op.conversationId;
+        } else {
+          conversationId = convCommand.getCid();
+        }
       } else {
         if (operation.equals(ConversationControlOp.STARTED)) {
           session.conversationOperationCache.poll(requestId);
