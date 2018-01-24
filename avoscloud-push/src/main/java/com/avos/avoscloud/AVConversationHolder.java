@@ -604,7 +604,7 @@ class AVConversationHolder {
       }
     } else if (ConversationControlOp.UPDATED.equals(operation)) {
       if (null == imop) {
-        LogUtil.log.e("IllegalState. operation is null, excepted is MUTE / UNMUTE / UPDATE, originalOp=" + operation);
+        // LogUtil.log.e("IllegalState. operation is null, excepted is MUTE / UNMUTE / UPDATE, originalOp=" + operation);
         // conv/updated notification
         onInfoChangedNotify(convCommand);
       } else if (AVIMOperation.CONVERSATION_MUTE.getCode() == imop.getCode()) {
