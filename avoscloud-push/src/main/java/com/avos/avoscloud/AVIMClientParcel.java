@@ -21,9 +21,9 @@ public class AVIMClientParcel implements Parcelable {
   private String sessionToken = "";
 
   /**
-   * 单点登录是否强制
+   * 是否恢复重连
    */
-  private boolean isForceSingleLogin;
+  private boolean isReconnection = false;
 
 
   public AVIMClientParcel() {}
@@ -31,7 +31,7 @@ public class AVIMClientParcel implements Parcelable {
   public AVIMClientParcel(Parcel in) {
     clientTag = in.readString();
     sessionToken = in.readString();
-    isForceSingleLogin = in.readInt() == 1;
+    isReconnection = in.readInt() == 1;
   }
 
   @Override
@@ -43,7 +43,7 @@ public class AVIMClientParcel implements Parcelable {
   public void writeToParcel(Parcel dest, int flags) {
     dest.writeString(clientTag);
     dest.writeString(sessionToken);
-    dest.writeInt(isForceSingleLogin ? 1 : 0);
+    dest.writeInt(isReconnection ? 1 : 0);
   }
 
   public static final Creator<AVIMClientParcel> CREATOR = new Creator<AVIMClientParcel>() {
@@ -66,12 +66,12 @@ public class AVIMClientParcel implements Parcelable {
     return clientTag;
   }
 
-  public void setForceSingleLogin(boolean isForceSingleLogin) {
-    this.isForceSingleLogin = isForceSingleLogin;
+  public void setReconnection(boolean isReconnection) {
+    this.isReconnection = isReconnection;
   }
 
-  public boolean isForceSingleLogin() {
-    return isForceSingleLogin;
+  public boolean isReconnection() {
+    return isReconnection;
   }
 
   public void setSessionToken(String sessionToken) {
