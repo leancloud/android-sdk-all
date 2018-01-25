@@ -119,7 +119,7 @@ public class AVSession {
         return;
       }
 
-      openWithSignature(requestId, !parcel.isForceSingleLogin(), true);
+      openWithSignature(requestId, parcel.isReconnection(), true);
     } catch (Exception e) {
       sessionListener.onError(AVOSCloud.applicationContext, this, e,
           OPERATION_OPEN_SESSION, requestId);

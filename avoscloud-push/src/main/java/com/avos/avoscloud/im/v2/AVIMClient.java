@@ -16,7 +16,6 @@ import android.support.v4.content.LocalBroadcastManager;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.avos.avoscloud.AVErrorUtils;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVIMClientParcel;
 import com.avos.avoscloud.AVOSCloud;
@@ -245,7 +244,9 @@ public class AVIMClient {
     parcel.setClientTag(tag);
     parcel.setSessionToken(userSessionToken);
     if (null != option) {
-      parcel.setForceSingleLogin(option.isForceSingleLogin());
+      parcel.setReconnection(option.isReconnect());
+    } else {
+      parcel.setReconnection(false);
     }
     BroadcastReceiver receiver = null;
 
