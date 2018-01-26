@@ -122,7 +122,7 @@ public class PaasClient {
   protected void updateHeaders(Request.Builder builder, Map<String, String> header,
                                boolean needRequestStatistic) {
     // if the field isnt exist, the server will assume it's true
-    builder.header("X-LC-Prod", AVCloud.isIsProduction() ? "1" : "0");
+    builder.header("X-LC-Prod", AVCloud.isProductionMode() ? "1" : "0");
 
     AVUser currAVUser = AVUser.getCurrentUser();
     builder.header(sessionTokenField,
