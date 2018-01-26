@@ -42,6 +42,7 @@ public class AVCloud {
   public static void setProductionMode(boolean productionMode) {
     isProduction = productionMode;
   }
+  public static boolean isProductionMode() {return isProduction;}
 
   /**
    * Calls a cloud function.
