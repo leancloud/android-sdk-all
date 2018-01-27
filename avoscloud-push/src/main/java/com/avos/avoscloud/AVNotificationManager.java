@@ -17,6 +17,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
+import com.avos.avoscloud.utils.StringUtils;
 import com.avos.avospush.session.StaleMessageDepot;
 
 import org.json.JSONException;
@@ -82,10 +83,8 @@ class AVNotificationManager {
     updateIntent.putExtra(PUSH_INTENT_KEY, 1);
     updateIntent.putExtra("com.avos.avoscloud.Channel", channel);
     updateIntent.putExtra("com.avoscloud.Channel", channel);
-    updateIntent.putExtra("com.parse.Channel", channel);
     updateIntent.putExtra("com.avos.avoscloud.Data", msg);
     updateIntent.putExtra("com.avoscloud.Data", msg);
-    updateIntent.putExtra("com.parse.Data", msg);
     updateIntent.setPackage(context.getPackageName());
     return updateIntent;
   }
@@ -180,7 +179,7 @@ class AVNotificationManager {
   }
 
   /**
-   * 处理华为、小米的透传消息（华为只有透传）
+   * 处理透传消息（华为只有透传）
    * @param message
    */
   void processMixPushMessage(String message) {
@@ -206,7 +205,9 @@ class AVNotificationManager {
    * @param message
    */
   void processMixNotification(String message, String defaultAction) {
-    if (!AVUtils.isBlankString(message)) {
+    if (StringUtils.isBlankString(message)) {
+      LogUtil.log.e(LOGTAG, "message is empty, ignore.");
+    } else {
       String channel = getChannel(message);
       if (channel == null || !containsDefaultPushCallback(channel)) {
         channel = AVOSCloud.applicationId;
@@ -217,7 +218,9 @@ class AVNotificationManager {
         sendNotificationBroadcast(channel, message, defaultAction);
       } else {
         String clsName = getDefaultPushCallback(channel);
-        if (!AVUtils.isBlankString(clsName)) {
+        if (StringUtils.isBlankString(clsName)) {
+          LogUtil.log.e(LOGTAG, "className is empty, ignore.");
+        } else {
           Intent intent = buildUpdateIntent(channel, message, null);
           ComponentName cn = new ComponentName(context, clsName);
           intent.setComponent(cn);
@@ -226,7 +229,7 @@ class AVNotificationManager {
           try {
             pendingIntent.send();
           } catch (PendingIntent.CanceledException e) {
-            LogUtil.avlog.e("PendingIntent.CanceledException");
+            LogUtil.log.e(LOGTAG,"Ocurred PendingIntent.CanceledException", e);
           }
         }
       }
