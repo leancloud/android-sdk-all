@@ -320,14 +320,15 @@ class AVConversationHolder {
       binaryMessage = ((AVIMBinaryMessage) message).getBytes();
     }
 
-    if (!messageOption.isTransient()) {
-      session.storeMessage((Message.getMessage(message.getContent(),
+    session.storeMessage((Message.getMessage(message.getContent(),
         String.valueOf(requestId), messageOption.isReceipt(), conversationId)), requestId);
-    } else {
-      // 暂态消息服务器也不会返回 ack，所以这里不需要等待网络返回，直接返回成功即可
-      BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), conversationId,
-          requestId, AVIMOperation.CONVERSATION_SEND_MESSAGE);
-    }
+//    if (!messageOption.isTransient()) {
+//      新版本的 transient 消息服务端也会下发 ack
+//    } else {
+//      // 暂态消息服务器也不会返回 ack，所以这里不需要等待网络返回，直接返回成功即可
+//      BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), conversationId,
+//          requestId, AVIMOperation.CONVERSATION_SEND_MESSAGE);
+//    }
 
     PushService
       .sendData(ConversationDirectMessagePacket.getConversationMessagePacket(
