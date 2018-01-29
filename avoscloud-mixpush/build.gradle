@@ -31,7 +31,7 @@ android.libraryVariants.all { variant ->
 dependencies {
     compile files('libs/HwPush_SDK_V2705.jar', 'libs/MiPush_SDK_Client_3_2_2.jar')
     compile project(':avoscloud-push')
-    compile 'com.meizu.flyme.internet:push-internal-publish:3.3.170123@aar'
+    compile 'com.meizu.flyme.internet:push-internal:3.6.2@aar'
 }
 
 

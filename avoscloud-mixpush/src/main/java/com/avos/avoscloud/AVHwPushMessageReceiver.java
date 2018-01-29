@@ -19,10 +19,10 @@ public class AVHwPushMessageReceiver extends PushEventReceiver {
       if (!hwToken.equals(installation.getString(AVInstallation.REGISTRATION_ID))) {
         installation.put(AVInstallation.REGISTRATION_ID, hwToken);
       }
-      String localProfile = installation.getString(AVMixpushManager.MIXPUSH_PRIFILE);
+      String localProfile = installation.getString(AVMixPushManager.MIXPUSH_PRIFILE);
       localProfile = (null != localProfile ? localProfile : "");
-      if (!localProfile.equals(AVMixpushManager.hwDeviceProfile)) {
-        installation.put(AVMixpushManager.MIXPUSH_PRIFILE, AVMixpushManager.hwDeviceProfile);
+      if (!localProfile.equals(AVMixPushManager.hwDeviceProfile)) {
+        installation.put(AVMixPushManager.MIXPUSH_PRIFILE, AVMixPushManager.hwDeviceProfile);
       }
 
       installation.saveInBackground(new SaveCallback() {

@@ -4,15 +4,10 @@ import android.Manifest;
 import android.content.Context;
 import android.os.Build;
 
-import com.huawei.android.pushagent.*;
-import com.xiaomi.mipush.sdk.MiPushClient;
-
-
-
 /**
  * Created by wli on 16/6/27.
  */
-public class AVMixpushManager {
+public class AVMixPushManager {
 
   static final String MIXPUSH_PRIFILE = "deviceProfile";
 
@@ -30,6 +25,7 @@ public class AVMixpushManager {
    * 魅族推送的 deviceProfile
    */
   static String flymeDevicePrifile = "";
+  static int flymeMStatusBarIcon = 0;
 
   /**
    * 注册小米推送
@@ -77,7 +73,7 @@ public class AVMixpushManager {
 
     miDeviceProfile = profile;
 
-    MiPushClient.registerPush(context, miAppId, miAppKey);
+    com.xiaomi.mipush.sdk.MiPushClient.registerPush(context, miAppId, miAppKey);
 
     if (AVOSCloud.isDebugLogEnabled()) {
       LogUtil.avlog.d("start register mi push");
@@ -117,7 +113,7 @@ public class AVMixpushManager {
     }
 
     hwDeviceProfile = profile;
-    PushManager.requestToken(context);
+    com.huawei.android.pushagent.PushManager.requestToken(context);
 
     if (AVOSCloud.isDebugLogEnabled()) {
       LogUtil.avlog.d("start register hawei push");
@@ -131,26 +127,27 @@ public class AVMixpushManager {
    * @param flymeKey
    * @param profile 魅族推送配置
    */
-  public static void registerFlymePush(Context context, String flymeId, String flymeKey, String profile) {
+  public static boolean registerFlymePush(Context context, String flymeId, String flymeKey, String profile) {
     if (null == context) {
-      throw new IllegalArgumentException("context cannot be null.");
+      printErrorLog("register error, context is null!");
+      return false;
     }
-
-    if (!isFlyme()) {
+    boolean result = false;
+    if (!com.meizu.cloud.pushsdk.util.MzSystemUtils.isBrandMeizu(context)) {
       printErrorLog("register error, is not flyme phone!");
-      return;
+    } else {
+      if (!checkFlymeManifest(context)) {
+        printErrorLog("register error, mainifest is incomplete!");
+      } else {
+        flymeDevicePrifile = profile;
+        com.meizu.cloud.pushsdk.PushManager.register(context, flymeId, flymeKey);
+        result = true;
+        if (AVOSCloud.isDebugLogEnabled()) {
+          LogUtil.avlog.d("start register flyme push");
+        }
+      }
     }
-
-    if (!checkFlymeManifest(context)) {
-      printErrorLog("register error, mainifest is incomplete!");
-      return;
-    }
-
-    flymeDevicePrifile = profile;
-    com.meizu.cloud.pushsdk.PushManager.register(context, flymeId, flymeKey);
-    if (AVOSCloud.isDebugLogEnabled()) {
-      LogUtil.avlog.d("start register flyme push");
-    }
+    return result;
   }
 
   /**
@@ -159,10 +156,13 @@ public class AVMixpushManager {
    * @param flymeId
    * @param flymeKey
    */
-  public static void registerFlymePush(Context context, String flymeId, String flymeKey) {
-    registerFlymePush(context, flymeId, flymeKey, null);
+  public static boolean registerFlymePush(Context context, String flymeId, String flymeKey) {
+    return registerFlymePush(context, flymeId, flymeKey, null);
   }
 
+  public static void setFlymeMStatusbarIcon(int icon) {
+    flymeMStatusBarIcon = icon;
+  }
   /**
    * 取消混合推送的注册
    * 取消成功后，消息会通过 LeanCloud websocket 发送
@@ -200,15 +200,6 @@ public class AVMixpushManager {
       && phoneManufacturer.toLowerCase().contains("xiaomi");
   }
 
-  private static boolean isFlyme() {
-    final String phoneBrand = Build.BRAND;
-    try {
-      return (phoneBrand.equalsIgnoreCase("meizu"));
-    } catch (Exception e) {
-      return false;
-    }
-  }
-
   private static boolean checkXiaomiManifest(Context context) {
     try {
       return AVManifestUtils.checkReceiver(context, AVMiPushMessageReceiver.class);
@@ -228,7 +219,7 @@ public class AVMixpushManager {
         && AVManifestUtils.checkPermission(context, android.Manifest.permission.WAKE_LOCK)
         && AVManifestUtils.checkService(context, com.huawei.android.pushagent.PushService.class)
         && AVManifestUtils.checkReceiver(context, AVHwPushMessageReceiver.class)
-        && AVManifestUtils.checkReceiver(context, PushEventReceiver.class);
+        && AVManifestUtils.checkReceiver(context, com.huawei.android.pushagent.PushEventReceiver.class);
     } catch (Exception e) {
     }
     return result;

@@ -29,10 +29,10 @@ public class AVMiPushMessageReceiver extends PushMessageReceiver {
       if (!miRegId.equals(installation.getString(AVInstallation.REGISTRATION_ID))) {
         installation.put(AVInstallation.REGISTRATION_ID, miRegId);
       }
-      String localProfile = installation.getString(AVMixpushManager.MIXPUSH_PRIFILE);
+      String localProfile = installation.getString(AVMixPushManager.MIXPUSH_PRIFILE);
       localProfile = (null != localProfile ? localProfile : "");
-      if (!localProfile.equals(AVMixpushManager.miDeviceProfile)) {
-        installation.put(AVMixpushManager.MIXPUSH_PRIFILE, AVMixpushManager.miDeviceProfile);
+      if (!localProfile.equals(AVMixPushManager.miDeviceProfile)) {
+        installation.put(AVMixPushManager.MIXPUSH_PRIFILE, AVMixPushManager.miDeviceProfile);
       }
       installation.saveInBackground(new SaveCallback() {
         @Override
