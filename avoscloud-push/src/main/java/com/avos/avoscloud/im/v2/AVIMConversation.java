@@ -1629,8 +1629,7 @@ public class AVIMConversation {
                   if (timestamp != -1) {
                     message.setTimestamp(timestamp);
                   }
-                  if ((null == messageOption || !messageOption.isTransient())
-                      && AVIMClient.messageQueryCacheEnabled) {
+                  if ((null == messageOption || !messageOption.isTransient()) && AVIMClient.messageQueryCacheEnabled) {
                     setLastMessage(message);
                     storage.insertMessage(message, false);
                   } else {
@@ -1716,6 +1715,7 @@ public class AVIMConversation {
                 }
                 return;
               }
+
               callback.internalDone(null, AVIMException.wrapperAVException(error));
             }
           }, new IntentFilter(operation.getOperation() + requestId));
