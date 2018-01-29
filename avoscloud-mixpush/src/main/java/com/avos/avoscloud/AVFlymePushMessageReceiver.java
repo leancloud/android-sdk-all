@@ -69,7 +69,7 @@ public class AVFlymePushMessageReceiver extends MzPushMessageReceiver {
   }
 
   @Override
-  public void onMessage(Context var1, String message,String platformExtra) {
+  public void onMessage(Context var1, String message, String platformExtra) {
     // onMessage(Context context, String s) 实现一个即可
   }
 

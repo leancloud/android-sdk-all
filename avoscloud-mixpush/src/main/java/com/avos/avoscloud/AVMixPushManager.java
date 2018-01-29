@@ -200,10 +200,6 @@ public class AVMixPushManager {
       && phoneManufacturer.toLowerCase().contains("xiaomi");
   }
 
-  private static boolean isFlyme(Context context) {
-    return com.meizu.cloud.pushsdk.util.MzSystemUtils.isBrandMeizu(context);
-  }
-
   private static boolean checkXiaomiManifest(Context context) {
     try {
       return AVManifestUtils.checkReceiver(context, AVMiPushMessageReceiver.class);
