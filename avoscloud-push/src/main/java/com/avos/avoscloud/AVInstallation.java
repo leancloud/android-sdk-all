@@ -205,7 +205,7 @@ public final class AVInstallation extends AVObject {
   }
 
   private static void writeInstallationFile(Context ctx, AVInstallation installation) throws IOException {
-    if (installation != null) {
+    if (null != ctx && null != installation) {
       installation.initialize();
       File installationFile = new File(ctx.getFilesDir(), INSTALLATION);
       String jsonString =

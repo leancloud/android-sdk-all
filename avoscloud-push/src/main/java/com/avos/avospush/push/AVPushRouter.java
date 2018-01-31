@@ -59,7 +59,7 @@ public class AVPushRouter {
   public AVPushRouter(Context context, RouterResponseListener listener) {
     this.context = context;
     this.listener = listener;
-    this.installationId = AVInstallation.getCurrentInstallation().getInstallationId();
+    this.installationId = AVInstallation.getCurrentInstallation(context).getInstallationId();
   }
 
   private String getRouterUrl() {
