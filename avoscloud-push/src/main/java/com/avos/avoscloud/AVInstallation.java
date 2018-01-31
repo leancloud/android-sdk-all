@@ -1,5 +1,6 @@
 package com.avos.avoscloud;
 
+import android.content.Context;
 import android.os.Parcel;
 import java.io.File;
 import java.io.IOException;
@@ -46,25 +47,31 @@ public final class AVInstallation extends AVObject {
    * @return
    */
   public static AVInstallation getCurrentInstallation() {
+    return getCurrentInstallation(null);
+  }
+
+  public static AVInstallation getCurrentInstallation(Context ctx) {
+    Context usingCtx = (null == ctx)? AVOSCloud.applicationContext : ctx;
+
     if (currentInstallation == null) {
       synchronized (AVInstallation.class) {
-        // double check.
-        if (currentInstallation == null && readInstallationFile() == null) {
-          createNewInstallation();
+        if (currentInstallation == null && readInstallationFile(usingCtx) == null) {
+          createNewInstallation(usingCtx);
         }
       }
     }
-    // 每次取到以后强制加上deviceType跟timeZone...因为在测试过程中间遇到取到null的情况。
-    currentInstallation.initialize();
+    if (currentInstallation != null) {
+      currentInstallation.initialize();
+    }
     return currentInstallation;
   }
 
-  private static void createNewInstallation() {
+  private static void createNewInstallation(Context ctx) {
     String id = genInstallationId();
     currentInstallation = new AVInstallation();
     currentInstallation.setInstallationId(id);
     currentInstallation.put(INSTALLATIONIDTAG, id);
-    saveCurrentInstalationToLocal();
+    saveCurrentInstalationToLocal(ctx);
   }
 
   /**
@@ -79,9 +86,9 @@ public final class AVInstallation extends AVObject {
     return AVUtils.md5(packageName + additionalStr);
   }
 
-  private static void saveCurrentInstalationToLocal() {
+  private static void saveCurrentInstalationToLocal(Context ctx) {
     try {
-      writeInstallationFile(currentInstallation);
+      writeInstallationFile(ctx, currentInstallation);
     } catch (Exception e) {
       LogUtil.log.e(LOGTAG, e);
     }
@@ -141,7 +148,7 @@ public final class AVInstallation extends AVObject {
   protected void onSaveSuccess() {
     super.onSaveSuccess();
     try {
-      writeInstallationFile(this);
+      writeInstallationFile(AVOSCloud.applicationContext, this);
     } catch (Exception e) {
       LogUtil.log.e(LOGTAG, e);
     }
@@ -160,35 +167,35 @@ public final class AVInstallation extends AVObject {
   protected void onSaveFailure() {
     LogUtil.avlog.d("roll back installationId since error there");
     synchronized (AVInstallation.class) {
-      if (readInstallationFile() == null) {
-        createNewInstallation();
+      if (readInstallationFile(AVOSCloud.applicationContext) == null) {
+        createNewInstallation(AVOSCloud.applicationContext);
       }
     }
   }
 
-  protected static AVInstallation readInstallationFile() {
-    if (AVOSCloud.applicationContext == null) {
-      throw new IllegalStateException("Please call AVOSCloud.initialize at first in Application");
+  protected static AVInstallation readInstallationFile(Context usingCtx) {
+    if (null == usingCtx) {
+      LogUtil.log.e(LOGTAG,"Please call AVOSCloud.initialize at first in Application");
+      return null;
     }
     String json = "";
     try {
-      File installationFile = new File(AVOSCloud.applicationContext.getFilesDir(), INSTALLATION);
+      File installationFile = new File(usingCtx.getFilesDir(), INSTALLATION);
 
       if (installationFile.exists()) {
         json = AVPersistenceUtils.readContentFromFile(installationFile);
         if (json.indexOf("{") >= 0) {
           currentInstallation = (AVInstallation) JSON.parse(json);
-          return currentInstallation;
         } else {
           if (json.length() == UUID_LEN) {
             // old sdk verson.
             currentInstallation = new AVInstallation();
             currentInstallation.setInstallationId(json);
             // update it
-            saveCurrentInstalationToLocal();
-            return currentInstallation;
+            saveCurrentInstalationToLocal(usingCtx);
           }
         }
+        return currentInstallation;
       }
     } catch (Exception e) {
       // try to instance a new installation
@@ -197,10 +204,10 @@ public final class AVInstallation extends AVObject {
     return null;
   }
 
-  private static void writeInstallationFile(AVInstallation installation) throws IOException {
+  private static void writeInstallationFile(Context ctx, AVInstallation installation) throws IOException {
     if (installation != null) {
       installation.initialize();
-      File installationFile = new File(AVOSCloud.applicationContext.getFilesDir(), INSTALLATION);
+      File installationFile = new File(ctx.getFilesDir(), INSTALLATION);
       String jsonString =
         JSON.toJSONString(installation, ObjectValueFilter.instance,
           SerializerFeature.WriteClassName,
@@ -253,7 +260,7 @@ public final class AVInstallation extends AVObject {
       if (AVOSCloud.showInternalDebugLog()) {
         LogUtil.avlog.d("try to update installation to fix date type data");
       }
-      AVInstallation currentInstallation = AVInstallation.readInstallationFile();
+      AVInstallation currentInstallation = AVInstallation.readInstallationFile(AVOSCloud.applicationContext);
       if (currentInstallation != null && !AVUtils.isBlankString(currentInstallation.getObjectId())) {
         currentInstallation.fetchInBackground(new GetCallback<AVObject>() {
 
@@ -261,7 +268,7 @@ public final class AVInstallation extends AVObject {
           public void done(AVObject object, AVException e) {
             AVInstallation updatedInstallation = (AVInstallation) object;
             try {
-              AVInstallation.writeInstallationFile(updatedInstallation);
+              AVInstallation.writeInstallationFile(AVOSCloud.applicationContext, updatedInstallation);
             } catch (IOException e1) {
               if (AVOSCloud.showInternalDebugLog()) {
                 e1.printStackTrace();
