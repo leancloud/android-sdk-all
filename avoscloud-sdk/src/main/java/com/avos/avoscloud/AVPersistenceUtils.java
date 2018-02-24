@@ -316,6 +316,10 @@ public class AVPersistenceUtils {
   }
 
   public void removePersistentSettingString(String keyzone, String key) {
+    if (null == AVOSCloud.applicationContext) {
+      LogUtil.log.e("applicationContext is null, Please call AVOSCloud.initialize first");
+      return;
+    }
     SharedPreferences settings =
         AVOSCloud.applicationContext.getSharedPreferences(keyzone, Context.MODE_PRIVATE);
     SharedPreferences.Editor editor = settings.edit();
@@ -324,6 +328,10 @@ public class AVPersistenceUtils {
   }
 
   public String removePersistentSettingString(String keyzone, String key, String defaultValue) {
+    if (null == AVOSCloud.applicationContext) {
+      LogUtil.log.e("applicationContext is null, Please call AVOSCloud.initialize first");
+      return defaultValue;
+    }
     String currentValue = getPersistentSettingString(keyzone, key, defaultValue);
     SharedPreferences settings =
         AVOSCloud.applicationContext.getSharedPreferences(keyzone, Context.MODE_PRIVATE);
@@ -334,6 +342,10 @@ public class AVPersistenceUtils {
   }
 
   public void removeKeyZonePersistentSettings(String keyzone) {
+    if (null == AVOSCloud.applicationContext) {
+      LogUtil.log.e("applicationContext is null, Please call AVOSCloud.initialize first");
+      return;
+    }
     SharedPreferences settings =
         AVOSCloud.applicationContext.getSharedPreferences(keyzone, Context.MODE_PRIVATE);
     SharedPreferences.Editor editor = settings.edit();
