@@ -42,6 +42,12 @@ public class AVLiveQuery {
 
   private static Set<AVLiveQuery> liveQuerySet = Collections.synchronizedSet(new HashSet<AVLiveQuery>());
 
+  static void resumeSubscribeers() {
+    for (AVLiveQuery query: liveQuerySet) {
+      query.subscribeInBackground(null);
+    }
+  }
+
   private AVLiveQueryEventHandler eventHandler;
 
   public enum EventType {
