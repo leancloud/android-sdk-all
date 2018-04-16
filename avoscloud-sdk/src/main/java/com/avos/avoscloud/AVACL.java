@@ -19,6 +19,7 @@ public class AVACL {
   private static String writeTag = "write";
   private static String publicTag = "*";
   private static String rolePrefix = "role:";
+  static final String ACL_ATTR_NAME = "ACL";
 
   /**
    * Creates an ACL with no permissions granted.
@@ -330,7 +331,7 @@ public class AVACL {
 
   public Map<String, Object> getACLMap() {
     Map<String, Object> aclMap = new HashMap<String, Object>();
-    aclMap.put("ACL", getPermissionsById());
+    aclMap.put(ACL_ATTR_NAME, getPermissionsById());
     return aclMap;
   }
 
