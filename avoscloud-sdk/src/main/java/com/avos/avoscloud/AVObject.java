@@ -2219,25 +2219,14 @@ public class AVObject implements Parcelable {
   public void setACL(AVACL acl) {
     this.acl = acl;
 
-    if (null == acl) {
-      final Map<String, Object> emptyACL = new HashMap<>();
-      KeyValueCallback cb = new KeyValueCallback() {
-        @Override
-        public AVOp createOp() {
-          return new SetOp(AVACL.ACL_ATTR_NAME, emptyACL);
-        }
-      };
-      cb.execute(AVACL.ACL_ATTR_NAME, true);
-    } else {
-      KeyValueCallback cb = new KeyValueCallback() {
-        @Override
-        public AVOp createOp() {
-          return new SetOp(AVACL.ACL_ATTR_NAME, AVObject.this.acl.getPermissionsById());
-        }
-      };
-      cb.execute(AVACL.ACL_ATTR_NAME, true);
-    }
-
+    final Map<String, Object> aclMap = (null == acl)? new HashMap<String, Object>() : acl.getPermissionsById();
+    KeyValueCallback cb = new KeyValueCallback() {
+      @Override
+      public AVOp createOp() {
+        return new SetOp(AVACL.ACL_ATTR_NAME, aclMap);
+      }
+    };
+    cb.execute(AVACL.ACL_ATTR_NAME, true);
   }
 
   /**
