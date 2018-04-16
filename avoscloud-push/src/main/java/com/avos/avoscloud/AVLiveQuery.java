@@ -159,11 +159,15 @@ public class AVLiveQuery {
     LocalBroadcastManager.getInstance(AVOSCloud.applicationContext).registerReceiver(loginReceiver,
       new IntentFilter(LIVEQUERY_PRIFIX + requestId));
 
-    Intent i = new Intent(AVOSCloud.applicationContext, PushService.class);
-    i.setAction(ACTION_LIVE_QUERY_LOGIN);
-    i.putExtra(SUBSCRIBE_ID, getSubscribeId());
-    i.putExtra(Conversation.INTENT_KEY_REQUESTID, requestId);
-    AVOSCloud.applicationContext.startService(IntentUtil.setupIntentFlags(i));
+    try {
+      Intent i = new Intent(AVOSCloud.applicationContext, PushService.class);
+      i.setAction(ACTION_LIVE_QUERY_LOGIN);
+      i.putExtra(SUBSCRIBE_ID, getSubscribeId());
+      i.putExtra(Conversation.INTENT_KEY_REQUESTID, requestId);
+      AVOSCloud.applicationContext.startService(IntentUtil.setupIntentFlags(i));
+    } catch (Exception ex) {
+      LogUtil.avlog.e("failed to start PushServer. cause: " + ex.getMessage());
+    }
   }
 
   /**
