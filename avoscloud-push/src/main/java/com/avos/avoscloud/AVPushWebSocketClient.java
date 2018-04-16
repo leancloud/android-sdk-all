@@ -130,6 +130,9 @@ public class AVPushWebSocketClient extends WebSocketClient {
       receiver.processSessionsStatus(false);
     }
     LogUtil.avlog.d("onOpen()");
+
+    // resume livequery if necessary.
+    AVLiveQuery.resumeSubscribeers();
   }
 
   @Override
