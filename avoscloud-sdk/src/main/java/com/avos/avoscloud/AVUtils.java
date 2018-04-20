@@ -101,7 +101,7 @@ public class AVUtils {
 
   static Pattern pattern = Pattern.compile("^[a-zA-Z_][a-zA-Z_0-9]*$");
   static Pattern emailPattern = Pattern.compile("^\\w+?@\\w+?[.]\\w+");
-  static Pattern phoneNumPattern = Pattern.compile("1\\d{10}");
+  static Pattern phoneNumPattern = Pattern.compile("^[1+]\\d+$");
   static Pattern verifyCodePattern = Pattern.compile("\\d{6}");
 
   public static boolean checkEmailAddress(String email) {
