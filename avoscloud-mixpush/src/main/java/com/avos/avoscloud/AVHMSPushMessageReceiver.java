@@ -7,9 +7,7 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.avos.avoscloud.utils.StringUtils;
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 /**
@@ -19,6 +17,8 @@ import java.util.Map;
 public class AVHMSPushMessageReceiver extends com.huawei.hms.support.api.push.PushReceiver{
   static final String MIXPUSH_PRIFILE = "deviceProfile";
   static final String VENDOR = "HMS";
+  static final String ATTR_ACTION = "action";
+  static final String ATTR_CONTENT = "content";
 
   private void updateAVInstallation(String hwToken) {
     if (StringUtils.isBlankString(hwToken)) {
@@ -51,11 +51,33 @@ public class AVHMSPushMessageReceiver extends com.huawei.hms.support.api.push.Pu
     });
   }
 
+  /**
+   * 响应 token 通知。
+   *
+   * @param context
+   * @param token
+   * @param bundle
+   */
   @Override
   public void onToken(Context context, String token, Bundle bundle) {
     updateAVInstallation(token);
   }
 
+  /**
+   * 收到透传消息
+   *
+   * 消息格式类似于：
+   *      {"alert":"", "title":"", "action":"", "silent":true}
+   * SDK 内部会转换成 {"content":\\"{"alert":"", "title":"", "action":"", "silent":true}\\"}
+   * 再发送给本地的 Receiver。
+   *
+   * 所以，开发者如果想自己处理透传消息，则需要从 Receiver#onReceive(Context context, Intent intent) 的 intent 中通过
+   * getStringExtra("content") 获取到实际的数据。
+   *
+   * @param var1
+   * @param var2
+   * @param var3
+   */
   @Override
   public void onPushMsg(Context var1, byte[] var2, String var3) {
     try {
@@ -66,6 +88,13 @@ public class AVHMSPushMessageReceiver extends com.huawei.hms.support.api.push.Pu
     }
   }
 
+  /**
+   * 响应通知栏点击事件
+   *
+   * @param context
+   * @param event
+   * @param extras
+   */
   @Override
   public void onEvent(Context context, Event event, Bundle extras) {
     if (Event.NOTIFICATION_CLICK_BTN.equals(event) || Event.NOTIFICATION_OPENED.equals(event)) {
@@ -75,29 +104,32 @@ public class AVHMSPushMessageReceiver extends com.huawei.hms.support.api.push.Pu
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         manager.cancel(notifyId);
       }
-      String message = extras.getString(BOUND_KEY.pushMsgKey);
-      notifyPushMessage(context, message);
     }
   }
 
+  /**
+   * 响应推送状态变化通知。
+   *
+   * @param context
+   * @param pushState
+   */
   @Override
   public void onPushState(Context context, boolean pushState) {
     LogUtil.avlog.d("pushState changed, current=" + pushState);
   }
 
   private void notifyPushMessage(Context context, String message) {
-    Map<String, String> msgObject = JSON.parseObject(message, Map.class);
-    if (msgObject.containsKey("action")) {
-      String action = msgObject.get("action");
+    Map<String, Object> msgObject = JSON.parseObject(message, Map.class);
+    if (msgObject.containsKey(ATTR_ACTION)) {
+      String action = (String) msgObject.get(ATTR_ACTION);
 
-      LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(context);
-      Intent intent = new Intent(action);
       Bundle bundle = new Bundle();
-      for (Map.Entry<String, String> kv: msgObject.entrySet()) {
-        bundle.putString(kv.getKey(), kv.getValue());
-      }
+      bundle.putString(ATTR_CONTENT, message);
+
+      Intent intent = new Intent(action);
       intent.putExtras(bundle);
-      localBroadcastManager.sendBroadcast(intent);
+
+      LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     } else {
       LogUtil.avlog.e("invalid pushMessage: " + message);
     }
