@@ -91,7 +91,7 @@ public class AVMixPushManager {
    * @param context
    */
   @Deprecated
-  public static void registerHuaweiPush(Context context) {
+  public static void registerHuaweiPush(Context context) throws IllegalAccessException {
     registerHuaweiPush(context, null);
   }
 
@@ -105,27 +105,8 @@ public class AVMixPushManager {
    * @param profile 华为推送配置
    */
   @Deprecated
-  public static void registerHuaweiPush(Context context, String profile) {
-    if (null == context) {
-      throw new IllegalArgumentException("context cannot be null.");
-    }
-
-    if (!isHuaweiPhone()) {
-      printErrorLog("register error, is not huawei phone!");
-      return;
-    }
-
-    if (!checkHuaweiManifest(context)) {
-      printErrorLog("register error, mainifest is incomplete!");
-      return;
-    }
-
-    hwDeviceProfile = profile;
-    com.huawei.android.pushagent.PushManager.requestToken(context);
-
-    if (AVOSCloud.isDebugLogEnabled()) {
-      LogUtil.avlog.d("start register hawei push");
-    }
+  public static void registerHuaweiPush(Context context, String profile) throws IllegalAccessException {
+    throw new IllegalAccessException("registerHuaweiPush is deprecated, please use registerHMSPush instead.");
   }
 
   /**
@@ -157,7 +138,11 @@ public class AVMixPushManager {
     }
 
     hwDeviceProfile = profile;
-    com.huawei.android.hms.agent.HMSAgent.init(application);
+    boolean hmsInitResult = com.huawei.android.hms.agent.HMSAgent.init(application);
+    if (!hmsInitResult) {
+      LogUtil.avlog.e("failed to init HMSAgent.");
+    }
+
     if (AVOSCloud.isDebugLogEnabled()) {
       LogUtil.avlog.d("[HMS] start register HMS push");
     }
@@ -332,10 +317,7 @@ public class AVMixPushManager {
         && AVManifestUtils.checkPermission(context, android.Manifest.permission.ACCESS_NETWORK_STATE)
         && AVManifestUtils.checkPermission(context, android.Manifest.permission.ACCESS_WIFI_STATE)
         && AVManifestUtils.checkPermission(context, android.Manifest.permission.READ_PHONE_STATE)
-        && AVManifestUtils.checkPermission(context, android.Manifest.permission.WAKE_LOCK)
-        && AVManifestUtils.checkService(context, com.huawei.android.pushagent.PushService.class)
-        && AVManifestUtils.checkReceiver(context, AVHwPushMessageReceiver.class)
-        && AVManifestUtils.checkReceiver(context, com.huawei.android.pushagent.PushEventReceiver.class);
+        && AVManifestUtils.checkReceiver(context, AVHMSPushMessageReceiver.class);
     } catch (Exception e) {
     }
     return result;

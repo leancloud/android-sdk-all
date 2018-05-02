@@ -5,11 +5,6 @@ import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.xiaomi.mipush.sdk.ErrorCode;
-import com.xiaomi.mipush.sdk.MiPushClient;
-import com.xiaomi.mipush.sdk.MiPushCommandMessage;
-import com.xiaomi.mipush.sdk.MiPushMessage;
-import com.xiaomi.mipush.sdk.PushMessageReceiver;
 
 import java.util.List;
 
@@ -17,7 +12,7 @@ import java.util.List;
  * Created by wli on 16/6/22.
  * 该回调运行在非 UI 线程
  */
-public class AVMiPushMessageReceiver extends PushMessageReceiver {
+public class AVMiPushMessageReceiver extends com.xiaomi.mipush.sdk.PushMessageReceiver {
 
   private void updateAVInstallation(String miRegId) {
     if (!AVUtils.isBlankString(miRegId)) {
@@ -51,7 +46,7 @@ public class AVMiPushMessageReceiver extends PushMessageReceiver {
    * 处理小米推送的透传消息
    * @param miPushMessage
    */
-  private void processMiPushMessage(MiPushMessage miPushMessage) {
+  private void processMiPushMessage(com.xiaomi.mipush.sdk.MiPushMessage miPushMessage) {
     if (null != miPushMessage) {
       String title = miPushMessage.getTitle();
       String description = miPushMessage.getDescription();
@@ -83,7 +78,7 @@ public class AVMiPushMessageReceiver extends PushMessageReceiver {
    * 处理小米推送点击事件
    * @param miPushMessage
    */
-  private void processMiNotification(MiPushMessage miPushMessage) {
+  private void processMiNotification(com.xiaomi.mipush.sdk.MiPushMessage miPushMessage) {
     if (null != miPushMessage) {
       String content = miPushMessage.getContent();
       if (!AVUtils.isBlankString(content)) {
@@ -96,13 +91,13 @@ public class AVMiPushMessageReceiver extends PushMessageReceiver {
    * 注册结果
    */
   @Override
-  public void onReceiveRegisterResult(Context context, MiPushCommandMessage miPushCommandMessage) {
+  public void onReceiveRegisterResult(Context context, com.xiaomi.mipush.sdk.MiPushCommandMessage miPushCommandMessage) {
     super.onReceiveRegisterResult(context, miPushCommandMessage);
     String command = miPushCommandMessage.getCommand();
     List<String> arguments = miPushCommandMessage.getCommandArguments();
     String cmdArg1 = ((arguments != null && arguments.size() > 0) ? arguments.get(0) : null);
-    if (MiPushClient.COMMAND_REGISTER.equals(command)) {
-      if (miPushCommandMessage.getResultCode() == ErrorCode.SUCCESS) {
+    if (com.xiaomi.mipush.sdk.MiPushClient.COMMAND_REGISTER.equals(command)) {
+      if (miPushCommandMessage.getResultCode() == com.xiaomi.mipush.sdk.ErrorCode.SUCCESS) {
         updateAVInstallation(cmdArg1);
       } else {
         LogUtil.avlog.d("register error, " + miPushCommandMessage.toString());
@@ -117,7 +112,7 @@ public class AVMiPushMessageReceiver extends PushMessageReceiver {
    * @param miPushMessage
    */
   @Override
-  public void onNotificationMessageArrived(Context context, MiPushMessage miPushMessage) {
+  public void onNotificationMessageArrived(Context context, com.xiaomi.mipush.sdk.MiPushMessage miPushMessage) {
     if (null != miPushMessage) {
       String content = miPushMessage.getContent();
       if (!AVUtils.isBlankString(content)) {
@@ -132,7 +127,7 @@ public class AVMiPushMessageReceiver extends PushMessageReceiver {
    * @param miPushMessage
    */
   @Override
-  public void onReceivePassThroughMessage(Context context, MiPushMessage miPushMessage) {
+  public void onReceivePassThroughMessage(Context context, com.xiaomi.mipush.sdk.MiPushMessage miPushMessage) {
     processMiPushMessage(miPushMessage);
   }
 
@@ -142,7 +137,7 @@ public class AVMiPushMessageReceiver extends PushMessageReceiver {
    * @param miPushMessage
    */
   @Override
-  public void onNotificationMessageClicked(Context context, MiPushMessage miPushMessage) {
+  public void onNotificationMessageClicked(Context context, com.xiaomi.mipush.sdk.MiPushMessage miPushMessage) {
     processMiNotification(miPushMessage);
   }
 }

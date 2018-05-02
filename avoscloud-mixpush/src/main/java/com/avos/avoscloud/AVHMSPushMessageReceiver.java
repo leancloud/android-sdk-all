@@ -2,10 +2,15 @@ package com.avos.avoscloud;
 
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.avos.avoscloud.utils.StringUtils;
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 
 /**
  * Created by fengjunwen on 2018/4/24.
@@ -55,22 +60,47 @@ public class AVHMSPushMessageReceiver extends com.huawei.hms.support.api.push.Pu
   public void onPushMsg(Context var1, byte[] var2, String var3) {
     try {
       String message = new String(var2, "UTF-8");
-    } catch (UnsupportedEncodingException ex) {
-      ex.printStackTrace();
+      notifyPushMessage(var1, message);
+    } catch (Exception ex) {
+      LogUtil.avlog.e("failed to process PushMessage.", ex);
     }
   }
 
   @Override
   public void onEvent(Context context, Event event, Bundle extras) {
-    int notifyId = extras.getInt(BOUND_KEY.pushNotifyId, 0);
-    if (0 != notifyId) {
-      NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-      manager.cancel(notifyId);
+    if (Event.NOTIFICATION_CLICK_BTN.equals(event) || Event.NOTIFICATION_OPENED.equals(event)) {
+      int notifyId = extras.getInt(BOUND_KEY.pushNotifyId, 0);
+      LogUtil.avlog.d("received Push Event. notifyId:" + notifyId);
+      if (0 != notifyId) {
+        NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.cancel(notifyId);
+      }
+      String message = extras.getString(BOUND_KEY.pushMsgKey);
+      notifyPushMessage(context, message);
     }
-
   }
 
+  @Override
   public void onPushState(Context context, boolean pushState) {
     LogUtil.avlog.d("pushState changed, current=" + pushState);
+  }
+
+  private void notifyPushMessage(Context context, String message) {
+    Map<String, String> msgObject = JSON.parseObject(message, Map.class);
+    if (msgObject.containsKey("action")) {
+      String action = msgObject.get("action");
+
+      LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(context);
+      Intent intent = new Intent(action);
+      Bundle bundle = new Bundle();
+      for (Map.Entry<String, String> kv: msgObject.entrySet()) {
+        bundle.putString(kv.getKey(), kv.getValue());
+      }
+      intent.putExtras(bundle);
+      localBroadcastManager.sendBroadcast(intent);
+    } else {
+      LogUtil.avlog.e("invalid pushMessage: " + message);
+    }
+
   }
 }
