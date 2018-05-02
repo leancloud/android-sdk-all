@@ -6,7 +6,7 @@ android {
     buildToolsVersion "25.0.3"
 
     defaultConfig {
-        minSdkVersion 14
+        minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -29,8 +29,9 @@ android.libraryVariants.all { variant ->
 }
 
 dependencies {
-    compile files('libs/HwPush_SDK_V2705.jar', 'libs/MiPush_SDK_Client_3_2_2.jar')
+    compile files('libs/MiPush_SDK_Client_3_2_2.jar', 'libs/HMS_SDK_2.6.0.301.jar')
     compile project(':avoscloud-push')
+    compile project(':hmsagent')
     compile 'com.meizu.flyme.internet:push-internal:3.6.2@aar'
 }
 

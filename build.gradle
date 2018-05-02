@@ -8,6 +8,7 @@ buildscript {
         maven {
             url "$androidHome/extras/android/m2repository/"
         }
+        maven {url "http://developer.huawei.com/repo"}
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.3'
@@ -26,5 +27,6 @@ subprojects {
         maven {
             url "$androidHome/extras/android/m2repository/"
         }
+        maven {url "http://developer.huawei.com/repo"}
     }
 }

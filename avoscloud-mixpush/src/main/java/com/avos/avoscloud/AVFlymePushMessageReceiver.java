@@ -4,20 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.avos.avoscloud.utils.StringUtils;
-import com.meizu.cloud.pushsdk.MzPushMessageReceiver;
-import com.meizu.cloud.pushsdk.handler.MzPushMessage;
-import com.meizu.cloud.pushsdk.notification.PushNotificationBuilder;
-import com.meizu.cloud.pushsdk.platform.message.PushSwitchStatus;
-import com.meizu.cloud.pushsdk.platform.message.RegisterStatus;
-import com.meizu.cloud.pushsdk.platform.message.SubAliasStatus;
-import com.meizu.cloud.pushsdk.platform.message.SubTagsStatus;
-import com.meizu.cloud.pushsdk.platform.message.UnRegisterStatus;
 
 /**
  * Created by wli on 2017/2/14.
  */
 
-public class AVFlymePushMessageReceiver extends MzPushMessageReceiver {
+public class AVFlymePushMessageReceiver extends com.meizu.cloud.pushsdk.MzPushMessageReceiver {
 
   private final String FLYME_VERDOR = "mz";
 
@@ -79,7 +71,7 @@ public class AVFlymePushMessageReceiver extends MzPushMessageReceiver {
   }
 
   @Override
-  public void onPushStatus(Context context, PushSwitchStatus pushSwitchStatus) {
+  public void onPushStatus(Context context, com.meizu.cloud.pushsdk.platform.message.PushSwitchStatus pushSwitchStatus) {
     //检查通知栏和透传消息开关状态回调
     if (null == context || null == pushSwitchStatus) {
       return;
@@ -101,7 +93,7 @@ public class AVFlymePushMessageReceiver extends MzPushMessageReceiver {
    */
 
   @Override
-  public void onRegisterStatus(Context context, RegisterStatus registerStatus) {
+  public void onRegisterStatus(Context context, com.meizu.cloud.pushsdk.platform.message.RegisterStatus registerStatus) {
     //调用新版订阅PushManager.register(context,appId,appKey)回调
     if (null == context || null == registerStatus) {
       return;
@@ -116,7 +108,7 @@ public class AVFlymePushMessageReceiver extends MzPushMessageReceiver {
   }
 
   @Override
-  public void onUnRegisterStatus(Context context, UnRegisterStatus unRegisterStatus) {
+  public void onUnRegisterStatus(Context context, com.meizu.cloud.pushsdk.platform.message.UnRegisterStatus unRegisterStatus) {
     //新版反订阅回调
     if (null == context || null == unRegisterStatus) {
       return;
@@ -127,12 +119,12 @@ public class AVFlymePushMessageReceiver extends MzPushMessageReceiver {
   }
 
   @Override
-  public void onSubTagsStatus(Context context, SubTagsStatus subTagsStatus) {
+  public void onSubTagsStatus(Context context, com.meizu.cloud.pushsdk.platform.message.SubTagsStatus subTagsStatus) {
     //标签回调
   }
 
   @Override
-  public void onSubAliasStatus(Context context, SubAliasStatus subAliasStatus) {
+  public void onSubAliasStatus(Context context, com.meizu.cloud.pushsdk.platform.message.SubAliasStatus subAliasStatus) {
     //别名回调
   }
 
@@ -148,7 +140,7 @@ public class AVFlymePushMessageReceiver extends MzPushMessageReceiver {
    */
 
   @Override
-  public void onUpdateNotificationBuilder(PushNotificationBuilder pushNotificationBuilder) {
+  public void onUpdateNotificationBuilder(com.meizu.cloud.pushsdk.notification.PushNotificationBuilder pushNotificationBuilder) {
     //重要,详情参考应用小图标自定设置
     if (AVMixPushManager.flymeMStatusBarIcon != 0) {
       pushNotificationBuilder.setmStatusbarIcon(AVMixPushManager.flymeMStatusBarIcon);
@@ -156,12 +148,12 @@ public class AVFlymePushMessageReceiver extends MzPushMessageReceiver {
   }
 
   @Override
-  public void onNotificationArrived(Context context, MzPushMessage var2) {
+  public void onNotificationArrived(Context context, com.meizu.cloud.pushsdk.handler.MzPushMessage var2) {
     //通知栏消息到达回调，flyme6基于android6.0以上不再回调
   }
 
   @Override
-  public void onNotificationClicked(Context context, MzPushMessage var2) {
+  public void onNotificationClicked(Context context, com.meizu.cloud.pushsdk.handler.MzPushMessage var2) {
     //通知栏消息点击回调
     if (null == context || null == var2) {
       return;
@@ -175,7 +167,7 @@ public class AVFlymePushMessageReceiver extends MzPushMessageReceiver {
   }
 
   @Override
-  public void onNotificationDeleted(Context context, MzPushMessage var2) {
+  public void onNotificationDeleted(Context context, com.meizu.cloud.pushsdk.handler.MzPushMessage var2) {
     //通知栏消息删除回调；flyme6基于android6.0以上不再回调
   }
 

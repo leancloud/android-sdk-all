@@ -1,6 +1,8 @@
 package com.avos.avoscloud;
 
 import android.Manifest;
+import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.os.Build;
 
@@ -84,9 +86,12 @@ public class AVMixPushManager {
    * 注册华为推送
    * 只有 EMUI && manifest 正确填写 才能注册
    *
+   * 这是老版本推送，现在已经不推荐使用了。
+   *
    * @param context
    */
-  public static void registerHuaweiPush(Context context) {
+  @Deprecated
+  public static void registerHuaweiPush(Context context) throws IllegalAccessException {
     registerHuaweiPush(context, null);
   }
 
@@ -94,30 +99,126 @@ public class AVMixPushManager {
    * 注册华为推送
    * 只有是 EMUI && manifest 正确填写 才能注册
    *
+   * 这是老版本推送，现在已经不推荐使用了。
+   *
    * @param context
    * @param profile 华为推送配置
    */
-  public static void registerHuaweiPush(Context context, String profile) {
-    if (null == context) {
-      throw new IllegalArgumentException("context cannot be null.");
+  @Deprecated
+  public static void registerHuaweiPush(Context context, String profile) throws IllegalAccessException {
+    throw new IllegalAccessException("registerHuaweiPush is deprecated, please use registerHMSPush instead.");
+  }
+
+  /**
+   * 初始化方法，建议在 Application onCreate 里面调用
+   * @param application
+   */
+  public static void registerHMSPush(Application application) {
+    registerHMSPush(application, null);
+  }
+
+  /**
+   * 初始化方法，建议在 Application onCreate 里面调用
+   * @param application
+   * @param profile 华为推送配置
+   */
+  public static void registerHMSPush(Application application, String profile) {
+    if (null == application) {
+      throw new IllegalArgumentException("[HMS] context cannot be null.");
     }
 
     if (!isHuaweiPhone()) {
-      printErrorLog("register error, is not huawei phone!");
+      printErrorLog("[HMS] register error, is not huawei phone!");
       return;
     }
 
-    if (!checkHuaweiManifest(context)) {
-      printErrorLog("register error, mainifest is incomplete!");
+    if (!checkHuaweiManifest(application)) {
+      printErrorLog("[HMS] register error, mainifest is incomplete!");
       return;
     }
 
     hwDeviceProfile = profile;
-    com.huawei.android.pushagent.PushManager.requestToken(context);
+    boolean hmsInitResult = com.huawei.android.hms.agent.HMSAgent.init(application);
+    if (!hmsInitResult) {
+      LogUtil.avlog.e("failed to init HMSAgent.");
+    }
 
     if (AVOSCloud.isDebugLogEnabled()) {
-      LogUtil.avlog.d("start register hawei push");
+      LogUtil.avlog.d("[HMS] start register HMS push");
     }
+  }
+
+  /**
+   * 连接HMS SDK， 可能拉起界面(包括升级引导等)，建议在第一个界面进行连接。
+   * 此方法可以重复调用，没必要为了只调用一次做复杂处理
+   * 方法为异步调用，调用结果在主线程回调
+   *  Connecting to the HMS SDK may pull up the activity (including upgrade guard, etc.), and it is recommended that you connect in the first activity.
+   *  This method can be called repeatedly, and there is no need to do complex processing for only one call at a time
+   *  Method is called asynchronously, and the result is invoked in the main thread callback
+   */
+  public static void connectHMS(Activity activity) {
+    if (null == activity) {
+      throw new IllegalArgumentException("[HMS] activity cannot be null.");
+    }
+    com.huawei.android.hms.agent.HMSAgent.connect(activity,
+        new com.huawei.android.hms.agent.common.handler.ConnectHandler() {
+          @Override
+          public void onConnect(int rst) {
+            LogUtil.avlog.d("[HMS] connect end:" + rst);
+            com.huawei.android.hms.agent.HMSAgent.Push.getToken(
+                new com.huawei.android.hms.agent.push.handler.GetTokenHandler() {
+                  @Override
+                  public void onResult(int rst) {
+                    LogUtil.avlog.d("[HMS] get token: end. returnCode=" + rst);
+                  }
+                }
+            );
+          }
+        });
+  }
+
+  /**
+   * 打开/关闭透传消息
+   *  Turn on/off notification bar messages
+   * @param enable 打开/关闭（默认为打开）
+   *                Turn ON/off
+   */
+  public static void setHMSReceiveNormalMsg(final boolean enable) {
+    com.huawei.android.hms.agent.HMSAgent.Push.enableReceiveNormalMsg(enable,
+        new com.huawei.android.hms.agent.push.handler.EnableReceiveNormalMsgHandler() {
+          @Override
+          public void onResult(int rst) {
+            LogUtil.avlog.d("[HMS] enableReceiveNormalMsg(flag=" + enable + ") returnCode=" + rst);
+          }
+        });
+  }
+
+  /**
+   * 打开/关闭通知栏消息
+   *  Turn on/off notification bar messages
+   * @param enable 打开/关闭（默认为打开）
+   *                Turn ON/off
+   */
+  public static void setHMSReceiveNotifyMsg(final boolean enable) {
+    com.huawei.android.hms.agent.HMSAgent.Push.enableReceiveNotifyMsg(enable,
+        new com.huawei.android.hms.agent.push.handler.EnableReceiveNotifyMsgHandler() {
+          @Override
+          public void onResult(int rst) {
+            LogUtil.avlog.d("[HMS] enableReceiveNotifyMsg(flag=" + enable + ") returnCode=" + rst);
+          }
+        });
+  }
+  /**
+   * 请求push协议展示
+   *  Request Push Protocol Display
+   */
+  public static void showHMSAgreement() {
+    com.huawei.android.hms.agent.HMSAgent.Push.queryAgreement(new com.huawei.android.hms.agent.push.handler.QueryAgreementHandler() {
+      @Override
+      public void onResult(int rst) {
+        LogUtil.avlog.d("[HMS] query agreement result: " + rst);
+      }
+    });
   }
 
   /**
@@ -216,10 +317,7 @@ public class AVMixPushManager {
         && AVManifestUtils.checkPermission(context, android.Manifest.permission.ACCESS_NETWORK_STATE)
         && AVManifestUtils.checkPermission(context, android.Manifest.permission.ACCESS_WIFI_STATE)
         && AVManifestUtils.checkPermission(context, android.Manifest.permission.READ_PHONE_STATE)
-        && AVManifestUtils.checkPermission(context, android.Manifest.permission.WAKE_LOCK)
-        && AVManifestUtils.checkService(context, com.huawei.android.pushagent.PushService.class)
-        && AVManifestUtils.checkReceiver(context, AVHwPushMessageReceiver.class)
-        && AVManifestUtils.checkReceiver(context, com.huawei.android.pushagent.PushEventReceiver.class);
+        && AVManifestUtils.checkReceiver(context, AVHMSPushMessageReceiver.class);
     } catch (Exception e) {
     }
     return result;
