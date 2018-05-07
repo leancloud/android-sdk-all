@@ -91,6 +91,7 @@ public class AVQuery<T extends AVObject> {
   private long maxCacheAge = -1;
 
   private String queryPath;
+  private boolean includeACL = false;
 
   // different from queryPath. externalQueryPath is used by caller directly to
   // create special end point for certain query.
@@ -135,7 +136,11 @@ public class AVQuery<T extends AVObject> {
   }
 
   Map<String, String> getParameters() {
-    return conditions.getParameters();
+    Map<String, String> result = conditions.getParameters();
+    if (this.includeACL && null != result) {
+      result.put("returnACL", "true");
+    }
+    return result;
   }
 
   void setParameters(Map<String, String> parameters) {
@@ -346,7 +351,6 @@ public class AVQuery<T extends AVObject> {
     return AVPowerfulUtils.getEndpoint(getClassName());
   }
 
-
   /**
    * Deprecated. Please use AVUser.getQuery() instead. Constructs a query for AVUsers
    *
@@ -471,6 +475,16 @@ public class AVQuery<T extends AVObject> {
    */
   public AVQuery<T> addDescendingOrder(String key) {
     conditions.addDescendingOrder(key);
+    return this;
+  }
+
+  /**
+   * Include ACL attribute.
+   *
+   * @param includeACL need ACL attribute returned or not.
+   */
+  public AVQuery<T> includeACL(boolean includeACL) {
+    this.includeACL = includeACL;
     return this;
   }
 
@@ -1547,7 +1561,7 @@ public class AVQuery<T extends AVObject> {
     final CountCallback internalCallback = callback;
     String path = queryPath();
     queryPath =
-        PaasClient.storageInstance().getObject(path, new AVRequestParams(getParameters()), sync,
+        PaasClient.storageInstance().getObject(path, new AVRequestParams(parameters), sync,
             null, new GenericObjectCallback() {
               @Override
               public void onSuccess(String content, AVException e) {
