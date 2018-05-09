@@ -33,7 +33,7 @@ public class AVMiPushMessageReceiver extends com.xiaomi.mipush.sdk.PushMessageRe
         @Override
         public void done(AVException e) {
           if (null != e) {
-            LogUtil.avlog.d("update installation error!");
+            LogUtil.avlog.e("update installation error!", e);
           } else {
             LogUtil.avlog.d("Xiaomi push registration successful!");
           }

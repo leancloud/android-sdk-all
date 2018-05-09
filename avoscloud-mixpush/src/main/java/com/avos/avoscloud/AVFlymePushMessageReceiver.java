@@ -34,7 +34,7 @@ public class AVFlymePushMessageReceiver extends com.meizu.cloud.pushsdk.MzPushMe
         @Override
         public void done(AVException e) {
           if (null != e) {
-            LogUtil.avlog.d("update installation error!");
+            LogUtil.avlog.e("update installation error!", e);
           } else {
             LogUtil.avlog.d("flyme push registration successful!");
           }
