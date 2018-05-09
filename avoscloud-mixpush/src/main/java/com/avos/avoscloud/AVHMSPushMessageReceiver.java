@@ -17,8 +17,6 @@ import java.util.Map;
 public class AVHMSPushMessageReceiver extends com.huawei.hms.support.api.push.PushReceiver{
   static final String MIXPUSH_PRIFILE = "deviceProfile";
   static final String VENDOR = "HMS";
-  static final String ATTR_ACTION = "action";
-  static final String ATTR_CONTENT = "content";
 
   private void updateAVInstallation(String hwToken) {
     if (StringUtils.isBlankString(hwToken)) {
@@ -82,7 +80,7 @@ public class AVHMSPushMessageReceiver extends com.huawei.hms.support.api.push.Pu
   public void onPushMsg(Context var1, byte[] var2, String var3) {
     try {
       String message = new String(var2, "UTF-8");
-      notifyPushMessage(var1, message);
+      AVNotificationManager.getInstance().processMixPushMessage(message);
     } catch (Exception ex) {
       LogUtil.avlog.e("failed to process PushMessage.", ex);
     }
@@ -118,21 +116,4 @@ public class AVHMSPushMessageReceiver extends com.huawei.hms.support.api.push.Pu
     LogUtil.avlog.d("pushState changed, current=" + pushState);
   }
 
-  private void notifyPushMessage(Context context, String message) {
-    Map<String, Object> msgObject = JSON.parseObject(message, Map.class);
-    if (msgObject.containsKey(ATTR_ACTION)) {
-      String action = (String) msgObject.get(ATTR_ACTION);
-
-      Bundle bundle = new Bundle();
-      bundle.putString(ATTR_CONTENT, message);
-
-      Intent intent = new Intent(action);
-      intent.putExtras(bundle);
-
-      LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-    } else {
-      LogUtil.avlog.e("invalid pushMessage: " + message);
-    }
-
-  }
 }
