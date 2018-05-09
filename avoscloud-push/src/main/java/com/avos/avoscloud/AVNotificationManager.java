@@ -195,6 +195,8 @@ class AVNotificationManager {
         sendBroadcast(channel, message, action);
       } else if (!slient) {
         sendNotification(channel, message);
+      } else {
+        LogUtil.avlog.e("ignore push silent message: " + message);
       }
     }
   }
