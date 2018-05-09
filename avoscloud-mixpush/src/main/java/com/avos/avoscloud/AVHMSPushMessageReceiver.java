@@ -41,7 +41,7 @@ public class AVHMSPushMessageReceiver extends com.huawei.hms.support.api.push.Pu
       @Override
       public void done(AVException e) {
         if (null != e) {
-          LogUtil.avlog.d("update installation error!");
+          LogUtil.avlog.e("update installation error!", e);
         } else {
           LogUtil.avlog.d("Huawei push registration successful!");
         }
