@@ -59,17 +59,19 @@ gradle 下载完成后，默认情况保存路径：`$HOME/.gradle/wrapper/dists
 执行下面命令可以打包项目：
 
 ```
-./gradlew build
+./build-sdk-noupload.sh 1.0.0
 ```
+> 1.0.0 指版本号，可任意指定
 
 如果你看到下面的提示，就代表打包成功：
 
 ```
-
 BUILD SUCCESSFUL
 
 Total time: 27.543 secs
 ```
+
+可以到 `./build/release-1.0.0` 目录下查看打包出来的文件。
 
 对于 Android 组件包，产出分两种：
 
