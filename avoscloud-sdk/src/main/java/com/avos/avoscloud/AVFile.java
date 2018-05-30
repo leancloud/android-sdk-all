@@ -6,6 +6,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.avos.avoscloud.upload.FileUploader;
 import com.avos.avoscloud.upload.Uploader;
 import com.avos.avoscloud.upload.UrlDirectlyUploader;
+import com.avos.avoscloud.utils.StringUtils;
 
 import org.json.JSONObject;
 
@@ -312,6 +313,7 @@ public final class AVFile {
     }
     file.setObjectId(object.getObjectId());
     file.fileObject = object;
+    file.name = object.getString("name");
     file.setBucket((String) object.get("bucket"));
     if (!file.metaData.containsKey(FILE_NAME_KEY)) {
       file.metaData.put(FILE_NAME_KEY, object.getString("name"));
@@ -497,6 +499,9 @@ public final class AVFile {
    * @return The file's name.
    */
   public String getName() {
+    if (StringUtils.isBlankString(this.name)) {
+      return getOriginalName();
+    }
     return this.name;
   }
 

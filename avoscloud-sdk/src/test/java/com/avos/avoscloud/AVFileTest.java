@@ -103,6 +103,20 @@ public class AVFileTest {
   }
 
   @Test
+  public void testAVFile_nameAndData_Server() throws Exception {
+    String objectId = "5ad5c5afee920a0046c1c3b9";
+    final CountDownLatch latch = new CountDownLatch(1);
+    AVFile.withObjectIdInBackground(objectId, new GetFileCallback<AVFile>() {
+      @Override
+      public void done(AVFile avFile, AVException e) {
+        System.out.println(" file name = " + avFile.getName());
+        latch.countDown();
+      }
+    });
+    latch.await();
+  }
+
+  @Test
   public void testSetObjectId() {
     String objectId = "testObjectId";
     AVFile file = new AVFile();

@@ -66,16 +66,18 @@ class AVPushConnectionManager implements AVPushWebSocketClient.AVPacketParser {
         Method getTokenMethod = gcmManagerClass.getMethod("getGcmTokenInBackground", Context.class);
         getTokenMethod.invoke(gcmManagerClass, ctx);
         initializeConn = false;
+        LogUtil.log.d("skip initialize connection bcz of GCM Push using");
       } catch (Exception e) {
         if (AVOSCloud.isDebugLogEnabled()) {
           LogUtil.avlog.i("gcm library not started since not included");
         }
       }
+    } else if (AVOSCloud.isFCMOpen()) {
+      initializeConn = false;
+      LogUtil.log.d("skip initialize connection bcz of FCM Push using");
     }
     if (initializeConn) {
       initConnection();
-    } else {
-      LogUtil.log.d("skip initialize connection bcz of GCM Push using");
     }
     LogUtil.log.d("end of AVPushConnectionManager(Context)");
   }

@@ -42,6 +42,7 @@ public class AVOSCloud {
   private static boolean userInternalDebugLog = false;
 
   private static boolean isGcmOpen = false;
+  private static boolean isFcmOpen = false;
 
   public static final int DEFAULT_NETWORK_TIMEOUT = 15000;
 
@@ -299,9 +300,16 @@ public class AVOSCloud {
   public static void setGcmOpen(boolean isOpen) {
     isGcmOpen = isOpen;
   }
-
   public static boolean isGcmOpen() {
     return isGcmOpen;
+  }
+
+  public static void setFCMOpen(boolean isOpen) {
+    isFcmOpen = isOpen;
+  }
+
+  public static boolean isFCMOpen() {
+    return isFcmOpen;
   }
 
   public static boolean isLastModifyEnabled() {
