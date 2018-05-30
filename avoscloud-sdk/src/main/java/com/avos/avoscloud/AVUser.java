@@ -35,6 +35,7 @@ public class AVUser extends AVObject {
   public static final String SMS_VALIDATE_TOKEN = "validate_token";
   public static final String SMS_PHONE_NUMBER = "mobilePhoneNumber";
   public static final String AVUSER_ENDPOINT = "users";
+  public static final String AVUSER_ENDPOINT_FAILON = "users?failOnNotExist=true";
   public static final String SNS_TENCENT_WEIBO = "qq";
   public static final String SNS_SINA_WEIBO = "weibo";
   public static final String SNS_TENCENT_WEIXIN = "weixin";
@@ -425,7 +426,7 @@ public class AVUser extends AVObject {
     logInInBackground(username, password, false, callback, clazz);
   }
 
-  static private Map<String, String> createUserMap(String username, String password, String email) {
+  private static Map<String, String> createUserMap(String username, String password, String email) {
     Map<String, String> map = new HashMap<String, String>();
     map.put("username", username);
     if (AVUtils.isBlankString(username)) {
@@ -440,13 +441,35 @@ public class AVUser extends AVObject {
     return map;
   }
 
-  static private Map<String, String> createUserMap(String username, String password, String email,
+  private static Map<String, String> createUserMap(String username, String password, String email,
       String phoneNumber, String smsCode) {
     Map<String, String> map = new HashMap<String, String>();
 
     if (AVUtils.isBlankString(username) && AVUtils.isBlankString(phoneNumber)) {
       throw new IllegalArgumentException("Blank username and blank mobile phone number");
     }
+    if (!AVUtils.isBlankString(username)) {
+      map.put("username", username);
+    }
+    if (!AVUtils.isBlankString(password)) {
+      map.put("password", password);
+    }
+    if (!AVUtils.isBlankString(email)) {
+      map.put("email", email);
+    }
+    if (!AVUtils.isBlankString(phoneNumber)) {
+      map.put("mobilePhoneNumber", phoneNumber);
+    }
+    if (!AVUtils.isBlankString(smsCode)) {
+      map.put("smsCode", smsCode);
+    }
+    return map;
+  }
+
+  private static Map<String, String> createUserMapAFAP(String username, String password, String email,
+                                                   String phoneNumber, String smsCode) {
+    Map<String, String> map = new HashMap<String, String>();
+
     if (!AVUtils.isBlankString(username)) {
       map.put("username", username);
     }
@@ -2381,6 +2404,88 @@ public class AVUser extends AVObject {
         }, null, null);
   }
 
+  public void loginWithAuthData(final Map<String, Object> authData, final String platform,
+                                final String unionId, final String unionIdPlatform,
+                                final boolean asMainAccount, final boolean failOnNotExist,
+                                final LogInCallback callback) {
+    if (null == authData || authData.isEmpty()) {
+      if (null != callback) {
+        callback.internalDone(AVErrorUtils.createException(AVException.OTHER_CAUSE, "illegal parameter. authdata must not null/empty."));
+      }
+      return;
+    }
+    if (StringUtils.isBlankString(unionId)) {
+      if (null != callback) {
+        callback.internalDone(AVErrorUtils.createException(AVException.OTHER_CAUSE, "illegal parameter. unionId must not null/empty."));
+      }
+      return;
+    }
+    if (StringUtils.isBlankString(unionIdPlatform)) {
+      if (null != callback) {
+        callback.internalDone(AVErrorUtils.createException(AVException.OTHER_CAUSE, "illegal parameter. unionIdPlatform must not null/empty."));
+      }
+      return;
+    }
+    authData.put(AUTHDATA_ATTR_UNIONID, unionId);
+    authData.put(AUTHDATA_ATTR_UNIONID_PLATFORM, unionIdPlatform);
+    if (asMainAccount) {
+      authData.put(AUTHDATA_ATTR_MAIN_ACCOUNT, asMainAccount);
+    }
+    loginWithAuthData(authData, platform, failOnNotExist, callback);
+  }
+
+  public void loginWithAuthData(final Map<String, Object> authData, final String platform,
+                                final boolean failOnNotExist, final LogInCallback callback) {
+    if (null == authData || authData.isEmpty()) {
+      if (null != callback) {
+        callback.internalDone(AVErrorUtils.createException(AVException.OTHER_CAUSE, "illegal parameter. authdata must not null/empty."));
+      }
+      return;
+    }
+    if (StringUtils.isBlankString(platform)) {
+      if (null != callback) {
+        callback.internalDone(AVErrorUtils.createException(AVException.OTHER_CAUSE, "illegal parameter. platform must not null/empty."));
+      }
+      return;
+    }
+    Map<String, String> userData = createUserMapAFAP(getUsername(), null, getEmail(), getMobilePhoneNumber(), null);
+    Map<String, Object> data = new HashMap<>();
+    Map<String, Object> authMap = new HashMap<String, Object>();
+    authMap.put(platform, authData);
+    if(!userData.isEmpty()) {
+      data.putAll(userData);
+    }
+    data.put(authDataTag, authMap);
+    String jsonString = JSON.toJSONString(data);
+    String path = failOnNotExist ? AVUSER_ENDPOINT_FAILON : AVUSER_ENDPOINT;
+    PaasClient.storageInstance().postObject(path, jsonString, false, false,
+        new GenericObjectCallback() {
+          @Override
+          public void onSuccess(String content, AVException e) {
+            if (e == null) {
+              AVUtils.copyPropertiesFromJsonStringToAVObject(content, AVUser.this);
+              AVUser.this.processAuthData(null);
+              if (platform.equals(SNS_SINA_WEIBO)) {
+                AVUser.this.sinaWeiboToken = (String)authData.get(accessTokenTag);
+              } else if (platform.equals(SNS_TENCENT_WEIBO)) {
+                AVUser.this.qqWeiboToken = (String)authData.get(accessTokenTag);
+              }
+              AVUser.changeCurrentUser(AVUser.this, true);
+              if (callback != null) {
+                callback.internalDone(AVUser.this, null);
+              }
+            }
+          }
+
+          @Override
+          public void onFailure(Throwable error, String content) {
+            if (callback != null) {
+              callback.internalDone(null, AVErrorUtils.createException(error, content));
+            }
+          }
+        }, null, null);
+  }
+
   /**
    * 生成一个新的AVUser子类化对象，并且将该对象与SNS平台获取的userInfo关联。
    * 
@@ -2390,7 +2495,7 @@ public class AVUser extends AVObject {
    * @since 1.4.4
    */
   @Deprecated
-  static public <T extends AVUser> void loginWithAuthData(final Class<T> clazz,
+  public static <T extends AVUser> void loginWithAuthData(final Class<T> clazz,
       final AVThirdPartyUserAuth userInfo, final LogInCallback<T> callback) {
     if (userInfo == null) {
       if (callback != null) {
