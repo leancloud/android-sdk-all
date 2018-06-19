@@ -2278,19 +2278,19 @@ public class AVUser extends AVObject {
    * @param callback 关联完成后，调用的回调函数。
    * @since 4.5.3
    */
-  public static void loginWithAuthData(final Map<String, Object> authData, final String platform, final LogInCallback callback) {
+  public static void loginWithAuthData(final Map<String, Object> authData, final String platform, final LogInCallback<AVUser> callback) {
     loginWithAuthData(AVUser.class, authData, platform, callback);
   }
 
   public static void loginWithAuthData(final Map<String, Object> authData, final String platform,
                                        final String unionId, final String unionIdPlatform, final boolean asMainAccount,
-                                       final LogInCallback callback) {
+                                       final LogInCallback<AVUser> callback) {
     loginWithAuthData(AVUser.class, authData, platform, unionId, unionIdPlatform, asMainAccount, callback);
   }
 
   public static <T extends AVUser> void loginWithAuthData(final Class<T> clazz, final Map<String, Object> authData, final String platform,
                                        final String unionId, final String unionIdPlatform, final boolean asMainAccount,
-                                       final LogInCallback callback) {
+                                       final LogInCallback<T> callback) {
     if (null == clazz) {
       if (null != callback) {
         callback.internalDone(AVErrorUtils.createException(AVException.OTHER_CAUSE, "illegal parameter. clazz must not null/empty."));
@@ -2348,7 +2348,7 @@ public class AVUser extends AVObject {
    * @since 4.5.3
    */
   public static <T extends AVUser> void loginWithAuthData(final Class<T> clazz, final Map<String, Object> authData,
-                                                          final String platform, final LogInCallback callback) {
+                                                          final String platform, final LogInCallback<T> callback) {
     if (null == clazz) {
       if (null != callback) {
         callback.internalDone(AVErrorUtils.createException(AVException.OTHER_CAUSE, "illegal parameter. clazz must not null/empty."));
@@ -2377,16 +2377,16 @@ public class AVUser extends AVObject {
           @Override
           public void onSuccess(String content, AVException e) {
             if (e == null) {
-              AVUser userObject = AVUser.newAVUser(clazz, callback);
+              T userObject = AVUser.newAVUser(clazz, callback);
               if (userObject == null) {
                 return;
               }
               AVUtils.copyPropertiesFromJsonStringToAVObject(content, userObject);
               userObject.processAuthData(null);
               if (platform.equals(SNS_SINA_WEIBO)) {
-                userObject.sinaWeiboToken = (String)authData.get(accessTokenTag);
+                ((AVUser)userObject).sinaWeiboToken = (String)authData.get(accessTokenTag);
               } else if (platform.equals(SNS_TENCENT_WEIBO)) {
-                userObject.qqWeiboToken = (String)authData.get(accessTokenTag);
+                ((AVUser)userObject).qqWeiboToken = (String)authData.get(accessTokenTag);
               }
               AVUser.changeCurrentUser(userObject, true);
               if (callback != null) {
@@ -2407,7 +2407,7 @@ public class AVUser extends AVObject {
   public void loginWithAuthData(final Map<String, Object> authData, final String platform,
                                 final String unionId, final String unionIdPlatform,
                                 final boolean asMainAccount, final boolean failOnNotExist,
-                                final LogInCallback callback) {
+                                final LogInCallback<AVUser> callback) {
     if (null == authData || authData.isEmpty()) {
       if (null != callback) {
         callback.internalDone(AVErrorUtils.createException(AVException.OTHER_CAUSE, "illegal parameter. authdata must not null/empty."));
@@ -2435,7 +2435,7 @@ public class AVUser extends AVObject {
   }
 
   public void loginWithAuthData(final Map<String, Object> authData, final String platform,
-                                final boolean failOnNotExist, final LogInCallback callback) {
+                                final boolean failOnNotExist, final LogInCallback<AVUser> callback) {
     if (null == authData || authData.isEmpty()) {
       if (null != callback) {
         callback.internalDone(AVErrorUtils.createException(AVException.OTHER_CAUSE, "illegal parameter. authdata must not null/empty."));
