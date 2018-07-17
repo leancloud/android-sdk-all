@@ -167,6 +167,9 @@ public class AVLiveQuery {
       AVOSCloud.applicationContext.startService(IntentUtil.setupIntentFlags(i));
     } catch (Exception ex) {
       LogUtil.avlog.e("failed to start PushServer. cause: " + ex.getMessage());
+      if (null != callback) {
+        callback.internalDone(new AVException(ex));
+      }
     }
   }
 

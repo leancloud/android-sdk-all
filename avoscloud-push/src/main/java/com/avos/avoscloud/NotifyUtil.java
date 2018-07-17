@@ -44,7 +44,11 @@ class NotifyUtil {
                 LogUtil.avlog.d("try to start:" + appPackage + " from:"
                     + AVOSCloud.applicationContext.getPackageName());
               }
-              AVOSCloud.applicationContext.startService(intent);
+              try {
+                AVOSCloud.applicationContext.startService(intent);
+              } catch (Exception ex) {
+                LogUtil.avlog.e("failed to startService. cause: " + ex.getMessage());
+              }
             }
           }
         } catch (Exception e) {
