@@ -2655,16 +2655,18 @@ public class AVUser extends AVObject {
       }
       return;
     }
-    Map<String, Object> authData = (Map<String, Object>) this.get(authDataTag);
-    if (authData != null) {
-      authData.remove(platform);
-    }
-    this.put(authDataTag, authData);
+    this.remove(authDataTag + "." + platform);
     if (this.isAuthenticated() && !AVUtils.isBlankString(getObjectId())) {
       this.saveInBackground(new SaveCallback() {
         @Override
         public void done(AVException e) {
-          processAuthData(new AVThirdPartyUserAuth(null, null, platform, null));
+          if (null == e) {
+            Map<String, Object> authData = (Map<String, Object>) AVUser.this.get(authDataTag);
+            if (authData != null) {
+              authData.remove(platform);
+            }
+            processAuthData(new AVThirdPartyUserAuth(null, null, platform, null));
+          }
           if (null != callback) {
             callback.internalDone(e);
           }
@@ -2679,30 +2681,15 @@ public class AVUser extends AVObject {
   }
 
   @Deprecated
-  static public void dissociateAuthData(final AVUser user, final String type,
+  static public void dissociateAuthData(final AVUser user, final String platform,
       final SaveCallback callback) {
-    Map<String, Object> authData = (Map<String, Object>) user.get(authDataTag);
-    if (authData != null) {
-      authData.remove(type);
-    }
-    user.put(authDataTag, authData);
-    if (user.isAuthenticated() && !AVUtils.isBlankString(user.getObjectId())) {
-      user.saveInBackground(new SaveCallback() {
-
-        @Override
-        public void done(AVException e) {
-          user.processAuthData(new AVThirdPartyUserAuth(null, null, type, null));
-          if (callback != null) {
-            callback.internalDone(e);
-          }
-        }
-      });
-    } else {
-      if (callback != null) {
-        callback.internalDone(new AVException(AVException.SESSION_MISSING,
-            "the user object missing a valid session"));
+    if (null == user) {
+      if (null != callback) {
+        callback.internalDone(AVErrorUtils.createException(AVException.OTHER_CAUSE, "illegal parameter. user must not be null."));
       }
+      return;
     }
+    user.dissociateAuthData(platform, callback);
   }
 
   protected void processAuthData(AVThirdPartyUserAuth auth) {

@@ -258,7 +258,10 @@ public class AVIMClient {
         }
       };
     }
-    this.sendClientCommand(parcel, receiver, AVIMOperation.CLIENT_OPEN);
+    boolean ret = sendClientCommand(parcel, receiver, AVIMOperation.CLIENT_OPEN);
+    if (!ret && null != callback) {
+      callback.internalDone(AVIMClient.this, new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
   }
 
   /**
@@ -289,8 +292,11 @@ public class AVIMClient {
         }
       };
     }
-    this.sendClientCMDToPushService(JSON.toJSONString(params), receiver,
+    boolean ret = this.sendClientCMDToPushService(JSON.toJSONString(params), receiver,
         AVIMOperation.CLIENT_ONLINE_QUERY);
+    if (!ret && null != callback) {
+      callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
   }
 
   /**
@@ -486,8 +492,11 @@ public class AVIMClient {
         }
       };
     }
-    this.sendClientCMDToPushService(JSON.toJSONString(params), receiver,
+    boolean ret = this.sendClientCMDToPushService(JSON.toJSONString(params), receiver,
         AVIMOperation.CONVERSATION_CREATION);
+    if (!ret && null != callback) {
+      callback.internalDone(null, new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
   }
 
   /**
@@ -733,7 +742,10 @@ public class AVIMClient {
         }
       };
     }
-    this.sendClientCMDToPushService(null, receiver, AVIMOperation.CLIENT_DISCONNECT);
+    boolean ret = this.sendClientCMDToPushService(null, receiver, AVIMOperation.CLIENT_DISCONNECT);
+    if (!ret && null != callback) {
+      callback.internalDone(AVIMClient.this, new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
   }
 
   /**
@@ -766,7 +778,10 @@ public class AVIMClient {
           }
         }
       };
-      this.sendClientCMDToPushService(null, receiver, AVIMOperation.CLIENT_REFRESH_TOKEN);
+      boolean ret = this.sendClientCMDToPushService(null, receiver, AVIMOperation.CLIENT_REFRESH_TOKEN);
+      if (!ret && null != cb) {
+        cb.internalDone(null, new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+      }
     }
   }
 
@@ -883,10 +898,14 @@ public class AVIMClient {
         }
       };
     }
-    this.sendClientCMDToPushService(null, receiver, AVIMOperation.CLIENT_STATUS);
+    boolean ret = this.sendClientCMDToPushService(null, receiver, AVIMOperation.CLIENT_STATUS);
+    if (!ret && null != callback) {
+      callback.internalDone(AVIMClientStatus.AVIMClientStatusNone,
+          new AVException(AVException.OPERATION_FORBIDDEN, "could't start service in background."));
+    }
   }
 
-  protected void sendClientCommand(AVIMClientParcel parcel, BroadcastReceiver receiver, AVIMOperation operation) {
+  protected boolean sendClientCommand(AVIMClientParcel parcel, BroadcastReceiver receiver, AVIMOperation operation) {
     int requestId = AVUtils.getNextIMRequestId();
 
     if (receiver != null) {
@@ -899,10 +918,16 @@ public class AVIMClient {
     i.putExtra(Conversation.INTENT_KEY_CLIENT, clientId);
     i.putExtra(Conversation.INTENT_KEY_REQUESTID, requestId);
     i.putExtra(Conversation.INTENT_KEY_OPERATION, operation.getCode());
-    AVOSCloud.applicationContext.startService(IntentUtil.setupIntentFlags(i));
+    try {
+      AVOSCloud.applicationContext.startService(IntentUtil.setupIntentFlags(i));
+    } catch (Exception ex) {
+      LogUtil.avlog.e("failed to startService. cause: " + ex.getMessage());
+      return false;
+    }
+    return true;
   }
 
-  protected void sendClientCMDToPushService(String dataAsString, BroadcastReceiver receiver,
+  protected boolean sendClientCMDToPushService(String dataAsString, BroadcastReceiver receiver,
       AVIMOperation operation) {
 
     int requestId = AVUtils.getNextIMRequestId();
@@ -920,7 +945,13 @@ public class AVIMClient {
     i.putExtra(Conversation.INTENT_KEY_CLIENT, clientId);
     i.putExtra(Conversation.INTENT_KEY_REQUESTID, requestId);
     i.putExtra(Conversation.INTENT_KEY_OPERATION, operation.getCode());
-    AVOSCloud.applicationContext.startService(IntentUtil.setupIntentFlags(i));
+    try {
+      AVOSCloud.applicationContext.startService(IntentUtil.setupIntentFlags(i));
+    } catch (Exception ex) {
+      LogUtil.avlog.e("failed to startService. cause: " + ex.getMessage());
+      return false;
+    }
+    return true;
   }
 
   static AVException validateNonEmptyConversationMembers(List<String> members) {
@@ -940,9 +971,13 @@ public class AVIMClient {
    * 同步 sqlite 中数据到 conversationCache，只需要同步一次就可以
    */
   private void syncConversationCache() {
-    List<AVIMConversation> cachedConversations = storage.getAllCachedConversations();
-    for (AVIMConversation conversation : cachedConversations) {
-      conversationCache.put(conversation.getConversationId(), conversation);
+    try {
+      List<AVIMConversation> cachedConversations = storage.getAllCachedConversations();
+      for (AVIMConversation conversation : cachedConversations) {
+        conversationCache.put(conversation.getConversationId(), conversation);
+      }
+    } catch (Exception ex) {
+      LogUtil.avlog.d("failed to initialize cached conversations. cause:" + ex.getMessage());
     }
     isConversationSync = true;
   }

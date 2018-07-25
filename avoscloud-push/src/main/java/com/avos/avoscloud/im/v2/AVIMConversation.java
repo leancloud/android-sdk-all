@@ -58,7 +58,7 @@ public class AVIMConversation {
    */
   public static final int TRANSIENT_MESSAGE_FLAG = 0x10;
   /**
-`   * 回执消息
+   * 回执消息
    * <p/>
    * 当消息送到到对方以后，发送方会收到消息回执说明消息已经成功达到接收方
    */
@@ -251,14 +251,20 @@ public class AVIMConversation {
               callback.internalDone(e);
             }
           } else {
-            sendCMDToPushService(null, message, messageOption, AVIMOperation.CONVERSATION_SEND_MESSAGE,
+            boolean ret = sendCMDToPushService(null, message, messageOption, AVIMOperation.CONVERSATION_SEND_MESSAGE,
               callback, null);
+            if (!ret && null != callback) {
+              callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+            }
           }
         }
       });
     } else {
-      sendCMDToPushService(null, message, messageOption, AVIMOperation.CONVERSATION_SEND_MESSAGE,
+      boolean ret = sendCMDToPushService(null, message, messageOption, AVIMOperation.CONVERSATION_SEND_MESSAGE,
         callback, null);
+      if (!ret && null != callback) {
+        callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+      }
     }
   }
 
@@ -288,7 +294,10 @@ public class AVIMConversation {
     PushServiceParcel parcel = new PushServiceParcel();
     parcel.setOldMessage(oldMessage);
     parcel.setNewMessage(newMessage);
-    sendParcelToPushService(parcel, AVIMOperation.CONVERSATION_UPDATE_MESSAGE, callback);
+    boolean ret = sendParcelToPushService(parcel, AVIMOperation.CONVERSATION_UPDATE_MESSAGE, callback);
+    if (!ret && null != callback) {
+      callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
   }
 
   /**
@@ -299,7 +308,10 @@ public class AVIMConversation {
   public void recallMessage(AVIMMessage message, AVIMMessageRecalledCallback callback) {
     PushServiceParcel parcel = new PushServiceParcel();
     parcel.setRecallMessage(message);
-    sendParcelToPushService(parcel, AVIMOperation.CONVERSATION_RECALL_MESSAGE, callback);
+    boolean ret = sendParcelToPushService(parcel, AVIMOperation.CONVERSATION_RECALL_MESSAGE, callback);
+    if (!ret && null != callback) {
+      callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
   }
 
   /**
@@ -394,6 +406,9 @@ public class AVIMConversation {
    */
   public void queryMessagesByType(int msgType, final String msgId, final long timestamp, final int limit,
                                   final AVIMMessagesQueryCallback callback) {
+    if (null == callback) {
+      return;
+    }
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_MESSAGE_QUERY_MSGID, msgId);
     params.put(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP, timestamp);
@@ -404,8 +419,11 @@ public class AVIMConversation {
     params.put(Conversation.PARAM_MESSAGE_QUERY_DIRECT, AVIMMessageQueryDirection.AVIMMessageQueryDirectionFromNewToOld.getCode());
     params.put(Conversation.PARAM_MESSAGE_QUERY_LIMIT, limit);
     params.put(Conversation.PARAM_MESSAGE_QUERY_TYPE, msgType);
-    sendNonSideEffectCommand(JSON.toJSONString(params),
+    boolean ret = sendNonSideEffectCommand(JSON.toJSONString(params),
         AVIMOperation.CONVERSATION_MESSAGE_QUERY, callback);
+    if (!ret) {
+      callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
   }
 
   private void queryMessagesFromServer(String msgId, long timestamp, boolean startClosed,
@@ -422,8 +440,12 @@ public class AVIMConversation {
     params.put(Conversation.PARAM_MESSAGE_QUERY_DIRECT, direction.getCode());
     params.put(Conversation.PARAM_MESSAGE_QUERY_LIMIT, limit);
     params.put(Conversation.PARAM_MESSAGE_QUERY_TYPE, 0);
-    sendCMDToPushService(JSON.toJSONString(params),
+    boolean ret = sendCMDToPushService(JSON.toJSONString(params),
         AVIMOperation.CONVERSATION_MESSAGE_QUERY, cb);
+    if (!ret && null != cb) {
+      cb.internalDone(null,
+          new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
   }
 
   private void queryMessagesFromCache(final String msgId, final long timestamp, final int limit,
@@ -773,8 +795,11 @@ public class AVIMConversation {
     AVIMConversationMemberInfo info = new AVIMConversationMemberInfo(this.conversationId, memberId, role);
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER_DETAILS, info.getUpdateAttrs());
-    sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_PROMOTE_MEMBER,
+    boolean ret = sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_PROMOTE_MEMBER,
         callback, null);
+    if (!ret && null != callback) {
+      callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
   }
 
   private void updateNickName(final String nickname, final AVIMConversationCallback callback) {
@@ -806,8 +831,12 @@ public class AVIMConversation {
     }
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
-    sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_MUTE_MEMBER,
+    boolean ret = sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_MUTE_MEMBER,
         callback, null);
+    if (!ret && null != callback) {
+      callback.internalDone(null,
+          new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
   }
 
   /**
@@ -824,8 +853,12 @@ public class AVIMConversation {
     }
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
-    sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_UNMUTE_MEMBER,
+    boolean ret = sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_UNMUTE_MEMBER,
         callback, null);
+    if (!ret && null != callback) {
+      callback.internalDone(null,
+          new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
   }
 
   /**
@@ -844,8 +877,12 @@ public class AVIMConversation {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.QUERY_PARAM_LIMIT, limit);
     params.put(Conversation.QUERY_PARAM_OFFSET, offset);
-    sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY,
+    boolean ret = sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY,
         callback, null);
+    if (!ret) {
+      callback.internalDone(null,
+          new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
   }
 
   /**
@@ -862,8 +899,11 @@ public class AVIMConversation {
     }
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
-    sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_BLOCK_MEMBER,
+    boolean ret = sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_BLOCK_MEMBER,
         callback, null);
+    if (!ret && null != callback) {
+      callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
   }
 
   /**
@@ -880,8 +920,11 @@ public class AVIMConversation {
     }
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
-    sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_UNBLOCK_MEMBER,
+    boolean ret = sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_UNBLOCK_MEMBER,
         callback, null);
+    if (!ret && null != callback) {
+      callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
   }
 
   /**
@@ -900,8 +943,12 @@ public class AVIMConversation {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.QUERY_PARAM_LIMIT, limit);
     params.put(Conversation.QUERY_PARAM_OFFSET, offset);
-    sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY,
+    boolean ret = sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY,
         callback, null);
+    if (!ret) {
+      callback.internalDone(null,
+          new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
   }
 
   /**
@@ -909,7 +956,13 @@ public class AVIMConversation {
    * @param callback
    */
   public void getMemberCount(AVIMConversationMemberCountCallback callback) {
-    sendCMDToPushService(null, AVIMOperation.CONVERSATION_MEMBER_COUNT_QUERY, callback);
+    if (null == callback) {
+      return;
+    }
+    boolean ret = sendCMDToPushService(null, AVIMOperation.CONVERSATION_MEMBER_COUNT_QUERY, callback);
+    if (!ret) {
+      callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
   }
 
   /**
@@ -932,7 +985,7 @@ public class AVIMConversation {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, friendsList);
 
-    this.sendCMDToPushService(JSON.toJSONString(params),
+    boolean ret = this.sendCMDToPushService(JSON.toJSONString(params),
         AVIMOperation.CONVERSATION_ADD_MEMBER, callback, new OperationCompleteCallback() {
 
           @Override
@@ -944,6 +997,10 @@ public class AVIMConversation {
           @Override
           public void onFailure() {}
         });
+    if (!ret && null != callback) {
+      callback.internalDone(null,
+          new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
   }
 
   /**
@@ -967,7 +1024,7 @@ public class AVIMConversation {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, friendsList);
 
-    this.sendCMDToPushService(JSON.toJSONString(params),
+    boolean ret = this.sendCMDToPushService(JSON.toJSONString(params),
         AVIMOperation.CONVERSATION_RM_MEMBER, callback, new OperationCompleteCallback() {
 
           @Override
@@ -979,6 +1036,10 @@ public class AVIMConversation {
           @Override
           public void onFailure() {}
         });
+    if (!ret && null != callback) {
+      callback.internalDone(null,
+          new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
   }
 
   /**
@@ -1000,8 +1061,11 @@ public class AVIMConversation {
    * @param callback
    */
   public void mute(final AVIMConversationCallback callback) {
-    this.sendCMDToPushService(null,
+    boolean ret = this.sendCMDToPushService(null,
         AVIMOperation.CONVERSATION_MUTE, callback, null);
+    if (!ret && null != callback) {
+      callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
   }
 
   /**
@@ -1010,8 +1074,11 @@ public class AVIMConversation {
    * @param callback
    */
   public void unmute(final AVIMConversationCallback callback) {
-    this.sendCMDToPushService(null,
+    boolean ret = this.sendCMDToPushService(null,
         AVIMOperation.CONVERSATION_UNMUTE, callback, null);
+    if (!ret && null != callback) {
+      callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
   }
 
   protected void setMembers(List<String> m) {
@@ -1066,7 +1133,7 @@ public class AVIMConversation {
    * @since 3.0
    */
   public void quit(final AVIMConversationCallback callback) {
-    this.sendCMDToPushService(null, AVIMOperation.CONVERSATION_QUIT,
+    boolean ret = this.sendCMDToPushService(null, AVIMOperation.CONVERSATION_QUIT,
         callback, new OperationCompleteCallback() {
           @Override
           public void onComplete() {
@@ -1079,6 +1146,9 @@ public class AVIMConversation {
 
           }
         });
+    if (!ret && null != callback) {
+      callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
   }
 
   /**
@@ -1314,7 +1384,11 @@ public class AVIMConversation {
   }
 
   public void fetchReceiptTimestamps(AVIMConversationCallback callback) {
-    this.sendCMDToPushService(null, AVIMOperation.CONVERSATION_FETCH_RECEIPT_TIME, callback, null);
+    boolean ret = sendCMDToPushService(null, AVIMOperation.CONVERSATION_FETCH_RECEIPT_TIME,
+        callback, null);
+    if (!ret && null != callback) {
+      callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
   }
 
   /**
@@ -1344,7 +1418,7 @@ public class AVIMConversation {
         params.put(Conversation.PARAM_CONVERSATION_ATTRIBUTE, attributesMap);
       }
 
-      this.sendCMDToPushService(JSON.toJSONString(params),
+      boolean ret = this.sendCMDToPushService(JSON.toJSONString(params),
         AVIMOperation.CONVERSATION_UPDATE, callback, new OperationCompleteCallback() {
 
           @Override
@@ -1361,6 +1435,9 @@ public class AVIMConversation {
 
           }
         });
+      if (!ret && null != callback) {
+        callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+      }
     } else {
       callback.internalDone(null);
     }
@@ -1383,7 +1460,10 @@ public class AVIMConversation {
     }
 
     Map<String, Object> params = getFetchRequestParams();
-    sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_QUERY, callback);
+    boolean ret = sendCMDToPushService(JSON.toJSONString(params), AVIMOperation.CONVERSATION_QUERY, callback);
+    if (!ret && null != callback) {
+      callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
   }
 
   public Map<String, Object> getFetchRequestParams() {
@@ -1405,7 +1485,7 @@ public class AVIMConversation {
    */
 
   public void join(AVIMConversationCallback callback) {
-    this.sendCMDToPushService(null, AVIMOperation.CONVERSATION_JOIN,
+    boolean ret = this.sendCMDToPushService(null, AVIMOperation.CONVERSATION_JOIN,
         callback, new OperationCompleteCallback() {
           @Override
           public void onComplete() {
@@ -1417,6 +1497,9 @@ public class AVIMConversation {
 
           }
         });
+    if (!ret && null != callback) {
+      callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
   }
 
   public boolean isTransient() {
@@ -1465,7 +1548,7 @@ public class AVIMConversation {
     storage.updateMessageForPatch(message);
   }
 
-  private void sendParcelToPushService(final PushServiceParcel pushServiceParcel, final AVIMOperation operation, AVCallback callback) {
+  private boolean sendParcelToPushService(final PushServiceParcel pushServiceParcel, final AVIMOperation operation, AVCallback callback) {
     final int requestId = AVUtils.getNextIMRequestId();
     Intent i = new Intent(AVOSCloud.applicationContext, PushService.class);
     i.setAction(Conversation.AV_CONVERSATION_PARCEL_ACTION);
@@ -1475,24 +1558,30 @@ public class AVIMConversation {
     i.putExtra(Conversation.INTENT_KEY_CONV_TYPE, this.getType());
     i.putExtra(Conversation.INTENT_KEY_REQUESTID, requestId);
     i.putExtra(Conversation.INTENT_KEY_OPERATION, operation.getCode());
-    AVOSCloud.applicationContext.startService(IntentUtil.setupIntentFlags(i));
-    if (callback != null) {
-      LocalBroadcastManager.getInstance(AVOSCloud.applicationContext).registerReceiver(
-        new AVIMBaseBroadcastReceiver(callback) {
-          @Override
-          public void execute(Intent intent, Throwable error) {
-            if (null == error) {
-              long patchTime = intent.getLongExtra(Conversation.PARAM_MESSAGE_PATCH_TIME, 0);
-              if (operation.equals(AVIMOperation.CONVERSATION_RECALL_MESSAGE)) {
-                onMessageRecalled(pushServiceParcel, patchTime, callback);
-              } else {
-                onMessageUpdated(pushServiceParcel, patchTime, callback);
+    try {
+      AVOSCloud.applicationContext.startService(IntentUtil.setupIntentFlags(i));
+      if (callback != null) {
+        LocalBroadcastManager.getInstance(AVOSCloud.applicationContext).registerReceiver(
+            new AVIMBaseBroadcastReceiver(callback) {
+              @Override
+              public void execute(Intent intent, Throwable error) {
+                if (null == error) {
+                  long patchTime = intent.getLongExtra(Conversation.PARAM_MESSAGE_PATCH_TIME, 0);
+                  if (operation.equals(AVIMOperation.CONVERSATION_RECALL_MESSAGE)) {
+                    onMessageRecalled(pushServiceParcel, patchTime, callback);
+                  } else {
+                    onMessageUpdated(pushServiceParcel, patchTime, callback);
+                  }
+                } else {
+                  callback.internalDone(new AVException(error));
+                }
               }
-            } else {
-              callback.internalDone(new AVException(error));
-            }
-          }
-        }, new IntentFilter(operation.getOperation() + requestId));
+            }, new IntentFilter(operation.getOperation() + requestId));
+      }
+      return true;
+    } catch (Exception ex) {
+      LogUtil.avlog.e("failed to startService. cause: " + ex.getMessage());
+      return false;
     }
   }
 
@@ -1526,20 +1615,20 @@ public class AVIMConversation {
     newMessage.setMessageIOType(oldMessage.getMessageIOType());
   }
 
-  private void sendCMDToPushService(String dataInString,
+  private boolean sendCMDToPushService(String dataInString,
                                     final AVIMOperation operation,
                                     final AVCallback callback, final OperationCompleteCallback occ) {
-    sendCMDToPushService(dataInString, null, null, operation, callback, occ);
+    return sendCMDToPushService(dataInString, null, null, operation, callback, occ);
   }
 
-  protected void sendCMDToPushService(String dataInString, final AVIMOperation operation,
+  protected boolean sendCMDToPushService(String dataInString, final AVIMOperation operation,
                                     AVCallback callback) {
-    sendCMDToPushService(dataInString, null, null, operation, callback, null);
+    return sendCMDToPushService(dataInString, null, null, operation, callback, null);
   }
 
-  private void sendNonSideEffectCommand(String dataInString, final AVIMOperation operation, AVCallback callback) {
+  private boolean sendNonSideEffectCommand(String dataInString, final AVIMOperation operation, AVCallback callback) {
     if (null == callback) {
-      return;
+      return true;
     }
     final int requestId = AVUtils.getNextIMRequestId();
     Intent i = new Intent(AVOSCloud.applicationContext, PushService.class);
@@ -1552,31 +1641,38 @@ public class AVIMConversation {
     i.putExtra(Conversation.INTENT_KEY_CONV_TYPE, this.getType());
     i.putExtra(Conversation.INTENT_KEY_OPERATION, operation.getCode());
     i.putExtra(Conversation.INTENT_KEY_REQUESTID, requestId);
-    AVOSCloud.applicationContext.startService(IntentUtil.setupIntentFlags(i));
-    LocalBroadcastManager.getInstance(AVOSCloud.applicationContext).registerReceiver(
-        new AVIMBaseBroadcastReceiver(callback) {
-          @Override
-          public void execute(Intent intent, Throwable ex) {
-            // 处理历史消息查询
-            if (operation.getCode() == AVIMOperation.CONVERSATION_MESSAGE_QUERY.getCode()) {
-              List<AVIMMessage> historyMessages =
-                  intent.getParcelableArrayListExtra(Conversation.callbackHistoryMessages);
+    try {
+      AVOSCloud.applicationContext.startService(IntentUtil.setupIntentFlags(i));
+      LocalBroadcastManager.getInstance(AVOSCloud.applicationContext).registerReceiver(
+          new AVIMBaseBroadcastReceiver(callback) {
+            @Override
+            public void execute(Intent intent, Throwable ex) {
+              // 处理历史消息查询
+              if (operation.getCode() == AVIMOperation.CONVERSATION_MESSAGE_QUERY.getCode()) {
+                List<AVIMMessage> historyMessages =
+                    intent.getParcelableArrayListExtra(Conversation.callbackHistoryMessages);
 
-              if (ex != null) {
-                callback.internalDone(null, new AVIMException(ex));
-              } else {
-                if (historyMessages == null) {
-                  historyMessages = Collections.EMPTY_LIST;
+                if (ex != null) {
+                  callback.internalDone(null, new AVIMException(ex));
+                } else {
+                  if (historyMessages == null) {
+                    historyMessages = Collections.EMPTY_LIST;
+                  }
+                  callback.internalDone(historyMessages, null);
                 }
-                callback.internalDone(historyMessages, null);
+                return;
               }
-              return;
             }
-          }
-        }, new IntentFilter(operation.getOperation() + requestId));
+          }, new IntentFilter(operation.getOperation() + requestId));
+      return true;
+    } catch (Exception ex) {
+      LogUtil.avlog.e("failed to startService. cause: " + ex.getMessage());
+      return false;
+    }
   }
 
-  private void sendCMDToPushService(String dataInString, final AVIMMessage message, final AVIMMessageOption messageOption, final AVIMOperation operation,
+  private boolean sendCMDToPushService(String dataInString, final AVIMMessage message,
+                                       final AVIMMessageOption messageOption, final AVIMOperation operation,
                                     final AVCallback callback, final OperationCompleteCallback occ) {
     final int requestId = AVUtils.getNextIMRequestId();
     Intent i = new Intent(AVOSCloud.applicationContext, PushService.class);
@@ -1601,125 +1697,131 @@ public class AVIMConversation {
     i.putExtra(Conversation.INTENT_KEY_OPERATION, operation.getCode());
     i.putExtra(Conversation.INTENT_KEY_REQUESTID, requestId);
 
-    AVOSCloud.applicationContext.startService(IntentUtil.setupIntentFlags(i));
-    if (callback != null) {
-      LocalBroadcastManager.getInstance(AVOSCloud.applicationContext).registerReceiver(
-          new AVIMBaseBroadcastReceiver(callback) {
-            @Override
-            public void execute(Intent intent, Throwable error) {
-              // 处理退出命令时
-              if (operation.getCode() == AVIMOperation.CONVERSATION_QUIT.getCode()) {
-                client.removeConversationCache(AVIMConversation.this);
-              }
-              // 处理side effect调用
-              if (error == null && occ != null) {
-                occ.onComplete();
-              } else if (error != null && occ != null) {
-                occ.onFailure();
-              }
-              // 消息命令
-              if (message != null) {
-                if (error == null) {
-                  // 处理发送成功的消息
-                  long timestamp =
-                      intent.getExtras().getLong(Conversation.callbackMessageTimeStamp, -1);
-                  String messageId = intent.getStringExtra(Conversation.callbackMessageId);
-                  message.setMessageId(messageId);
-                  message.setMessageStatus(AVIMMessage.AVIMMessageStatus.AVIMMessageStatusSent);
-                  if (timestamp != -1) {
-                    message.setTimestamp(timestamp);
-                  }
-                  if ((null == messageOption || !messageOption.isTransient()) && AVIMClient.messageQueryCacheEnabled) {
-                    setLastMessage(message);
-                    storage.insertMessage(message, false);
-                  } else {
-                    LogUtil.avlog.d("skip inserting into local storage.");
-                  }
-                  AVIMConversation.this.lastMessageAt = new Date(timestamp);
-                  storage.updateConversationLastMessageAt(AVIMConversation.this);
-                } else {
-                  message.setMessageStatus(AVIMMessage.AVIMMessageStatus.AVIMMessageStatusFailed);
+    try {
+      AVOSCloud.applicationContext.startService(IntentUtil.setupIntentFlags(i));
+      if (callback != null) {
+        LocalBroadcastManager.getInstance(AVOSCloud.applicationContext).registerReceiver(
+            new AVIMBaseBroadcastReceiver(callback) {
+              @Override
+              public void execute(Intent intent, Throwable error) {
+                // 处理退出命令时
+                if (operation.getCode() == AVIMOperation.CONVERSATION_QUIT.getCode()) {
+                  client.removeConversationCache(AVIMConversation.this);
                 }
-              }
-              // 处理历史消息查询
-              if (operation.getCode() == AVIMOperation.CONVERSATION_MESSAGE_QUERY.getCode()) {
-                List<AVIMMessage> historyMessages =
-                    intent.getParcelableArrayListExtra(Conversation.callbackHistoryMessages);
+                // 处理side effect调用
+                if (error == null && occ != null) {
+                  occ.onComplete();
+                } else if (error != null && occ != null) {
+                  occ.onFailure();
+                }
+                // 消息命令
+                if (message != null) {
+                  if (error == null) {
+                    // 处理发送成功的消息
+                    long timestamp =
+                        intent.getExtras().getLong(Conversation.callbackMessageTimeStamp, -1);
+                    String messageId = intent.getStringExtra(Conversation.callbackMessageId);
+                    message.setMessageId(messageId);
+                    message.setMessageStatus(AVIMMessage.AVIMMessageStatus.AVIMMessageStatusSent);
+                    if (timestamp != -1) {
+                      message.setTimestamp(timestamp);
+                    }
+                    if ((null == messageOption || !messageOption.isTransient()) && AVIMClient.messageQueryCacheEnabled) {
+                      setLastMessage(message);
+                      storage.insertMessage(message, false);
+                    } else {
+                      LogUtil.avlog.d("skip inserting into local storage.");
+                    }
+                    AVIMConversation.this.lastMessageAt = new Date(timestamp);
+                    storage.updateConversationLastMessageAt(AVIMConversation.this);
+                  } else {
+                    message.setMessageStatus(AVIMMessage.AVIMMessageStatus.AVIMMessageStatusFailed);
+                  }
+                }
+                // 处理历史消息查询
+                if (operation.getCode() == AVIMOperation.CONVERSATION_MESSAGE_QUERY.getCode()) {
+                  List<AVIMMessage> historyMessages =
+                      intent.getParcelableArrayListExtra(Conversation.callbackHistoryMessages);
 
-                if (error != null) {
-                  // modify by jwfing[2017/8/23] not return exception to external caller.
-                  callback.internalDone(null, new AVIMException(AVIMException.TIMEOUT, AVException.CONNECTION_FAILED, error.getMessage()));
-                } else {
+                  if (error != null) {
+                    // modify by jwfing[2017/8/23] not return exception to external caller.
+                    callback.internalDone(null, new AVIMException(AVIMException.TIMEOUT, AVException.CONNECTION_FAILED, error.getMessage()));
+                  } else {
+                    setLastReadAt(intent.getLongExtra(Conversation.callbackReadAt, 0L), false);
+                    setLastDeliveredAt(intent.getLongExtra(Conversation.callbackDeliveredAt, 0L), false);
+                    storage.updateConversationTimes(AVIMConversation.this);
+                    if (historyMessages == null) {
+                      historyMessages = Collections.EMPTY_LIST;
+                    }
+                    callback.internalDone(historyMessages, null);
+                  }
+                  return;
+                }
+                // 刷新Conversation 更新时间
+                if (operation.getCode() == AVIMOperation.CONVERSATION_UPDATE.getCode()) {
+                  if (intent.getExtras().containsKey(Conversation.callbackUpdatedAt)) {
+                    String updatedAt = intent.getExtras().getString(Conversation.callbackUpdatedAt);
+                    AVIMConversation.this.updatedAt = updatedAt;
+                  }
+                }
+
+                // 处理成员数量查询
+                if (operation.getCode() == AVIMOperation.CONVERSATION_MEMBER_COUNT_QUERY.getCode()) {
+                  int memberCount = intent.getIntExtra(Conversation.callbackMemberCount, 0);
+                  callback.internalDone(memberCount, AVIMException.wrapperAVException(error));
+                  return;
+                }
+
+                if (operation.getCode() == AVIMOperation.CONVERSATION_FETCH_RECEIPT_TIME.getCode()) {
                   setLastReadAt(intent.getLongExtra(Conversation.callbackReadAt, 0L), false);
                   setLastDeliveredAt(intent.getLongExtra(Conversation.callbackDeliveredAt, 0L), false);
                   storage.updateConversationTimes(AVIMConversation.this);
-                  if (historyMessages == null) {
-                    historyMessages = Collections.EMPTY_LIST;
-                  }
-                  callback.internalDone(historyMessages, null);
-                }
-                return;
-              }
-              // 刷新Conversation 更新时间
-              if (operation.getCode() == AVIMOperation.CONVERSATION_UPDATE.getCode()) {
-                if (intent.getExtras().containsKey(Conversation.callbackUpdatedAt)) {
-                  String updatedAt = intent.getExtras().getString(Conversation.callbackUpdatedAt);
-                  AVIMConversation.this.updatedAt = updatedAt;
-                }
-              }
-
-              // 处理成员数量查询
-              if (operation.getCode() == AVIMOperation.CONVERSATION_MEMBER_COUNT_QUERY.getCode()) {
-                int memberCount = intent.getIntExtra(Conversation.callbackMemberCount, 0);
-                callback.internalDone(memberCount, AVIMException.wrapperAVException(error));
-                return;
-              }
-
-              if (operation.getCode() == AVIMOperation.CONVERSATION_FETCH_RECEIPT_TIME.getCode()) {
-                setLastReadAt(intent.getLongExtra(Conversation.callbackReadAt, 0L), false);
-                setLastDeliveredAt(intent.getLongExtra(Conversation.callbackDeliveredAt, 0L), false);
-                storage.updateConversationTimes(AVIMConversation.this);
-                callback.internalDone(null, AVIMException.wrapperAVException(error));
-                return;
-              }
-
-              // 处理对成员禁言/拉黑系操作
-              if (operation.getCode() == AVIMOperation.CONVERSATION_MUTE_MEMBER.getCode()
-                  || operation.getCode() == AVIMOperation.CONVERSATION_UNMUTE_MEMBER.getCode()
-                  || operation.getCode() == AVIMOperation.CONVERSATION_BLOCK_MEMBER.getCode()
-                  || operation.getCode() == AVIMOperation.CONVERSATION_UNBLOCK_MEMBER.getCode()) {
-                String[] allowedList = intent.getStringArrayExtra(Conversation.callbackConvMemberMuted_SUCC);
-                ArrayList<AVIMOperationFailure> failedList = intent.getParcelableArrayListExtra(Conversation.callbackConvMemberMuted_FAIL);
-                Map<String, Object> result = new HashMap<>();
-                result.put(Conversation.callbackConvMemberMuted_SUCC, allowedList);
-                result.put(Conversation.callbackConvMemberMuted_FAIL, failedList);
-                callback.internalDone(result, AVIMException.wrapperAVException(error));
-                return;
-              }
-
-              // 处理被禁言成员列表查询
-              if (operation.getCode() == AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY.getCode()
-                  || operation.getCode() == AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY.getCode()) {
-                String[] result = intent.getStringArrayExtra(Conversation.callbackData);
-                callback.internalDone(null != result? Arrays.asList(result): null, AVIMException.wrapperAVException(error));
-                return;
-              }
-
-              if (operation.getCode() == AVIMOperation.CONVERSATION_QUERY.getCode()) {
-                // for fetchInfoInBackground() method.
-                if (null != error) {
                   callback.internalDone(null, AVIMException.wrapperAVException(error));
-                } else {
-                  Exception exception = processQueryResult(intent.getExtras().getSerializable(Conversation.callbackData));
-                  callback.internalDone(null, AVIMException.wrapperAVException(exception));
+                  return;
                 }
-                return;
-              }
 
-              callback.internalDone(null, AVIMException.wrapperAVException(error));
-            }
-          }, new IntentFilter(operation.getOperation() + requestId));
+                // 处理对成员禁言/拉黑系操作
+                if (operation.getCode() == AVIMOperation.CONVERSATION_MUTE_MEMBER.getCode()
+                    || operation.getCode() == AVIMOperation.CONVERSATION_UNMUTE_MEMBER.getCode()
+                    || operation.getCode() == AVIMOperation.CONVERSATION_BLOCK_MEMBER.getCode()
+                    || operation.getCode() == AVIMOperation.CONVERSATION_UNBLOCK_MEMBER.getCode()) {
+                  String[] allowedList = intent.getStringArrayExtra(Conversation.callbackConvMemberMuted_SUCC);
+                  ArrayList<AVIMOperationFailure> failedList = intent.getParcelableArrayListExtra(Conversation.callbackConvMemberMuted_FAIL);
+                  Map<String, Object> result = new HashMap<>();
+                  result.put(Conversation.callbackConvMemberMuted_SUCC, allowedList);
+                  result.put(Conversation.callbackConvMemberMuted_FAIL, failedList);
+                  callback.internalDone(result, AVIMException.wrapperAVException(error));
+                  return;
+                }
+
+                // 处理被禁言成员列表查询
+                if (operation.getCode() == AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY.getCode()
+                    || operation.getCode() == AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY.getCode()) {
+                  String[] result = intent.getStringArrayExtra(Conversation.callbackData);
+                  callback.internalDone(null != result ? Arrays.asList(result) : null, AVIMException.wrapperAVException(error));
+                  return;
+                }
+
+                if (operation.getCode() == AVIMOperation.CONVERSATION_QUERY.getCode()) {
+                  // for fetchInfoInBackground() method.
+                  if (null != error) {
+                    callback.internalDone(null, AVIMException.wrapperAVException(error));
+                  } else {
+                    Exception exception = processQueryResult(intent.getExtras().getSerializable(Conversation.callbackData));
+                    callback.internalDone(null, AVIMException.wrapperAVException(exception));
+                  }
+                  return;
+                }
+
+                callback.internalDone(null, AVIMException.wrapperAVException(error));
+              }
+            }, new IntentFilter(operation.getOperation() + requestId));
+      }
+    } catch (Exception ex) {
+      LogUtil.avlog.e("failed to startService. cause: " + ex.getMessage());
+      return false;
     }
+    return true;
   }
 
   /**
