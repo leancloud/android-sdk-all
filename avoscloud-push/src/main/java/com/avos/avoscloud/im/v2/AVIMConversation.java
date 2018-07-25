@@ -1671,7 +1671,8 @@ public class AVIMConversation {
     }
   }
 
-  private boolean sendCMDToPushService(String dataInString, final AVIMMessage message, final AVIMMessageOption messageOption, final AVIMOperation operation,
+  private boolean sendCMDToPushService(String dataInString, final AVIMMessage message,
+                                       final AVIMMessageOption messageOption, final AVIMOperation operation,
                                     final AVCallback callback, final OperationCompleteCallback occ) {
     final int requestId = AVUtils.getNextIMRequestId();
     Intent i = new Intent(AVOSCloud.applicationContext, PushService.class);
