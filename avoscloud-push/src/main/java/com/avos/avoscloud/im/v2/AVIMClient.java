@@ -971,9 +971,13 @@ public class AVIMClient {
    * 同步 sqlite 中数据到 conversationCache，只需要同步一次就可以
    */
   private void syncConversationCache() {
-    List<AVIMConversation> cachedConversations = storage.getAllCachedConversations();
-    for (AVIMConversation conversation : cachedConversations) {
-      conversationCache.put(conversation.getConversationId(), conversation);
+    try {
+      List<AVIMConversation> cachedConversations = storage.getAllCachedConversations();
+      for (AVIMConversation conversation : cachedConversations) {
+        conversationCache.put(conversation.getConversationId(), conversation);
+      }
+    } catch (Exception ex) {
+      LogUtil.avlog.d("failed to initialize cached conversations. cause:" + ex.getMessage());
     }
     isConversationSync = true;
   }

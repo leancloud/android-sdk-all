@@ -941,17 +941,18 @@ class AVIMMessageStorage {
   }
 
   public List<AVIMConversation> getAllCachedConversations() {
+    List<AVIMConversation> conversations = new LinkedList<AVIMConversation>();
     long currentTs = System.currentTimeMillis();
     SQLiteDatabase db = dbHelper.getReadableDatabase();
     Cursor cursor =
         db.query(CONVERSATION_TABLE, null, SQL.SELECT_VALID_CONVS,
             new String[] {String.valueOf(currentTs), String.valueOf(currentTs/1000)}, null, null, null,
             null);
-    cursor.moveToFirst();
-    List<AVIMConversation> conversations = new LinkedList<AVIMConversation>();
-    while (!cursor.isAfterLast()) {
-      conversations.add(parseConversationFromCursor(cursor));
-      cursor.moveToNext();
+    if (cursor.moveToFirst()) {
+      while (!cursor.isAfterLast()) {
+        conversations.add(parseConversationFromCursor(cursor));
+        cursor.moveToNext();
+      }
     }
     cursor.close();
     return conversations;
@@ -1037,6 +1038,7 @@ class AVIMMessageStorage {
   }
 
   public AVIMConversation getConversation(String conversationId) {
+    AVIMConversation conversation = null;
     SQLiteDatabase db = dbHelper.getReadableDatabase();
     Cursor cursor =
         db.query(CONVERSATION_TABLE, null, getWhereClause(COLUMN_CONVERSATION_ID) + " and "
@@ -1044,25 +1046,26 @@ class AVIMMessageStorage {
             new String[] {conversationId, String.valueOf(System.currentTimeMillis())}, null, null,
             null,
             null);
-    cursor.moveToFirst();
-    AVIMConversation conversation = null;
-    if (!cursor.isAfterLast()) {
-      conversation = parseConversationFromCursor(cursor);
+    if (cursor.moveToFirst()) {
+      if (!cursor.isAfterLast()) {
+        conversation = parseConversationFromCursor(cursor);
+      }
     }
     cursor.close();
     return conversation;
   }
 
   public List<AVIMConversation> getCachedConversations(List<String> conversationIds) {
+    List<AVIMConversation> conversations = new LinkedList<AVIMConversation>();
     SQLiteDatabase db = dbHelper.getReadableDatabase();
     Cursor cursor =
         db.rawQuery("SELECT * FROM " + CONVERSATION_TABLE + " WHERE " + COLUMN_CONVERSATION_ID
             + " in ('" + AVUtils.joinCollection(conversationIds, "','") + "')", null);
-    cursor.moveToFirst();
-    List<AVIMConversation> conversations = new LinkedList<AVIMConversation>();
-    while (!cursor.isAfterLast()) {
-      conversations.add(parseConversationFromCursor(cursor));
-      cursor.moveToNext();
+    if (cursor.moveToFirst()) {
+      while (!cursor.isAfterLast()) {
+        conversations.add(parseConversationFromCursor(cursor));
+        cursor.moveToNext();
+      }
     }
     cursor.close();
     return conversations;
