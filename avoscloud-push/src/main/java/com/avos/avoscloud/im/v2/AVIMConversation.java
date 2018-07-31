@@ -1840,10 +1840,15 @@ public class AVIMConversation {
           client.mergeConversationCache(this, true, null);
           storage.insertConversations(Arrays.asList(this));
           latestConversationFetch = System.currentTimeMillis();
+        } else {
+          // not found conversation
+          return new AVIMException(9100, "Conversation not found");
         }
       } catch (Exception e) {
         return e;
       }
+    } else {
+      return new AVIMException(9100, "Conversation not found");
     }
     return null;
   }
