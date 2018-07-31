@@ -51,7 +51,10 @@ public class AVAnonymousUtils {
    * Creates an anonymous user.
    * 
    * @param callback The callback to execute when anonymous user creation is complete.
+   *
+   * Deprecated since v4.7.0, pls use AVUser.logInAnonymously instead.
    */
+  @Deprecated
   public static void logIn(LogInCallback<AVUser> callback) {
     final LogInCallback<AVUser> internalCallback = callback;
     String string = anonymousAuthData();

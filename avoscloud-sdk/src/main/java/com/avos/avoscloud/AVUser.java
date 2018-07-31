@@ -391,6 +391,42 @@ public class AVUser extends AVObject {
     return (T) list[0];
   }
 
+  private static String anonymousAuthData() {
+    String json =
+        String.format("{\"authData\": {\"anonymous\" : {\"id\": \"%s\"}}}", UUID.randomUUID()
+            .toString().toLowerCase());
+    return json;
+  }
+
+  /**
+   * anonymously login.
+   *
+   * @param callback
+   */
+  public static void logInAnonymously(final LogInCallback<AVUser> callback) {
+    String string = anonymousAuthData();
+    PaasClient.storageInstance().postObject(AVUser.AVUSER_ENDPOINT, string, false,
+        new GenericObjectCallback() {
+      @Override
+      public void onSuccess(String content, AVException e) {
+        AVUser user = AVUser.newAVUser();
+        AVUtils.copyPropertiesFromJsonStringToAVObject(content, user);
+        user.setAnonymous(true);
+        AVUser.changeCurrentUser(user, true);
+        if (callback != null) {
+          callback.internalDone(user, null);
+        }
+      }
+
+      @Override
+      public void onFailure(Throwable error, String content) {
+        if (callback != null) {
+          callback.internalDone(null, AVErrorUtils.createException(error, content));
+        }
+      }
+    });
+  }
+
   static private String logInPath() {
     return "login";
   }
