@@ -1,4 +1,4 @@
-package com.huawei.android.hms.agent.pay;
+package com.huawei.android.hms.agent.game;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -9,73 +9,60 @@ import com.huawei.android.hms.agent.common.BaseApiAgent;
 import com.huawei.android.hms.agent.common.CallbackResultRunnable;
 import com.huawei.android.hms.agent.common.HMSAgentLog;
 import com.huawei.android.hms.agent.common.StrUtils;
-import com.huawei.android.hms.agent.pay.handler.GetOrderHandler;
+import com.huawei.android.hms.agent.game.handler.GetTemperatureHandler;
 import com.huawei.hms.api.HuaweiApiClient;
 import com.huawei.hms.support.api.client.PendingResult;
 import com.huawei.hms.support.api.client.ResultCallback;
 import com.huawei.hms.support.api.client.Status;
 import com.huawei.hms.support.api.entity.core.CommonCode;
-import com.huawei.hms.support.api.entity.pay.OrderRequest;
-import com.huawei.hms.support.api.pay.HuaweiPay;
-import com.huawei.hms.support.api.pay.OrderResult;
+import com.huawei.hms.support.api.game.HuaweiGame;
+import com.huawei.hms.support.api.game.TemperatureResult;
 
 /**
- * 查询订单请求
+ * 获取温度信息类
  */
-public class GetPayOrderApi extends BaseApiAgent {
+public class GetTemperatureApi extends BaseApiAgent {
 
     /**
-     * client 无效最大重试次数
+     * client 无效时，最大重试次数
      */
     private static final int MAX_RETRY_TIMES = 1;
 
     /**
-     * 查询订单请求，请求体
+     * 获取温度结果回调
      */
-    private OrderRequest checkPayReq;
+    private GetTemperatureHandler handler;
 
     /**
-     * 查询订单请求回调接口
-     */
-    private GetOrderHandler handler;
-
-    /**
-     * 剩余重试次数
+     * 重试次数
      */
     private int retryTimes = MAX_RETRY_TIMES;
 
-    /**
-     * Huawei Api Client 连接回调
-     * @param rst 结果码
-     * @param client HuaweiApiClient 实例
-     */
     @Override
     public void onConnect(int rst, HuaweiApiClient client) {
 
         HMSAgentLog.d("onConnect:" + rst);
-
         if (client == null || !ApiClientMgr.INST.isConnect(client)) {
             HMSAgentLog.e("client not connted");
-            onCheckOrderResult(rst, null);
+            onGetTemperatureResult(rst, null);
             return;
         }
 
-        // 调用HMS-SDK getOrderDetail 接口
-        PendingResult<OrderResult> checkPayResult = HuaweiPay.HuaweiPayApi.getOrderDetail(client, checkPayReq);
-        checkPayResult.setResultCallback(new ResultCallback<OrderResult>() {
+        PendingResult<TemperatureResult> pendingRst = HuaweiGame.HuaweiGameApi.getTemperature(client);
+        pendingRst.setResultCallback(new ResultCallback<TemperatureResult>() {
             @Override
-            public void onResult(OrderResult result) {
+            public void onResult(TemperatureResult result) {
 
                 if (result == null) {
                     HMSAgentLog.e("result is null");
-                    onCheckOrderResult(HMSAgent.AgentResultCode.RESULT_IS_NULL, null);
+                    onGetTemperatureResult(HMSAgent.AgentResultCode.RESULT_IS_NULL, null);
                     return;
                 }
 
                 Status status = result.getStatus();
                 if (status == null) {
                     HMSAgentLog.e("status is null");
-                    onCheckOrderResult(HMSAgent.AgentResultCode.STATUS_IS_NULL, null);
+                    onGetTemperatureResult(HMSAgent.AgentResultCode.STATUS_IS_NULL, null);
                     return;
                 }
 
@@ -87,31 +74,28 @@ public class GetPayOrderApi extends BaseApiAgent {
                     retryTimes--;
                     connect();
                 } else {
-                    onCheckOrderResult(rstCode, result);
+                    onGetTemperatureResult(rstCode, result);
                 }
             }
         });
     }
 
-    private void onCheckOrderResult(int retCode, OrderResult checkPayResult){
-        HMSAgentLog.i("getOrderDetail:callback=" + StrUtils.objDesc(handler) +" retCode=" + retCode + "  checkPayResult=" + StrUtils.objDesc(checkPayResult));
+    private void onGetTemperatureResult(int resultCode, TemperatureResult result) {
+        HMSAgentLog.i("getTemperature:callback=" + StrUtils.objDesc(handler) +" retCode=" + resultCode + "  temperatureResult=" + StrUtils.objDesc(result));
         if (handler != null) {
-            new Handler(Looper.getMainLooper()).post(new CallbackResultRunnable<OrderResult>(handler, retCode, checkPayResult));
+            new Handler(Looper.getMainLooper()).post(new CallbackResultRunnable<TemperatureResult>(handler, resultCode, result));
             handler = null;
         }
 
-        checkPayReq = null;
         retryTimes = MAX_RETRY_TIMES;
     }
 
     /**
-     * 查询订单接口
-     * @param request 查询订单请求体
-     * @param handler 查询订单结果回调
+     * 获取温度
+     * @param handler 结果回调
      */
-    public void getOrderDetail(OrderRequest request, GetOrderHandler handler) {
-        HMSAgentLog.i("getOrderDetail:request=" + StrUtils.objDesc(request) + "  handler=" + StrUtils.objDesc(handler));
-        this.checkPayReq = request;
+    public void getTemperature(final GetTemperatureHandler handler){
+        HMSAgentLog.i("getTemperature: handler=" + StrUtils.objDesc(handler));
         this.handler = handler;
         this.retryTimes = MAX_RETRY_TIMES;
         connect();

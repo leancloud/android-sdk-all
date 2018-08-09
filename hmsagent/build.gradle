@@ -1,34 +1,36 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.3"
-
-    defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+    compileSdkVersion 26
+    buildToolsVersion '25.0.0'
+        defaultConfig {
+            minSdkVersion 16
+            targetSdkVersion 26
+            versionCode 1
+            versionName "1.0"
     }
 
-    buildTypes {
+   buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            debuggable true
         }
     }
-
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
 
-    String HMSSDKVer ='2.6.0.301'
+    // 此处版本号仅为示例，请手动修改成实际集成的HMSSDK版本号
+    String HMSSDKVer ='2.6.1.301'
     compile 'com.huawei.android.hms:iap:'+HMSSDKVer
     compile 'com.huawei.android.hms:game:'+HMSSDKVer
     compile 'com.huawei.android.hms:sns:'+HMSSDKVer
     compile 'com.huawei.android.hms:hwid:'+HMSSDKVer
     compile 'com.huawei.android.hms:push:'+HMSSDKVer
-    testCompile 'junit:junit:4.12'
+    compile 'com.huawei.android.hms:opendevice:'+HMSSDKVer
 
 }
+
+
