@@ -95,6 +95,7 @@ public class AVHMSPushMessageReceiver extends com.huawei.hms.support.api.push.Pu
    */
   @Override
   public void onEvent(Context context, Event event, Bundle extras) {
+    LogUtil.avlog.d("received Notify Event. Event=" + event);
     if (Event.NOTIFICATION_CLICK_BTN.equals(event) || Event.NOTIFICATION_OPENED.equals(event)) {
       int notifyId = extras.getInt(BOUND_KEY.pushNotifyId, 0);
       LogUtil.avlog.d("received Push Event. notifyId:" + notifyId);
@@ -102,7 +103,10 @@ public class AVHMSPushMessageReceiver extends com.huawei.hms.support.api.push.Pu
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         manager.cancel(notifyId);
       }
+    } else {
+      LogUtil.avlog.d("unknow event.");
     }
+    super.onEvent(context, event, extras);
   }
 
   /**

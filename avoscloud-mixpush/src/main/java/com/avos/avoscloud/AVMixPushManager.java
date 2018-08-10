@@ -114,7 +114,7 @@ public class AVMixPushManager {
    * @param application
    */
   public static void registerHMSPush(Application application) {
-    registerHMSPush(application, null);
+    registerHMSPush(application, "");
   }
 
   /**
