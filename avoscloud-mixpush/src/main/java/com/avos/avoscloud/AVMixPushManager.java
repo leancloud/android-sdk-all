@@ -38,7 +38,7 @@ public class AVMixPushManager {
    * @param miAppKey
    */
   public static void registerXiaomiPush(Context context, String miAppId, String miAppKey) {
-    registerXiaomiPush(context, miAppId, miAppKey, null);
+    registerXiaomiPush(context, miAppId, miAppKey, "");
   }
 
   /**
@@ -92,7 +92,7 @@ public class AVMixPushManager {
    */
   @Deprecated
   public static void registerHuaweiPush(Context context) throws IllegalAccessException {
-    registerHuaweiPush(context, null);
+    registerHuaweiPush(context, "");
   }
 
   /**
@@ -258,7 +258,7 @@ public class AVMixPushManager {
    * @param flymeKey
    */
   public static boolean registerFlymePush(Context context, String flymeId, String flymeKey) {
-    return registerFlymePush(context, flymeId, flymeKey, null);
+    return registerFlymePush(context, flymeId, flymeKey, "");
   }
 
   public static void setFlymeMStatusbarIcon(int icon) {
