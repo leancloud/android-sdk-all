@@ -1,6 +1,6 @@
 package com.huawei.android.hms.agent.game.handler;
 
-import com.huawei.android.hms.agent.common.ICallbackResult;
+import com.huawei.android.hms.agent.common.handler.ICallbackResult;
 import com.huawei.hms.support.api.entity.game.GameUserData;
 
 /**

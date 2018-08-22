@@ -117,7 +117,7 @@ public class LoginApi extends BaseApiAgent {
                 }
 
                 int rstCode = status.getStatusCode();
-                HMSAgentLog.d("rstCode=" + rstCode);
+                HMSAgentLog.d("status=" + status);
 
                 if (!result.getStatus().isSuccess()) {
                     // 需要重试的错误码，并且可以重试

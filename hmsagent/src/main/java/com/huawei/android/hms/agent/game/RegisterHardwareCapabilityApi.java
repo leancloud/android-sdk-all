@@ -1,4 +1,4 @@
-package com.huawei.android.hms.agent.pay;
+package com.huawei.android.hms.agent.game;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -6,76 +6,63 @@ import android.os.Looper;
 import com.huawei.android.hms.agent.HMSAgent;
 import com.huawei.android.hms.agent.common.ApiClientMgr;
 import com.huawei.android.hms.agent.common.BaseApiAgent;
-import com.huawei.android.hms.agent.common.CallbackResultRunnable;
+import com.huawei.android.hms.agent.common.CallbackCodeRunnable;
 import com.huawei.android.hms.agent.common.HMSAgentLog;
 import com.huawei.android.hms.agent.common.StrUtils;
-import com.huawei.android.hms.agent.pay.handler.GetOrderHandler;
+import com.huawei.android.hms.agent.game.handler.RegisterHardwareCapabilityHandler;
 import com.huawei.hms.api.HuaweiApiClient;
 import com.huawei.hms.support.api.client.PendingResult;
 import com.huawei.hms.support.api.client.ResultCallback;
 import com.huawei.hms.support.api.client.Status;
 import com.huawei.hms.support.api.entity.core.CommonCode;
-import com.huawei.hms.support.api.entity.pay.OrderRequest;
-import com.huawei.hms.support.api.pay.HuaweiPay;
-import com.huawei.hms.support.api.pay.OrderResult;
+import com.huawei.hms.support.api.game.HardwareCapabilityResult;
+import com.huawei.hms.support.api.game.HuaweiGame;
 
 /**
- * 查询订单请求
+ * 注册硬件信息类
  */
-public class GetPayOrderApi extends BaseApiAgent {
+public class RegisterHardwareCapabilityApi extends BaseApiAgent {
 
     /**
-     * client 无效最大重试次数
+     * client 无效时，最大重试次数
      */
     private static final int MAX_RETRY_TIMES = 1;
 
     /**
-     * 查询订单请求，请求体
+     * 注册硬件能力结果回调
      */
-    private OrderRequest checkPayReq;
+    private RegisterHardwareCapabilityHandler handler;
 
     /**
-     * 查询订单请求回调接口
-     */
-    private GetOrderHandler handler;
-
-    /**
-     * 剩余重试次数
+     * 重试次数
      */
     private int retryTimes = MAX_RETRY_TIMES;
 
-    /**
-     * Huawei Api Client 连接回调
-     * @param rst 结果码
-     * @param client HuaweiApiClient 实例
-     */
     @Override
     public void onConnect(int rst, HuaweiApiClient client) {
 
         HMSAgentLog.d("onConnect:" + rst);
-
         if (client == null || !ApiClientMgr.INST.isConnect(client)) {
             HMSAgentLog.e("client not connted");
-            onCheckOrderResult(rst, null);
+            onRegisterHardwareCapabilityResult(rst);
             return;
         }
 
-        // 调用HMS-SDK getOrderDetail 接口
-        PendingResult<OrderResult> checkPayResult = HuaweiPay.HuaweiPayApi.getOrderDetail(client, checkPayReq);
-        checkPayResult.setResultCallback(new ResultCallback<OrderResult>() {
+        PendingResult<HardwareCapabilityResult> pendingRst = HuaweiGame.HuaweiGameApi.registerHardwareCapability(client);
+        pendingRst.setResultCallback(new ResultCallback<HardwareCapabilityResult>() {
             @Override
-            public void onResult(OrderResult result) {
+            public void onResult(HardwareCapabilityResult result) {
 
                 if (result == null) {
                     HMSAgentLog.e("result is null");
-                    onCheckOrderResult(HMSAgent.AgentResultCode.RESULT_IS_NULL, null);
+                    onRegisterHardwareCapabilityResult(HMSAgent.AgentResultCode.RESULT_IS_NULL);
                     return;
                 }
 
                 Status status = result.getStatus();
                 if (status == null) {
                     HMSAgentLog.e("status is null");
-                    onCheckOrderResult(HMSAgent.AgentResultCode.STATUS_IS_NULL, null);
+                    onRegisterHardwareCapabilityResult(HMSAgent.AgentResultCode.STATUS_IS_NULL);
                     return;
                 }
 
@@ -87,31 +74,28 @@ public class GetPayOrderApi extends BaseApiAgent {
                     retryTimes--;
                     connect();
                 } else {
-                    onCheckOrderResult(rstCode, result);
+                    onRegisterHardwareCapabilityResult(rstCode);
                 }
             }
         });
     }
 
-    private void onCheckOrderResult(int retCode, OrderResult checkPayResult){
-        HMSAgentLog.i("getOrderDetail:callback=" + StrUtils.objDesc(handler) +" retCode=" + retCode + "  checkPayResult=" + StrUtils.objDesc(checkPayResult));
+    private void onRegisterHardwareCapabilityResult(int resultCode) {
+        HMSAgentLog.i("registerHardwareCapability:callback=" + StrUtils.objDesc(handler) +" retCode=" + resultCode);
         if (handler != null) {
-            new Handler(Looper.getMainLooper()).post(new CallbackResultRunnable<OrderResult>(handler, retCode, checkPayResult));
+            new Handler(Looper.getMainLooper()).post(new CallbackCodeRunnable(handler, resultCode));
             handler = null;
         }
 
-        checkPayReq = null;
         retryTimes = MAX_RETRY_TIMES;
     }
 
     /**
-     * 查询订单接口
-     * @param request 查询订单请求体
-     * @param handler 查询订单结果回调
+     * 注册硬件信息
+     * @param handler 结果回调
      */
-    public void getOrderDetail(OrderRequest request, GetOrderHandler handler) {
-        HMSAgentLog.i("getOrderDetail:request=" + StrUtils.objDesc(request) + "  handler=" + StrUtils.objDesc(handler));
-        this.checkPayReq = request;
+    public void registerHardwareCapability(final RegisterHardwareCapabilityHandler handler){
+        HMSAgentLog.i("registerHardwareCapability: handler=" + StrUtils.objDesc(handler));
         this.handler = handler;
         this.retryTimes = MAX_RETRY_TIMES;
         connect();

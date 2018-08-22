@@ -59,13 +59,7 @@ public class FloatWindowApi implements IActivityResumeCallback, IActivityPauseCa
             }
 
             Status status = result.getStatus();
-            if (status == null) {
-                HMSAgentLog.e("status is null");
-                return;
-            }
-
-            int rstCode = status.getStatusCode();
-            HMSAgentLog.d("show float end:" + rstCode);
+            HMSAgentLog.d("show float end:status=" + status);
         }
     }
 

@@ -88,6 +88,7 @@ public class AVHMSPushMessageReceiver extends com.huawei.hms.support.api.push.Pu
 
   /**
    * 响应通知栏点击事件
+   * 注意：这一机制基本上是失效的，华为官方不推荐使用这一接口来响应不同的通知内容。
    *
    * @param context
    * @param event
@@ -95,6 +96,7 @@ public class AVHMSPushMessageReceiver extends com.huawei.hms.support.api.push.Pu
    */
   @Override
   public void onEvent(Context context, Event event, Bundle extras) {
+    LogUtil.avlog.d("received Notify Event. Event=" + event);
     if (Event.NOTIFICATION_CLICK_BTN.equals(event) || Event.NOTIFICATION_OPENED.equals(event)) {
       int notifyId = extras.getInt(BOUND_KEY.pushNotifyId, 0);
       LogUtil.avlog.d("received Push Event. notifyId:" + notifyId);
@@ -102,7 +104,10 @@ public class AVHMSPushMessageReceiver extends com.huawei.hms.support.api.push.Pu
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         manager.cancel(notifyId);
       }
+    } else {
+      LogUtil.avlog.d("unknow event.");
     }
+    super.onEvent(context, event, extras);
   }
 
   /**
