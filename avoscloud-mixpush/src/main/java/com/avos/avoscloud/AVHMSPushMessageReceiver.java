@@ -88,6 +88,7 @@ public class AVHMSPushMessageReceiver extends com.huawei.hms.support.api.push.Pu
 
   /**
    * 响应通知栏点击事件
+   * 注意：这一机制基本上是失效的，华为官方不推荐使用这一接口来响应不同的通知内容。
    *
    * @param context
    * @param event
