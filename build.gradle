@@ -8,10 +8,13 @@ buildscript {
         maven {
             url "$androidHome/extras/android/m2repository/"
         }
-        maven {url "http://developer.huawei.com/repo"}
+        maven {
+            url "https://maven.google.com" // Google's Maven repository
+        }
+//        maven {url "http://developer.huawei.com/repo"}
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.0.1'
         classpath 'org.robolectric:robolectric-gradle-plugin:0.14.+'
     }
 }
@@ -27,6 +30,9 @@ subprojects {
         maven {
             url "$androidHome/extras/android/m2repository/"
         }
-        maven {url "http://developer.huawei.com/repo"}
+        maven {
+            url "https://maven.google.com" // Google's Maven repository
+        }
+//        maven {url "http://developer.huawei.com/repo"}
     }
 }
