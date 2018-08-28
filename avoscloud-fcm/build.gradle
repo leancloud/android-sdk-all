@@ -48,3 +48,5 @@ android.libraryVariants.all { variant ->
     task.exclude '**/R$*.class'
     artifacts.add('archives', task);
 }
+
+apply from: '../maven_push.gradle'
