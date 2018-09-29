@@ -1300,6 +1300,8 @@ public class AVIMConversation {
       } else {
         if(this.lastMessage.getTimestamp() <= lastMessage.getTimestamp()) {
           this.lastMessage = lastMessage;
+        } else {
+          LogUtil.log.d("lastMessage timestamp is invalid. existed=" + this.lastMessage.getTimestamp() + ", newValue=" + lastMessage.getTimestamp());
         }
       }
     }
