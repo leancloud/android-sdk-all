@@ -1135,10 +1135,14 @@ class AVConversationHolder {
    */
   void onUnreadMessagesEvent(AVIMMessage message, int unreadCount, boolean mentioned) {
     final AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
-    if (handler != null) {
+    if (null == handler) {
+      LogUtil.log.d("conversation event handler is none.");
+    } else {
       AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
       final AVIMConversation conversation = client.getConversation(this.conversationId);
-      if (conversation.getUnreadMessagesCount() != unreadCount) {
+      if (conversation.getUnreadMessagesCount() == unreadCount) {
+        LogUtil.log.d("unread count isn't changed, ignore command...");
+      } else {
         final Pair<Integer, Boolean> unreadInfo = new Pair<>(unreadCount, mentioned);
         if (null != message) {
           message.setMessageIOType(AVIMMessage.AVIMMessageIOType.AVIMMessageIOTypeIn);

@@ -455,7 +455,7 @@ class AVDefaultWebSocketListener implements AVWebSocketListener {
         for (Messages.UnreadTuple unreadTuple : unreadTupleList) {
           String msgId = unreadTuple.getMid();
           String msgContent = unreadTuple.getData();
-          long ts = unreadTuple.getPatchTimestamp();
+          long ts = unreadTuple.getTimestamp();
           long updateTS = unreadTuple.getPatchTimestamp();
           String conversationId = unreadTuple.getCid();
           boolean mentioned = unreadTuple.getMentioned();
