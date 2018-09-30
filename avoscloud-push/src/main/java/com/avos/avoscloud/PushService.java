@@ -104,16 +104,19 @@ public class PushService extends Service {
     connectivityReceiver = new AVConnectivityReceiver(new AVConnectivityListener() {
       @Override
       public void onMobile(Context context) {
+        LogUtil.log.d(LOGTAG, "Connectivity resumed with Mobile");
         sPushConnectionManager.initConnection();
       }
 
       @Override
       public void onWifi(Context context) {
+        LogUtil.log.d(LOGTAG, "Connectivity resumed with Mobile");
         sPushConnectionManager.initConnection();
       }
 
       @Override
       public void onNotConnected(Context context) {
+        LogUtil.log.d(LOGTAG, "Connectivity broken");
         //sPushConnectionManager.cleanupSocketConnection();
       }
     });
