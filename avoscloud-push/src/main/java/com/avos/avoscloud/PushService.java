@@ -117,7 +117,7 @@ public class PushService extends Service {
 
       @Override
       public void onWifi(Context context) {
-        LogUtil.log.d(LOGTAG, "Connectivity resumed with Mobile");
+        LogUtil.log.d(LOGTAG, "Connectivity resumed with Wifi");
         connectEstablished = true;
         sPushConnectionManager.initConnection();
       }
