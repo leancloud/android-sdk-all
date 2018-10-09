@@ -154,7 +154,7 @@ public class AVPushWebSocketClient extends WebSocketClient {
     if (receiver != null) {
       receiver.processConnectionStatus(new AVException(code, reason));
     }
-    LogUtil.avlog.d("onClose(). local disconnection:" + code + "  " + reason + " :" + remote);
+    LogUtil.avlog.d("onClose(). local disconnection code=" + code + ", reason=" + reason + ", remote=" + remote);
     switch (code) {
       case -1:
         LogUtil.avlog.d("connection refused");
@@ -196,11 +196,18 @@ public class AVPushWebSocketClient extends WebSocketClient {
   protected void cancelReconnect() {
     AVOSCloud.handler.removeCallbacks(this.reconnectTask);
   }
+
   AtomicBoolean destroyed = new AtomicBoolean(false);
+
   protected void destroy(){
     destroyed.set(true);
     cancelReconnect();
     heartBeatPolicy.stopHeartbeat();
+    LogUtil.avlog.d("connection destroyed");
+  }
+
+  protected boolean isDestroyed() {
+    return this.destroyed.get();
   }
 
   protected synchronized void reconnect() {

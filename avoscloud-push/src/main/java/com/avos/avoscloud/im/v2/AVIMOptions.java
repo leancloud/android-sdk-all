@@ -12,6 +12,7 @@ public class AVIMOptions {
   private String rtmServer = "";
   private SignatureFactory signatureFactory = null;
   private int timeoutInSecs = 15;
+  private boolean resetConnectionWhileBroken = false;
 
   /**
    * get global options instance.
@@ -67,6 +68,14 @@ public class AVIMOptions {
    */
   public void setTimeoutInSecs(int timeoutInSecs) {
     this.timeoutInSecs = timeoutInSecs;
+  }
+
+  public boolean isResetConnectionWhileBroken() {
+    return resetConnectionWhileBroken;
+  }
+
+  public void setResetConnectionWhileBroken(boolean resetConnectionWhileBroken) {
+    this.resetConnectionWhileBroken = resetConnectionWhileBroken;
   }
 
   private AVIMOptions() {
