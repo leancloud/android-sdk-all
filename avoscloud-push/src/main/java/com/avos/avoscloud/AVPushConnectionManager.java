@@ -167,7 +167,8 @@ class AVPushConnectionManager implements AVPushWebSocketClient.AVPacketParser {
   public void cleanupSocketConnection(final int code, final String message) {
     if (socketClient != null && (socketClient.isConnecting() || socketClient.isOpen())) {
       try {
-        socketClient.close(code, message);
+        LogUtil.avlog.d("try to close and destroy connection");
+        socketClient.closeConnection(code, message);
         socketClient.destroy();
       } catch (Exception e) {
         if (AVOSCloud.isDebugLogEnabled()) {
@@ -175,15 +176,18 @@ class AVPushConnectionManager implements AVPushWebSocketClient.AVPacketParser {
         }
       }
     } else if (socketClient != null && socketClient.isClosing()) {
+      LogUtil.avlog.d("try to destroy connection");
       socketClient.destroy();
       socketClient = null;
+    } else {
+      LogUtil.avlog.d("do nothing for invalid connection");
     }
   }
 
   private synchronized void createNewWebSocket(final String pushServer) {
-    if (socketClient == null || socketClient.isClosed()) {
+    if (socketClient == null || socketClient.isDestroyed() || socketClient.isClosed()) {
       // 由于需要链接到新的server address上,原来的client就要被抛弃了,抛弃前需要取消自动重连的任务
-      if (socketClient != null) {
+      if (socketClient != null && !socketClient.isDestroyed()) {
         LogUtil.log.d("destroy socketClient first which is closed.");
         socketClient.destroy();
       }

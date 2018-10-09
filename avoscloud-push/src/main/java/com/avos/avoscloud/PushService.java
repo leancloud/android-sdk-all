@@ -24,14 +24,18 @@ import com.alibaba.fastjson.JSON;
 import com.avos.avoscloud.im.v2.AVIMClient;
 import com.avos.avoscloud.im.v2.AVIMMessage;
 import com.avos.avoscloud.im.v2.AVIMMessageOption;
+import com.avos.avoscloud.im.v2.AVIMOptions;
 import com.avos.avoscloud.im.v2.Conversation;
 import com.avos.avoscloud.im.v2.Conversation.AVIMOperation;
+import com.avos.avoscloud.java_websocket.framing.CloseFrame;
 import com.avos.avospush.push.*;
 import com.avos.avospush.session.CommandPacket;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * <p>
@@ -102,19 +106,39 @@ public class PushService extends Service {
     sPushConnectionManager = AVPushConnectionManager.getInstance(this);
 
     connectivityReceiver = new AVConnectivityReceiver(new AVConnectivityListener() {
+      private volatile boolean connectEstablished = false;
+      private Timer cleanupTimer = new Timer();
       @Override
       public void onMobile(Context context) {
+        LogUtil.log.d(LOGTAG, "Connectivity resumed with Mobile");
+        connectEstablished = true;
         sPushConnectionManager.initConnection();
       }
 
       @Override
       public void onWifi(Context context) {
+        LogUtil.log.d(LOGTAG, "Connectivity resumed with Wifi");
+        connectEstablished = true;
         sPushConnectionManager.initConnection();
       }
 
       @Override
       public void onNotConnected(Context context) {
-        //sPushConnectionManager.cleanupSocketConnection();
+        LogUtil.log.d(LOGTAG, "Connectivity broken");
+        connectEstablished = false;
+        if (AVIMOptions.getGlobalOptions().isResetConnectionWhileBroken()) {
+          cleanupTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+              if (!connectEstablished) {
+                LogUtil.log.d(LOGTAG, "Connectivity cleanup now.");
+                sPushConnectionManager.cleanupSocketConnection(CloseFrame.ABNORMAL_CLOSE, "Connectivity broken");
+              } else {
+                LogUtil.log.d(LOGTAG, "Connectivity resumed");
+              }
+            }
+          }, 3000);
+        }
       }
     });
     registerReceiver(connectivityReceiver,

@@ -50,9 +50,10 @@ public class SessionControlPacket extends PeerBasedCommandPacket {
     this.setCmd("session");
   }
 
-  private static final long PATCH_FLAG = 0x01;
-  private static final long PATCH_FLAG_BIND_INSTALLATION_TO_SESSION = 0x04;
-  private static final long PATCH_FLAG_ACK_4_TRANSIENT_MSG = 0x08;
+  private static final long PATCH_FLAG = 0x01; // support to update and recall message.
+  private static final long PATCH_FLAG_TEMPORARY_CONV = 0x02; // support temporary conversation.
+  private static final long PATCH_FLAG_BIND_INSTALLATION_TO_SESSION = 0x04; // support to bind Installation.
+  private static final long PATCH_FLAG_ACK_4_TRANSIENT_MSG = 0x08; // support to receive ack for transient message.
   private static final long PATCH_FLAG_SUPPORT_CONVMEMBER_INFO = 0x20;
 
   private String op;
@@ -169,7 +170,7 @@ public class SessionControlPacket extends PeerBasedCommandPacket {
     scp.sessionPeerIds = peers;
     scp.lastUnreadNotifyTime = lastUnreadNotifyTime;
     scp.lastPatchTime = lastPatchTime;
-    scp.sessionConfig |= PATCH_FLAG | PATCH_FLAG_ACK_4_TRANSIENT_MSG;
+    scp.sessionConfig |= PATCH_FLAG | PATCH_FLAG_TEMPORARY_CONV | PATCH_FLAG_ACK_4_TRANSIENT_MSG;
     scp.sessionConfig |= PATCH_FLAG_SUPPORT_CONVMEMBER_INFO;
     if (op.equals(SessionControlOp.RENEW_RTMTOKEN)) {
       scp.setPeerId(selfId);
