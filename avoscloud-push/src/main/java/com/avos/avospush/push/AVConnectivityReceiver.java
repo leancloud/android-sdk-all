@@ -21,18 +21,18 @@ public class AVConnectivityReceiver extends BroadcastReceiver {
   public void onReceive(Context context, Intent intent) {
     int status = AVUtils.getConnectivityStatus(context);
     switch (status) {
-      case AVUtils.TYPE_MOBILE: {
+      case AVUtils.TYPE_MOBILE:
         listener.onMobile(context);
         break;
-      }
-      case AVUtils.TYPE_WIFI: {
+      case AVUtils.TYPE_WIFI:
         listener.onWifi(context);
         break;
-      }
-      case AVUtils.TYPE_NOT_CONNECTED: {
+      case AVUtils.TYPE_OTHERS:
+        listener.onOtherConnected(context);
+        break;
+      case AVUtils.TYPE_NOT_CONNECTED:
         listener.onNotConnected(context);
         break;
-      }
       default:
         break;
     }

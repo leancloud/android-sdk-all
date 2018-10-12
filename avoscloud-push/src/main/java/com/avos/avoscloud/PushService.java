@@ -124,6 +124,12 @@ public class PushService extends Service {
         sPushConnectionManager.initConnection();
       }
 
+      public void onOtherConnected(Context context) {
+        LogUtil.log.d(LOGTAG, "Connectivity resumed with Others");
+        connectEstablished = true;
+        sPushConnectionManager.initConnection();
+      }
+
       @Override
       public void onNotConnected(Context context) {
         if(!connectEstablished) {
