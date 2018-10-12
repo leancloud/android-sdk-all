@@ -96,6 +96,8 @@ public class PushService extends Service {
   AVConnectivityReceiver connectivityReceiver;
   AVShutdownReceiver shutdownReceiver;
 
+  private Timer cleanupTimer = new Timer();
+
   /**
    * Client code should not call onCreate directly.
    */
@@ -107,7 +109,7 @@ public class PushService extends Service {
 
     connectivityReceiver = new AVConnectivityReceiver(new AVConnectivityListener() {
       private volatile boolean connectEstablished = false;
-      private Timer cleanupTimer = new Timer();
+
       @Override
       public void onMobile(Context context) {
         LogUtil.log.d(LOGTAG, "Connectivity resumed with Mobile");
@@ -124,6 +126,10 @@ public class PushService extends Service {
 
       @Override
       public void onNotConnected(Context context) {
+        if(!connectEstablished) {
+          LogUtil.log.d(LOGTAG, "Connectivity isn't established yet.");
+          return;
+        }
         LogUtil.log.d(LOGTAG, "Connectivity broken");
         connectEstablished = false;
         if (AVIMOptions.getGlobalOptions().isResetConnectionWhileBroken()) {
@@ -131,10 +137,10 @@ public class PushService extends Service {
             @Override
             public void run() {
               if (!connectEstablished) {
-                LogUtil.log.d(LOGTAG, "Connectivity cleanup now.");
+                LogUtil.log.d(LOGTAG, "Connection cleanup now.");
                 sPushConnectionManager.cleanupSocketConnection(CloseFrame.ABNORMAL_CLOSE, "Connectivity broken");
               } else {
-                LogUtil.log.d(LOGTAG, "Connectivity resumed");
+                LogUtil.log.d(LOGTAG, "Connection has been resumed");
               }
             }
           }, 3000);
