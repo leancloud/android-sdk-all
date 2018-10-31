@@ -2,14 +2,13 @@ package com.avos.avoscloud;
 
 import android.os.AsyncTask;
 
-import org.apache.http.Header;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.locks.Lock;
 
+import okhttp3.Headers;
 import okhttp3.Request;
 
 /**
@@ -120,7 +119,7 @@ class AVFileDownloader extends AsyncTask<String, Integer, AVException> {
     client.execute(requestBuilder.build(), true, new AsyncHttpStreamResponseHandler() {
 
       @Override
-      public void onSuccess(int statusCode, Header[] headers, InputStream data) {
+      public void onSuccess(int statusCode, Headers headers, InputStream data) {
         if (statusCode / 100 == 2 && null != data) {
           // read data from InputStream and save to cache File
           byte[] content = new byte[READ_BUF_SIZE];
@@ -167,7 +166,7 @@ class AVFileDownloader extends AsyncTask<String, Integer, AVException> {
       }
 
       @Override
-      public void onFailure(int statusCode, Header[] headers, Throwable error) {
+      public void onFailure(int statusCode, Headers headers, Throwable error) {
         errors[0] = new AVException(error);
       }
     });

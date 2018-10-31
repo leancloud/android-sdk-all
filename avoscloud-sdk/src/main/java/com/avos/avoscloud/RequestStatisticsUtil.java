@@ -7,12 +7,11 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.provider.Settings;
 
-import org.apache.http.Header;
-
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
+import okhttp3.Headers;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
@@ -125,7 +124,7 @@ class RequestStatisticsUtil {
         client.updateHeaders(builder,null,false);
         asyncClient.execute(builder.build(), true   , new AsyncHttpResponseHandler() {
           @Override
-          public void onSuccess(int statusCode, Header[] headers, byte[] body) {
+          public void onSuccess(int statusCode, Headers headers, byte[] body) {
             if (200 == statusCode) {
               updateLastSendTime();
               requestStatistics.minus(requestData);
@@ -134,7 +133,7 @@ class RequestStatisticsUtil {
           }
 
           @Override
-          public void onFailure(int statusCode, Header[] headers, byte[] responseBody,
+          public void onFailure(int statusCode, Headers headers, byte[] responseBody,
               Throwable error) {}
         });
       } catch (UnsupportedEncodingException e) {

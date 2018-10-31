@@ -1,6 +1,6 @@
 package com.avos.avoscloud;
 
-import org.apache.http.Header;
+import okhttp3.Headers;
 
 class PostHttpResponseHandler extends AsyncHttpResponseHandler {
 
@@ -10,7 +10,7 @@ class PostHttpResponseHandler extends AsyncHttpResponseHandler {
 
   // put common json parsing here.
   @Override
-  public void onSuccess(int statusCode, Header[] headers, byte[] body) {
+  public void onSuccess(int statusCode, Headers headers, byte[] body) {
 
     String content = AVUtils.stringFromBytes(body);
     if (AVOSCloud.isDebugLogEnabled()) {
@@ -34,7 +34,7 @@ class PostHttpResponseHandler extends AsyncHttpResponseHandler {
   }
 
   @Override
-  public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+  public void onFailure(int statusCode, Headers headers, byte[] responseBody, Throwable error) {
     String content = AVUtils.stringFromBytes(responseBody);
     if (AVOSCloud.isDebugLogEnabled()) {
       LogUtil.avlog.e(content + "\nerror:" + error);

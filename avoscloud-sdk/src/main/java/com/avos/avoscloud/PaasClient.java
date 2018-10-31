@@ -4,8 +4,6 @@ import android.annotation.SuppressLint;
 import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
-import org.apache.http.Header;
-import org.apache.http.entity.ByteArrayEntity;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -17,6 +15,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+
+import okhttp3.Headers;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
@@ -34,7 +34,7 @@ public class PaasClient {
   static final String DEFAULT_CONTENT_TYPE = "application/json";
   public static final String DEFAULT_FAIL_STRING = "request failed!!!";
 
-  public static final String sdkVersion = "v4.7.1";
+  public static final String sdkVersion = "v4.7.7";
 
   private static final String userAgent = "AVOS Cloud android-" + sdkVersion + " SDK";
   private AVUser currentUser = null;
@@ -403,7 +403,6 @@ public class PaasClient {
       String url = batchUrl();
       Map<String, Object> requests = batchRequest(parameters);
       String json = JSON.toJSONString(requests);
-      ByteArrayEntity entity = new ByteArrayEntity(json.getBytes(DEFAULT_ENCODING));
       if (AVOSCloud.isDebugLogEnabled()) {
         dumpHttpPostRequest(header, url, json);
       }
@@ -735,10 +734,13 @@ public class PaasClient {
     lastModify.clear();
   }
 
-  static public String lastModifyFromHeaders(Header[] headers) {
-    for (Header h : headers) {
-      if (h.getName().equalsIgnoreCase("Last-Modified")) {
-        return h.getValue();
+  static public String lastModifyFromHeaders(Headers headers) {
+    if (null != headers) {
+      for (int i = 0; i < headers.size(); i++) {
+        String name = headers.name(i);
+        if ("Last-Modified".equalsIgnoreCase(name)) {
+          return headers.value(i);
+        }
       }
     }
     return null;
@@ -752,11 +754,12 @@ public class PaasClient {
     return false;
   }
 
-  protected static String extractContentType(Header[] headers) {
+  protected static String extractContentType(Headers headers) {
     if (headers != null) {
-      for (Header h : headers) {
-        if (h.getName().equalsIgnoreCase("Content-Type")) {
-          return h.getValue();
+      for (int i = 0; i < headers.size(); i++) {
+        String name = headers.name(i);
+        if ("Content-Type".equalsIgnoreCase(name)) {
+          return headers.value(i);
         }
       }
     }
