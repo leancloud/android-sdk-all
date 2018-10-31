@@ -15,10 +15,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.avos.avoscloud.utils.StringUtils;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.message.BasicNameValuePair;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -35,7 +31,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 
 import java.util.List;
 import java.util.Map;
@@ -44,6 +39,8 @@ import java.util.TimeZone;
 import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
+
+import okhttp3.HttpUrl;
 
 @SuppressLint("NewApi")
 public class AVUtils {
@@ -1131,11 +1128,13 @@ public class AVUtils {
   }
 
   public static String addQueryParams(String path, Map<String, Object> params) {
-    LinkedList<NameValuePair> pairs = new LinkedList<>();
+    HttpUrl.Builder builder = new HttpUrl.Builder();
+    builder.addPathSegment(path);
+
     for (Map.Entry<String, Object> entry : params.entrySet()) {
-      pairs.add(new BasicNameValuePair(entry.getKey(), JSON.toJSONString(entry.getValue())));
+      builder.addQueryParameter(entry.getKey(), JSON.toJSONString(entry.getValue()));
     }
-    return String.format("%s?%s", path, URLEncodedUtils.format(pairs, "UTF-8"));
+    return builder.toString();
   }
 
   protected static final int defaultFileKeyLength = 40;
@@ -1169,8 +1168,7 @@ public class AVUtils {
     return buf.toString();
   }
 
-  public static String SHA1(byte[] data) throws NoSuchAlgorithmException,
-      UnsupportedEncodingException {
+  public static String SHA1(byte[] data) throws NoSuchAlgorithmException {
     MessageDigest md = MessageDigest.getInstance("SHA-1");
     md.update(data, 0, data.length);
     byte[] sha1hash = md.digest();

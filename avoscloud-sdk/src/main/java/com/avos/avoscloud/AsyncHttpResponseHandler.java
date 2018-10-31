@@ -1,8 +1,5 @@
 package com.avos.avoscloud;
 
-import org.apache.http.Header;
-import org.apache.http.message.BasicHeader;
-
 import java.io.IOException;
 
 import okhttp3.Call;
@@ -34,29 +31,29 @@ public abstract class AsyncHttpResponseHandler implements Callback {
 
   @Override
   public void onFailure(Call call, IOException e) {
-    onFailure(0, getHeaders(call.request().headers()), null, e);
+    onFailure(0, call.request().headers(), null, e);
   }
 
   @Override
   public void onResponse(Call call, Response response) throws IOException {
-    this.onSuccess(response.code(), getHeaders(response.headers()), response.body().bytes());
+    this.onSuccess(response.code(), response.headers(), response.body().bytes());
   }
 
-  public abstract void onSuccess(int statusCode, Header[] headers, byte[] body);
+  public abstract void onSuccess(int statusCode, Headers headers, byte[] body);
 
-  public abstract void onFailure(int statusCode, Header[] headers, byte[] responseBody,
+  public abstract void onFailure(int statusCode, Headers headers, byte[] responseBody,
       Throwable error);
 
-  static Header[] getHeaders(Headers headers) {
-    if (headers != null && headers.size() > 0) {
-      Header[] httpHeaders = new Header[headers.size()];
-      for (int index = 0; index < headers.size(); index++) {
-        final String key = headers.name(index);
-        final String value = headers.get(key);
-        httpHeaders[index] = new BasicHeader(key, value);
-      }
-      return httpHeaders;
-    }
-    return null;
-  }
+//  static Header[] getHeaders(Headers headers) {
+//    if (headers != null && headers.size() > 0) {
+//      Header[] httpHeaders = new Header[headers.size()];
+//      for (int index = 0; index < headers.size(); index++) {
+//        final String key = headers.name(index);
+//        final String value = headers.get(key);
+//        httpHeaders[index] = new BasicHeader(key, value);
+//      }
+//      return httpHeaders;
+//    }
+//    return null;
+//  }
 }

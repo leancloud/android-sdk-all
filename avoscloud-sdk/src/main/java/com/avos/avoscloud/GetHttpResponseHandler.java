@@ -1,6 +1,6 @@
 package com.avos.avoscloud;
 
-import org.apache.http.Header;
+import okhttp3.Headers;
 
 public class GetHttpResponseHandler extends AsyncHttpResponseHandler {
 
@@ -55,7 +55,7 @@ public class GetHttpResponseHandler extends AsyncHttpResponseHandler {
 
 
   @Override
-  public void onSuccess(int statusCode, Header[] headers, byte[] body) {
+  public void onSuccess(int statusCode, Headers headers, byte[] body) {
 
     String content = AVUtils.stringFromBytes(body);
     if (AVOSCloud.isDebugLogEnabled()) {
@@ -101,7 +101,7 @@ public class GetHttpResponseHandler extends AsyncHttpResponseHandler {
   }
 
   @Override
-  public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+  public void onFailure(int statusCode, Headers headers, byte[] responseBody, Throwable error) {
 
 
     String content = AVUtils.stringFromBytes(responseBody);
