@@ -4,11 +4,11 @@ export PATH=$PATH:/usr/local/bin
 test -f common.function && source common.function || exit 2
 
 if hostname | grep -iE '(avos|builder)' > /dev/null 2>&1 ; then
-  release_sdk_path="/Users/avos/jenkins/workspace/avoscloud-sdk/"
-  release_doc_path="/Users/avos/jenkins/workspace/api-docs"
-  export ANDROID_HOME="/Users/avos/avos/android-sdk-macosx"
+  release_sdk_path="/Users/builder/leancloud/jenkins/workspace/avoscloud-Android-sdk-release/"
+  release_doc_path="/Users/builder/leancloud/jenkins/workspace/api-docs"
+  export ANDROID_HOME="/Users/builder/leancloud/android-sdk-macosx"
 elif hostname | grep -i hj > /dev/null 2>&1 ; then
-  release_sdk_path="/Users/hong/avos/code/avoscloud-sdk"
+  release_sdk_path="/Users/hong/avos/code/avoscloud-Android-sdk-release"
   export ANDROID_HOME="/Users/hong/avos/android-sdk-macosx"
 fi
 branch=$(get_current_branch)
@@ -67,7 +67,7 @@ else
   exit 1
 fi
 
-# add to avoscloud-sdk and push
+# add to avoscloud-Android-sdk-release and push
 cd $release_sdk_path && {
   echo "|==> add changes into repos"
   git add .
