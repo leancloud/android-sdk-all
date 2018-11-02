@@ -1,6 +1,7 @@
 buildscript {
     repositories {
         def androidHome = System.getenv("ANDROID_HOME")
+        google()
         jcenter()
         maven {
             url "http://mvn.leancloud.cn/nexus/content/repositories/releases"
@@ -25,6 +26,7 @@ subprojects {
 
     repositories {
         def androidHome = System.getenv("ANDROID_HOME")
+        google()
         jcenter()
         maven { url "http://mvn.leancloud.cn/nexus/content/repositories/releases" }
         maven {
