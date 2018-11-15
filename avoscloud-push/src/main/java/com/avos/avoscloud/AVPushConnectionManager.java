@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.avos.avoscloud.im.v2.AVIMClient;
-import com.avos.avoscloud.java_websocket.framing.CloseFrame;
+import org.java_websocket.framing.CloseFrame;
 import com.avos.avospush.session.LiveQueryLoginPacket;
 import com.avos.avospush.push.AVPushRouter;
 import com.avos.avospush.session.CommandPacket;

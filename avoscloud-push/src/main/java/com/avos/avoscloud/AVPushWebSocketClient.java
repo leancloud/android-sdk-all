@@ -4,19 +4,31 @@ import android.net.SSLCertificateSocketFactory;
 import android.net.SSLSessionCache;
 import android.os.Build;
 
-import com.avos.avoscloud.java_websocket.WebSocket;
-import com.avos.avoscloud.java_websocket.client.WebSocketClient;
-import com.avos.avoscloud.java_websocket.drafts.Draft_17;
-import com.avos.avoscloud.java_websocket.framing.CloseFrame;
-import com.avos.avoscloud.java_websocket.framing.Framedata;
-import com.avos.avoscloud.java_websocket.framing.FramedataImpl1;
-import com.avos.avoscloud.java_websocket.handshake.ServerHandshake;
+//import com.avos.avoscloud.java_websocket.WebSocket;
+//import com.avos.avoscloud.java_websocket.client.WebSocketClient;
+//import com.avos.avoscloud.java_websocket.drafts.Draft_17;
+//import com.avos.avoscloud.java_websocket.framing.CloseFrame;
+//import com.avos.avoscloud.java_websocket.framing.Framedata;
+//import com.avos.avoscloud.java_websocket.framing.FramedataImpl1;
+//import com.avos.avoscloud.java_websocket.handshake.ServerHandshake;
+
+import org.java_websocket.WebSocket;
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.drafts.Draft_6455;
+import org.java_websocket.extensions.IExtension;
+import org.java_websocket.framing.Framedata;
+import org.java_websocket.framing.PingFrame;
+import org.java_websocket.handshake.ServerHandshake;
+import org.java_websocket.protocols.IProtocol;
+import org.java_websocket.protocols.Protocol;
+
 import com.avos.avospush.session.CommandPacket;
 
 import java.net.Socket;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -31,6 +43,9 @@ import javax.net.ssl.SSLSocket;
  * Created by lbt05 on 5/20/16.
  */
 public class AVPushWebSocketClient extends WebSocketClient {
+  public static final String SUB_PROTOCOL_2_1 = "lc.protobuf2.1";
+  public static final String SUB_PROTOCOL_2_3 = "lc.protobuf2.3";
+
   private static final String HEADER_SUB_PROTOCOL = "Sec-WebSocket-Protocol";
   private static final String HEADER_SNI_HOST = "Host";
   private static final int PING_TIMEOUT_CODE = 3000;
@@ -42,16 +57,21 @@ public class AVPushWebSocketClient extends WebSocketClient {
   Runnable reconnectTask = new Runnable() {
     @Override
     public void run() {
-      reconnect();
+      autoReconnect();
     }
   };
 
   AVPacketParser receiver;
   SSLSessionCache sessionCache;
 
+  private static ArrayList<IProtocol> protocols = new ArrayList<IProtocol>();
+  static {
+    protocols.add(new Protocol(SUB_PROTOCOL_2_3));
+  }
+
   public AVPushWebSocketClient(URI serverURI, AVPacketParser parser,
                                final String subProtocol, boolean secEnabled) {
-    super(serverURI, new Draft_17(), new HashMap<String, String>() {
+    super(serverURI, new Draft_6455(Collections.<IExtension>emptyList(), protocols), new HashMap<String, String>() {
       {
         put(HEADER_SUB_PROTOCOL, subProtocol);
       }
@@ -166,12 +186,9 @@ public class AVPushWebSocketClient extends WebSocketClient {
           scheduleReconnect();
         }
         break;
-      case CloseFrame.ABNORMAL_CLOSE:
-        scheduleReconnect();
-        break;
       case PING_TIMEOUT_CODE:
         LogUtil.avlog.d("connection unhealthy");
-        reconnect();
+        autoReconnect();
         break;
       default:
         scheduleReconnect();
@@ -210,7 +227,7 @@ public class AVPushWebSocketClient extends WebSocketClient {
     return this.destroyed.get();
   }
 
-  protected synchronized void reconnect() {
+  protected synchronized void autoReconnect() {
     if (this.isConnecting() || this.isOpen()) {
       // 已经是健康的状态了就没必要再发了
       return;
@@ -223,8 +240,7 @@ public class AVPushWebSocketClient extends WebSocketClient {
   }
 
   protected void ping() {
-    FramedataImpl1 frame = new FramedataImpl1(Framedata.Opcode.PING);
-    frame.setFin(true);
+    PingFrame frame = new PingFrame();
     this.sendFrame(frame);
   }
 

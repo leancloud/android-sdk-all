@@ -4,15 +4,11 @@ buildscript {
         google()
         jcenter()
         maven {
-            url "http://mvn.leancloud.cn/nexus/content/repositories/releases"
-        }
-        maven {
             url "$androidHome/extras/android/m2repository/"
         }
         maven {
-            url "https://maven.google.com" // Google's Maven repository
+            url "http://mvn.leancloud.cn/nexus/content/repositories/releases"
         }
-//        maven {url "http://developer.huawei.com/repo"}
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
@@ -28,13 +24,11 @@ subprojects {
         def androidHome = System.getenv("ANDROID_HOME")
         google()
         jcenter()
-        maven { url "http://mvn.leancloud.cn/nexus/content/repositories/releases" }
         maven {
             url "$androidHome/extras/android/m2repository/"
         }
         maven {
-            url "https://maven.google.com" // Google's Maven repository
+            url "http://mvn.leancloud.cn/nexus/content/repositories/releases"
         }
-//        maven {url "http://developer.huawei.com/repo"}
     }
 }

@@ -27,9 +27,10 @@ import com.avos.avoscloud.im.v2.AVIMMessageOption;
 import com.avos.avoscloud.im.v2.AVIMOptions;
 import com.avos.avoscloud.im.v2.Conversation;
 import com.avos.avoscloud.im.v2.Conversation.AVIMOperation;
-import com.avos.avoscloud.java_websocket.framing.CloseFrame;
 import com.avos.avospush.push.*;
 import com.avos.avospush.session.CommandPacket;
+
+import org.java_websocket.framing.CloseFrame;
 
 import java.util.Arrays;
 import java.util.List;
