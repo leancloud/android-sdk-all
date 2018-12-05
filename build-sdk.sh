@@ -19,7 +19,6 @@ sed -i '' "s/sdkVersion = .*;/sdkVersion = \"$version\";/" avoscloud-sdk/src/mai
 
 sed -i '' "s/include ':Statistics'//" settings.gradle
 sed -i '' "s/include ':paas_unit_test_application'//" settings.gradle
-sed -i '' "s/include ':hmsagent'//" settings.gradle
 
 ./gradlew clean assemble uploadArchives
 
@@ -39,22 +38,9 @@ cp avoscloud-mixpush/build/libs/avoscloud-mixpush-*.jar $releaseDir/
 cp avoscloud-mixpush/libs/HMS_SDK_*.jar $releaseDir/
 cp avoscloud-mixpush/libs/MiPush_SDK_Client_*.jar $releaseDir/
 
-cp avoscloud-gcm/build/libs/avoscloud-gcm-*.jar $releaseDir/
 cp avoscloud-fcm/build/libs/avoscloud-fcm-*.jar $releaseDir/
 
-cp avoscloud-statistics/build/libs/avoscloud-statistics-*.jar $releaseDir/
-
-cp avoscloud-sns/build/libs/avoscloud-sns-*.jar $releaseDir/
-cp -r avoscloud-sns/src/main/res $releaseDir/avoscloud-sns/
-cp -r avoscloud-sns/build/libs/avoscloud-sns-*.jar $releaseDir/avoscloud-sns/libs
-cd $releaseDir && zip -r avoscloud-sns-${version}.zip avoscloud-sns && rm -rf avoscloud-sns || fail_and_exit "$0"
-cd -
-
 cp avoscloud-feedback/build/libs/avoscloud-feedback-*.jar $releaseDir/avoscloud-feedback/libs
-#cp avoscloud/build/libs/avoscloud-*.jar $releaseDir/avosfeedback/libs
-#cp libs/android-async-http-*.jar $releaseDir/avosfeedback/libs
-#cp libs/fastjson.jar $releaseDir/avosfeedback/libs
-#cp libs/httpmime-4.2.4.jar $releaseDir/avosfeedback/libs
 cp -r avoscloud-feedback/src/main/res $releaseDir/avoscloud-feedback/
 cd $releaseDir && zip -r avoscloud-feedback-${version}.zip avoscloud-feedback && rm -rf avoscloud-feedback || fail_and_exit "$0"
 cd -
