@@ -19,6 +19,7 @@ sed -i '' "s/sdkVersion = .*;/sdkVersion = \"$version\";/" avoscloud-sdk/src/mai
 
 sed -i '' "s/include ':Statistics'//" settings.gradle
 sed -i '' "s/include ':paas_unit_test_application'//" settings.gradle
+sed -i '' "s/include ':hmsagent'//" settings.gradle
 
 ./gradlew clean assemble uploadArchives
 

@@ -83,7 +83,9 @@ public final class AVRole extends AVObject {
    * @return the relation for the roles belonging to this role.
    */
   public AVRelation getRoles() {
-    return super.getRelation(AVROLE_ENDPOINT);
+    AVRelation relation = super.getRelation(AVROLE_ENDPOINT);
+    relation.setTargetClass(AVRole.className);
+    return relation;
   }
 
   /**
@@ -94,7 +96,9 @@ public final class AVRole extends AVObject {
    * @return the relation for the users belonging to this role.
    */
   public AVRelation getUsers() {
-    return super.getRelation(AVUser.AVUSER_ENDPOINT);
+    AVRelation relation = super.getRelation(AVUser.AVUSER_ENDPOINT);
+    relation.setTargetClass(AVUser.userClassName());
+    return relation;
   }
 
   /**

@@ -34,7 +34,7 @@ public class PaasClient {
   static final String DEFAULT_CONTENT_TYPE = "application/json";
   public static final String DEFAULT_FAIL_STRING = "request failed!!!";
 
-  public static final String sdkVersion = "4.7.8_RC";
+  public static final String sdkVersion = "4.7.8";
 
   private static final String userAgent = "AVOS Cloud android-" + sdkVersion + " SDK";
   private AVUser currentUser = null;

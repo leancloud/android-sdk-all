@@ -96,7 +96,7 @@ public class QueryConditions {
   }
 
   public Map<String, String> getParameters() {
-    return parameters;
+    return new HashMap<>(parameters);
   }
 
   public void setParameters(Map<String, String> parameters) {
