@@ -232,7 +232,7 @@ public class AVPushWebSocketClient extends WebSocketClient {
       // 已经是健康的状态了就没必要再发了
       return;
     } else if (AVUtils.isConnected(AVOSCloud.applicationContext)) {
-      this.connect();
+      this.reconnect();
     } else if(!destroyed.get()){
       // 网络状态有问题,我们延期再尝试吧
       scheduleReconnect();
