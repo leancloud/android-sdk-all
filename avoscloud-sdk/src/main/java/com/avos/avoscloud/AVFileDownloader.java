@@ -16,7 +16,7 @@ import okhttp3.Request;
  * 文件下载，避免 AVFile 代码太多，所以从 AVFile 剥离出来
  * 下载的内容会存到本地
  * 流程：
- * 如果本地包含缓存，则直接返回缓存数据，反正则从网络加载数据
+ * 如果本地包含缓存，则直接返回缓存数据，否则从网络加载数据
  */
 class AVFileDownloader extends AsyncTask<String, Integer, AVException> {
 
