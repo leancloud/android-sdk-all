@@ -356,7 +356,7 @@ public class AVIMClient {
    * @param name 聊天室名字
    * @param attributes 聊天室的额外属性
    * @param isUnique 如果已经存在符合条件的会话，是否返回已有聊天室
-   *                 为 false 时，则一直为创建新的聊天室
+   *                 为 false 时，则一直创建新的聊天室
    *                 为 true 时，则先查询，如果已有符合条件的回话，则返回已有的，否则，创建新的并返回
    *                 为 true 时，仅 conversationMembers 为有效查询条件
    * @param callback  结果回调函数
