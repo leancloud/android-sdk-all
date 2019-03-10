@@ -1,6 +1,7 @@
 syntax = "proto2";
 
-package push_server.messages;
+//package com.avos.avoscloud;
+package cn.leancloud.im;
 
 // note that this line will be removed by out build script until we
 // finally upgraded to protobuffer 3
@@ -21,6 +22,13 @@ enum CommandType {
   read = 11;
   presence = 12;
   report = 13;
+  echo = 14;
+  loggedin = 15;
+  logout = 16;
+  loggedout = 17;
+  patch = 18;
+  pubsub = 19;
+  blacklist = 20;
 }
 
 enum OpType {
@@ -36,6 +44,8 @@ enum OpType {
   conflict = 9;
   added = 10;
   removed = 11;
+  refresh = 12;
+  refreshed = 13;
 
   // conv
   start = 30;
@@ -56,6 +66,13 @@ enum OpType {
   updated = 46;
   mute = 47;
   unmute = 48;
+  status = 49;
+  members = 50;
+  max_read = 51;
+  is_member = 52;
+  member_info_update = 53;
+  member_info_updated = 54;
+  member_info_changed = 55;
 
   // room
   join = 80;
@@ -73,6 +90,36 @@ enum OpType {
   // report
   upload = 100;
   uploaded = 101;
+
+  // pubsub
+  subscribe = 120;
+  subscribed = 121;
+  unsubscribe = 122;
+  unsubscribed = 123;
+  is_subscribed = 124;
+
+  // patch
+  modify = 150;
+  modified = 151;
+
+  // blacklist, query, query_result defined with 7, 8
+  block = 170;
+  unblock = 171;
+  blocked = 172;
+  unblocked = 173;
+  members_blocked = 174;
+  members_unblocked = 175;
+
+  add_shutup = 180;
+  remove_shutup = 181;
+  query_shutup = 182;
+  shutup_added = 183;
+  shutup_removed = 184;
+  shutup_result = 185;
+  shutuped = 186;
+  unshutuped = 187;
+  members_shutuped = 188;
+  members_unshutuped = 189;
 }
 
 enum StatusType {
@@ -87,6 +134,14 @@ message JsonObjectMessage {
 message UnreadTuple {
   required string cid = 1;
   required int32 unread = 2;
+  optional string mid = 3;
+  optional int64 timestamp = 4;
+  optional string from = 5;
+  optional string data = 6;
+  optional int64 patchTimestamp = 7;
+  optional bool mentioned = 8;
+  optional bytes binaryMsg = 9;
+  optional int32 convType = 10;
 }
 
 message LogItem {
@@ -94,14 +149,25 @@ message LogItem {
   optional string data = 2;
   optional int64 timestamp = 3;
   optional string msgId = 4;
+  optional int64 ackAt = 5;
+  optional int64 readAt = 6;
+  optional int64 patchTimestamp = 7;
+  optional bool mentionAll = 8;
+  repeated string mentionPids = 9;
+  optional bool bin = 10;
+  optional int32 convType = 11;
 }
 
-message LoginCommand {
+message ConvMemberInfo {
+  optional string pid = 1;
+  optional string role = 2;
+  optional string infoId = 3;
 }
 
 message DataCommand {
   repeated string ids = 1;
-  repeated string msg = 2;
+  repeated JsonObjectMessage msg = 2;
+  optional bool offline = 3;
 }
 
 message SessionCommand {
@@ -119,6 +185,11 @@ message SessionCommand {
   optional int32 code = 12;
   optional string reason = 13;
   optional string deviceToken = 14;
+  optional bool sp = 15;
+  optional string detail = 16;
+  optional int64 lastUnreadNotifTime = 17;
+  optional int64 lastPatchTime = 18;
+  optional int64 configBitmap = 19;
 }
 
 message ErrorCommand {
@@ -126,6 +197,7 @@ message ErrorCommand {
   required string reason = 2;
   optional int32 appCode = 3;
   optional string detail = 4;
+  repeated string pids = 5;
 }
 
 message DirectCommand {
@@ -142,6 +214,13 @@ message DirectCommand {
   optional bool transient = 13;
   optional string dt = 14;
   optional string roomId = 15;
+  optional string pushData = 16;
+  optional bool will = 17;
+  optional int64 patchTimestamp = 18;
+  optional bytes binaryMsg = 19;
+  repeated string mentionPids = 20;
+  optional bool mentionAll = 21;
+  optional int32 convType = 22;
 }
 
 message AckCommand {
@@ -160,6 +239,7 @@ message AckCommand {
 
 message UnreadCommand {
   repeated UnreadTuple convs = 1;
+  optional int64 notifTime = 2;
 }
 
 message ConvCommand {
@@ -178,6 +258,30 @@ message ConvCommand {
   optional int64 t = 13;
   optional string n = 14;
   optional string s = 15;
+
+  optional bool statusSub = 16;
+  optional bool statusPub = 17;
+  optional int32 statusTTL = 18;
+  optional string uniqueId = 19;
+
+  optional string targetClientId = 20;
+  optional int64 maxReadTimestamp = 21;
+  optional int64 maxAckTimestamp = 22;
+  optional bool queryAllMembers = 23;
+  repeated MaxReadTuple maxReadTuples = 24;
+  repeated string cids = 25;
+
+  optional ConvMemberInfo info = 26;
+
+  optional bool tempConv = 27;
+  optional int32 tempConvTTL = 28;
+  repeated string tempConvIds = 29;
+
+  repeated string allowedPids = 30;
+  repeated ErrorCommand failedPids = 31;
+
+  // used in shutup query
+  optional string next = 40;
 
   optional JsonObjectMessage results = 100;
   optional JsonObjectMessage where = 101;
@@ -202,6 +306,16 @@ message LogsCommand {
   optional int64 tt = 5;
   optional string tmid = 6;
   optional string mid = 7;
+  optional string checksum = 8;
+  optional bool stored = 9;
+  enum QueryDirection {
+     OLD = 1;
+     NEW = 2;
+  }
+  optional QueryDirection direction = 10 [default = OLD];
+  optional bool tIncluded = 11;
+  optional bool ttIncluded = 12;
+  optional int32 lctype = 13;
 
   repeated LogItem logs = 105;
 }
@@ -210,16 +324,32 @@ message RcpCommand {
   optional string id = 1;
   optional string cid = 2;
   optional int64 t = 3;
+  optional bool read = 4;
+  optional string from = 5;
+}
+
+message ReadTuple {
+  required string cid = 1;
+  optional int64 timestamp = 2;
+  optional string mid = 3;
+}
+
+message MaxReadTuple {
+  optional string pid = 1;
+  optional int64 maxAckTimestamp = 2;
+  optional int64 maxReadTimestamp = 3;
 }
 
 message ReadCommand {
   optional string cid = 1;
   repeated string cids = 2;
+  repeated ReadTuple convs = 3;
 }
 
 message PresenceCommand {
   optional StatusType status = 1;
   repeated string sessionPeerIds = 2;
+  optional string cid = 3;
 }
 
 message ReportCommand {
@@ -228,16 +358,65 @@ message ReportCommand {
   optional string data = 3;
 }
 
+message PatchItem {
+  optional string cid = 1;
+  optional string mid = 2;
+  optional int64 timestamp = 3;
+  optional bool recall = 4;
+  optional string data = 5;
+  optional int64 patchTimestamp = 6;
+  optional string from = 7;
+  optional bytes binaryMsg = 8;
+  optional bool mentionAll = 9;
+  repeated string mentionPids = 10;
+}
+
+message PatchCommand {
+  repeated PatchItem patches = 1;
+  optional int64 lastPatchTime = 2;
+}
+
+message PubsubCommand {
+  optional string cid = 1;
+  repeated string cids = 2;
+  optional string topic = 3;
+  optional string subtopic = 4;
+  repeated string topics = 5;
+  repeated string subtopics = 6;
+  optional JsonObjectMessage results = 7;
+}
+
+message BlacklistCommand {
+  optional string srcCid      = 1;
+  repeated string toPids      = 2;
+  optional string srcPid      = 3;
+  repeated string toCids      = 4;
+  optional int32 limit        = 5;
+  optional string next        = 6;
+
+  repeated string blockedPids = 8;
+  repeated string blockedCids = 9;
+
+  repeated string allowedPids = 10;
+  repeated ErrorCommand failedPids = 11;
+
+  optional int64 t = 12;
+  optional string n = 13;
+  optional string s = 14;
+}
+
 message GenericCommand {
-  required CommandType cmd = 1;
+  optional CommandType cmd = 1;
   optional OpType op = 2;
 
   optional string appId = 3;
   optional string peerId = 4;
   optional int32 i = 5;
   optional string installationId = 6;
+  optional int32 priority = 7;
+  optional int32 service = 8;
+  optional int64 serverTs = 9;
 
-  optional LoginCommand loginMessage = 100;
   optional DataCommand dataMessage = 101;
   optional SessionCommand sessionMessage = 102;
   optional ErrorCommand errorMessage = 103;
@@ -251,4 +430,7 @@ message GenericCommand {
   optional RoomCommand roomMessage = 111;
   optional PresenceCommand presenceMessage = 112;
   optional ReportCommand reportMessage = 113;
+  optional PatchCommand patchMessage = 114;
+  optional PubsubCommand pubsubMessage = 115;
+  optional BlacklistCommand blacklistMessage = 116;
 }

@@ -28,6 +28,8 @@ public abstract class AVSessionListener {
   public abstract void onOnlineQuery(Context context, AVSession session, List<String> onlinePeerIds,
       int requestCode);
 
+  public abstract void onGoaway(Context context, AVSession session);
+
   /*
    * 这个方法主要是用来处理服务器端的主动登出当前用户的登录的
    */

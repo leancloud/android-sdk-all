@@ -219,6 +219,8 @@ public class AVOSCloud {
   }
 
   private static void initialize() {
+    AVPersistenceUtils.initAppInfo(applicationId, applicationContext);
+
     AppRouterManager.getInstance().fetchRouter(false);
 
     // 这里需要注意时序，因为 statistics 会依赖 appRouter 返回的 api server

@@ -32,6 +32,8 @@ public interface AVWebSocketListener {
 
   void onHistoryMessageQuery(Integer requestKey, Messages.LogsCommand command);
 
+  void onGoaway();
+
   /**
    * process unread count of offline messages
    */

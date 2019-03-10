@@ -309,6 +309,9 @@ class AVPushConnectionManager implements AVPushWebSocketClient.AVPacketParser {
               processPatchCommand(peerId, false, requestKey, command.getPatchMessage());
             }
             break;
+          case Messages.CommandType.goaway_VALUE:
+            processGoawayCommand(peerId);
+            break;
           default:
             break;
         }
@@ -434,6 +437,15 @@ class AVPushConnectionManager implements AVPushWebSocketClient.AVPacketParser {
       Intent intent = new Intent();
       intent.setAction(AVLiveQuery.LIVEQUERY_PRIFIX + requestKey);
       LocalBroadcastManager.getInstance(AVOSCloud.applicationContext).sendBroadcast(intent);
+    }
+  }
+
+  private void processGoawayCommand(String peerId) {
+    AVSession session = peerIdEnabledSessions.get(peerId);
+    if (session != null && session.getWebSocketListener() != null) {
+      session.getWebSocketListener().onGoaway();
+    } else {
+      LogUtil.avlog.d("peerId(" + peerId + ") is invalid within GOAWAY command.");
     }
   }
 

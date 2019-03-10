@@ -346,19 +346,16 @@ public class AVIMClient {
   public void createConversation(final List<String> members, final String name,
                                  final Map<String, Object> attributes, final boolean isTransient,
                                  final AVIMConversationCreatedCallback callback) {
-    this.createConversation(members, name, attributes, isTransient, false, callback);
+    this.createConversation(members, name, attributes, isTransient, true, callback);
   }
 
   /**
    * 创建或查询一个已有的开放聊天室
    *
-   * @param conversationMembers 聊天室成员
+   * @param conversationMembers 聊天室成员(ignored)
    * @param name 聊天室名字
    * @param attributes 聊天室的额外属性
-   * @param isUnique 如果已经存在符合条件的会话，是否返回已有聊天室
-   *                 为 false 时，则一直为创建新的聊天室
-   *                 为 true 时，则先查询，如果已有符合条件的回话，则返回已有的，否则，创建新的并返回
-   *                 为 true 时，仅 conversationMembers 为有效查询条件
+   * @param isUnique 如果已经存在符合条件的会话，是否返回已有聊天室(ignored)
    * @param callback  结果回调函数
    * @since 4.6
    */
@@ -452,7 +449,7 @@ public class AVIMClient {
     }
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, conversationMembers);
-    params.put(Conversation.PARAM_CONVERSATION_ISUNIQUE, isUnique);
+    params.put(Conversation.PARAM_CONVERSATION_ISUNIQUE, ((isTemp || isTransient)? false : isUnique));
     params.put(Conversation.PARAM_CONVERSATION_ISTRANSIENT, isTransient);
     params.put(Conversation.PARAM_CONVERSATION_ISTEMPORARY, isTemp);
     if (isTemp) {

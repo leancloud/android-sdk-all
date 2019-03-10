@@ -165,7 +165,6 @@ public class AVIMConversationsQuery {
    * @param value
    * @return
    */
-
   public AVIMConversationsQuery whereContainsIn(String key, Collection<?> value) {
     conditions.whereContainedIn(key, value);
     return this;
