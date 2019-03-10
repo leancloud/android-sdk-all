@@ -12,7 +12,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * User: summer Date: 13-4-11 Time: AM10:37
  */
 public class AVPersistenceUtils {
+  private static final String INSTALLATION = "installation";
   private static AVPersistenceUtils instance = null;
+  private static String currentAppPrefix = "";
 
   private static ConcurrentHashMap<String, ReentrantReadWriteLock> fileLocks =
       new ConcurrentHashMap<String, ReentrantReadWriteLock>();
@@ -43,12 +45,57 @@ public class AVPersistenceUtils {
     return instance;
   }
 
+  public static synchronized void initAppInfo(String appId, Context ctx) {
+    if (AVUtils.isBlankString(appId) || null == ctx) {
+      return;
+    }
+    currentAppPrefix = appId.substring(0, 7);
+
+    // cache data migration
+    File oldDocumentDir = getPaasDocumentDir_old();
+    File newDocumentDir = getPaasDocumentDir();
+    if (!newDocumentDir.exists() && oldDocumentDir.exists()) {
+      boolean ret = oldDocumentDir.renameTo(newDocumentDir);
+      if (ret) {
+        LogUtil.avlog.i("succeed to migrate document dir.");
+      } else {
+        LogUtil.avlog.e("failed to migrate document dir");
+      }
+    }
+
+    File oldCommandCacheDir = getCommandCacheDir_old();
+    File newCommandCacheDir = getCommandCacheDir();
+    if (!newCommandCacheDir.exists() && oldCommandCacheDir.exists()) {
+      boolean ret = oldCommandCacheDir.renameTo(newCommandCacheDir);
+      if (ret) {
+        LogUtil.avlog.i("succeed to migrate command cache dir.");
+      } else {
+        LogUtil.avlog.e("failed to migrate command cache dir");
+      }
+    }
+
+    File oldInstallationFile = getInstallationFile_old(ctx);
+    File newInstallationFile = getInstallationFile(ctx);
+    if (oldInstallationFile.exists() && !newInstallationFile.exists()) {
+      boolean ret = oldInstallationFile.renameTo(newInstallationFile);
+      if (ret) {
+        LogUtil.avlog.i("succeed to migrate installation file.");
+      } else {
+        LogUtil.avlog.e("failed to migrate installation file.");
+      }
+    }
+  }
+
+  public static String getCurrentAppPrefix() {
+    return currentAppPrefix;
+  }
+
   public static File getPaasDocumentDir() {
     if (AVOSCloud.applicationContext == null) {
       throw new IllegalStateException(
           "applicationContext is null, Please call AVOSCloud.initialize first");
     }
-    return AVOSCloud.applicationContext.getDir("Paas", Context.MODE_PRIVATE);
+    return AVOSCloud.applicationContext.getDir(currentAppPrefix + "Paas", Context.MODE_PRIVATE);
   }
 
   public static File getCacheDir() {
@@ -64,9 +111,26 @@ public class AVPersistenceUtils {
       throw new IllegalStateException(
           "applicationContext is null, Please call AVOSCloud.initialize first");
     }
-    File dir = new File(getCacheDir(), "CommandCache");
+    File dir = new File(getCacheDir(), currentAppPrefix + "CommandCache");
     dir.mkdirs();
     return dir;
+  }
+
+  public static File getInstallationFile(Context ctx) {
+    return new File(getFilesDir(ctx), currentAppPrefix + INSTALLATION);
+  }
+
+  private static File getInstallationFile_old(Context ctx) {
+    return new File(getFilesDir(ctx),  INSTALLATION);
+  }
+
+  private static File getFilesDir(Context ctx) {
+    Context validContext = (null != ctx)? ctx : AVOSCloud.applicationContext;
+    if (validContext == null) {
+      throw new IllegalStateException(
+          "applicationContext is null, Please call AVOSCloud.initialize first");
+    }
+    return validContext.getFilesDir();
   }
 
   public static File getAnalysisCacheDir() {
@@ -74,7 +138,27 @@ public class AVPersistenceUtils {
       throw new IllegalStateException(
           "applicationContext is null, Please call AVOSCloud.initialize first");
     }
-    File dir = new File(getCacheDir(), "Analysis");
+    File dir = new File(getCacheDir(), currentAppPrefix + "Analysis");
+    dir.mkdirs();
+    return dir;
+  }
+
+  @Deprecated
+  private static File getPaasDocumentDir_old() {
+    if (AVOSCloud.applicationContext == null) {
+      throw new IllegalStateException(
+          "applicationContext is null, Please call AVOSCloud.initialize first");
+    }
+    return AVOSCloud.applicationContext.getDir("Paas", Context.MODE_PRIVATE);
+  }
+
+  @Deprecated
+  private static File getCommandCacheDir_old() {
+    if (AVOSCloud.applicationContext == null) {
+      throw new IllegalStateException(
+          "applicationContext is null, Please call AVOSCloud.initialize first");
+    }
+    File dir = new File(getCacheDir(), "CommandCache");
     dir.mkdirs();
     return dir;
   }

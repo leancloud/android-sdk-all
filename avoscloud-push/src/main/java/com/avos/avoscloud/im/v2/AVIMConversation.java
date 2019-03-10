@@ -1266,7 +1266,7 @@ public class AVIMConversation {
   }
 
   /**
-   * 获取最新一条消息的时间
+   * 获取最新一条消息
    *
    * @return
    */

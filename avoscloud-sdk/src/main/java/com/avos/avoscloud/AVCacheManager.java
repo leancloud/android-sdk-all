@@ -9,13 +9,9 @@ public class AVCacheManager {
   private static AVCacheManager instance = null;
 
   private static File keyValueCacheDir() {
-    File dir = new File(AVPersistenceUtils.getCacheDir(), "PaasKeyValueCache");
+    File dir = new File(AVPersistenceUtils.getCacheDir(), AVPersistenceUtils.getCurrentAppPrefix() + "PaasKeyValueCache");
     dir.mkdirs();
     return dir;
-  }
-
-  private static File getCacheFile(String fileName) {
-    return new File(keyValueCacheDir(), fileName);
   }
 
   private AVCacheManager() {
@@ -60,6 +56,10 @@ public class AVCacheManager {
   private File getCacheFile(String key, String ts) {
     File file = getCacheFile(fileCacheKey(key, ts));
     return file;
+  }
+
+  private static File getCacheFile(String fileName) {
+    return new File(keyValueCacheDir(), fileName);
   }
 
   public void get(String key, long maxAgeInMilliseconds, String ts,

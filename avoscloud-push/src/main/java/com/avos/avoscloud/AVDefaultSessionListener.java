@@ -101,6 +101,22 @@ public class AVDefaultSessionListener extends AVSessionListener {
     }
   }
 
+  @Override
+  public void onGoaway(Context context, final AVSession session) {
+    LogUtil.log.d("received GOAWAY command and try to re-connect to rtm server...");
+    manager.cleanupSocketConnection();
+    manager.initConnection(new AVCallback() {
+      @Override
+      protected void internalDone0(Object o, AVException avException) {
+        if (null != avException) {
+          LogUtil.log.e("failed to re-connect to rtm server. error:" + avException);
+        } else {
+          session.reopen();
+        }
+      }
+    });
+  }
+
   private void cleanSession(AVSession session) {
     AVSessionCacheHelper.getTagCacheInstance().removeSession(session.getSelfPeerId());
     session.sessionOpened.set(false);

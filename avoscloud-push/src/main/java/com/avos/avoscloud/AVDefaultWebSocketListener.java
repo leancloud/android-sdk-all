@@ -190,6 +190,7 @@ class AVDefaultWebSocketListener implements AVWebSocketListener {
       requestKey, error, operation);
   }
 
+
   @Override
   public void onAckCommand(Integer requestKey, Messages.AckCommand ackCommand) {
     session.setServerAckReceived(System.currentTimeMillis() / 1000);
@@ -210,6 +211,15 @@ class AVDefaultWebSocketListener implements AVWebSocketListener {
           MessageReceiptCache.add(session.getSelfPeerId(), msgId, m);
         }
       }
+    }
+  }
+
+  @Override
+  public void onGoaway() {
+    if (null != session.sessionListener) {
+      session.sessionListener.onGoaway(null, session);
+    } else {
+      LogUtil.avlog.d("sessionListener is null, ignore GOAWAY command.");
     }
   }
 

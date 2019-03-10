@@ -17,7 +17,6 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 @AVClassName("_Installation")
 public final class AVInstallation extends AVObject {
   private static final String LOGTAG = AVInstallation.class.getName();
-  private static final String INSTALLATION = "installation";
   private static final String DEVICETYPETAG = "deviceType";
   private static final String CHANNELSTAG = "channel";
   private static final String INSTALLATIONIDTAG = "installationId";
@@ -180,7 +179,7 @@ public final class AVInstallation extends AVObject {
     }
     String json = "";
     try {
-      File installationFile = new File(usingCtx.getFilesDir(), INSTALLATION);
+      File installationFile = AVPersistenceUtils.getInstallationFile(usingCtx);
 
       if (installationFile.exists()) {
         json = AVPersistenceUtils.readContentFromFile(installationFile);
@@ -207,7 +206,7 @@ public final class AVInstallation extends AVObject {
   private static void writeInstallationFile(Context ctx, AVInstallation installation) throws IOException {
     if (null != ctx && null != installation) {
       installation.initialize();
-      File installationFile = new File(ctx.getFilesDir(), INSTALLATION);
+      File installationFile = AVPersistenceUtils.getInstallationFile(ctx);
       String jsonString =
         JSON.toJSONString(installation, ObjectValueFilter.instance,
           SerializerFeature.WriteClassName,
