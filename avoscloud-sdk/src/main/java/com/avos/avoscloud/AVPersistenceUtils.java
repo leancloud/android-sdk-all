@@ -49,7 +49,7 @@ public class AVPersistenceUtils {
     if (AVUtils.isBlankString(appId) || null == ctx) {
       return;
     }
-    currentAppPrefix = appId.substring(0, 7);
+    currentAppPrefix = appId.substring(0, 8);
 
     // cache data migration
     File oldDocumentDir = getPaasDocumentDir_old();
