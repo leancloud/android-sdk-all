@@ -2,13 +2,9 @@ package com.avos.avoscloud;
 
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 
-import com.alibaba.fastjson.JSON;
 import com.avos.avoscloud.utils.StringUtils;
-import java.util.Map;
 
 /**
  * Created by fengjunwen on 2018/4/24.
@@ -34,7 +30,7 @@ public class AVHMSPushMessageReceiver extends com.huawei.hms.support.api.push.Pu
       localProfile = "";
     }
     if (!localProfile.equals(AVMixPushManager.hwDeviceProfile)) {
-      installation.put(AVMixPushManager.MIXPUSH_PRIFILE, AVMixPushManager.hwDeviceProfile);
+      installation.put(AVMixPushManager.MIXPUSH_PROFILE, AVMixPushManager.hwDeviceProfile);
     }
 
     installation.saveInBackground(new SaveCallback() {

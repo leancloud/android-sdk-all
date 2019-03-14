@@ -24,10 +24,10 @@ public class AVMiPushMessageReceiver extends com.xiaomi.mipush.sdk.PushMessageRe
       if (!miRegId.equals(installation.getString(AVInstallation.REGISTRATION_ID))) {
         installation.put(AVInstallation.REGISTRATION_ID, miRegId);
       }
-      String localProfile = installation.getString(AVMixPushManager.MIXPUSH_PRIFILE);
+      String localProfile = installation.getString(AVMixPushManager.MIXPUSH_PROFILE);
       localProfile = (null != localProfile ? localProfile : "");
       if (!localProfile.equals(AVMixPushManager.miDeviceProfile)) {
-        installation.put(AVMixPushManager.MIXPUSH_PRIFILE, AVMixPushManager.miDeviceProfile);
+        installation.put(AVMixPushManager.MIXPUSH_PROFILE, AVMixPushManager.miDeviceProfile);
       }
       installation.saveInBackground(new SaveCallback() {
         @Override

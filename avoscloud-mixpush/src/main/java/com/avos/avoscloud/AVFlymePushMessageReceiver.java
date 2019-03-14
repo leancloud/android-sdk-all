@@ -24,10 +24,10 @@ public class AVFlymePushMessageReceiver extends com.meizu.cloud.pushsdk.MzPushMe
         installation.put(AVInstallation.REGISTRATION_ID, flymePushId);
       }
 
-      String localProfile = installation.getString(AVMixPushManager.MIXPUSH_PRIFILE);
+      String localProfile = installation.getString(AVMixPushManager.MIXPUSH_PROFILE);
       localProfile = (null != localProfile ? localProfile : "");
-      if (!localProfile.equals(AVMixPushManager.flymeDevicePrifile)) {
-        installation.put(AVMixPushManager.MIXPUSH_PRIFILE, AVMixPushManager.flymeDevicePrifile);
+      if (!localProfile.equals(AVMixPushManager.flymeDeviceProfile)) {
+        installation.put(AVMixPushManager.MIXPUSH_PROFILE, AVMixPushManager.flymeDeviceProfile);
       }
 
       installation.saveInBackground(new SaveCallback() {
