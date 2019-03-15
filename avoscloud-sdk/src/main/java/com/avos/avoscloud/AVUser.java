@@ -561,6 +561,60 @@ public class AVUser extends AVObject {
         }, null, null);
   }
 
+  /**
+   * login by email.
+   * @param email
+   * @param password
+   * @param callback
+   */
+  public static void loginByEmailInBackground(String email, String password, final LogInCallback<AVUser> callback) {
+    loginByEmailInBackground(email, password, callback, AVUser.class);
+  }
+
+  /**
+   * login by email with specified User class.
+   * @param email
+   * @param password
+   * @param callback
+   * @param clazz
+   * @param <T>
+   */
+  public static <T extends AVUser> void loginByEmailInBackground(String email, String password, final LogInCallback<T> callback, Class<T> clazz) {
+    Map<String, String> map = createUserMapAFAP(null, password, email, null, null);
+    final LogInCallback<T> internalCallback = callback;
+    final T user = newAVUser(clazz, callback);
+    if (user == null) {
+      return;
+    }
+    user.put("email", email, false);
+    PaasClient.storageInstance().postObject(logInPath(), JSON.toJSONString(map), false, false,
+        new GenericObjectCallback() {
+          @Override
+          public void onSuccess(String content, AVException e) {
+            AVException error = e;
+            T resultUser = user;
+            if (!AVUtils.isBlankContent(content)) {
+              AVUtils.copyPropertiesFromJsonStringToAVObject(content, user);
+              user.processAuthData(null);
+              AVUser.changeCurrentUser(user, true);
+            } else {
+              resultUser = null;
+              error = new AVException(AVException.OBJECT_NOT_FOUND, "User is not found.");
+            }
+            if (internalCallback != null) {
+              internalCallback.internalDone(resultUser, error);
+            }
+          }
+
+          @Override
+          public void onFailure(Throwable error, String content) {
+            if (internalCallback != null) {
+              internalCallback.internalDone(null, AVErrorUtils.createException(error, content));
+            }
+          }
+        }, null, null);
+  }
+
   public static AVUser loginByMobilePhoneNumber(String phone, String password) throws AVException {
     return loginByMobilePhoneNumber(phone, password, AVUser.class);
   }
