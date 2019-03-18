@@ -149,6 +149,10 @@ class AVDefaultWebSocketListener implements AVWebSocketListener {
         if (command.hasSt() && command.hasStTtl()) {
           session.updateRealtimeSessionToken(command.getSt(), Integer.valueOf(command.getStTtl()));
         }
+        if (command.hasLastPatchTime()) {
+          long lastPatchTime = command.getLastPatchTime();
+          session.updateLastPatchTime(lastPatchTime, true);
+        }
       } catch (Exception e) {
         session.sessionListener.onError(AVOSCloud.applicationContext, session, e);
       }

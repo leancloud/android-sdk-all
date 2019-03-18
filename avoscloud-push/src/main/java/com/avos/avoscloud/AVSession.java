@@ -465,10 +465,19 @@ public class AVSession {
   }
 
   void updateLastPatchTime(long patchTime) {
-    long currentTime = getLastPatchTime();
-    if (patchTime > currentTime) {
+    updateLastPatchTime(patchTime, false);
+  }
+
+  void updateLastPatchTime(long patchTime, boolean force) {
+    if (force) {
       lastPatchTime = patchTime;
       AVPersistenceUtils.sharedInstance().savePersistentSettingLong(selfId, LAST_PATCH_TIME, patchTime);
+    } else {
+      long currentTime = getLastPatchTime();
+      if (patchTime > currentTime) {
+        lastPatchTime = patchTime;
+        AVPersistenceUtils.sharedInstance().savePersistentSettingLong(selfId, LAST_PATCH_TIME, patchTime);
+      }
     }
   }
 
