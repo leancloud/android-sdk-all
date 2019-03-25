@@ -468,7 +468,7 @@ public class AVMixPushManager {
 
   /**
    * get vivo topics
-   * 
+   *
    * @param context
    * @return
    */
