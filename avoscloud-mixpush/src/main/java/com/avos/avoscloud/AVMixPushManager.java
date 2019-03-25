@@ -345,6 +345,13 @@ public class AVMixPushManager {
     return client.isSupport();
   }
 
+  /**
+   * bind vivo alias
+   *
+   * @param context
+   * @param alias
+   * @param callback
+   */
   public static void bindVIVOAlias(Context context, String alias, final AVCallback<Boolean> callback) {
     if (null == context) {
       if (null != callback) {
@@ -365,6 +372,13 @@ public class AVMixPushManager {
     }
   }
 
+  /**
+   * unbind vivo alias
+   *
+   * @param context
+   * @param alias
+   * @param callback
+   */
   public static void unbindVIVOAlias(Context context, String alias, final AVCallback<Boolean> callback) {
     if (null == context) {
       if (null != callback) {
@@ -385,6 +399,12 @@ public class AVMixPushManager {
     }
   }
 
+  /**
+   * get vivo alias
+   *
+   * @param context
+   * @return
+   */
   public static String getVIVOAlias(Context context) {
     if (null == context) {
       return null;
@@ -392,32 +412,20 @@ public class AVMixPushManager {
     return com.vivo.push.PushClient.getInstance(context).getAlias();
   }
 
-  public static void setVIVOTopic(Context context, String alias, final AVCallback<Boolean> callback) {
+  /**
+   * set vivo topic
+   *
+   * @param context
+   * @param topic
+   * @param callback
+   */
+  public static void setVIVOTopic(Context context, String topic, final AVCallback<Boolean> callback) {
     if (null == context) {
       if (null != callback) {
         callback.internalDone(false, new AVException(AVException.VALIDATION_ERROR, "context is null"));
       }
     } else {
-      com.vivo.push.PushClient.getInstance(context).setTopic(alias, new com.vivo.push.IPushActionListener() {
-        public void onStateChanged(int state) {
-          if (null == callback) {
-            AVException exception = null;
-            if (0 != state) {
-              exception = new AVException(AVException.UNKNOWN, "VIVO server internal error, state=" + state);
-            }
-            callback.internalDone(null == exception, exception);
-          }
-        }
-      });
-    }
-  }
-  public static void delVIVOTopic(Context context, String alias, final AVCallback<Boolean> callback) {
-    if (null == context) {
-      if (null != callback) {
-        callback.internalDone(false, new AVException(AVException.VALIDATION_ERROR, "context is null"));
-      }
-    } else {
-      com.vivo.push.PushClient.getInstance(context).delTopic(alias, new com.vivo.push.IPushActionListener() {
+      com.vivo.push.PushClient.getInstance(context).setTopic(topic, new com.vivo.push.IPushActionListener() {
         public void onStateChanged(int state) {
           if (null == callback) {
             AVException exception = null;
@@ -431,6 +439,39 @@ public class AVMixPushManager {
     }
   }
 
+  /**
+   * delete vivo topic
+   *
+   * @param context
+   * @param topic
+   * @param callback
+   */
+  public static void delVIVOTopic(Context context, String topic, final AVCallback<Boolean> callback) {
+    if (null == context) {
+      if (null != callback) {
+        callback.internalDone(false, new AVException(AVException.VALIDATION_ERROR, "context is null"));
+      }
+    } else {
+      com.vivo.push.PushClient.getInstance(context).delTopic(topic, new com.vivo.push.IPushActionListener() {
+        public void onStateChanged(int state) {
+          if (null == callback) {
+            AVException exception = null;
+            if (0 != state) {
+              exception = new AVException(AVException.UNKNOWN, "VIVO server internal error, state=" + state);
+            }
+            callback.internalDone(null == exception, exception);
+          }
+        }
+      });
+    }
+  }
+
+  /**
+   * get vivo topics
+   * 
+   * @param context
+   * @return
+   */
   public static List<String> getVIVOTopics(Context context) {
     if (null == context) {
       return null;
