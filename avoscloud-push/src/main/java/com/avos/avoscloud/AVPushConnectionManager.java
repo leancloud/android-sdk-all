@@ -33,7 +33,9 @@ class AVPushConnectionManager implements AVPushWebSocketClient.AVPacketParser {
   private static final String SUB_PROTOCOL_2_1 = "lc.protobuf2.1";
   private static AVPushConnectionManager instance = null;
 
-  private volatile AVPushWebSocketClient socketClient;
+  private volatile AVPushWebSocketClient socketClient = null;
+  private Object socketClientObject = new Object();
+  private AVPushRouter.RouterResponseListener routerResponseListener = null;
 
   private static final Map<String, AVSession> peerIdEnabledSessions = Collections
       .synchronizedMap(new HashMap<String, AVSession>());
@@ -45,18 +47,23 @@ class AVPushConnectionManager implements AVPushWebSocketClient.AVPacketParser {
 
   private AVPushConnectionManager(Context ctx) {
     LogUtil.log.d("begin to invoke AVPushConnectionManager(Context)");
-    router = new AVPushRouter(ctx, new AVPushRouter.RouterResponseListener() {
+    routerResponseListener = new AVPushRouter.RouterResponseListener() {
       @Override
       public void onServerAddress(String address) {
-        if (!AVUtils.isBlankString(address)) {
-          createNewWebSocket(address);
-        } else {
-          if (AVOSCloud.isDebugLogEnabled()) {
-            LogUtil.avlog.d("push server address is null");
+        try {
+          if (!AVUtils.isBlankString(address)) {
+            createNewWebSocket(address);
+          } else {
+            if (AVOSCloud.isDebugLogEnabled()) {
+              LogUtil.avlog.d("push server address is null");
+            }
           }
+        } catch (Exception ex) {
+          LogUtil.avlog.e("failed to create new ws. cause: " + ex.getMessage());
         }
       }
-    });
+    };
+    router = new AVPushRouter(ctx, routerResponseListener);
 
     initSessionsIfExists();
     boolean initializeConn = true;
@@ -107,12 +114,15 @@ class AVPushConnectionManager implements AVPushWebSocketClient.AVPacketParser {
   }
 
   public void initConnection(final AVCallback cl) {
-    if (socketClient != null && socketClient.isOpen()) {
-      LogUtil.log.d("push connection is open");
-      return;
-    } else if (socketClient != null) {
-      socketClient.cancelReconnect();
+    synchronized (socketClientObject) {
+      if (socketClient != null && socketClient.isOpen()) {
+        LogUtil.log.d("push connection is open");
+        return;
+      } else if (socketClient != null) {
+        socketClient.cancelReconnect();
+      }
     }
+
     LogUtil.log.d("try to query connection server via push router.");
     router.fetchPushServer();
     if (null != cl) {
@@ -165,47 +175,51 @@ class AVPushConnectionManager implements AVPushWebSocketClient.AVPacketParser {
   }
 
   public void cleanupSocketConnection(final int code, final String message) {
-    if (socketClient != null && (socketClient.isConnecting() || socketClient.isOpen())) {
-      try {
-        LogUtil.avlog.d("try to close and destroy connection");
-        socketClient.closeConnection(code, message);
-        socketClient.destroy();
-      } catch (Exception e) {
-        if (AVOSCloud.isDebugLogEnabled()) {
-          LogUtil.avlog.e("Close socket client failed.", e);
+    synchronized (socketClientObject) {
+      if (socketClient != null && (socketClient.isConnecting() || socketClient.isOpen())) {
+        try {
+          LogUtil.avlog.d("try to close and destroy connection");
+          socketClient.closeConnection(code, message);
+          socketClient.destroy();
+        } catch (Exception e) {
+          if (AVOSCloud.isDebugLogEnabled()) {
+            LogUtil.avlog.e("Close socket client failed.", e);
+          }
         }
+      } else if (socketClient != null && socketClient.isClosing()) {
+        LogUtil.avlog.d("try to destroy connection");
+        socketClient.destroy();
+        socketClient = null;
+      } else {
+        LogUtil.avlog.d("do nothing for invalid connection");
       }
-    } else if (socketClient != null && socketClient.isClosing()) {
-      LogUtil.avlog.d("try to destroy connection");
-      socketClient.destroy();
-      socketClient = null;
-    } else {
-      LogUtil.avlog.d("do nothing for invalid connection");
     }
   }
 
-  private synchronized void createNewWebSocket(final String pushServer) {
-    if (socketClient == null || socketClient.isDestroyed() || socketClient.isClosed()) {
-      // 由于需要链接到新的server address上,原来的client就要被抛弃了,抛弃前需要取消自动重连的任务
-      if (socketClient != null && !socketClient.isDestroyed()) {
-        LogUtil.log.d("destroy socketClient first which is closed.");
-        socketClient.destroy();
-      }
+  private void createNewWebSocket(final String pushServer) {
+    synchronized(socketClientObject) {
+      if (socketClient == null || socketClient.isDestroyed() || socketClient.isClosed()) {
+        // 由于需要链接到新的server address上,原来的client就要被抛弃了,抛弃前需要取消自动重连的任务
+        if (socketClient != null && !socketClient.isDestroyed()) {
+          LogUtil.log.d("destroy socketClient first which is closed.");
+          socketClient.destroy();
+        }
 
-      if (AVSession.isOnlyPushCount()) {
-        socketClient =
-            new AVPushWebSocketClient(URI.create(pushServer), this, SUB_PROTOCOL_2_3, true);
+        if (AVSession.isOnlyPushCount()) {
+          socketClient =
+              new AVPushWebSocketClient(URI.create(pushServer), this, SUB_PROTOCOL_2_3, true);
+        } else {
+          socketClient =
+              new AVPushWebSocketClient(URI.create(pushServer), this, SUB_PROTOCOL_2_1, true);
+        }
+
+        socketClient.connect();
+        if (AVOSCloud.isDebugLogEnabled()) {
+          LogUtil.avlog.d("connect to server: " + pushServer);
+        }
       } else {
-        socketClient =
-            new AVPushWebSocketClient(URI.create(pushServer), this, SUB_PROTOCOL_2_1, true);
+        LogUtil.log.d("skip create socketClient.");
       }
-
-      socketClient.connect();
-      if (AVOSCloud.isDebugLogEnabled()) {
-        LogUtil.avlog.d("connect to server: " + pushServer);
-      }
-    } else {
-      LogUtil.log.d("skip create socketClient.");
     }
   }
 

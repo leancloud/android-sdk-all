@@ -35,7 +35,8 @@ build/
 proguard/
 
 # IDEA
-**/avoscloud-*.iml
+**/*.iml
+*.iml
 *.ipr
 *.iws
 out
