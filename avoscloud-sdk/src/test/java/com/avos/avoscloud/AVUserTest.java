@@ -14,6 +14,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
@@ -306,6 +307,23 @@ public class AVUserTest {
     user.put(testKey, testValue);
     user.save();
     Assert.assertEquals(testValue, user.get(testKey));
+
+    user.getFollowersAndFolloweesInBackground(new FollowersAndFolloweesCallback() {
+      @Override
+      public void done(Map avObjects, AVException avException) {
+        if (null != avException || null == avObjects) {
+          ;
+        } else {
+          List<AVUser> followers = (List<AVUser>) avObjects.get("followers");
+          List<AVUser> followees = (List<AVUser>) avObjects.get("followees");
+        }
+      }
+
+      @Override
+      protected void internalDone0(Object o, AVException avException) {
+
+      }
+    });
   }
 
   @Test
