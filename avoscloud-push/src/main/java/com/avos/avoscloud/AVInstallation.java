@@ -66,7 +66,7 @@ public final class AVInstallation extends AVObject {
   }
 
   private static void createNewInstallation(Context ctx) {
-    String id = genInstallationId();
+    String id = genInstallationId(ctx);
     currentInstallation = new AVInstallation();
     currentInstallation.setInstallationId(id);
     currentInstallation.put(INSTALLATIONIDTAG, id);
@@ -78,9 +78,9 @@ public final class AVInstallation extends AVObject {
    *
    * @return
    */
-  private static String genInstallationId() {
+  private static String genInstallationId(Context ctx) {
     // app的包名
-    String packageName = AVOSCloud.applicationContext.getPackageName();
+    String packageName = ctx.getPackageName();
     String additionalStr = UUID.randomUUID().toString();
     return AVUtils.md5(packageName + additionalStr);
   }
