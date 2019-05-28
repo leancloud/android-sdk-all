@@ -5,6 +5,7 @@ import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVOSCloud;
 import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.LogUtil;
+import com.avos.avoscloud.utils.StringUtils;
 
 import java.util.List;
 import java.util.zip.CRC32;
@@ -45,10 +46,10 @@ import okhttp3.Response;
  */
 
 class QiniuAccessor {
-  static final String QINIU_HOST = "http://upload.qiniu.com";
-  static final String QINIU_CREATE_BLOCK_EP = QINIU_HOST + "/mkblk/%d";
-  static final String QINIU_BRICK_UPLOAD_EP = QINIU_HOST + "/bput/%s/%d";
-  static final String QINIU_MKFILE_EP = QINIU_HOST + "/mkfile/%d/key/%s";
+  static final String QINIU_DEFAULT_HOST = "http://upload.qiniu.com";
+  static final String QINIU_CREATE_BLOCK_EP = "%s/mkblk/%d";
+  static final String QINIU_BRICK_UPLOAD_EP = "%s/bput/%s/%d";
+  static final String QINIU_MKFILE_EP = "%s/mkfile/%d/key/%s";
 
   static final String HEAD_CONTENT_LENGTH = "Content-Length";
   static final String HEAD_CONTENT_TYPE = "Content-Type";
@@ -76,11 +77,17 @@ class QiniuAccessor {
   private OkHttpClient client;
   private String uploadToken;
   private String fileKey;
+  private String uploadUrl;
 
-  QiniuAccessor(OkHttpClient client, String uploadToken, String fileKey) {
+  QiniuAccessor(OkHttpClient client, String uploadToken, String fileKey, String uploadUrl) {
     this.client = client;
     this.uploadToken = uploadToken;
     this.fileKey = fileKey;
+    if (StringUtils.isBlankString(uploadUrl)) {
+      this.uploadUrl = QINIU_DEFAULT_HOST;
+    } else {
+      this.uploadUrl = uploadUrl;
+    }
   }
 
   private static <T> T parseQiniuResponse(Response resp, Class<T> clazz) throws Exception {
@@ -140,12 +147,14 @@ class QiniuAccessor {
       if (AVOSCloud.isDebugLogEnabled()) {
         LogUtil.avlog.d("try to invoke mkblk");
       }
-      String endPoint = String.format(QINIU_CREATE_BLOCK_EP, blockSize);
+      String endPoint = String.format(QINIU_CREATE_BLOCK_EP, this.uploadUrl, blockSize);
       Request.Builder builder = new Request.Builder();
       builder.url(endPoint);
       builder.addHeader(HEAD_CONTENT_TYPE, DEFAULT_CONTENT_TYPE);
       builder.addHeader(HEAD_CONTENT_LENGTH, String.valueOf(firstChunkSize));
       builder.addHeader(HEAD_AUTHORIZATION, "UpToken " + this.uploadToken);
+
+      LogUtil.avlog.d("try to create block through " + endPoint);
 
       RequestBody requestBody = RequestBody.create(MediaType.parse(DEFAULT_CONTENT_TYPE), firstChunkData, 0, firstChunkSize);
       builder = builder.post(requestBody);
@@ -197,7 +206,7 @@ class QiniuAccessor {
                                                       final byte[] currentChunkData,
                                                       int currentChunkSize, int retry) {
     try {
-      String endPoint = String.format(QINIU_BRICK_UPLOAD_EP, lastChunk.ctx, lastChunk.offset);
+      String endPoint = String.format(QINIU_BRICK_UPLOAD_EP, this.uploadUrl, lastChunk.ctx, lastChunk.offset);
       Request.Builder builder = new Request.Builder();
       builder.url(endPoint);
       builder.addHeader(HEAD_CONTENT_TYPE, DEFAULT_CONTENT_TYPE);
@@ -260,7 +269,7 @@ class QiniuAccessor {
   public QiniuMKFileResponseData makeFile(int fileTotalSize, List<String> uploadFileCtxs, int retry)
       throws Exception {
     try {
-      String endPoint = String.format(QINIU_MKFILE_EP, fileTotalSize, AVUtils.base64Encode(this.fileKey));
+      String endPoint = String.format(QINIU_MKFILE_EP, this.uploadUrl, fileTotalSize, AVUtils.base64Encode(this.fileKey));
       final String joinedFileCtx = AVUtils.joinCollection(uploadFileCtxs, ",");
       Request.Builder builder = new Request.Builder();
       builder.url(endPoint);

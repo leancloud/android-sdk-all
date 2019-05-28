@@ -100,7 +100,7 @@ public class FileUploader extends HttpClientUploader {
         case "s3":
           return new S3Uploader(avFile, uploadUrl, saveCallback, progressCallback);
         default:
-          return new QiniuSlicingUploader(avFile, token, fileKey, saveCallback, progressCallback);
+          return new QiniuSlicingUploader(avFile, uploadUrl, token, fileKey, saveCallback, progressCallback);
       }
     } else {
       return null;

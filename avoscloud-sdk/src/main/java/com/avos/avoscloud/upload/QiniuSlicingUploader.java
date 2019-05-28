@@ -22,16 +22,18 @@ import java.util.ArrayList;
 
 class QiniuSlicingUploader extends HttpClientUploader {
   private final String token;
+  private final String uploadUrl;
   private final String fileKey;
   private FileUploader.ProgressCalculator progressCalculator;
   private int uploadChunkSize = QiniuAccessor.WIFI_CHUNK_SIZE;
   private QiniuAccessor qiniuAccessor;
 
-  QiniuSlicingUploader(AVFile avFile, String token, String fileKey, SaveCallback saveCallback, ProgressCallback progressCallback) {
+  QiniuSlicingUploader(AVFile avFile, String uploadUrl, String token, String fileKey, SaveCallback saveCallback, ProgressCallback progressCallback) {
     super(avFile, saveCallback, progressCallback);
+    this.uploadUrl = uploadUrl;
     this.token = token;
     this.fileKey = fileKey;
-    this.qiniuAccessor = new QiniuAccessor(getOKHttpClient(), token, fileKey);
+    this.qiniuAccessor = new QiniuAccessor(getOKHttpClient(), token, fileKey, uploadUrl);
   }
 
   @Override
