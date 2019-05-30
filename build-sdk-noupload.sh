@@ -35,7 +35,6 @@ cp avoscloud-sdk/build/libs/avoscloud-sdk-*.jar $releaseDir/
 cp avoscloud-push/build/libs/avoscloud-push-*.jar $releaseDir/
 
 cp avoscloud-mixpush/build/libs/avoscloud-mixpush-*.jar $releaseDir/
-cp avoscloud-mixpush/libs/HMS_SDK_*.jar $releaseDir/
 cp avoscloud-mixpush/libs/MiPush_SDK_Client_*.jar $releaseDir/
 
 cp avoscloud-gcm/build/libs/avoscloud-gcm-*.jar $releaseDir/
