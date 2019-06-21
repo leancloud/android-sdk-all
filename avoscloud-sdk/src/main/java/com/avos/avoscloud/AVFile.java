@@ -15,6 +15,8 @@ import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.avos.avoscloud.AppRouterManager.APP_REGION_CN_EAST;
+
 
 /**
  * <p>
@@ -590,7 +592,7 @@ public final class AVFile {
    * @return
    */
   public String getThumbnailUrl(boolean scaleToFit, int width, int height, int quality, String fmt) {
-    if (!AVOSCloud.isCN() || AppRouterManager.isQCloudApp(AVOSCloud.applicationId)) {
+    if (!AVOSCloud.isCN() || APP_REGION_CN_EAST == AppRouterManager.getAppRegion(AVOSCloud.applicationId)) {
       throw new UnsupportedOperationException("We only support this method for qiniu storage.");
     }
     if (width < 0 || height < 0) {

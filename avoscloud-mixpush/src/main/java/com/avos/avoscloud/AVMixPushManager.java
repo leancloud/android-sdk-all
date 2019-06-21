@@ -36,6 +36,7 @@ public class AVMixPushManager {
    */
   static String vivoDeviceProfile = "";
 
+  static String oppoDeviceProfile = "";
 
   /**
    * 注册小米推送
@@ -477,6 +478,86 @@ public class AVMixPushManager {
       return null;
     }
     return com.vivo.push.PushClient.getInstance(context).getTopics();
+  }
+
+  /**
+   * Oppo push
+   */
+
+
+  public static boolean registerOppoPush(Context context, String appKey, String appSecret,
+                                         AVOPPOPushAdapter callback) {
+    if (!isSupportOppoPush(context)) {
+      return false;
+    }
+    com.coloros.mcssdk.PushManager.getInstance().register(context, appKey, appSecret, callback);
+    return true;
+  }
+
+  public static boolean isSupportOppoPush(Context context) {
+    return com.coloros.mcssdk.PushManager.isSupportPush(context);
+  }
+
+  public static void pauseOppoPush() {
+    com.coloros.mcssdk.PushManager.getInstance().pausePush();
+  }
+
+  public static void resumeOppoPush() {
+    com.coloros.mcssdk.PushManager.getInstance().resumePush();
+  }
+
+  public static void setOppoPushTime(List<Integer> weekDays, int startHour, int startMinute,
+                                     int endHour, int endMinute) {
+    com.coloros.mcssdk.PushManager.getInstance().setPushTime(weekDays, startHour, startMinute,
+        endHour, endMinute);
+  }
+
+  public static void getOppoPushTime() {
+    com.coloros.mcssdk.PushManager.getInstance().getPushTime();
+  }
+
+  public static void setOppoAliases(List<String> aliases) {
+    com.coloros.mcssdk.PushManager.getInstance().setAliases(aliases);
+  }
+
+  public static void unsetOppoAlias(String alias) {
+    com.coloros.mcssdk.PushManager.getInstance().unsetAlias(alias);
+  }
+
+  public static void getOppoAliases() {
+    com.coloros.mcssdk.PushManager.getInstance().getAliases();
+  }
+
+  public static void setOppoUserAccount(String account) {
+    com.coloros.mcssdk.PushManager.getInstance().setUserAccount(account);
+  }
+
+  public static void unsetOppoUserAccouts(List<String> accounts) {
+    com.coloros.mcssdk.PushManager.getInstance().unsetUserAccounts(accounts);
+  }
+
+  public static void getOppoUserAccounts() {
+    com.coloros.mcssdk.PushManager.getInstance().getUserAccounts();
+  }
+
+  public static void setOppoTags(List<String> tags) {
+    com.coloros.mcssdk.PushManager.getInstance().setTags(tags);
+  }
+
+  public static void unsetOppoTags(List<String> tags) {
+    com.coloros.mcssdk.PushManager.getInstance().unsetTags(tags);
+  }
+
+  public static void getOppoTags() {
+    com.coloros.mcssdk.PushManager.getInstance().getTags();
+  }
+
+  public static void getOppoPushStatus() {
+    com.coloros.mcssdk.PushManager.getInstance().getPushStatus();
+  }
+
+  public static void getOppoNotificationStatus() {
+    com.coloros.mcssdk.PushManager.getInstance().getNotificationStatus();
   }
 
   /**

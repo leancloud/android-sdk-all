@@ -8,7 +8,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import okhttp3.Request;
 
-
 /**
  * Created by wli on 16/5/6.
  */
@@ -31,21 +30,16 @@ public class AppRouterManager {
 
   private static final String LATEST_UPDATE_TIME_KEY = "latest_update_time";
 
-  /**
-   * api 默认的地址
-   */
-  private static final String DEFAULT_QCLOUD_API_SERVER = "https://e1-api.leancloud.cn";
-  private static final String DEFALUT_US_API_SERVER = "https://us-api.leancloud.cn";
+  private static final String DEFAULT_REGION_EAST_CHINA = "lncldapi.com";
+  private static final String DEFAULT_REGION_NORTH_CHINA = "lncld.net";
+  private static final String DEFAULT_REGION_NORTH_AMERICA = "lncldglobal.com";
 
-  /**
-   * push router 默认地址
-   */
-  private static final String DEFAULT_QCLOUD_ROUTER_SERVER = "https://router-q0-push.leancloud.cn";
-  private static final String DEFAULT_US_ROUTER_SERVER = "https://router-a0-push.leancloud.cn";
+  public static final int APP_REGION_CN_NORTH = 0;
+  public static final int APP_REGION_CN_EAST = 1;
+  public static final int APP_REGION_US_NORTH = 2;
 
-
-  private Map<String, String> apiMaps = new ConcurrentHashMap<>();
-  private static Map<String, String> customApiMaps = new ConcurrentHashMap<>();
+  private Map<String, String> serverHostsMap = new ConcurrentHashMap<>();
+  private static Map<String, String> customServerHostsMap = new ConcurrentHashMap<>();
 
   private static AppRouterManager appRouterManager;
 
@@ -60,7 +54,7 @@ public class AppRouterManager {
   }
 
   static void setServer(AVOSCloud.SERVER_TYPE server, String host) {
-    customApiMaps.put(server.name, host);
+    customServerHostsMap.put(server.name, host);
     RequestStatisticsUtil.REPORT_INTERNAL_STATS = false;
   }
 
@@ -89,44 +83,34 @@ public class AppRouterManager {
   }
 
   private String getServerUrl(AVOSCloud.SERVER_TYPE type) {
-    if (customApiMaps.containsKey(type.name)) {
-      return customApiMaps.get(type.name);
+    if (customServerHostsMap.containsKey(type.name)) {
+      return customServerHostsMap.get(type.name);
     }
 
-    final boolean isRtm = type.equals(AVOSCloud.SERVER_TYPE.RTM);
-
-    // 美国节点
-    if (isUsApp(AVOSCloud.applicationId)) {
-      return isRtm ? DEFAULT_US_ROUTER_SERVER : DEFALUT_US_API_SERVER;
-    }
-
-    // QCloud 节点
-    if (isQCloudApp(AVOSCloud.applicationId)) {
-      return isRtm ? DEFAULT_QCLOUD_ROUTER_SERVER : DEFAULT_QCLOUD_API_SERVER;
-    }
-
-    // UCloud 节点
-    if (apiMaps.containsKey(type.name) && !AVUtils.isBlankString(apiMaps.get(type.name))) {
-      return apiMaps.get(type.name);
+    if (serverHostsMap.containsKey(type.name) && !AVUtils.isBlankString(serverHostsMap.get(type.name))) {
+      return serverHostsMap.get(type.name);
     } else {
-      return getUcloudDefaultServer(type);
+      int appRegion = getAppRegion(AVOSCloud.applicationId);
+      return getDefaultServer(type, appRegion);
     }
   }
 
   /**
-   * 获取默认的 UCloud 节点的 url
+   * 获取默认的 url
    * @param type
+   * @param region
    * @return
    */
-  private String getUcloudDefaultServer(AVOSCloud.SERVER_TYPE type) {
-    if (!AVUtils.isBlankString(AVOSCloud.applicationId)) {
-      return String.format("https://%s.%s.lncld.net", AVOSCloud.applicationId.substring(0, 8), type.name);
-    } else {
-      LogUtil.avlog.e("AppId is null, Please call AVOSCloud.initialize first");
-      return "";
+  private String getDefaultServer(AVOSCloud.SERVER_TYPE type, int region) {
+    String prefix = AVOSCloud.applicationId.substring(0, 8);
+    String suffix = DEFAULT_REGION_NORTH_CHINA;
+    if (APP_REGION_US_NORTH == region) {
+      suffix = DEFAULT_REGION_NORTH_AMERICA;
+    } else if (APP_REGION_CN_EAST == region) {
+      suffix = DEFAULT_REGION_EAST_CHINA;
     }
+    return String.format("https://%s.%s.%s", prefix, type.name, suffix);
   }
-
 
   /**
    * 更新 router url
@@ -137,10 +121,10 @@ public class AppRouterManager {
    *                    为 true 则存到本地，app 下次打开后仍有效果，否则仅当次声明周期内有效
    */
   public void updateRtmRouterServer(String router, boolean persistence) {
-    apiMaps.put(AVOSCloud.SERVER_TYPE.RTM.name, addHttpsPrefix(router));
+    serverHostsMap.put(AVOSCloud.SERVER_TYPE.RTM.name, addHttpsPrefix(router));
     if (persistence) {
       AVPersistenceUtils.sharedInstance().savePersistentSettingString(
-        getAppRouterSPName(), RTM_ROUTER_SERVRE_KEY, apiMaps.get(AVOSCloud.SERVER_TYPE.RTM.name));
+        getAppRouterSPName(), RTM_ROUTER_SERVRE_KEY, serverHostsMap.get(AVOSCloud.SERVER_TYPE.RTM.name));
     }
   }
 
@@ -159,54 +143,48 @@ public class AppRouterManager {
    * @param callback
    */
   void fetchRouter(boolean force, final AVCallback callback) {
-    if (!isUsApp(AVOSCloud.applicationId)) {
-      updateServers();
+    updateServers();
 
-      Long lastTime = AVPersistenceUtils.sharedInstance().getPersistentSettingLong(
+    Long lastTime = AVPersistenceUtils.sharedInstance().getPersistentSettingLong(
         getAppRouterSPName(), LATEST_UPDATE_TIME_KEY, 0L);
 
-      int ttl = AVPersistenceUtils.sharedInstance().getPersistentSettingInteger(
+    int ttl = AVPersistenceUtils.sharedInstance().getPersistentSettingInteger(
         getAppRouterSPName(), TTL_KEY, 0);
 
-      if (force || System.currentTimeMillis() - lastTime > ttl * 1000) {
-        AVHttpClient client = AVHttpClient.clientInstance();
-        Request.Builder builder = new Request.Builder();
-        builder.url(ROUTER_ADDRESS + AVOSCloud.applicationId).get();
-        client.execute(builder.build(), false, new GetHttpResponseHandler(new GenericObjectCallback() {
-          @Override
-          public void onSuccess(String content, AVException e) {
-            if (null == e) {
-              if (AVOSCloud.showInternalDebugLog()) {
-                LogUtil.avlog.d(" fetchRouter :" + content);
-              }
-
-              saveRouterResult(content);
-            } else {
-              LogUtil.avlog.e("get router error ", e);
+    if (force || System.currentTimeMillis() - lastTime > ttl * 1000) {
+      AVHttpClient client = AVHttpClient.clientInstance();
+      Request.Builder builder = new Request.Builder();
+      builder.url(ROUTER_ADDRESS + AVOSCloud.applicationId).get();
+      client.execute(builder.build(), false, new GetHttpResponseHandler(new GenericObjectCallback() {
+        @Override
+        public void onSuccess(String content, AVException e) {
+          if (null == e) {
+            if (AVOSCloud.showInternalDebugLog()) {
+              LogUtil.avlog.d(" fetchRouter :" + content);
             }
-            if (null != callback) {
-              callback.internalDone(e);
-            }
-          }
 
-          @Override
-          public void onFailure(Throwable error, String content) {
-            LogUtil.avlog.e("get router error ", new AVException(error));
-            if (null != callback) {
-              callback.internalDone(new AVException(error));
-            }
+            saveRouterResult(content);
+          } else {
+            LogUtil.avlog.e("get router error ", e);
           }
-
-          @Override
-          public boolean isRequestStatisticNeed() {
-            return false;
+          if (null != callback) {
+            callback.internalDone(e);
           }
-        }));
-      } else {
-        if (null != callback) {
-          callback.internalDone(null);
         }
-      }
+
+        @Override
+        public void onFailure(Throwable error, String content) {
+          LogUtil.avlog.e("get router error ", new AVException(error));
+          if (null != callback) {
+            callback.internalDone(new AVException(error));
+          }
+        }
+
+        @Override
+        public boolean isRequestStatisticNeed() {
+          return false;
+        }
+      }));
     } else {
       if (null != callback) {
         callback.internalDone(null);
@@ -223,11 +201,11 @@ public class AppRouterManager {
     }
 
     if (null != response) {
-      updateMapAndSaveLocal(apiMaps, response, AVOSCloud.SERVER_TYPE.RTM.name, RTM_ROUTER_SERVRE_KEY);
-      updateMapAndSaveLocal(apiMaps, response, AVOSCloud.SERVER_TYPE.PUSH.name, PUSH_SERVRE_KEY);
-      updateMapAndSaveLocal(apiMaps, response, AVOSCloud.SERVER_TYPE.API.name, API_SERVER_KEY);
-      updateMapAndSaveLocal(apiMaps, response, AVOSCloud.SERVER_TYPE.STATS.name, STATS_SERVRE_KEY);
-      updateMapAndSaveLocal(apiMaps, response, AVOSCloud.SERVER_TYPE.ENGINE.name, ENGINE_SERVRE_KEY);
+      updateMapAndSaveLocal(serverHostsMap, response, AVOSCloud.SERVER_TYPE.RTM.name, RTM_ROUTER_SERVRE_KEY);
+      updateMapAndSaveLocal(serverHostsMap, response, AVOSCloud.SERVER_TYPE.PUSH.name, PUSH_SERVRE_KEY);
+      updateMapAndSaveLocal(serverHostsMap, response, AVOSCloud.SERVER_TYPE.API.name, API_SERVER_KEY);
+      updateMapAndSaveLocal(serverHostsMap, response, AVOSCloud.SERVER_TYPE.STATS.name, STATS_SERVRE_KEY);
+      updateMapAndSaveLocal(serverHostsMap, response, AVOSCloud.SERVER_TYPE.ENGINE.name, ENGINE_SERVRE_KEY);
 
       if (response.containsKey(TTL_KEY)) {
         AVPersistenceUtils.sharedInstance().savePersistentSettingInteger(
@@ -267,11 +245,11 @@ public class AppRouterManager {
    * 这样如果运行过程中动态切换了 appId，app router 仍然可以正常 work
    */
   private void updateServers() {
-    refreshMap(apiMaps, AVOSCloud.SERVER_TYPE.RTM.name, RTM_ROUTER_SERVRE_KEY);
-    refreshMap(apiMaps, AVOSCloud.SERVER_TYPE.PUSH.name, PUSH_SERVRE_KEY);
-    refreshMap(apiMaps, AVOSCloud.SERVER_TYPE.API.name, API_SERVER_KEY);
-    refreshMap(apiMaps, AVOSCloud.SERVER_TYPE.STATS.name, STATS_SERVRE_KEY);
-    refreshMap(apiMaps, AVOSCloud.SERVER_TYPE.ENGINE.name, ENGINE_SERVRE_KEY);
+    refreshMap(serverHostsMap, AVOSCloud.SERVER_TYPE.RTM.name, RTM_ROUTER_SERVRE_KEY);
+    refreshMap(serverHostsMap, AVOSCloud.SERVER_TYPE.PUSH.name, PUSH_SERVRE_KEY);
+    refreshMap(serverHostsMap, AVOSCloud.SERVER_TYPE.API.name, API_SERVER_KEY);
+    refreshMap(serverHostsMap, AVOSCloud.SERVER_TYPE.STATS.name, STATS_SERVRE_KEY);
+    refreshMap(serverHostsMap, AVOSCloud.SERVER_TYPE.ENGINE.name, ENGINE_SERVRE_KEY);
   }
 
   /**
@@ -288,21 +266,16 @@ public class AppRouterManager {
     return url;
   }
 
-  /**
-   * QCloud 节点的末尾是写死的，这里根据末尾后缀判断是否为 QCloud 节点
-   *
-   * @return
-   */
-  static boolean isQCloudApp(String appId) {
-    return !AVUtils.isBlankString(appId) && appId.endsWith("9Nh9j0Va");
-  }
-
-  /**
-   * 判断是否为 us 节点
-   * @param appId
-   * @return
-   */
-  static boolean isUsApp(String appId) {
-    return !AVOSCloud.isCN() || (!AVUtils.isBlankString(appId) && appId.endsWith("MdYXbMMI"));
+  static int getAppRegion(String appId) {
+    if (AVUtils.isBlankString(appId)) {
+      return APP_REGION_CN_NORTH;
+    }
+    if (appId.endsWith("9Nh9j0Va")) {
+      return APP_REGION_CN_EAST;
+    }
+    if (appId.endsWith("MdYXbMMI")) {
+      return APP_REGION_US_NORTH;
+    }
+    return APP_REGION_CN_NORTH;
   }
 }
