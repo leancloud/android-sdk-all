@@ -1,5 +1,7 @@
 package com.avos.avoscloud;
 
+import com.alibaba.fastjson.JSON;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,9 +24,42 @@ public class AVObjectTest {
 
   @Before
   public void initAvos() {
+    AVOSCloud.setServer(AVOSCloud.SERVER_TYPE.API, "avoscloud.com");
+    AVOSCloud.setServer(AVOSCloud.SERVER_TYPE.ENGINE, "avoscloud.com");
+    AVOSCloud.setServer(AVOSCloud.SERVER_TYPE.PUSH, "avoscloud.com");
+    AVOSCloud.setServer(AVOSCloud.SERVER_TYPE.RTM, "avoscloud.com");
     AVOSCloud.initialize(RuntimeEnvironment.application, TestConfig.TEST_APP_ID, TestConfig.TEST_APP_KEY);
   }
 
+  @Test
+  public void testAVObjectDeserialize() {
+    String data = "{\n" +
+        "        \"image\": {\n" +
+        "                \"bucket\": \"xtuccgoj\",\n" +
+        "                \"metaData\": {\n" +
+        "                        \"owner\": \"unknown\",\n" +
+        "                        \"size\": 12382\n" +
+        "                },\n" +
+        "                \"createdAt\": \"2019-06-22T07:18:09.584Z\",\n" +
+        "                \"mime_type\": \"image/jpeg\",\n" +
+        "                \"__type\": \"File\",\n" +
+        "                \"name\": \"shop_vip_qq.jpg\",\n" +
+        "                \"url\": \"http://file2.i7play.com/8de5fdb6cf3f8e91010f/shop_vip_qq.jpg\",\n" +
+        "                \"objectId\": \"5d0dd631eaa375007402d28a\",\n" +
+        "                \"updatedAt\": \"2019-06-22T07:18:09.584Z\"\n" +
+        "        },\n" +
+        "        \"createdAt\": \"2019-06-22T06:48:28.395Z\",\n" +
+        "        \"__type\": \"Object\",\n" +
+        "        \"name\": \"腾讯会员月卡\",\n" +
+        "        \"end\": \"-1\",\n" +
+        "        \"className\": \"ShopItem\",\n" +
+        "        \"type\": 1,\n" +
+        "        \"value\": 19000,\n" +
+        "        \"objectId\": \"5d0dcf3c43e78c0073024a19\",\n" +
+        "        \"updatedAt\": \"2019-06-22T12:11:50.924Z\"\n" +
+        "}";
+    AVObject obj = JSON.parseObject(data, AVObject.class);
+  }
   @Test
   public void testAVObjectSave() throws AVException {
     AVObject object = new AVObject(TEST_TABLE_NAME);

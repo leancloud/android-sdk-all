@@ -83,14 +83,15 @@ public class AVHMSPushMessageReceiver extends com.huawei.hms.support.api.push.Pu
   }
 
   /**
-   * 响应通知栏点击事件
-   * 注意：这一机制基本上是失效的，华为官方不推荐使用这一接口来响应不同的通知内容。
+   * 响应通知栏点击事件（已废弃）
+   * 注意：这一机制现在已经是失效的了，华为官方不推荐使用这一接口来响应不同的通知内容。
    *
    * @param context
    * @param event
    * @param extras
    */
   @Override
+  @Deprecated
   public void onEvent(Context context, Event event, Bundle extras) {
     LogUtil.avlog.d("received Notify Event. Event=" + event);
     if (Event.NOTIFICATION_CLICK_BTN.equals(event) || Event.NOTIFICATION_OPENED.equals(event)) {
@@ -112,7 +113,7 @@ public class AVHMSPushMessageReceiver extends com.huawei.hms.support.api.push.Pu
    * @param context
    * @param pushState
    */
-  @Override
+  @Deprecated
   public void onPushState(Context context, boolean pushState) {
     LogUtil.avlog.d("pushState changed, current=" + pushState);
   }

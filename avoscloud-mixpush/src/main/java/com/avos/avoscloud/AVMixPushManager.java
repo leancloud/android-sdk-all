@@ -484,7 +484,15 @@ public class AVMixPushManager {
    * Oppo push
    */
 
-
+  /**
+   * register Oppo Push.
+   *
+   * @param context
+   * @param appKey
+   * @param appSecret
+   * @param callback
+   * @return
+   */
   public static boolean registerOppoPush(Context context, String appKey, String appSecret,
                                          AVOPPOPushAdapter callback) {
     if (!isSupportOppoPush(context)) {
@@ -494,68 +502,130 @@ public class AVMixPushManager {
     return true;
   }
 
+  /**
+   * judgement if support oppo push or not.
+   *
+   * @param context
+   * @return
+   */
   public static boolean isSupportOppoPush(Context context) {
     return com.coloros.mcssdk.PushManager.isSupportPush(context);
   }
 
+  /**
+   * pause oppo push
+   */
   public static void pauseOppoPush() {
     com.coloros.mcssdk.PushManager.getInstance().pausePush();
   }
 
+  /**
+   * resume oppo push
+   */
   public static void resumeOppoPush() {
     com.coloros.mcssdk.PushManager.getInstance().resumePush();
   }
 
+  /**
+   * set oppo push time.
+   * @param weekDays
+   * @param startHour
+   * @param startMinute
+   * @param endHour
+   * @param endMinute
+   */
   public static void setOppoPushTime(List<Integer> weekDays, int startHour, int startMinute,
                                      int endHour, int endMinute) {
     com.coloros.mcssdk.PushManager.getInstance().setPushTime(weekDays, startHour, startMinute,
         endHour, endMinute);
   }
 
+  /**
+   * retrieve oppo push time.
+   */
   public static void getOppoPushTime() {
     com.coloros.mcssdk.PushManager.getInstance().getPushTime();
   }
 
+  /**
+   * set oppo push aliases.
+   * @param aliases
+   */
   public static void setOppoAliases(List<String> aliases) {
     com.coloros.mcssdk.PushManager.getInstance().setAliases(aliases);
   }
 
+  /**
+   * unset oppo push aliases.
+   * @param alias
+   */
   public static void unsetOppoAlias(String alias) {
     com.coloros.mcssdk.PushManager.getInstance().unsetAlias(alias);
   }
 
+  /**
+   * get oppo aliases.
+   */
   public static void getOppoAliases() {
     com.coloros.mcssdk.PushManager.getInstance().getAliases();
   }
 
+  /**
+   * set oppo push account.
+   * @param account
+   */
   public static void setOppoUserAccount(String account) {
     com.coloros.mcssdk.PushManager.getInstance().setUserAccount(account);
   }
 
+  /**
+   * unset oppo push accounts.
+   * @param accounts
+   */
   public static void unsetOppoUserAccouts(List<String> accounts) {
     com.coloros.mcssdk.PushManager.getInstance().unsetUserAccounts(accounts);
   }
 
+  /**
+   * get oppo push accounts.
+   */
   public static void getOppoUserAccounts() {
     com.coloros.mcssdk.PushManager.getInstance().getUserAccounts();
   }
 
+  /**
+   * set oppo push tags.
+   * @param tags
+   */
   public static void setOppoTags(List<String> tags) {
     com.coloros.mcssdk.PushManager.getInstance().setTags(tags);
   }
 
+  /**
+   * unset oppo push tags.
+   * @param tags
+   */
   public static void unsetOppoTags(List<String> tags) {
     com.coloros.mcssdk.PushManager.getInstance().unsetTags(tags);
   }
 
+  /**
+   * retrieve oppo push tags.
+   */
   public static void getOppoTags() {
     com.coloros.mcssdk.PushManager.getInstance().getTags();
   }
 
+  /**
+   * get oppo push status
+   */
   public static void getOppoPushStatus() {
     com.coloros.mcssdk.PushManager.getInstance().getPushStatus();
   }
 
+  /**
+   * get oppo notification status.
+   */
   public static void getOppoNotificationStatus() {
     com.coloros.mcssdk.PushManager.getInstance().getNotificationStatus();
   }
